@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "name": "Code Quality Analyzer",
+  "description": "Monitors source code file changes and automatically analyzes them for potential improvements including code smells, design patterns, best practices, readability, maintainability, and performance optimizations. Creates and runs tests automatically without prompting.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/**/*.php",
+      "app-modules/**/*.php",
+      "tests/**/*.php",
+      "database/**/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": ""
+  }
+}
