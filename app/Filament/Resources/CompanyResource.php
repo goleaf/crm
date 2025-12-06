@@ -21,8 +21,10 @@ use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -54,15 +56,45 @@ final class CompanyResource extends Resource
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->required(),
-                Select::make('account_owner_id')
-                    ->relationship('accountOwner', 'name')
-                    ->label(__('app.labels.account_owner'))
-                    ->nullable()
-                    ->preload()
-                    ->searchable(),
-
+                Grid::make()
+                    ->columns(12)
+                    ->schema([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpan(6),
+                        Select::make('account_owner_id')
+                            ->relationship('accountOwner', 'name')
+                            ->label(__('app.labels.account_owner'))
+                            ->nullable()
+                            ->preload()
+                            ->searchable()
+                            ->columnSpan(6),
+                        TextInput::make('website')
+                            ->label('Website')
+                            ->url()
+                            ->maxLength(255)
+                            ->columnSpan(6),
+                        TextInput::make('industry')
+                            ->label('Industry')
+                            ->maxLength(255)
+                            ->columnSpan(6),
+                        TextInput::make('revenue')
+                            ->label('Annual Revenue')
+                            ->numeric()
+                            ->step(0.01)
+                            ->minValue(0)
+                            ->columnSpan(6),
+                        TextInput::make('employee_count')
+                            ->label('Employees')
+                            ->integer()
+                            ->minValue(0)
+                            ->columnSpan(6),
+                        Textarea::make('description')
+                            ->label('Description')
+                            ->rows(4)
+                            ->columnSpanFull(),
+                    ]),
                 CustomFields::form()->forSchema($schema)->build()->columns(1),
             ])
             ->columns(1)
@@ -82,6 +114,26 @@ final class CompanyResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
+                TextColumn::make('website')
+                    ->label('Website')
+                    ->url(fn (Company $record): ?string => $record->website ?: null)
+                    ->openUrlInNewTab()
+                    ->limit(30)
+                    ->toggleable(),
+                TextColumn::make('industry')
+                    ->label('Industry')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('employee_count')
+                    ->label('Employees')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('revenue')
+                    ->label('Annual Revenue')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->formatStateUsing(fn (mixed $state): string => $state !== null ? '$'.number_format((float) $state, 2) : '—'),
                 TextColumn::make('creator.name')
                     ->label(__('app.labels.created_by'))
                     ->searchable()

@@ -19,6 +19,7 @@ use Filament\Actions\EditAction;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Flex;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Relaticle\CustomFields\Facades\CustomFields;
@@ -94,6 +95,33 @@ final class ViewCompany extends ViewRecord
                                 ->circular()
                                 ->label(__('app.labels.account_owner')),
                         ]),
+                        Grid::make()
+                            ->columns(12)
+                            ->schema([
+                                TextEntry::make('website')
+                                    ->label('Website')
+                                    ->icon('heroicon-o-globe-alt')
+                                    ->url(fn (Company $record): ?string => $record->website ?: null)
+                                    ->columnSpan(6),
+                                TextEntry::make('industry')
+                                    ->label('Industry')
+                                    ->icon('heroicon-o-briefcase')
+                                    ->columnSpan(3),
+                                TextEntry::make('employee_count')
+                                    ->label('Employees')
+                                    ->icon('heroicon-o-users')
+                                    ->columnSpan(3)
+                                    ->formatStateUsing(fn (mixed $state): string => $state !== null ? number_format((int) $state) : '—'),
+                                TextEntry::make('revenue')
+                                    ->label('Annual Revenue')
+                                    ->icon('heroicon-o-banknotes')
+                                    ->columnSpan(3)
+                                    ->formatStateUsing(fn (mixed $state): string => $state !== null ? '$'.number_format((float) $state, 2) : '—'),
+                                TextEntry::make('description')
+                                    ->label('Description')
+                                    ->columnSpan(12)
+                                    ->formatStateUsing(fn (?string $state): string => $state !== null && trim($state) !== '' ? $state : '—'),
+                            ]),
                         CustomFields::infolist()->forSchema($schema)->build(),
                     ]),
                     Section::make([

@@ -78,6 +78,22 @@ final class PeopleResource extends Resource
                                     ->schema(fn (Schema $schema): \Filament\Schemas\Schema => $schema->components([
                                         TextInput::make('name')
                                             ->required(),
+                                        TextInput::make('website')
+                                            ->label('Website')
+                                            ->url()
+                                            ->maxLength(255),
+                                        TextInput::make('industry')
+                                            ->label('Industry')
+                                            ->maxLength(255),
+                                        TextInput::make('revenue')
+                                            ->label('Annual Revenue')
+                                            ->numeric()
+                                            ->step(0.01)
+                                            ->minValue(0),
+                                        TextInput::make('employee_count')
+                                            ->label('Employees')
+                                            ->integer()
+                                            ->minValue(0),
                                         Select::make('account_owner_id')
                                             ->model(Company::class)
                                             ->relationship('accountOwner', 'name')

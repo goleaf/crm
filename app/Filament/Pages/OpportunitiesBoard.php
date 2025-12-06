@@ -44,7 +44,7 @@ final class OpportunitiesBoard extends BoardPage
         return __('app.navigation.board');
     }
 
-    public static function getTitle(): string
+    public function getTitle(): string
     {
         return __('app.labels.opportunities');
     }

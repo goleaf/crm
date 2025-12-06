@@ -1,6 +1,6 @@
 # Implementation Plan
 
-- [ ] 1. Create database migration for new account fields
+- [x] 1. Create database migration for new account fields
   - Add website, industry, revenue, employee_count, description fields to companies table
   - Add indexes for duplicate detection (name, website)
   - Create account_merges table for audit trail

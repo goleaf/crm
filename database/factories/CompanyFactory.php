@@ -28,6 +28,11 @@ final class CompanyFactory extends Factory
             'name' => $this->faker->company(),
             'account_owner_id' => User::factory(),
             'team_id' => Team::factory(),
+            'website' => $this->faker->url(),
+            'industry' => $this->faker->companySuffix(),
+            'revenue' => $this->faker->randomFloat(2, 100000, 100000000),
+            'employee_count' => $this->faker->numberBetween(5, 5000),
+            'description' => $this->faker->paragraph(),
         ];
     }
 
