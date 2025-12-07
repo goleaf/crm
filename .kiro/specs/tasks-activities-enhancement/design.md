@@ -262,7 +262,6 @@ After reviewing all testable properties from the prework analysis, several oppor
 9. **Note Categories (10.1-10.5)** can be consolidated into fewer properties
 10. **Polymorphic Linking (20.1-20.3)** are the same pattern for different entity types - can be generalized
 11. **Soft Delete Operations (24.1-24.5)** follow the same pattern for tasks and notes - can be generalized
-12. **AI Summary Invalidation (25.1-25.4)** follow the same pattern - can be consolidated
 
 **Consolidated Property Set:**
 
@@ -398,10 +397,6 @@ Property 32: Soft delete and restore
 *For any* task or note, deleting should set deleted_at timestamp, default queries should exclude soft deleted records, querying deleted items should return them, and restoring should clear deleted_at and restore functionality
 **Validates: Requirements 24.1, 24.2, 24.3, 24.4, 24.5**
 
-Property 33: AI summary invalidation cascade
-*For any* task or note operation (create, update, delete, status change, content change), AI summaries for all linked entities should be invalidated
-**Validates: Requirements 25.1, 25.2, 25.3, 25.4**
-
 ## Error Handling
 
 ### Validation Errors
@@ -451,7 +446,6 @@ Property 33: AI summary invalidation cascade
 - Log rollback events for debugging
 
 **Graceful Degradation**:
-- If AI summary invalidation fails, continue with primary operation
 - If notification sending fails, log error but don't block operation
 - If activity logging fails, log error but don't block operation
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\LeadResource\Pages;
 
-use App\Filament\Actions\GenerateRecordSummaryAction;
 use App\Filament\Resources\CompanyResource;
 use App\Filament\Resources\LeadResource;
 use App\Filament\Resources\OpportunityResource;
@@ -125,7 +124,6 @@ final class ViewLead extends ViewRecord
 
                     $this->redirect(LeadResource::getUrl('view', [$record]));
                 }),
-            GenerateRecordSummaryAction::make(),
             ActionGroup::make([
                 EditAction::make(),
                 DeleteAction::make(),

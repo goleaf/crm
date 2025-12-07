@@ -319,8 +319,4 @@ This specification defines the enhancement and completion of the Tasks & Activit
 
 #### Acceptance Criteria
 
-1. WHEN a task is created, updated, or deleted THEN the Task System SHALL invalidate AI summaries for all linked entities
-2. WHEN a note is created, updated, or deleted THEN the Note System SHALL invalidate AI summaries for all linked entities
-3. WHEN a task's status changes THEN the Task System SHALL trigger AI summary regeneration for the parent entity
-4. WHEN a note's content changes THEN the Note System SHALL trigger AI summary regeneration for the parent entity
-5. WHEN a user views an entity with invalidated summaries THEN the system SHALL display a prompt to regenerate summaries
+_AI summary requirements removed as feature has been deprecated._

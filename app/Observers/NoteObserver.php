@@ -24,8 +24,6 @@ final readonly class NoteObserver
 
     public function saved(Note $note): void
     {
-        $note->invalidateRelatedSummaries();
-
         DB::afterCommit(function () use ($note): void {
             $freshNote = $note->fresh(['customFieldValues.customField', 'team']);
 
@@ -42,8 +40,6 @@ final readonly class NoteObserver
 
     public function deleted(Note $note): void
     {
-        $note->invalidateRelatedSummaries();
-
         DB::afterCommit(function () use ($note): void {
             app(NoteHistoryService::class)->record($note, NoteHistoryEvent::DELETED);
         });

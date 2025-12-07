@@ -33,11 +33,9 @@ final readonly class CompanyObserver
 
     /**
      * Handle the Company "saved" event.
-     * Invalidate AI summary when company data changes.
      */
     public function saved(Company $company): void
     {
         $company->ensureAccountOwnerOnTeam();
-        $company->invalidateAiSummary();
     }
 }

@@ -6,7 +6,6 @@ namespace App\Models;
 
 use App\Enums\ContactEmailType;
 use App\Enums\CreationSource;
-use App\Models\Concerns\HasAiSummary;
 use App\Models\Concerns\HasCreator;
 use App\Models\Concerns\HasNotes;
 use App\Models\Concerns\HasTags;
@@ -37,7 +36,6 @@ use Relaticle\CustomFields\Models\Contracts\HasCustomFields;
 #[ObservedBy(PeopleObserver::class)]
 final class People extends Model implements HasCustomFields
 {
-    use HasAiSummary;
     use HasCreator;
 
     /** @use HasFactory<PeopleFactory> */

@@ -41,12 +41,10 @@ final readonly class PeopleObserver
 
     /**
      * Handle the People "saved" event.
-     * Invalidate AI summary when person data changes.
      */
     public function saved(People $people): void
     {
         $people->ensureEmailsFromColumns();
         $people->syncEmailColumns();
-        $people->invalidateAiSummary();
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\PeopleResource\Pages;
 
-use App\Filament\Actions\GenerateRecordSummaryAction;
 use App\Filament\Resources\PeopleResource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
@@ -23,7 +22,6 @@ final class EditPeople extends EditRecord
     {
         return [
             ViewAction::make(),
-            GenerateRecordSummaryAction::make(),
             DeleteAction::make(),
             ForceDeleteAction::make(),
             RestoreAction::make(),

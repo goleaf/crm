@@ -87,9 +87,6 @@ The following files were updated to use translations:
 - `app/Filament/Exports/NoteExporter.php`
 - `app/Filament/Exports/OpportunityExporter.php`
 
-### Actions
-- `app/Filament/Actions/GenerateRecordSummaryAction.php`
-
 ### View Pages
 - `app/Filament/Resources/CompanyResource/Pages/ViewCompany.php`
 - `app/Filament/Resources/PeopleResource/Pages/ViewPeople.php`

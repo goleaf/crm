@@ -312,8 +312,6 @@ return [
         'create' => 'Create',
         'save' => 'Save',
         'cancel' => 'Cancel',
-        'regenerate' => 'Regenerate',
-        'copy' => 'Copy',
         'create_company' => 'Create Company',
         'add_condition' => 'Add Condition',
         'add_action' => 'Add Action',
@@ -321,10 +319,6 @@ return [
         'update_status' => 'Update Status',
         'assign_to' => 'Assign To',
         'set_nurture_status' => 'Set Nurture Status',
-    ],
-
-    'ai' => [
-        'summary' => 'AI Summary',
     ],
 
     'placeholders' => [

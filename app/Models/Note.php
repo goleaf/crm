@@ -10,7 +10,6 @@ use App\Enums\NoteCategory;
 use App\Enums\NoteVisibility;
 use App\Models\Concerns\HasCreator;
 use App\Models\Concerns\HasTeam;
-use App\Models\Concerns\InvalidatesRelatedAiSummaries;
 use App\Observers\NoteObserver;
 use Database\Factories\NoteFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -45,7 +44,6 @@ final class Note extends Model implements HasCustomFields, HasMedia
 
     use HasTeam;
     use InteractsWithMedia;
-    use InvalidatesRelatedAiSummaries;
     use SoftDeletes;
     use UsesCustomFields;
 

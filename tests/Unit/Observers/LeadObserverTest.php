@@ -40,24 +40,6 @@ test('sets last activity at on creating', function () {
     expect($lead->last_activity_at)->not()->toBeNull();
 });
 
-test('invalidates ai summary on save', function () {
-    $this->actingAs($this->user);
-
-    $lead = Lead::factory()->create();
-
-    $lead->aiSummaries()->create([
-        'team_id' => $this->team->id,
-        'summary' => 'Test summary',
-        'model' => 'gpt-4',
-    ]);
-
-    expect($lead->aiSummaries()->count())->toBe(1);
-
-    $lead->update(['name' => 'Updated Name']);
-
-    expect($lead->fresh()->aiSummaries()->count())->toBe(0);
-});
-
 test('detects duplicates on save', function () {
     $this->actingAs($this->user);
 

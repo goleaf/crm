@@ -12,7 +12,6 @@ use App\Enums\LeadGrade;
 use App\Enums\LeadNurtureStatus;
 use App\Enums\LeadSource;
 use App\Enums\LeadStatus;
-use App\Models\Concerns\HasAiSummary;
 use App\Models\Concerns\HasCreator;
 use App\Models\Concerns\HasNotes;
 use App\Models\Concerns\HasTags;
@@ -45,7 +44,6 @@ use Relaticle\CustomFields\Services\TenantContextService;
 #[UsePolicy(\App\Policies\LeadPolicy::class)]
 final class Lead extends Model implements HasCustomFields
 {
-    use HasAiSummary;
     use HasCreator;
 
     /** @use HasFactory<LeadFactory> */

@@ -52,23 +52,3 @@ test('ensures account owner on team when saved', function () {
 
     expect($this->team->fresh()->users->contains($this->user))->toBeTrue();
 });
-
-test('invalidates ai summary on save', function () {
-    $this->actingAs($this->user);
-
-    $company = Company::factory()->create([
-        'team_id' => $this->team->id,
-    ]);
-
-    $company->aiSummaries()->create([
-        'team_id' => $this->team->id,
-        'summary' => 'Test summary',
-        'model' => 'gpt-4',
-    ]);
-
-    expect($company->aiSummaries()->count())->toBe(1);
-
-    $company->update(['name' => 'Updated Name']);
-
-    expect($company->fresh()->aiSummaries()->count())->toBe(0);
-});

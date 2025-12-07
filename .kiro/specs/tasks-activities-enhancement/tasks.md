@@ -140,24 +140,20 @@
 - [ ] 5.1 Enhance TaskObserver
   - Add reminder cancellation on task completion
   - Add parent completion update on subtask changes
-  - Add AI summary invalidation
-  - _Requirements: 3.5, 21.3, 25.1, 25.3_
+  - _Requirements: 3.5, 21.3_
 
 - [ ] 5.2 Write unit tests for TaskObserver
   - Test reminder cancellation
   - Test parent updates
-  - Test AI summary invalidation
-  - _Requirements: 3.5, 21.3, 25.1, 25.3_
+  - _Requirements: 3.5, 21.3_
 
 - [ ] 5.3 Enhance NoteObserver
   - Add history record creation on updates
-  - Add AI summary invalidation
-  - _Requirements: 11.1, 25.2, 25.4_
+  - _Requirements: 11.1_
 
 - [ ] 5.4 Write unit tests for NoteObserver
   - Test history creation
-  - Test AI summary invalidation
-  - _Requirements: 11.1, 25.2, 25.4_
+  - _Requirements: 11.1_
 
 - [ ] 6. Create background jobs for async processing
 - [ ] 6.1 Implement SendTaskReminderJob
@@ -286,10 +282,6 @@
 - [ ] 12.3 Write property test for soft delete and restore
   - **Property 32: Soft delete and restore**
   - **Validates: Requirements 24.1, 24.2, 24.3, 24.4, 24.5**
-
-- [ ] 12.4 Write property test for AI summary invalidation cascade
-  - **Property 33: AI summary invalidation cascade**
-  - **Validates: Requirements 25.1, 25.2, 25.3, 25.4**
 
 - [ ] 13. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.

@@ -9,7 +9,6 @@ use App\Enums\AccountType;
 use App\Enums\AddressType;
 use App\Enums\CustomFields\CompanyField;
 use App\Enums\Industry;
-use App\Filament\Actions\GenerateRecordSummaryAction;
 use App\Filament\Components\Infolists\AvatarName;
 use App\Filament\RelationManagers\ActivitiesRelationManager;
 use App\Filament\Resources\CompanyResource;
@@ -71,7 +70,6 @@ final class ViewCompany extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            GenerateRecordSummaryAction::make(),
             ActionGroup::make([
                 EditAction::make()
                     ->after(function (Company $record, array $data): void {
@@ -288,8 +286,6 @@ final class ViewCompany extends ViewRecord
                                 ])
                                 ->all())
                             ->visible(fn (?array $state): bool => count($state ?? []) > 0)
-                            ->emptyStateHeading(__('app.messages.no_team_members'))
-                            ->emptyStateDescription(__('app.messages.add_team_members_to_collaborate'))
                             ->schema([
                                 TextEntry::make('name')
                                     ->label(__('app.labels.member'))

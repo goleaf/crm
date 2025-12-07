@@ -41,11 +41,11 @@ final readonly class TaskObserver
 
     public function saved(Task $task): void
     {
-        $task->invalidateRelatedSummaries();
+        //
     }
 
     public function deleted(Task $task): void
     {
-        $task->invalidateRelatedSummaries();
+        //
     }
 }

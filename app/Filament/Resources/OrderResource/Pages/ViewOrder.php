@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\OrderResource\Pages;
 
-use App\Filament\Actions\GenerateRecordSummaryAction;
 use App\Filament\Resources\OrderResource;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
@@ -22,7 +21,6 @@ final class ViewOrder extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            GenerateRecordSummaryAction::make(),
             ActionGroup::make([
                 EditAction::make(),
                 DeleteAction::make(),

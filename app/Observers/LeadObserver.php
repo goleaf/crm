@@ -23,12 +23,9 @@ final readonly class LeadObserver
 
     /**
      * Handle the Lead "saved" event.
-     * Invalidate AI summary when lead data changes.
      */
     public function saved(Lead $lead): void
     {
-        $lead->invalidateAiSummary();
-
         if ($lead->duplicate_of_id !== null) {
             return;
         }

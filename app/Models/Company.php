@@ -14,7 +14,6 @@ use App\Enums\CustomFields\NoteField;
 use App\Enums\CustomFields\OpportunityField;
 use App\Enums\CustomFields\TaskField;
 use App\Enums\Industry;
-use App\Models\Concerns\HasAiSummary;
 use App\Models\Concerns\HasCreator;
 use App\Models\Concerns\HasNotes;
 use App\Models\Concerns\HasTags;
@@ -61,7 +60,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 #[ObservedBy(CompanyObserver::class)]
 final class Company extends Model implements HasCustomFields, HasMedia
 {
-    use HasAiSummary;
     use HasCreator;
 
     /** @use HasFactory<CompanyFactory> */

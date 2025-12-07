@@ -327,9 +327,6 @@ final class CrmSettings extends Page
                                 Forms\Components\Toggle::make('features.support_cases')
                                     ->label(__('app.labels.cases')),
 
-                                Forms\Components\Toggle::make('features.ai_summaries')
-                                    ->label(__('app.labels.ai_summaries')),
-
                                 Forms\Components\Toggle::make('features.exports')
                                     ->label(__('app.labels.exports')),
 
@@ -395,7 +392,6 @@ final class CrmSettings extends Page
                 'notes' => $service->get('features.notes', true, $teamId),
                 'leads' => $service->get('features.leads', true, $teamId),
                 'support_cases' => $service->get('features.support_cases', true, $teamId),
-                'ai_summaries' => $service->get('features.ai_summaries', false, $teamId),
                 'exports' => $service->get('features.exports', true, $teamId),
                 'imports' => $service->get('features.imports', true, $teamId),
             ],

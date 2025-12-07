@@ -64,7 +64,6 @@ return [
         'deliveries' => env('CRM_FEATURE_DELIVERIES', true),
         'projects' => env('CRM_FEATURE_PROJECTS', true),
         'custom_fields' => env('CRM_FEATURE_CUSTOM_FIELDS', true),
-        'ai_summaries' => env('CRM_FEATURE_AI_SUMMARIES', true),
         'exports' => env('CRM_FEATURE_EXPORTS', true),
         'imports' => env('CRM_FEATURE_IMPORTS', true),
         'kanban_boards' => env('CRM_FEATURE_KANBAN_BOARDS', true),
