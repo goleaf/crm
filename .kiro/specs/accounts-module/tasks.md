@@ -121,11 +121,11 @@
     - Add cast to AccountType enum
     - _Requirements: 11.1_
 
-  - [-] 5a.4 Write property test for account type persistence and filtering
+  - [x] 5a.4 Write property test for account type persistence and filtering
     - **Property 27: Account type persistence and filtering**
     - **Validates: Requirements 11.1, 11.2**
 
-  - [ ] 5a.5 Write property test for account type change audit trail
+  - [-] 5a.5 Write property test for account type change audit trail
     - **Property 28: Account type change audit trail**
     - **Validates: Requirements 11.4**
 

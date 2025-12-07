@@ -65,10 +65,43 @@ final class PeopleExporter extends BaseExporter
                 ->label('Country'),
             ExportColumn::make('segments')
                 ->label('Segments')
-                ->formatStateUsing(fn (?array $state): ?string => $state === null ? null : implode(', ', $state)),
+                ->formatStateUsing(function (mixed $state): ?string {
+                    if (in_array($state, [null, '', []], true)) {
+                        return null;
+                    }
+
+                    // Handle JSON string
+                    if (is_string($state)) {
+                        $decoded = json_decode($state, true);
+                        $state = is_array($decoded) ? $decoded : [$state];
+                    }
+
+                    // Handle array
+                    if (is_array($state)) {
+                        return implode(', ', $state);
+                    }
+
+                    return (string) $state;
+                }),
             ExportColumn::make('social_links')
                 ->label('Social Links')
-                ->formatStateUsing(fn (?array $state): ?string => $state === null ? null : json_encode($state)),
+                ->formatStateUsing(function (mixed $state): ?string {
+                    if (in_array($state, [null, '', []], true)) {
+                        return null;
+                    }
+
+                    // Handle JSON string
+                    if (is_string($state)) {
+                        return $state;
+                    }
+
+                    // Handle array
+                    if (is_array($state)) {
+                        return json_encode($state);
+                    }
+
+                    return (string) $state;
+                }),
             ExportColumn::make('is_portal_user')
                 ->label('Portal User')
                 ->formatStateUsing(fn (mixed $state): string => $state ? 'Yes' : 'No'),

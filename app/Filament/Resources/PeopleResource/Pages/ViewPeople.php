@@ -32,7 +32,6 @@ final class ViewPeople extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            GenerateRecordSummaryAction::make(),
             ActionGroup::make([
                 EditAction::make(),
                 DeleteAction::make(),
@@ -43,125 +42,261 @@ final class ViewPeople extends ViewRecord
     public function infolist(Schema $schema): Schema
     {
         return $schema->schema([
-            Section::make()->schema([
-                Flex::make([
-                    ImageEntry::make('avatar')
-                        ->label('')
-                        ->height(30)
-                        ->circular()
-                        ->grow(false),
-                    TextEntry::make('name')
-                        ->label('')
-                        ->size(TextSize::Large),
-                    TextEntry::make('company.name')
-                        ->label(__('app.labels.company'))
-                        ->color('primary')
-                        ->url(fn (People $record): ?string => $record->company ? CompanyResource::getUrl('view', [$record->company]) : null),
-                ]),
-                Grid::make()
-                    ->columns(3)
-                    ->schema([
-                        TextEntry::make('job_title')
-                            ->label('Job Title'),
-                        TextEntry::make('department')
-                            ->label('Department'),
-                        TextEntry::make('lead_source')
-                            ->label('Lead Source'),
-                        TextEntry::make('reportsTo.name')
-                            ->label('Reports To'),
-                        TextEntry::make('birthdate')
-                            ->label('Birthday')
-                            ->date(),
-                        TextEntry::make('segments')
-                            ->label('Segments')
-                            ->formatStateUsing(fn (?array $state): ?string => $state === null || $state === [] ? null : implode(', ', $state)),
-                        TextEntry::make('tags')
-                            ->label(__('app.labels.tags'))
-                            ->state(fn (People $record) => $record->tags)
-                            ->formatStateUsing(fn (Tag $tag): string => $tag->name)
-                            ->badge()
-                            ->listWithLineBreaks()
-                            ->color(fn (Tag $tag): array|string => $tag->color ? Color::hex($tag->color) : 'gray'),
-                        TextEntry::make('is_portal_user')
-                            ->label('Portal User')
-                            ->formatStateUsing(fn (People $record): string => $record->is_portal_user ? 'Yes' : 'No'),
-                        TextEntry::make('portal_username')
-                            ->label('Portal Username'),
-                        TextEntry::make('sync_enabled')
-                            ->label('Sync Enabled')
-                            ->formatStateUsing(fn (People $record): string => $record->sync_enabled ? 'Yes' : 'No'),
-                        TextEntry::make('sync_reference')
-                            ->label('Sync Reference'),
+            // Header Section with Avatar and Basic Info
+            Section::make()
+                ->schema([
+                    Flex::make([
+                        ImageEntry::make('avatar')
+                            ->label('')
+                            ->height(80)
+                            ->circular()
+                            ->grow(false),
+                        Grid::make(1)
+                            ->schema([
+                                TextEntry::make('name')
+                                    ->label('')
+                                    ->size(TextSize::ExtraLarge)
+                                    ->weight('bold'),
+                                TextEntry::make('job_title')
+                                    ->label('')
+                                    ->size(TextSize::Medium)
+                                    ->color('gray')
+                                    ->icon('heroicon-o-briefcase'),
+                                TextEntry::make('company.name')
+                                    ->label('')
+                                    ->color('primary')
+                                    ->icon('heroicon-o-building-office-2')
+                                    ->url(fn (People $record): ?string => $record->company ? CompanyResource::getUrl('view', [$record->company]) : null),
+                            ])
+                            ->grow(true),
                     ]),
-                Grid::make()
-                    ->columns(3)
-                    ->schema([
-                        TextEntry::make('emails')
-                            ->label('Emails')
-                            ->state(fn (People $record) => $record->emails->map(
-                                fn ($email): string => $email->email.' '.($email->is_primary ? '(primary)' : '('.
-                                    ($email->type?->label() ?? $email->type).')')
-                            ))
-                            ->listWithLineBreaks()
-                            ->copyable(),
-                        TextEntry::make('phone_mobile')
-                            ->label('Mobile')
-                            ->copyable(),
-                        TextEntry::make('phone_office')
-                            ->label('Office')
-                            ->copyable(),
-                        TextEntry::make('phone_home')
-                            ->label('Home')
-                            ->copyable(),
-                        TextEntry::make('phone_fax')
-                            ->label('Fax')
-                            ->copyable(),
-                        TextEntry::make('custom_phones')
-                            ->label('Other Phones')
-                            ->state(fn (People $record): ?string => $this->formatCustomPhoneNumbers($record))
-                            ->visible(fn (?string $state): bool => filled($state))
-                            ->copyable(),
-                        TextEntry::make('social_links.linkedin')
-                            ->label('LinkedIn')
-                            ->url(fn (?string $state): ?string => $state)
-                            ->copyable(),
-                        TextEntry::make('social_links.twitter')
-                            ->label('Twitter')
-                            ->url(fn (?string $state): ?string => $state)
-                            ->copyable(),
-                        TextEntry::make('social_links.facebook')
-                            ->label('Facebook')
-                            ->url(fn (?string $state): ?string => $state)
-                            ->copyable(),
-                        TextEntry::make('social_links.github')
-                            ->label('GitHub')
-                            ->url(fn (?string $state): ?string => $state)
-                            ->copyable(),
-                    ]),
-                Grid::make()
-                    ->columns(3)
-                    ->schema([
-                        TextEntry::make('address_street')
-                            ->label('Street'),
-                        TextEntry::make('address_city')
-                            ->label('City'),
-                        TextEntry::make('address_state')
-                            ->label('State/Province'),
-                        TextEntry::make('address_postal_code')
-                            ->label('Postal Code'),
-                        TextEntry::make('address_country')
-                            ->label('Country'),
-                        TextEntry::make('assistant_name')
-                            ->label('Assistant'),
-                        TextEntry::make('assistant_email')
-                            ->label('Assistant Email')
-                            ->copyable(),
-                        TextEntry::make('assistant_phone')
-                            ->label('Assistant Phone')
-                            ->copyable(),
-                    ]),
-                CustomFields::infolist()->forSchema($schema)->build()->columnSpanFull(),
-            ])->columnSpanFull(),
+                ])
+                ->columnSpanFull(),
+
+            // Professional Information
+            Section::make('Professional Information')
+                ->icon('heroicon-o-briefcase')
+                ->description('Job details and organizational structure')
+                ->columns(2)
+                ->schema([
+                    TextEntry::make('job_title')
+                        ->label('Job Title')
+                        ->icon('heroicon-o-identification'),
+                    TextEntry::make('department')
+                        ->label('Department')
+                        ->icon('heroicon-o-building-office'),
+                    TextEntry::make('role')
+                        ->label('Role')
+                        ->icon('heroicon-o-user-circle')
+                        ->badge(),
+                    TextEntry::make('reportsTo.name')
+                        ->label('Reports To')
+                        ->icon('heroicon-o-arrow-up-circle'),
+                    TextEntry::make('lead_source')
+                        ->label('Lead Source')
+                        ->icon('heroicon-o-funnel')
+                        ->badge()
+                        ->color('info'),
+                    TextEntry::make('birthdate')
+                        ->label('Birthday')
+                        ->icon('heroicon-o-cake')
+                        ->date('F j, Y'),
+                ])
+                ->collapsible(),
+
+            // Contact Information
+            Section::make('Contact Information')
+                ->icon('heroicon-o-phone')
+                ->description('Email addresses and phone numbers')
+                ->columns(2)
+                ->schema([
+                    TextEntry::make('emails')
+                        ->label('Email Addresses')
+                        ->icon('heroicon-o-envelope')
+                        ->state(fn (People $record) => $record->emails->map(
+                            fn ($email): string => $email->email.' '.($email->is_primary ? '★' : '('.($email->type?->label() ?? $email->type).')')
+                        ))
+                        ->listWithLineBreaks()
+                        ->copyable()
+                        ->columnSpanFull(),
+                    TextEntry::make('phone_mobile')
+                        ->label('Mobile Phone')
+                        ->icon('heroicon-o-device-phone-mobile')
+                        ->copyable(),
+                    TextEntry::make('phone_office')
+                        ->label('Office Phone')
+                        ->icon('heroicon-o-phone')
+                        ->copyable(),
+                    TextEntry::make('phone_home')
+                        ->label('Home Phone')
+                        ->icon('heroicon-o-home')
+                        ->copyable(),
+                    TextEntry::make('phone_fax')
+                        ->label('Fax')
+                        ->icon('heroicon-o-printer')
+                        ->copyable(),
+                    TextEntry::make('custom_phones')
+                        ->label('Other Phones')
+                        ->icon('heroicon-o-phone-arrow-down-left')
+                        ->state(fn (People $record): ?string => $this->formatCustomPhoneNumbers($record))
+                        ->visible(fn (?string $state): bool => filled($state))
+                        ->copyable()
+                        ->columnSpanFull(),
+                ])
+                ->collapsible(),
+
+            // Social Media
+            Section::make('Social Media')
+                ->icon('heroicon-o-globe-alt')
+                ->description('Social media profiles and links')
+                ->columns(2)
+                ->schema([
+                    TextEntry::make('social_links.linkedin')
+                        ->label('LinkedIn')
+                        ->icon('heroicon-o-link')
+                        ->url(fn (?string $state): ?string => $state)
+                        ->openUrlInNewTab()
+                        ->copyable(),
+                    TextEntry::make('social_links.twitter')
+                        ->label('Twitter')
+                        ->icon('heroicon-o-link')
+                        ->url(fn (?string $state): ?string => $state)
+                        ->openUrlInNewTab()
+                        ->copyable(),
+                    TextEntry::make('social_links.facebook')
+                        ->label('Facebook')
+                        ->icon('heroicon-o-link')
+                        ->url(fn (?string $state): ?string => $state)
+                        ->openUrlInNewTab()
+                        ->copyable(),
+                    TextEntry::make('social_links.github')
+                        ->label('GitHub')
+                        ->icon('heroicon-o-link')
+                        ->url(fn (?string $state): ?string => $state)
+                        ->openUrlInNewTab()
+                        ->copyable(),
+                ])
+                ->collapsible()
+                ->collapsed(),
+
+            // Address Information
+            Section::make('Address')
+                ->icon('heroicon-o-map-pin')
+                ->description('Physical address details')
+                ->columns(2)
+                ->schema([
+                    TextEntry::make('address_street')
+                        ->label('Street Address')
+                        ->icon('heroicon-o-map')
+                        ->columnSpanFull(),
+                    TextEntry::make('address_city')
+                        ->label('City')
+                        ->icon('heroicon-o-building-office-2'),
+                    TextEntry::make('address_state')
+                        ->label('State/Province')
+                        ->icon('heroicon-o-map'),
+                    TextEntry::make('address_postal_code')
+                        ->label('Postal Code')
+                        ->icon('heroicon-o-hashtag'),
+                    TextEntry::make('address_country')
+                        ->label('Country')
+                        ->icon('heroicon-o-globe-americas'),
+                ])
+                ->collapsible()
+                ->collapsed(),
+
+            // Assistant Information
+            Section::make('Assistant Information')
+                ->icon('heroicon-o-user-plus')
+                ->description('Assistant contact details')
+                ->columns(3)
+                ->schema([
+                    TextEntry::make('assistant_name')
+                        ->label('Assistant Name')
+                        ->icon('heroicon-o-user'),
+                    TextEntry::make('assistant_email')
+                        ->label('Assistant Email')
+                        ->icon('heroicon-o-envelope')
+                        ->copyable(),
+                    TextEntry::make('assistant_phone')
+                        ->label('Assistant Phone')
+                        ->icon('heroicon-o-phone')
+                        ->copyable(),
+                ])
+                ->collapsible()
+                ->collapsed()
+                ->visible(fn (People $record): bool => filled($record->assistant_name) || filled($record->assistant_email) || filled($record->assistant_phone)),
+
+            // Segmentation & Tags
+            Section::make('Segmentation & Tags')
+                ->icon('heroicon-o-tag')
+                ->description('Categories and organizational tags')
+                ->columns(1)
+                ->schema([
+                    TextEntry::make('segments')
+                        ->label('Segments')
+                        ->icon('heroicon-o-squares-2x2')
+                        ->formatStateUsing(function (mixed $state): ?string {
+                            if (in_array($state, [null, '', []], true)) {
+                                return null;
+                            }
+
+                            if (is_string($state)) {
+                                $decoded = json_decode($state, true);
+                                $state = is_array($decoded) ? $decoded : [$state];
+                            }
+
+                            if (is_array($state)) {
+                                return implode(', ', $state);
+                            }
+
+                            return (string) $state;
+                        })
+                        ->badge()
+                        ->separator(','),
+                    TextEntry::make('tags')
+                        ->label('Tags')
+                        ->icon('heroicon-o-tag')
+                        ->state(fn (People $record) => $record->tags)
+                        ->formatStateUsing(fn (Tag $tag): string => $tag->name)
+                        ->badge()
+                        ->separator(',')
+                        ->color(fn (Tag $tag): array|string => $tag->color ? Color::hex($tag->color) : 'gray'),
+                ])
+                ->collapsible(),
+
+            // Portal & Sync Settings
+            Section::make('Portal & Sync Settings')
+                ->icon('heroicon-o-cog-6-tooth')
+                ->description('Portal access and synchronization configuration')
+                ->columns(2)
+                ->schema([
+                    TextEntry::make('is_portal_user')
+                        ->label('Portal User')
+                        ->icon('heroicon-o-user-circle')
+                        ->formatStateUsing(fn (People $record): string => $record->is_portal_user ? 'Yes' : 'No')
+                        ->badge()
+                        ->color(fn (People $record): string => $record->is_portal_user ? 'success' : 'gray'),
+                    TextEntry::make('portal_username')
+                        ->label('Portal Username')
+                        ->icon('heroicon-o-at-symbol')
+                        ->copyable(),
+                    TextEntry::make('sync_enabled')
+                        ->label('Sync Enabled')
+                        ->icon('heroicon-o-arrow-path')
+                        ->formatStateUsing(fn (People $record): string => $record->sync_enabled ? 'Yes' : 'No')
+                        ->badge()
+                        ->color(fn (People $record): string => $record->sync_enabled ? 'success' : 'gray'),
+                    TextEntry::make('sync_reference')
+                        ->label('Sync Reference')
+                        ->icon('heroicon-o-key')
+                        ->copyable(),
+                ])
+                ->collapsible()
+                ->collapsed(),
+
+            // Custom Fields
+            CustomFields::infolist()->forSchema($schema)->build()->columnSpanFull(),
         ]);
     }
 

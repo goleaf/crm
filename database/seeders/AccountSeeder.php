@@ -5,7 +5,12 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\Account;
-use App\Models\AccountMerge;
+use App\Models\AccountTeamMember;
+use App\Models\Note;
+use App\Models\Opportunity;
+use App\Models\People;
+use App\Models\SupportCase;
+use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -14,7 +19,7 @@ final class AccountSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->command->info('Creating accounts (200)...');
+        $this->command->info('Creating accounts with all relations...');
 
         $teams = Team::all();
         $users = User::all();
@@ -25,63 +30,119 @@ final class AccountSeeder extends Seeder
             return;
         }
 
-        $accounts = Account::factory()
-            ->count(200)
-            ->create([
-                'team_id' => fn () => $teams->random()->id,
-                'owner_id' => fn () => $users->random()->id,
-                'assigned_to_id' => fn () => $users->random()->id,
+        // Create 50 accounts with full relations
+        $accounts = collect();
+
+        for ($i = 0; $i < 50; $i++) {
+            $team = $teams->random();
+            $owner = $users->random();
+
+            $account = Account::factory()->create([
+                'team_id' => $team->id,
+                'owner_id' => $owner->id,
+                'assigned_to_id' => $users->random()->id,
             ]);
 
-        // Create account team members (skipped due to complexity with unique constraints)
-        // TODO: Fix this seeder to properly handle unique company_id + user_id combinations
-        $this->command->info('Skipping account team members for now...');
+            // Create 2-5 contacts per account
+            $contactCount = random_int(2, 5);
+            $contacts = People::factory()
+                ->count($contactCount)
+                ->create([
+                    'team_id' => $team->id,
+                    'company_id' => null, // Will be linked via pivot
+                ]);
 
-        // Create account merges (avoiding duplicate combinations)
-        // Get actual company IDs from the companies table
-        $companyIds = \App\Models\Company::pluck('id')->toArray();
-        $merges = [];
-        $usedMergePairs = [];
-
-        $mergeCount = min(50, floor(count($companyIds) / 2));
-
-        for ($i = 0; $i < $mergeCount; $i++) {
-            $primaryCompanyId = $companyIds[array_rand($companyIds)];
-            $availableForMerge = array_diff($companyIds, [$primaryCompanyId]);
-
-            if ($availableForMerge === []) {
-                continue;
+            // Attach contacts to account with pivot data
+            foreach ($contacts as $index => $contact) {
+                $account->contacts()->attach($contact->id, [
+                    'is_primary' => $index === 0,
+                    'role' => fake()->randomElement(['Decision Maker', 'Technical Contact', 'Billing Contact']),
+                ]);
             }
 
-            $duplicateCompanyId = $availableForMerge[array_rand($availableForMerge)];
-            $pairKey = min($primaryCompanyId, $duplicateCompanyId).'-'.max($primaryCompanyId, $duplicateCompanyId);
+            // Create 1-3 opportunities per account
+            $opportunityCount = random_int(1, 3);
+            Opportunity::factory()
+                ->count($opportunityCount)
+                ->create([
+                    'account_id' => $account->id,
+                    'team_id' => $team->id,
+                    'contact_id' => $contacts->random()->id,
+                ]);
 
-            if (! isset($usedMergePairs[$pairKey])) {
-                $merges[] = [
-                    'primary_company_id' => $primaryCompanyId,
-                    'duplicate_company_id' => $duplicateCompanyId,
-                    'merged_by_user_id' => $users->random()->id,
-                    'field_selections' => json_encode([
-                        'name' => 'primary',
-                        'email' => 'primary',
-                        'phone' => 'duplicate',
-                    ]),
-                    'transferred_relationships' => json_encode([
-                        'contacts' => random_int(5, 20),
-                        'opportunities' => random_int(1, 10),
-                        'activities' => random_int(10, 50),
-                    ]),
-                    'created_at' => now()->subDays(random_int(1, 365)),
-                    'updated_at' => now()->subDays(random_int(1, 365)),
-                ];
-                $usedMergePairs[$pairKey] = true;
+            // Create 0-2 support cases per account
+            if (random_int(0, 1) !== 0) {
+                $caseCount = random_int(1, 2);
+                SupportCase::factory()
+                    ->count($caseCount)
+                    ->create([
+                        'account_id' => $account->id,
+                        'team_id' => $team->id,
+                        'contact_id' => $contacts->random()->id,
+                    ]);
+            }
+
+            // Create 2-4 notes per account
+            $noteCount = random_int(2, 4);
+            $notes = Note::factory()
+                ->count($noteCount)
+                ->create([
+                    'team_id' => $team->id,
+                    'creator_id' => $users->random()->id,
+                ]);
+
+            foreach ($notes as $note) {
+                $account->notes()->attach($note->id);
+            }
+
+            // Create 1-3 tasks per account
+            $taskCount = random_int(1, 3);
+            $tasks = Task::factory()
+                ->count($taskCount)
+                ->create([
+                    'team_id' => $team->id,
+                    'creator_id' => $users->random()->id,
+                ]);
+
+            foreach ($tasks as $task) {
+                $account->tasks()->attach($task->id);
+            }
+
+            // Create 1-3 team members per account
+            $teamMemberCount = random_int(1, 3);
+            $availableUsers = $users->shuffle()->take($teamMemberCount);
+
+            foreach ($availableUsers as $user) {
+                // Check if this combination already exists
+                $exists = AccountTeamMember::where('company_id', $account->id)
+                    ->where('user_id', $user->id)
+                    ->exists();
+
+                if (! $exists) {
+                    AccountTeamMember::factory()->create([
+                        'company_id' => $account->id,
+                        'team_id' => $team->id,
+                        'user_id' => $user->id,
+                    ]);
+                }
+            }
+
+            // Create parent-child relationships for some accounts
+            if ($i > 0 && random_int(0, 3) === 0) {
+                $potentialParent = $accounts->random();
+                if (! $account->wouldCreateCycle($potentialParent->id)) {
+                    $account->update(['parent_id' => $potentialParent->id]);
+                }
+            }
+
+            $accounts->push($account);
+
+            if (($i + 1) % 10 === 0) {
+                $count = $i + 1;
+                $this->command->info("  Created {$count} accounts...");
             }
         }
 
-        if ($merges !== []) {
-            AccountMerge::insert($merges);
-        }
-
-        $this->command->info('✓ Created '.$accounts->count().' accounts with team members and merges');
+        $this->command->info('✓ Created '.$accounts->count().' accounts with contacts, opportunities, cases, notes, tasks, and team members');
     }
 }

@@ -63,8 +63,6 @@ use Relaticle\CustomFields\Facades\CustomFields;
  * @see \App\Models\Company
  * @see docs/ui-ux/viewcompany-badge-colors.md
  * @see docs/performance-viewcompany.md
- *
- * @package App\Filament\Resources\CompanyResource\Pages
  */
 final class ViewCompany extends ViewRecord
 {
@@ -92,8 +90,6 @@ final class ViewCompany extends ViewRecord
      *
      * @param  Company  $company  The company record being updated
      * @param  array<string, mixed>  $data  The form data containing custom_fields
-     *
-     * @return void
      */
     private function dispatchFaviconFetchIfNeeded(Company $company, array $data): void
     {

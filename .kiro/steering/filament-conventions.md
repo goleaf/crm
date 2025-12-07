@@ -55,6 +55,44 @@ app/Filament/
 
 ## Resource Organization
 
+### JSON Field Handling (CRITICAL)
+**All `formatStateUsing()` closures that handle JSON fields MUST accept `mixed` type, not `?array`.**
+
+JSON fields stored in the database may be returned as either strings or arrays depending on the model's cast configuration. Always handle both cases to prevent type errors.
+
+**Standard Pattern:**
+```php
+TextColumn::make('segments')
+    ->formatStateUsing(function (mixed $state): string {
+        if (in_array($state, [null, '', []], true)) {
+            return '—';
+        }
+        
+        // Handle JSON string
+        if (is_string($state)) {
+            $decoded = json_decode($state, true);
+            $state = is_array($decoded) ? $decoded : [$state];
+        }
+        
+        // Handle array
+        if (is_array($state)) {
+            return implode(', ', $state);
+        }
+        
+        return (string) $state;
+    })
+```
+
+**Why This Matters:**
+- Model casts may not always be applied (e.g., in exports, raw queries)
+- Database may store JSON as string even with array cast
+- Prevents "Argument #1 ($state) must be of type ?array, string given" errors
+
+**Apply to:**
+- Table columns (`TextColumn::make()->formatStateUsing()`)
+- Infolist entries (`TextEntry::make()->formatStateUsing()`)
+- Export columns (`ExportColumn::make()->formatStateUsing()`)
+
 ### Translations
 - No inline strings. Use PHP lang keys for all labels/headings/descriptions/empty states/actions/navigation (e.g., `__('app.labels.name')`, `__('app.actions.save')`, `__('app.navigation.workspace')`).
 - Ensure enums expose translated labels (`getLabel()` -> `__()`), so tables/forms inherit translations.

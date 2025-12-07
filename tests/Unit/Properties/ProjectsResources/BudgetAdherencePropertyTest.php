@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Unit\Properties\ProjectsResources;
 
 use App\Models\Project;
-use App\Models\Task;
 use App\Models\TaskTimeEntry;
 use Illuminate\Support\Carbon;
 use Tests\Support\Generators\ProjectGenerator;

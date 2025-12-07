@@ -115,5 +115,6 @@ final class LocalSeeder extends Seeder
 
         $this->call(DocumentSeeder::class);
         $this->call(ProductDemoSeeder::class);
+        $this->call(AccountSeeder::class);
     }
 }

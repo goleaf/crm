@@ -9,6 +9,8 @@ use App\Enums\CreationSource;
 use App\Enums\Industry;
 use App\Filament\Exports\PeopleExporter;
 use App\Filament\RelationManagers\ActivitiesRelationManager as SharedActivitiesRelationManager;
+use App\Filament\Resources\PeopleResource\Pages\CreatePeople;
+use App\Filament\Resources\PeopleResource\Pages\EditPeople;
 use App\Filament\Resources\PeopleResource\Pages\ListPeople;
 use App\Filament\Resources\PeopleResource\Pages\ViewPeople;
 use App\Filament\Resources\PeopleResource\RelationManagers\CasesRelationManager;
@@ -74,15 +76,13 @@ final class PeopleResource extends Resource
     {
         return $schema
             ->components([
-                Grid::make()
-                    ->columns(12)
+                Section::make('Contact Profile')
                     ->schema([
-                        Section::make('Contact Profile')
+                        Grid::make(2)
                             ->schema([
                                 TextInput::make('name')
                                     ->required()
-                                    ->maxLength(255)
-                                    ->columnSpan(3),
+                                    ->maxLength(255),
                                 Select::make('company_id')
                                     ->relationship('company', 'name')
                                     ->suffixAction(
@@ -128,16 +128,13 @@ final class PeopleResource extends Resource
                                     )
                                     ->searchable()
                                     ->preload()
-                                    ->required()
-                                    ->columnSpan(3),
+                                    ->required(),
                                 TextInput::make('job_title')
                                     ->label('Job Title')
-                                    ->maxLength(255)
-                                    ->columnSpan(3),
+                                    ->maxLength(255),
                                 TextInput::make('department')
                                     ->label('Department')
-                                    ->maxLength(255)
-                                    ->columnSpan(3),
+                                    ->maxLength(255),
                                 Select::make('role')
                                     ->label('Role')
                                     ->options(
@@ -147,14 +144,12 @@ final class PeopleResource extends Resource
                                     )
                                     ->native(false)
                                     ->searchable()
-                                    ->placeholder('Select role')
-                                    ->columnSpan(3),
+                                    ->placeholder('Select role'),
                                 TextInput::make('lead_source')
                                     ->label('Lead Source')
                                     ->maxLength(255)
                                     ->placeholder('Website, Referral, Event...')
-                                    ->hint(implode(', ', config('contacts.lead_sources', [])))
-                                    ->columnSpan(3),
+                                    ->hint(implode(', ', config('contacts.lead_sources', []))),
                                 Select::make('reports_to_id')
                                     ->relationship(
                                         'reportsTo',
@@ -166,156 +161,134 @@ final class PeopleResource extends Resource
                                     ->label('Reports To')
                                     ->searchable()
                                     ->preload()
-                                    ->nullable()
-                                    ->columnSpan(3),
-                            ])
-                            ->columns(6)
-                            ->columnSpan(12),
-                        Section::make('Communication')
+                                    ->nullable(),
+                            ]),
+                    ]),
+                Section::make('Communication')
+                    ->schema([
+                        Repeater::make('emails')
+                            ->label('Emails')
+                            ->relationship('emails')
                             ->schema([
-                                Repeater::make('emails')
-                                    ->label('Emails')
-                                    ->relationship('emails')
-                                    ->schema([
-                                        TextInput::make('email')
-                                            ->label('Email')
-                                            ->email()
-                                            ->required()
-                                            ->maxLength(255)
-                                            ->columnSpan(3),
-                                        Select::make('type')
-                                            ->label('Type')
-                                            ->options(collect(ContactEmailType::cases())->mapWithKeys(
-                                                fn (ContactEmailType $type): array => [$type->value => $type->label()]
-                                            ))
-                                            ->default(ContactEmailType::Work)
-                                            ->required()
-                                            ->native(false)
-                                            ->columnSpan(2),
-                                        Toggle::make('is_primary')
-                                            ->label('Primary')
-                                            ->inline(false)
-                                            ->columnSpan(1),
-                                    ])
-                                    ->columns(6)
-                                    ->minItems(1)
-                                    ->defaultItems(1)
-                                    ->reorderable(false)
-                                    ->columnSpan(6),
+                                TextInput::make('email')
+                                    ->label('Email')
+                                    ->email()
+                                    ->required()
+                                    ->maxLength(255),
+                                Select::make('type')
+                                    ->label('Type')
+                                    ->options(collect(ContactEmailType::cases())->mapWithKeys(
+                                        fn (ContactEmailType $type): array => [$type->value => $type->label()]
+                                    ))
+                                    ->default(ContactEmailType::Work)
+                                    ->required()
+                                    ->native(false),
+                                Toggle::make('is_primary')
+                                    ->label('Primary')
+                                    ->inline(false),
+                            ])
+                            ->columns(3)
+                            ->minItems(1)
+                            ->defaultItems(1)
+                            ->reorderable(false),
+                        Grid::make(2)
+                            ->schema([
                                 TextInput::make('phone_mobile')
                                     ->label('Mobile')
                                     ->tel()
                                     ->regex('/^[0-9+\\-\\s\\(\\)\\.]+$/')
-                                    ->maxLength(50)
-                                    ->columnSpan(3),
+                                    ->maxLength(50),
                                 TextInput::make('phone_office')
                                     ->label('Office')
                                     ->tel()
                                     ->regex('/^[0-9+\\-\\s\\(\\)\\.]+$/')
-                                    ->maxLength(50)
-                                    ->columnSpan(3),
+                                    ->maxLength(50),
                                 TextInput::make('phone_home')
                                     ->label('Home')
                                     ->tel()
                                     ->regex('/^[0-9+\\-\\s\\(\\)\\.]+$/')
-                                    ->maxLength(50)
-                                    ->columnSpan(3),
+                                    ->maxLength(50),
                                 TextInput::make('phone_fax')
                                     ->label('Fax')
                                     ->tel()
                                     ->regex('/^[0-9+\\-\\s\\(\\)\\.]+$/')
-                                    ->maxLength(50)
-                                    ->columnSpan(3),
+                                    ->maxLength(50),
                                 TextInput::make('social_links.linkedin')
                                     ->label('LinkedIn')
                                     ->url()
-                                    ->maxLength(255)
-                                    ->columnSpan(3),
+                                    ->maxLength(255),
                                 TextInput::make('social_links.twitter')
                                     ->label('Twitter')
                                     ->url()
-                                    ->maxLength(255)
-                                    ->columnSpan(3),
+                                    ->maxLength(255),
                                 TextInput::make('social_links.facebook')
                                     ->label('Facebook')
                                     ->url()
-                                    ->maxLength(255)
-                                    ->columnSpan(3),
+                                    ->maxLength(255),
                                 TextInput::make('social_links.github')
                                     ->label('GitHub')
                                     ->url()
-                                    ->maxLength(255)
-                                    ->columnSpan(3),
-                            ])
-                            ->columns(6)
-                            ->columnSpan(12),
-                        Section::make('Address')
+                                    ->maxLength(255),
+                            ]),
+                    ]),
+                Section::make('Address')
+                    ->schema([
+                        Grid::make(2)
                             ->schema([
                                 TextInput::make('address_street')
                                     ->label('Street')
                                     ->maxLength(255)
-                                    ->columnSpan(3),
+                                    ->columnSpanFull(),
                                 TextInput::make('address_city')
                                     ->label('City')
-                                    ->maxLength(255)
-                                    ->columnSpan(3),
+                                    ->maxLength(255),
                                 TextInput::make('address_state')
                                     ->label('State/Province')
-                                    ->maxLength(255)
-                                    ->columnSpan(3),
+                                    ->maxLength(255),
                                 TextInput::make('address_postal_code')
                                     ->label('Postal Code')
-                                    ->maxLength(20)
-                                    ->columnSpan(3),
+                                    ->maxLength(20),
                                 TextInput::make('address_country')
                                     ->label('Country')
-                                    ->maxLength(100)
-                                    ->columnSpan(3),
-                            ])
-                            ->columns(6)
-                            ->columnSpan(12),
-                        Section::make('Additional Details')
+                                    ->maxLength(100),
+                            ]),
+                    ]),
+                Section::make('Additional Details')
+                    ->schema([
+                        Grid::make(2)
                             ->schema([
                                 DatePicker::make('birthdate')
                                     ->label('Birthday')
-                                    ->maxDate(now())
-                                    ->columnSpan(2),
+                                    ->maxDate(now()),
                                 TextInput::make('assistant_name')
                                     ->label('Assistant Name')
-                                    ->maxLength(255)
-                                    ->columnSpan(2),
+                                    ->maxLength(255),
                                 TextInput::make('assistant_phone')
                                     ->label('Assistant Phone')
                                     ->tel()
                                     ->regex('/^[0-9+\\-\\s\\(\\)\\.]+$/')
-                                    ->maxLength(50)
-                                    ->columnSpan(2),
+                                    ->maxLength(50),
                                 TextInput::make('assistant_email')
                                     ->label('Assistant Email')
                                     ->email()
-                                    ->maxLength(255)
-                                    ->columnSpan(2),
+                                    ->maxLength(255),
                                 TagsInput::make('segments')
                                     ->label('Segments')
                                     ->placeholder('Add segment')
                                     ->suggestions(config('contacts.segment_suggestions', []))
-                                    ->columnSpan(4),
+                                    ->columnSpanFull(),
                                 Toggle::make('is_portal_user')
                                     ->label('Portal User')
-                                    ->inline(false)
-                                    ->columnSpan(2),
+                                    ->inline(false),
                                 TextInput::make('portal_username')
                                     ->label('Portal Username')
-                                    ->maxLength(255)
-                                    ->columnSpan(2),
+                                    ->maxLength(255),
                                 Toggle::make('sync_enabled')
                                     ->label('Sync Enabled')
-                                    ->inline(false)
-                                    ->columnSpan(2),
+                                    ->inline(false),
                                 TextInput::make('sync_reference')
                                     ->label('Sync Reference')
-                                    ->maxLength(255)
-                                    ->columnSpan(2),
+                                    ->maxLength(255),
                                 Select::make('tags')
                                     ->label('Tags')
                                     ->relationship(
@@ -339,10 +312,8 @@ final class PeopleResource extends Resource
                                             'team_id' => Auth::user()?->currentTeam?->getKey(),
                                         ]
                                     ))
-                                    ->columnSpan(4),
-                            ])
-                            ->columns(6)
-                            ->columnSpan(12),
+                                    ->columnSpanFull(),
+                            ]),
                     ]),
                 CustomFields::form()->build()->columnSpanFull(),
             ]);
@@ -390,7 +361,24 @@ final class PeopleResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('segments')
                     ->label('Segments')
-                    ->formatStateUsing(fn (?array $state): string => $state === null || $state === [] ? '—' : implode(', ', $state))
+                    ->formatStateUsing(function (mixed $state): string {
+                        if (in_array($state, [null, '', []], true)) {
+                            return '—';
+                        }
+
+                        // Handle JSON string
+                        if (is_string($state)) {
+                            $decoded = json_decode($state, true);
+                            $state = is_array($decoded) ? $decoded : [$state];
+                        }
+
+                        // Handle array
+                        if (is_array($state)) {
+                            return implode(', ', $state);
+                        }
+
+                        return (string) $state;
+                    })
                     ->wrap()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('tags')
@@ -487,6 +475,8 @@ final class PeopleResource extends Resource
     {
         return [
             'index' => ListPeople::route('/'),
+            'create' => CreatePeople::route('/create'),
+            'edit' => EditPeople::route('/{record}/edit'),
             'view' => ViewPeople::route('/{record}'),
         ];
     }

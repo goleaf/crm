@@ -10,7 +10,9 @@ return [
         AccountType::CUSTOMER->value => 'enums.account_type.customer',
         AccountType::PROSPECT->value => 'enums.account_type.prospect',
         AccountType::PARTNER->value => 'enums.account_type.partner',
-        AccountType::VENDOR->value => 'enums.account_type.vendor',
+        AccountType::COMPETITOR->value => 'enums.account_type.competitor',
+        AccountType::INVESTOR->value => 'enums.account_type.investor',
+        AccountType::RESELLER->value => 'enums.account_type.reseller',
     ],
 
     'ownership_types' => [

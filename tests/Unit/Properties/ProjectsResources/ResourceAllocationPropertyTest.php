@@ -6,11 +6,9 @@ namespace Tests\Unit\Properties\ProjectsResources;
 
 use App\Models\Employee;
 use App\Models\Project;
-use App\Models\Task;
 use Illuminate\Support\Carbon;
 use Tests\Support\Generators\EmployeeGenerator;
 use Tests\Support\Generators\ProjectGenerator;
-use Tests\Support\Generators\TaskGenerator;
 use Tests\Support\PropertyTestCase;
 
 /**

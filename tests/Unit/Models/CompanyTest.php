@@ -852,3 +852,94 @@ test('duplicate detection identifies similar accounts on creation', function () 
         expect($foundExisting['score'])->toBeGreaterThanOrEqual($variation['expectedMinScore']);
     }
 })->repeat(3);
+
+// Feature: accounts-module, Property 27: Account type persistence and filtering
+test('account type persists and can be filtered', function () {
+    $team = Team::factory()->create();
+
+    // Generate random account types
+    $accountTypes = fake()->randomElements(AccountType::cases(), fake()->numberBetween(2, 6));
+
+    // Create companies with different account types
+    $companies = collect($accountTypes)->map(function (AccountType $type) use ($team) {
+        return Company::factory()->create([
+            'team_id' => $team->getKey(),
+            'account_type' => $type,
+        ]);
+    });
+
+    // Test persistence: verify each company has the correct account type
+    foreach ($companies as $company) {
+        $retrieved = Company::find($company->getKey());
+        expect($retrieved->account_type)->toBe($company->account_type)
+            ->and($retrieved->account_type)->toBeInstanceOf(AccountType::class);
+    }
+
+    // Test filtering: for each unique account type, filter and verify results
+    $uniqueTypes = collect($accountTypes)->unique();
+    foreach ($uniqueTypes as $type) {
+        $filtered = Company::query()
+            ->where('team_id', $team->getKey())
+            ->where('account_type', $type)
+            ->get();
+
+        // All filtered companies should have the specified type
+        expect($filtered->every(fn (Company $c) => $c->account_type === $type))->toBeTrue();
+
+        // Count should match the number of companies created with this type
+        $expectedCount = $companies->filter(fn (Company $c) => $c->account_type === $type)->count();
+        expect($filtered->count())->toBe($expectedCount);
+    }
+})->repeat(100);
+
+// Feature: accounts-module, Property 28: Account type change audit trail
+test('account type changes are preserved in activity history', function () {
+    $team = Team::factory()->create();
+    $user = User::factory()->create(['current_team_id' => $team->getKey()]);
+    $this->actingAs($user);
+
+    // Create a company with an initial account type
+    $initialType = fake()->randomElement(AccountType::cases());
+    $company = Company::factory()->create([
+        'team_id' => $team->getKey(),
+        'account_type' => $initialType,
+    ]);
+
+    // Clear any creation activities
+    $company->activities()->delete();
+
+    // Change the account type to a different random type
+    $availableTypes = array_filter(
+        AccountType::cases(),
+        fn (AccountType $type) => $type !== $initialType
+    );
+    $newType = fake()->randomElement($availableTypes);
+
+    // Update using the enum value string to ensure it's detected as a change
+    $company->account_type = $newType;
+    $company->save();
+
+    // Verify the change was persisted
+    $company->refresh();
+    expect($company->account_type)->toBe($newType);
+
+    // Verify activity log exists for the update
+    $activities = $company->activities()->where('event', 'updated')->get();
+    expect($activities->isNotEmpty())->toBeTrue('Expected at least one update activity');
+
+    // Find the activity that logged the account_type change
+    $accountTypeChangeActivity = $activities->first(function ($activity) {
+        $changes = $activity->changes;
+
+        return is_array($changes)
+            && isset($changes['attributes']['account_type']);
+    });
+
+    expect($accountTypeChangeActivity)->not->toBeNull('Expected to find activity logging account_type change');
+
+    // Verify the activity contains the old and new values
+    $changes = $accountTypeChangeActivity->changes;
+    expect($changes)->toBeArray()
+        ->and($changes['attributes']['account_type'])->toBe($newType->value)
+        ->and($changes['old']['account_type'])->toBe($initialType->value);
+})->repeat(100);
