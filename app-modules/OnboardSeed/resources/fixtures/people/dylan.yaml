@@ -3,6 +3,8 @@ company: figma
 custom_fields:
   emails:
     - dylan@figma.com
-  phone_number: 555-123-4567
+  phone_number:
+    - 555-123-4567
+    - 555-123-4500
   job_title: CEO
-  linkedin: https://www.linkedin.com/in/dylanfield/ 
+  linkedin: https://www.linkedin.com/in/dylanfield/

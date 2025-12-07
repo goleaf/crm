@@ -16,9 +16,12 @@
         "php": "^8.4",
         "ashallendesign/favicon-fetcher": "^3.8",
         "awcodes/overlook": "^v3.0",
+        "barryvdh/laravel-dompdf": "^3.1",
+        "bensampo/laravel-enum": "^6.12",
         "blade-ui-kit/blade-heroicons": "^2.6",
         "blade-ui-kit/blade-icons": "^1.8",
         "filament/filament": "^4.0",
+        "filament/spatie-laravel-media-library-plugin": "^4.3",
         "laravel/framework": "^12.0",
         "laravel/horizon": "^5.29",
         "laravel/jetstream": "^5.2",
@@ -37,6 +40,7 @@
         "spatie/laravel-mailcoach-sdk": "^1.4",
         "spatie/laravel-markdown": "^2.7",
         "spatie/laravel-medialibrary": "^11.12",
+        "spatie/laravel-permission": "*",
         "spatie/laravel-prefixed-ids": "^1.4",
         "spatie/laravel-settings": "^3.3",
         "spatie/laravel-sitemap": "^7.3",
@@ -54,6 +58,7 @@
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.21",
         "laravel/sail": "^1.26",
+        "laravel/telescope": "^5.15",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.0",
         "pestphp/pest": "^4.0",
@@ -71,7 +76,10 @@
             "Relaticle\\OnboardSeed\\": "app-modules/OnboardSeed/src",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/Support/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
@@ -106,14 +114,14 @@
         "lint": "rector && pint --parallel",
         "test:lint": "pint --test",
         "test:refactor": "rector --dry-run",
-        "test:types": "phpstan analyse",
+        "test:types": "php -d memory_limit=1G ./vendor/bin/phpstan analyse",
         "test:arch": "pest --filter=arch",
-        "test:type-coverage": "pest --type-coverage --min=99.9",
+        "test:type-coverage": "php -d memory_limit=1G ./vendor/bin/pest --type-coverage --min=99.9",
         "test:coverage": "pest --coverage --min=80",
-        "test:pest": "pest --parallel",
+        "test:pest": "php -d memory_limit=1G ./vendor/bin/pest --parallel",
         "test:pest:shard": "pest --parallel --shard=${SHARD}",
-        "test:pest:ci": "pest --parallel --configuration phpunit.ci.xml",
-        "test:pest:ci:shard": "pest --parallel --configuration phpunit.ci.xml --shard=${SHARD}",
+        "test:pest:ci": "php -d memory_limit=1G ./vendor/bin/pest --parallel --configuration phpunit.ci.xml",
+        "test:pest:ci:shard": "php -d memory_limit=1G ./vendor/bin/pest --parallel --configuration phpunit.ci.xml --shard=${SHARD}",
         "test": [
             "@test:lint",
             "@test:refactor",

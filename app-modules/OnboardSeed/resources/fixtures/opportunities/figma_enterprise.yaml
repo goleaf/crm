@@ -3,4 +3,12 @@ company: figma
 custom_fields:
   amount: 15000
   close_date: '{{ +2w }}'
+  probability: 65
   stage: Proposal/Price Quote 
+  forecast_category: Commit
+  next_steps: "Finalize security review and schedule executive sign-off meeting."
+  competitors:
+    - Adobe XD
+    - Sketch
+  related_quotes: "Quote #FIG-2025-11, pricing deck link: https://example.com/figma-proposal"
+  outcome_notes: "Prospect prioritizing collaboration features and enterprise security."

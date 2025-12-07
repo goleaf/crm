@@ -11,6 +11,7 @@ use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Number;
 use Relaticle\CustomFields\Facades\CustomFields;
 
@@ -68,6 +69,195 @@ final class PeopleImporter extends BaseImporter
                     }
                 }),
 
+            ImportColumn::make('primary_email')
+                ->label('Primary Email')
+                ->guess(['email', 'primary_email'])
+                ->rules(['nullable', 'email', 'max:255'])
+                ->fillRecordUsing(function (People $record, ?string $state): void {
+                    $record->primary_email = filled($state) ? trim($state) : null;
+                }),
+
+            ImportColumn::make('alternate_email')
+                ->label('Alternate Email')
+                ->guess(['alternate_email', 'secondary_email'])
+                ->rules(['nullable', 'email', 'max:255'])
+                ->fillRecordUsing(function (People $record, ?string $state): void {
+                    $record->alternate_email = filled($state) ? trim($state) : null;
+                }),
+
+            ImportColumn::make('phone_mobile')
+                ->label('Mobile Phone')
+                ->guess(['mobile', 'mobile_phone', 'cell'])
+                ->rules(['nullable', 'string', 'max:50'])
+                ->fillRecordUsing(function (People $record, ?string $state): void {
+                    $record->phone_mobile = filled($state) ? trim($state) : null;
+                }),
+
+            ImportColumn::make('phone_office')
+                ->label('Office Phone')
+                ->guess(['office_phone', 'work_phone'])
+                ->rules(['nullable', 'string', 'max:50'])
+                ->fillRecordUsing(function (People $record, ?string $state): void {
+                    $record->phone_office = filled($state) ? trim($state) : null;
+                }),
+
+            ImportColumn::make('phone_home')
+                ->label('Home Phone')
+                ->guess(['home_phone'])
+                ->rules(['nullable', 'string', 'max:50'])
+                ->fillRecordUsing(function (People $record, ?string $state): void {
+                    $record->phone_home = filled($state) ? trim($state) : null;
+                }),
+
+            ImportColumn::make('phone_fax')
+                ->label('Fax')
+                ->guess(['fax'])
+                ->rules(['nullable', 'string', 'max:50'])
+                ->fillRecordUsing(function (People $record, ?string $state): void {
+                    $record->phone_fax = filled($state) ? trim($state) : null;
+                }),
+
+            ImportColumn::make('job_title')
+                ->label('Job Title')
+                ->guess(['job_title', 'title'])
+                ->rules(['nullable', 'string', 'max:255'])
+                ->fillRecordUsing(function (People $record, ?string $state): void {
+                    $record->job_title = filled($state) ? trim($state) : null;
+                }),
+
+            ImportColumn::make('department')
+                ->label('Department')
+                ->guess(['department'])
+                ->rules(['nullable', 'string', 'max:255'])
+                ->fillRecordUsing(function (People $record, ?string $state): void {
+                    $record->department = filled($state) ? trim($state) : null;
+                }),
+
+            ImportColumn::make('lead_source')
+                ->label('Lead Source')
+                ->guess(['lead_source', 'source'])
+                ->rules(['nullable', 'string', 'max:255'])
+                ->fillRecordUsing(function (People $record, ?string $state): void {
+                    $record->lead_source = filled($state) ? trim($state) : null;
+                }),
+
+            ImportColumn::make('reports_to')
+                ->label('Reports To')
+                ->guess(['reports_to', 'manager'])
+                ->rules(['nullable', 'string', 'max:255'])
+                ->fillRecordUsing(function (People $record, ?string $state, Importer $importer): void {
+                    if (! $importer->import->team_id || blank($state)) {
+                        $record->reports_to_id = null;
+
+                        return;
+                    }
+
+                    $manager = People::query()
+                        ->where('team_id', $importer->import->team_id)
+                        ->where('name', trim($state))
+                        ->first();
+
+                    $record->reports_to_id = $manager?->getKey();
+                }),
+
+            ImportColumn::make('birthdate')
+                ->label('Birthday')
+                ->guess(['birthday', 'birthdate', 'dob'])
+                ->rules(['nullable', 'date'])
+                ->fillRecordUsing(function (People $record, ?string $state): void {
+                    $record->birthdate = blank($state) ? null : Carbon::parse($state)->toDateString();
+                }),
+
+            ImportColumn::make('assistant_name')
+                ->label('Assistant Name')
+                ->rules(['nullable', 'string', 'max:255'])
+                ->fillRecordUsing(function (People $record, ?string $state): void {
+                    $record->assistant_name = filled($state) ? trim($state) : null;
+                }),
+
+            ImportColumn::make('assistant_email')
+                ->label('Assistant Email')
+                ->rules(['nullable', 'email', 'max:255'])
+                ->fillRecordUsing(function (People $record, ?string $state): void {
+                    $record->assistant_email = filled($state) ? trim($state) : null;
+                }),
+
+            ImportColumn::make('assistant_phone')
+                ->label('Assistant Phone')
+                ->rules(['nullable', 'string', 'max:50'])
+                ->fillRecordUsing(function (People $record, ?string $state): void {
+                    $record->assistant_phone = filled($state) ? trim($state) : null;
+                }),
+
+            ImportColumn::make('segments')
+                ->label('Segments')
+                ->rules(['nullable', 'string'])
+                ->example('Prospect, Customer')
+                ->fillRecordUsing(function (People $record, ?string $state): void {
+                    if (blank($state)) {
+                        return;
+                    }
+
+                    $record->segments = collect(explode(',', $state))
+                        ->map(fn (string $segment): string => trim($segment))
+                        ->filter()
+                        ->unique()
+                        ->values()
+                        ->all();
+                }),
+
+            ImportColumn::make('linkedin')
+                ->label('LinkedIn URL')
+                ->rules(['nullable', 'url', 'max:255'])
+                ->fillRecordUsing(function (People $record, ?string $state): void {
+                    if (blank($state)) {
+                        return;
+                    }
+
+                    $links = $record->social_links ?? [];
+                    $links['linkedin'] = trim($state);
+                    $record->social_links = $links;
+                }),
+
+            ImportColumn::make('twitter')
+                ->label('Twitter URL')
+                ->rules(['nullable', 'url', 'max:255'])
+                ->fillRecordUsing(function (People $record, ?string $state): void {
+                    if (blank($state)) {
+                        return;
+                    }
+
+                    $links = $record->social_links ?? [];
+                    $links['twitter'] = trim($state);
+                    $record->social_links = $links;
+                }),
+
+            ImportColumn::make('facebook')
+                ->label('Facebook URL')
+                ->rules(['nullable', 'url', 'max:255'])
+                ->fillRecordUsing(function (People $record, ?string $state): void {
+                    if (blank($state)) {
+                        return;
+                    }
+
+                    $links = $record->social_links ?? [];
+                    $links['facebook'] = trim($state);
+                    $record->social_links = $links;
+                }),
+
+            ImportColumn::make('github')
+                ->label('GitHub URL')
+                ->rules(['nullable', 'url', 'max:255'])
+                ->fillRecordUsing(function (People $record, ?string $state): void {
+                    if (blank($state)) {
+                        return;
+                    }
+
+                    $links = $record->social_links ?? [];
+                    $links['github'] = trim($state);
+                    $record->social_links = $links;
+                }),
+
             ...CustomFields::importer()->forModel(self::getModel())->columns(),
         ];
     }
@@ -89,12 +279,16 @@ final class PeopleImporter extends BaseImporter
 
         return People::query()
             ->when($this->import->team_id, fn (Builder $query) => $query->where('team_id', $this->import->team_id))
-            ->whereHas('customFieldValues', function (Builder $query) use ($emails): void {
-                $query->whereRelation('customField', 'code', 'emails')
-                    ->where(function (Builder $query) use ($emails): void {
-                        foreach ($emails as $email) {
-                            $query->orWhereJsonContains('json_value', $email);
-                        }
+            ->where(function (Builder $query) use ($emails): void {
+                $query->whereIn('primary_email', $emails)
+                    ->orWhereIn('alternate_email', $emails)
+                    ->orWhereHas('customFieldValues', function (Builder $query) use ($emails): void {
+                        $query->whereRelation('customField', 'code', 'emails')
+                            ->where(function (Builder $query) use ($emails): void {
+                                foreach ($emails as $email) {
+                                    $query->orWhereJsonContains('json_value', $email);
+                                }
+                            });
                     });
             })
             ->first();
@@ -107,17 +301,22 @@ final class PeopleImporter extends BaseImporter
      */
     private function extractEmails(): array
     {
+        $emails = collect([
+            $this->getOriginalData()['primary_email'] ?? null,
+            $this->getOriginalData()['alternate_email'] ?? null,
+        ]);
+
         $emailsField = $this->getOriginalData()['custom_fields_emails'] ?? null;
 
-        if (empty($emailsField)) {
-            return [];
+        if (! empty($emailsField)) {
+            $emails = $emails->merge(
+                is_string($emailsField)
+                    ? explode(',', $emailsField)
+                    : (array) $emailsField
+            );
         }
 
-        $emails = is_string($emailsField)
-            ? explode(',', $emailsField)
-            : (array) $emailsField;
-
-        return collect($emails)
+        return $emails
             ->map(fn (mixed $email): string => trim((string) $email))
             ->filter(fn (string $email): bool => filter_var($email, FILTER_VALIDATE_EMAIL) !== false)
             ->values()

@@ -28,7 +28,7 @@ it('can render the view page', function (): void {
 it('can render `:dataset` column', function (string $column): void {
     livewire(App\Filament\Resources\CompanyResource\Pages\ListCompanies::class)
         ->assertCanRenderTableColumn($column);
-})->with(['logo', 'name', 'accountOwner.name', 'creator.name', 'created_at', 'updated_at']);
+})->with(['logo', 'name', 'account_type', 'industry', 'accountOwner.name', 'creator.name', 'created_at', 'updated_at']);
 
 it('cannot render `:dataset` column', function (string $column): void {
     livewire(App\Filament\Resources\CompanyResource\Pages\ListCompanies::class)
@@ -38,12 +38,12 @@ it('cannot render `:dataset` column', function (string $column): void {
 it('has `:dataset` column', function (string $column): void {
     livewire(App\Filament\Resources\CompanyResource\Pages\ListCompanies::class)
         ->assertTableColumnExists($column);
-})->with(['logo', 'name', 'accountOwner.name', 'creator.name', 'deleted_at', 'created_at', 'updated_at']);
+})->with(['logo', 'name', 'account_type', 'industry', 'accountOwner.name', 'creator.name', 'deleted_at', 'created_at', 'updated_at']);
 
 it('shows `:dataset` column', function (string $column): void {
     livewire(App\Filament\Resources\CompanyResource\Pages\ListCompanies::class)
         ->assertTableColumnVisible($column);
-})->with(['logo', 'name', 'accountOwner.name', 'creator.name', 'deleted_at', 'created_at', 'updated_at']);
+})->with(['logo', 'name', 'account_type', 'industry', 'accountOwner.name', 'creator.name', 'deleted_at', 'created_at', 'updated_at']);
 
 it('can sort `:dataset` column', function (string $column): void {
     $records = App\Models\Company::factory(3)->for($this->user->personalTeam())->create();
@@ -57,7 +57,7 @@ it('can sort `:dataset` column', function (string $column): void {
         ->assertCanSeeTableRecords($records->sortBy($sortingKey), inOrder: true)
         ->sortTable($column, 'desc')
         ->assertCanSeeTableRecords($records->sortByDesc($sortingKey), inOrder: true);
-})->with(['name', 'accountOwner.name', 'creator.name', 'deleted_at', 'created_at', 'updated_at']);
+})->with(['name', 'account_type', 'industry', 'accountOwner.name', 'creator.name', 'deleted_at', 'created_at', 'updated_at']);
 
 it('can search `:dataset` column', function (string $column): void {
     $records = App\Models\Company::factory(3)->for($this->user->personalTeam())->create();
@@ -69,7 +69,7 @@ it('can search `:dataset` column', function (string $column): void {
         ->searchTable($search instanceof BackedEnum ? $search->value : $search)
         ->assertCanSeeTableRecords($visibleRecords)
         ->assertCountTableRecords($visibleRecords->count());
-})->with(['name', 'accountOwner.name', 'creator.name']);
+})->with(['name', 'industry', 'accountOwner.name', 'creator.name']);
 
 it('cannot display trashed records by default', function (): void {
     $records = App\Models\Company::factory()->count(4)->for($this->user->personalTeam())->create();
@@ -114,4 +114,4 @@ it('can bulk delete records', function (): void {
 it('has `:dataset` filter', function (string $filter): void {
     livewire(App\Filament\Resources\CompanyResource\Pages\ListCompanies::class)
         ->assertTableFilterExists($filter);
-})->with(['creation_source', 'trashed']);
+})->with(['account_type', 'industry', 'creation_source', 'trashed']);

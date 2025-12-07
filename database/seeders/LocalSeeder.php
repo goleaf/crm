@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\Company;
 use App\Models\Opportunity;
 use App\Models\People;
+use App\Models\Team;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Factories\Sequence;
@@ -26,14 +27,38 @@ final class LocalSeeder extends Seeder
 
         $this->call(SystemAdministratorSeeder::class);
 
-        $user = User::factory()
-            ->withPersonalTeam()
-            ->create([
-                'name' => 'Manuk Minasyan',
-                'email' => 'manuk.minasyan1@gmail.com',
+        $user = User::where('email', 'manuk.minasyan1@gmail.com')->first();
+
+        if (! $user) {
+            $user = User::factory()
+                ->withPersonalTeam()
+                ->create([
+                    'name' => 'Manuk Minasyan',
+                    'email' => 'manuk.minasyan1@gmail.com',
+                ]);
+        } elseif (! $user->personalTeam()) {
+            $team = Team::factory()->create([
+                'user_id' => $user->getKey(),
+                'personal_team' => true,
+                'name' => "{$user->name}'s Team",
+            ]);
+            $user->teams()->attach($team, ['role' => 'owner']);
+            $user->forceFill(['current_team_id' => $team->getKey()])->save();
+        }
+
+        $teamId = $user->personalTeam()?->id ?? $user->currentTeam?->id;
+
+        if (! $teamId) {
+            $team = Team::factory()->create([
+                'user_id' => $user->getKey(),
+                'personal_team' => true,
+                'name' => "{$user->name}'s Team",
             ]);
 
-        $teamId = $user->personalTeam()->id;
+            $user->teams()->attach($team, ['role' => 'owner']);
+            $user->forceFill(['current_team_id' => $team->getKey()])->save();
+            $teamId = $team->getKey();
+        }
         //
         //        User::factory()
         //            ->withPersonalTeam()
@@ -87,5 +112,8 @@ final class LocalSeeder extends Seeder
         //                $opportunity->saveCustomFieldValue($customFields->get('stage'), $customFields->get('stage')->options->random()->id);
         //            })
         //            ->create();
+
+        $this->call(DocumentSeeder::class);
+        $this->call(ProductDemoSeeder::class);
     }
 }

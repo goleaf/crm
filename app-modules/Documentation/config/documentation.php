@@ -59,6 +59,12 @@ return [
             'file' => 'api-guide.md',
             'description' => 'API reference and integration documentation.',
         ],
+        'suitecrm-features' => [
+            'title' => 'SuiteCRM Feature Catalog',
+            'file' => 'suitecrm-features.md',
+            'description' => 'Comprehensive SuiteCRM capabilities by category and subfeature.',
+            'base_path' => base_path('docs'),
+        ],
     ],
 
     /*

@@ -5,5 +5,5 @@ assigned_people:
 custom_fields:
   description: Discuss the Figma enterprise plan proposal and address any questions he may have.
   due_date: '{{ +3d }}'
-  status: To do
-  priority: High 
+  status: Not Started
+  priority: High

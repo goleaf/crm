@@ -90,6 +90,14 @@ final class Team extends JetstreamTeam implements HasAvatar
     }
 
     /**
+     * @return HasMany<Lead, $this>
+     */
+    public function leads(): HasMany
+    {
+        return $this->hasMany(Lead::class);
+    }
+
+    /**
      * @return HasMany<Opportunity, $this>
      */
     public function opportunities(): HasMany
@@ -103,5 +111,13 @@ final class Team extends JetstreamTeam implements HasAvatar
     public function notes(): HasMany
     {
         return $this->hasMany(Note::class);
+    }
+
+    /**
+     * @return HasMany<SupportCase, $this>
+     */
+    public function supportCases(): HasMany
+    {
+        return $this->hasMany(SupportCase::class);
     }
 }

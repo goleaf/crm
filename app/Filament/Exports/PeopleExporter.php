@@ -26,6 +26,59 @@ final class PeopleExporter extends BaseExporter
                 ->formatStateUsing(fn (mixed $state): string => $state->value ?? (string) $state),
             ExportColumn::make('company.name'),
             ExportColumn::make('name'),
+            ExportColumn::make('job_title')
+                ->label('Job Title'),
+            ExportColumn::make('department'),
+            ExportColumn::make('primary_email')
+                ->label('Primary Email'),
+            ExportColumn::make('alternate_email')
+                ->label('Alternate Email'),
+            ExportColumn::make('phone_mobile')
+                ->label('Mobile Phone'),
+            ExportColumn::make('phone_office')
+                ->label('Office Phone'),
+            ExportColumn::make('phone_home')
+                ->label('Home Phone'),
+            ExportColumn::make('phone_fax')
+                ->label('Fax'),
+            ExportColumn::make('lead_source')
+                ->label('Lead Source'),
+            ExportColumn::make('reportsTo.name')
+                ->label('Reports To'),
+            ExportColumn::make('birthdate')
+                ->label('Birthday'),
+            ExportColumn::make('assistant_name')
+                ->label('Assistant Name'),
+            ExportColumn::make('assistant_email')
+                ->label('Assistant Email'),
+            ExportColumn::make('assistant_phone')
+                ->label('Assistant Phone'),
+            ExportColumn::make('address_street')
+                ->label('Street'),
+            ExportColumn::make('address_city')
+                ->label('City'),
+            ExportColumn::make('address_state')
+                ->label('State/Province'),
+            ExportColumn::make('address_postal_code')
+                ->label('Postal Code'),
+            ExportColumn::make('address_country')
+                ->label('Country'),
+            ExportColumn::make('segments')
+                ->label('Segments')
+                ->formatStateUsing(fn (?array $state): ?string => $state === null ? null : implode(', ', $state)),
+            ExportColumn::make('social_links')
+                ->label('Social Links')
+                ->formatStateUsing(fn (?array $state): ?string => $state === null ? null : json_encode($state)),
+            ExportColumn::make('is_portal_user')
+                ->label('Portal User')
+                ->formatStateUsing(fn (mixed $state): string => $state ? 'Yes' : 'No'),
+            ExportColumn::make('portal_username')
+                ->label('Portal Username'),
+            ExportColumn::make('sync_enabled')
+                ->label('Sync Enabled')
+                ->formatStateUsing(fn (mixed $state): string => $state ? 'Yes' : 'No'),
+            ExportColumn::make('sync_reference')
+                ->label('Sync Reference'),
             ExportColumn::make('created_at'),
             ExportColumn::make('updated_at'),
             ExportColumn::make('deleted_at'),

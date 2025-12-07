@@ -36,9 +36,14 @@ enum CreationSource: string implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::WEB => 'Web Interface',
-            self::SYSTEM => 'System Process',
-            self::IMPORT => 'Data Import',
+            self::WEB => __('enums.creation_source.web'),
+            self::SYSTEM => __('enums.creation_source.system'),
+            self::IMPORT => __('enums.creation_source.import'),
         };
+    }
+
+    public function label(): string
+    {
+        return $this->getLabel();
     }
 }

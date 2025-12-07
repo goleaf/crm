@@ -113,7 +113,7 @@ final class TeamPerformanceTableWidget extends BaseWidget
     {
         $systemSource = CreationSource::SYSTEM->value;
         $driver = DB::connection()->getDriverName();
-        
+
         // SQLite uses MAX instead of GREATEST
         $greatestFunction = $driver === 'sqlite' ? 'MAX' : 'GREATEST';
 

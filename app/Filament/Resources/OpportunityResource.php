@@ -6,12 +6,14 @@ namespace App\Filament\Resources;
 
 use App\Enums\CreationSource;
 use App\Filament\Exports\OpportunityExporter;
+use App\Filament\RelationManagers\ActivitiesRelationManager;
 use App\Filament\Resources\OpportunityResource\Forms\OpportunityForm;
 use App\Filament\Resources\OpportunityResource\Pages\ListOpportunities;
 use App\Filament\Resources\OpportunityResource\Pages\ViewOpportunity;
 use App\Filament\Resources\OpportunityResource\RelationManagers\NotesRelationManager;
 use App\Filament\Resources\OpportunityResource\RelationManagers\TasksRelationManager;
 use App\Models\Opportunity;
+use App\Models\Tag;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -25,13 +27,16 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Support\Colors\Color;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 use Override;
+use Relaticle\CustomFields\Facades\CustomFields;
 
 final class OpportunityResource extends Resource
 {
@@ -61,6 +66,20 @@ final class OpportunityResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
+                TextColumn::make('tags')
+                    ->label(__('app.labels.tags'))
+                    ->state(fn (Opportunity $record) => $record->tags)
+                    ->formatStateUsing(fn (Tag $tag): string => $tag->name)
+                    ->badge()
+                    ->listWithLineBreaks()
+                    ->color(fn (Tag $tag): array|string => $tag->color ? Color::hex($tag->color) : 'gray')
+                    ->toggleable(),
+                TextColumn::make('owner.name')
+                    ->label(__('app.labels.owner'))
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+                ...CustomFields::table()->forModel($table->getModel())->columns(),
                 TextColumn::make('creator.name')
                     ->label(__('app.labels.created_by'))
                     ->searchable()
@@ -87,6 +106,18 @@ final class OpportunityResource extends Resource
                     ->label(__('app.labels.creation_source'))
                     ->options(CreationSource::class)
                     ->multiple(),
+                SelectFilter::make('tags')
+                    ->label(__('app.labels.tags'))
+                    ->relationship(
+                        'tags',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query): Builder => $query->when(
+                            Auth::user()?->currentTeam,
+                            fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey())
+                        )
+                    )
+                    ->multiple()
+                    ->preload(),
                 TrashedFilter::make(),
             ])
             ->recordActions([
@@ -114,6 +145,7 @@ final class OpportunityResource extends Resource
         return [
             TasksRelationManager::class,
             NotesRelationManager::class,
+            ActivitiesRelationManager::class,
         ];
     }
 
@@ -134,6 +166,7 @@ final class OpportunityResource extends Resource
         return parent::getEloquentQuery()
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
-            ]);
+            ])
+            ->with('tags');
     }
 }

@@ -8,10 +8,10 @@ use App\Enums\CreationSource;
 use App\Models\Company;
 use App\Models\Opportunity;
 use App\Models\Task;
+use App\Services\Opportunities\OpportunityMetricsService;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Relaticle\SystemAdmin\Filament\Widgets\Concerns\HasCustomFieldQueries;
 
 final class BusinessOverviewWidget extends BaseWidget
@@ -36,10 +36,26 @@ final class BusinessOverviewWidget extends BaseWidget
                     'class' => 'relative overflow-hidden',
                 ]),
 
+            Stat::make('Weighted Forecast', $this->formatCurrency($businessData['weighted_pipeline']))
+                ->description('Probability-weighted revenue forecast')
+                ->descriptionIcon('heroicon-o-sparkles')
+                ->color('primary')
+                ->extraAttributes([
+                    'class' => 'relative overflow-hidden',
+                ]),
+
             Stat::make('Active Opportunities', number_format($businessData['total_opportunities']))
                 ->description($this->getGrowthDescription($businessData['opportunities_growth'], 'opportunities'))
                 ->descriptionIcon($businessData['opportunities_growth'] >= 0 ? 'heroicon-o-arrow-trending-up' : 'heroicon-o-arrow-trending-down')
                 ->color($this->getGrowthColor($businessData['opportunities_growth']))
+                ->extraAttributes([
+                    'class' => 'relative overflow-hidden',
+                ]),
+
+            Stat::make('Avg Sales Cycle', $businessData['avg_sales_cycle'].' days')
+                ->description($this->getSalesCycleDescription($businessData['avg_sales_cycle']))
+                ->descriptionIcon('heroicon-o-clock')
+                ->color('warning')
                 ->extraAttributes([
                     'class' => 'relative overflow-hidden',
                 ]),
@@ -63,12 +79,30 @@ final class BusinessOverviewWidget extends BaseWidget
     }
 
     /**
-     * @return array{pipeline_value: float, total_opportunities: int, completion_rate: float, total_companies: int, opportunities_growth: float, companies_growth: float, pipeline_trend: array<int, float>}
+     * @return array{pipeline_value: float, weighted_pipeline: float, total_opportunities: int, completion_rate: float, total_companies: int, opportunities_growth: float, companies_growth: float, pipeline_trend: array<int, float>, avg_sales_cycle: float}
      */
     private function getBusinessData(): array
     {
-        $opportunities = $this->getOpportunitiesWithAmounts();
-        $pipelineValue = $opportunities->sum('amount') ?? 0;
+        $metrics = app(OpportunityMetricsService::class);
+        $opportunities = $this->getOpportunitiesWithMetrics();
+
+        $pipelineValue = $opportunities
+            ->map(fn (Opportunity $opportunity): float => $metrics->amount($opportunity) ?? 0.0)
+            ->sum();
+
+        $weightedPipeline = $opportunities
+            ->map(fn (Opportunity $opportunity): float => $metrics->weightedAmount($opportunity) ?? 0.0)
+            ->sum();
+
+        $salesCycleSamples = $opportunities
+            ->map(fn (Opportunity $opportunity): ?int => $metrics->salesCycleDays($opportunity))
+            ->filter(fn (?int $value): bool => $value !== null)
+            ->values();
+
+        $avgSalesCycle = $salesCycleSamples->isNotEmpty()
+            ? round($salesCycleSamples->avg(), 1)
+            : 0.0;
+
         $totalOpportunities = $opportunities->count();
 
         $totalTasks = Task::where('creation_source', '!=', CreationSource::SYSTEM)->count();
@@ -78,34 +112,30 @@ final class BusinessOverviewWidget extends BaseWidget
         $totalCompanies = Company::where('creation_source', '!=', CreationSource::SYSTEM)->count();
 
         [$opportunitiesGrowth, $companiesGrowth] = $this->calculateMonthlyGrowth();
-        $pipelineTrend = $this->generatePipelineTrend($opportunities);
+        $pipelineTrend = $this->generatePipelineTrend($opportunities, $metrics);
 
         return [
             'pipeline_value' => $pipelineValue,
+            'weighted_pipeline' => $weightedPipeline,
             'total_opportunities' => $totalOpportunities,
             'completion_rate' => $completionRate,
             'total_companies' => $totalCompanies,
             'opportunities_growth' => $opportunitiesGrowth,
             'companies_growth' => $companiesGrowth,
             'pipeline_trend' => $pipelineTrend,
+            'avg_sales_cycle' => $avgSalesCycle,
         ];
     }
 
     /**
-     * @return Collection<int, \stdClass>
+     * @return Collection<int, Opportunity>
      */
-    private function getOpportunitiesWithAmounts(): Collection
+    private function getOpportunitiesWithMetrics(): Collection
     {
-        return DB::table('opportunities')
-            ->leftJoin('custom_field_values as cfv_amount', fn (mixed $join) => $join->on('opportunities.id', '=', 'cfv_amount.entity_id')
-                ->where('cfv_amount.entity_type', 'opportunity')
-            )
-            ->leftJoin('custom_fields as cf_amount', fn (mixed $join) => $join->on('cfv_amount.custom_field_id', '=', 'cf_amount.id')
-                ->where('cf_amount.code', 'amount')
-            )
-            ->whereNull('opportunities.deleted_at')
-            ->where('opportunities.creation_source', '!=', CreationSource::SYSTEM->value)
-            ->select('cfv_amount.float_value as amount', 'opportunities.created_at')
+        return Opportunity::query()
+            ->withCustomFieldValues()
+            ->whereNull('deleted_at')
+            ->where('creation_source', '!=', CreationSource::SYSTEM->value)
             ->get();
     }
 
@@ -147,10 +177,10 @@ final class BusinessOverviewWidget extends BaseWidget
     }
 
     /**
-     * @param  Collection<int, \stdClass>  $opportunities
+     * @param  Collection<int, Opportunity>  $opportunities
      * @return array<int, float>
      */
-    private function generatePipelineTrend(\Illuminate\Support\Collection $opportunities): array
+    private function generatePipelineTrend(Collection $opportunities, OpportunityMetricsService $metrics): array
     {
         return collect(range(6, 0))
             ->map(fn (int $daysAgo): array => [
@@ -160,7 +190,8 @@ final class BusinessOverviewWidget extends BaseWidget
                         now()->subDays($daysAgo)->startOfDay(),
                         now()->subDays($daysAgo)->endOfDay(),
                     ])
-                    ->sum('amount') ?? 0,
+                    ->map(fn (Opportunity $opportunity): float => $metrics->amount($opportunity) ?? 0.0)
+                    ->sum(),
             ])
             ->pluck('value')
             ->toArray();
@@ -182,6 +213,17 @@ final class BusinessOverviewWidget extends BaseWidget
             $amount >= 100000 => 'Strong pipeline building momentum',
             $amount > 0 => 'Early stage opportunities in pipeline',
             default => 'No revenue opportunities tracked yet'
+        };
+    }
+
+    private function getSalesCycleDescription(float $averageDays): string
+    {
+        return match (true) {
+            $averageDays === 0.0 => 'No close dates provided yet',
+            $averageDays <= 15 => 'Fast-moving deals through the funnel',
+            $averageDays <= 45 => 'Healthy sales cadence',
+            $averageDays <= 90 => 'Longer cycles, watch for stalls',
+            default => 'Deals aging beyond target cycles',
         };
     }
 

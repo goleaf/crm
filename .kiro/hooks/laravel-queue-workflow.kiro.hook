@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "name": "Laravel Queue Workflow Automation",
+  "description": "Monitors app/Jobs, app/Console/Commands, and app/Http/Controllers directories. When files are saved, triggers a comprehensive queue-focused workflow: scans codebase for queue opportunities, suggests/generates Job classes with best practices (ShouldQueue, retry logic, serialization), auto-adds dispatch calls to relevant locations including Filament actions, validates queue configuration (Redis/database/Horizon), generates PHPUnit tests for jobs, and updates documentation with queue details and dispatch examples. Prioritizes scalability with rate limiting and chainable jobs.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Jobs/**/*.php",
+      "app/Console/Commands/**/*.php",
+      "app/Http/Controllers/**/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A file has been saved in the Laravel project's Jobs, Commands, or Controllers directory. Execute this queue-focused workflow:\n\n1. **Codebase Analysis**: Use MCP to scan the saved file and related codebase including:\n   - Queue configuration files (config/queue.php, config/horizon.php)\n   - Existing Job classes and their patterns\n   - Models that may need serialization\n   - Filament resources and actions that could benefit from queuing\n\n2. **Job Generation**: Analyze if new actions could benefit from queuing and:\n   - Suggest or generate Job classes following best practices\n   - Implement ShouldQueue interface\n   - Add proper failure handling with retry logic\n   - Include model/event serialization (SerializesModels trait)\n   - Add proper type hints and return types\n   - Include queue name specification for priority handling\n\n3. **Dispatch Integration**: Auto-add dispatch calls where appropriate:\n   - In controllers for async operations\n   - In Filament actions (e.g., bulk exports in table actions)\n   - Use proper syntax: MyJob::dispatch($data)->onQueue('high')\n   - Consider delayed dispatching where appropriate\n   - Add job chaining for multi-step processes\n\n4. **Configuration Validation**: Check queue setup via MCP:\n   - Validate queue driver (Redis, database, etc.)\n   - Suggest connection pooling optimizations\n   - Review horizon.php configuration for Filament Horizon integration\n   - Check for proper queue worker configuration\n   - Verify failed job handling setup\n\n5. **Testing**: Generate comprehensive PHPUnit/Pest tests:\n   - Test job dispatch\n   - Test job execution logic\n   - Test failure scenarios and retry behavior\n   - Test job chaining if applicable\n   - Run tests via MCP and fix any issues found\n\n6. **Documentation**: Update project documentation:\n   - Add inline comments to Job classes with queue details\n   - Update or create docs/queues.md with:\n     - Job class descriptions\n     - Dispatch examples\n     - Queue priority explanations\n     - Monitoring recommendations\n   - Document any new queue configurations\n\n7. **Scalability Considerations**:\n   - Implement rate limiting where appropriate\n   - Suggest job batching for bulk operations\n   - Recommend chainable jobs for complex workflows\n   - Consider job middleware for cross-cutting concerns\n\nExecute this workflow asynchronously and notify for approval on any code changes before applying them. Provide a summary of:\n- Jobs created or modified\n- Dispatch points added\n- Configuration changes suggested\n- Tests generated\n- Documentation updates\n\nPrioritize maintainability, testability, and scalability in all suggestions."
+  }
+}

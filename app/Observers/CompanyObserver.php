@@ -37,6 +37,7 @@ final readonly class CompanyObserver
      */
     public function saved(Company $company): void
     {
+        $company->ensureAccountOwnerOnTeam();
         $company->invalidateAiSummary();
     }
 }

@@ -64,7 +64,12 @@ final class TaskResource extends Resource
     public static function table(Table $table): Table
     {
         /** @var Collection<string, CustomField> $customFields */
-        $customFields = CustomField::query()->whereIn('code', ['status', 'priority'])->get()->keyBy('code');
+        $customFields = CustomField::query()
+            ->forEntity(Task::class)
+            ->with('options')
+            ->whereIn('code', ['status', 'priority'])
+            ->get()
+            ->keyBy('code');
         /** @var ValueResolvers $valueResolver */
         $valueResolver = app(ValueResolvers::class);
 
@@ -105,7 +110,7 @@ final class TaskResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->searchable()
             ->paginated([10, 25, 50])
-            ->filters([
+            ->filters(array_filter([
                 Filter::make('assigned_to_me')
                     ->label('Assigned to me')
                     ->query(fn (Builder $query): Builder => $query->whereHas('assignees', function (Builder $query): void {
@@ -117,12 +122,24 @@ final class TaskResource extends Resource
                     ->relationship('assignees', 'name')
                     ->searchable()
                     ->preload(),
+                SelectFilter::make('categories')
+                    ->label('Category')
+                    ->multiple()
+                    ->relationship('categories', 'name')
+                    ->searchable()
+                    ->preload(),
+                $customFields->has('status') ? self::makeCustomFieldFilter('status', $customFields['status']) : null,
+                $customFields->has('priority') ? self::makeCustomFieldFilter('priority', $customFields['priority']) : null,
+                Filter::make('blocked')
+                    ->label('Blocked (has dependencies)')
+                    ->query(fn (Builder $query): Builder => $query->whereHas('dependencies'))
+                    ->toggle(),
                 SelectFilter::make('creation_source')
                     ->label(__('app.labels.creation_source'))
                     ->options(CreationSource::class)
                     ->multiple(),
                 TrashedFilter::make(),
-            ])
+            ]))
             ->groups(array_filter([
                 ...collect(['status', 'priority'])->map(fn (string $fieldCode): ?\Filament\Tables\Grouping\Group => $customFields->has($fieldCode) ? self::makeCustomFieldGroup($fieldCode, $customFields, $valueResolver) : null
                 )->filter()->toArray(),
@@ -235,6 +252,32 @@ final class TaskResource extends Resource
                 return $query->whereHas('customFieldValues', function (Builder $query) use ($field, $key): void {
                     $query->where('custom_field_id', $field->id)
                         ->where($field->getValueColumn(), $key);
+                });
+            });
+    }
+
+    private static function makeCustomFieldFilter(string $fieldCode, CustomField $field): SelectFilter
+    {
+        $field->loadMissing('options');
+        $options = $field->options->pluck('name', 'id')->toArray();
+        $valueColumn = $field->getValueColumn();
+
+        return SelectFilter::make($fieldCode)
+            ->label(ucfirst($fieldCode))
+            ->multiple()
+            ->options($options)
+            ->query(function (Builder $query, array $data) use ($field, $valueColumn): Builder {
+                $selected = $data['values'] ?? $data['value'] ?? [];
+
+                $values = is_array($selected) ? array_filter($selected) : [$selected];
+
+                if ($values === []) {
+                    return $query;
+                }
+
+                return $query->whereHas('customFieldValues', function (Builder $query) use ($field, $valueColumn, $values): void {
+                    $query->where('custom_field_id', $field->id)
+                        ->whereIn($valueColumn, $values);
                 });
             });
     }

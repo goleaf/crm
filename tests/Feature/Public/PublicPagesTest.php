@@ -50,6 +50,14 @@ describe('Documentation pages', function () {
         $response->assertSee('Documentation');
     });
 
+    it('renders the SuiteCRM feature catalog', function () {
+        $response = $this->get('/documentation/suitecrm-features');
+
+        $response->assertStatus(200);
+        $response->assertSee('SuiteCRM Features');
+        $response->assertSee('Core CRM Modules');
+    });
+
     it('returns 404 for non-existent documentation page', function () {
         $response = $this->get('/documentation/non-existent-page');
 

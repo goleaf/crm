@@ -1,0 +1,29 @@
+---
+inclusion_mode: "always"
+---
+
+# Translations & Localization (PHP-only)
+
+## Source of truth
+- Use PHP translation files (`resources/lang/{locale}/*.php`) only—no JSON lang files.
+- Organize by domain: `app.php` (labels/actions/nav), `requests.php` (validation), `notifications.php`, `auth.php`, `pagination.php`, module-specific files if needed.
+
+## Coding rules
+- Never hardcode user-facing strings in PHP/Filament; always wrap with `__()`/`@lang`. Avoid adding Blade views for copy—use Filament schemas/labels instead.
+- In Filament v4, set labels/placeholders/descriptions/headings via translation keys: `->label(__('app.labels.name'))`, `->helperText(__('app.helpers.name_format'))`, `->modalHeading(__('app.modals.edit_record'))`, etc.
+- Keep keys stable and descriptive; avoid dynamic keys. Use placeholders (`:name`, `:count`) and pass replacements.
+
+## Key naming
+- `app.labels.*` for field labels; `app.actions.*` for buttons/bulk actions; `app.navigation.*` for menu/cluster names; `app.helpers.*` for helper text; `app.modals.*` for modal titles/descriptions.
+- `requests.*` for validation messages; `notifications.*` for notification titles/bodies; `table.*` for table empty states/headings.
+- Snake_case keys; group by feature to keep files maintainable.
+
+## Adding/updating strings
+- When introducing UI text in Filament resources/pages/widgets/actions, first add the key to the appropriate PHP lang file, then reference it in code.
+- For enums, prefer `->getLabel()` returning `__()` values so tables/forms stay translated.
+- If existing code has inline text, replace with translation keys during touch.
+
+## Verification checklist
+- No inline strings in Filament resources/pages/widgets/actions/notifications.
+- Modal headings/descriptions, empty states, table column labels, filter labels, bulk action labels all use translations.
+- English remains base locale; keep structure mirrored when adding locales.

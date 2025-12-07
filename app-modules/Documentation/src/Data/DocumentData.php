@@ -39,16 +39,17 @@ final class DocumentData extends Data
         $file = $documentConfig['file'];
         $title = $documentConfig['title'];
         $description = $documentConfig['description'] ?? null;
+        $basePath = self::resolveBasePath($documentConfig);
 
-        $path = self::getMarkdownPath($file);
+        $path = self::getMarkdownPath($file, $basePath);
 
         // Validate the path is within the intended directory
         $realPath = realpath($path);
-        $resourcePath = realpath(config('documentation.markdown.base_path'));
+        $resourcePath = realpath($basePath);
 
         abort_if($resourcePath === false, 500, 'Unable to determine resource path');
 
-        if ($realPath === '0' || $realPath === false || ! str_starts_with($realPath, $resourcePath) || ! file_exists($realPath)) {
+        if ($realPath === false || ! self::pathWithinBasePath($realPath, $resourcePath) || ! file_exists($realPath)) {
             abort(404, 'Document not found');
         }
 
@@ -90,8 +91,26 @@ final class DocumentData extends Data
     /**
      * Get the path to the Markdown file
      */
-    private static function getMarkdownPath(string $file): string
+    private static function getMarkdownPath(string $file, string $basePath): string
     {
-        return config('documentation.markdown.base_path').'/'.$file;
+        return rtrim($basePath, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$file;
+    }
+
+    /**
+     * Resolve the base path for the given document configuration
+     */
+    private static function resolveBasePath(array $documentConfig): string
+    {
+        return $documentConfig['base_path'] ?? config('documentation.markdown.base_path');
+    }
+
+    /**
+     * Ensure the resolved real path is inside the configured base path
+     */
+    private static function pathWithinBasePath(string $realPath, string $basePath): bool
+    {
+        $normalizedBasePath = rtrim($basePath, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+
+        return str_starts_with($realPath, $normalizedBasePath);
     }
 }

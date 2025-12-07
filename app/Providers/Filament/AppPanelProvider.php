@@ -8,10 +8,15 @@ use App\Filament\Pages\ApiTokens;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Auth\Register;
 use App\Filament\Pages\CreateTeam;
+use App\Filament\Pages\Dashboard;
 use App\Filament\Pages\EditProfile;
 use App\Filament\Pages\EditTeam;
-use App\Filament\Resources\CompanyResource;
+use App\Filament\Widgets\CrmStatsOverview;
+use App\Filament\Widgets\PipelinePerformanceChart;
+use App\Filament\Widgets\QuickActions;
+use App\Filament\Widgets\RecentActivity;
 use App\Http\Middleware\ApplyTenantScopes;
+use App\Http\Middleware\SetLocale;
 use App\Listeners\SwitchTeam;
 use App\Models\Team;
 use Exception;
@@ -71,11 +76,13 @@ final class AppPanelProvider extends PanelProvider
      */
     public function panel(Panel $panel): Panel
     {
+        $host = parse_url((string) config('app.url'), PHP_URL_HOST) ?: 'localhost';
+
         $panel
             ->default()
             ->id('app')
-            ->domain('app.'.parse_url((string) config('app.url'))['host'])
-            ->homeUrl(fn (): string => CompanyResource::getUrl())
+            ->domain("app.{$host}")
+            ->homeUrl(fn (): string => Dashboard::getUrl())
             ->brandName('Relaticle')
             ->login(Login::class)
             ->registration(Register::class)
@@ -117,6 +124,12 @@ final class AppPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->widgets([
+                CrmStatsOverview::class,
+                PipelinePerformanceChart::class,
+                QuickActions::class,
+                RecentActivity::class,
+            ])
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
             ->readOnlyRelationManagersOnResourceViewPagesByDefault(false)
             ->pages([
@@ -141,6 +154,7 @@ final class AppPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                SetLocale::class,
             ])
             ->authGuard('web')
             ->authPasswordBroker('users')
@@ -172,6 +186,10 @@ final class AppPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
                 fn (): View|Factory => view('filament.app.analytics')
+            )
+            ->renderHook(
+                PanelsRenderHook::USER_MENU_BEFORE,
+                fn (): string => Blade::render('<livewire:language-switcher />')
             );
 
         if (Features::hasApiFeatures()) {

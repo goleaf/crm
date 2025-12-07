@@ -16,6 +16,7 @@ final class DatabaseSeeder extends Seeder
     {
         $this->call([
             LocalSeeder::class,
+            AdvancedFeaturesSeeder::class,
         ]);
     }
 }

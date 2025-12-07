@@ -28,7 +28,7 @@ it('can render the view page', function (): void {
 it('can render `:dataset` column', function (string $column): void {
     livewire(App\Filament\Resources\OpportunityResource\Pages\ListOpportunities::class)
         ->assertCanRenderTableColumn($column);
-})->with(['name', 'creator.name']);
+})->with(['name', 'tags', 'creator.name']);
 
 it('cannot render `:dataset` column', function (string $column): void {
     livewire(App\Filament\Resources\OpportunityResource\Pages\ListOpportunities::class)
@@ -38,7 +38,7 @@ it('cannot render `:dataset` column', function (string $column): void {
 it('has `:dataset` column', function (string $column): void {
     livewire(App\Filament\Resources\OpportunityResource\Pages\ListOpportunities::class)
         ->assertTableColumnExists($column);
-})->with(['name', 'creator.name', 'deleted_at', 'created_at', 'updated_at']);
+})->with(['name', 'tags', 'creator.name', 'deleted_at', 'created_at', 'updated_at']);
 
 it('shows `:dataset` column', function (string $column): void {
     livewire(App\Filament\Resources\OpportunityResource\Pages\ListOpportunities::class)
@@ -106,4 +106,20 @@ it('can bulk delete records', function (): void {
 it('has `:dataset` filter', function (string $filter): void {
     livewire(App\Filament\Resources\OpportunityResource\Pages\ListOpportunities::class)
         ->assertTableFilterExists($filter);
-})->with(['creation_source', 'trashed']);
+})->with(['creation_source', 'tags', 'trashed']);
+
+it('can filter by tags', function (): void {
+    $vipTag = App\Models\Tag::factory()->for($this->user->personalTeam(), 'team')->create(['name' => 'VIP']);
+    $partnerTag = App\Models\Tag::factory()->for($this->user->personalTeam(), 'team')->create(['name' => 'Partner']);
+
+    $matching = App\Models\Opportunity::factory()->for($this->user->personalTeam(), 'team')->create();
+    $matching->tags()->attach([$vipTag->getKey(), $partnerTag->getKey()]);
+
+    $nonMatching = App\Models\Opportunity::factory()->for($this->user->personalTeam(), 'team')->create();
+    $nonMatching->tags()->attach([$partnerTag->getKey()]);
+
+    livewire(App\Filament\Resources\OpportunityResource\Pages\ListOpportunities::class)
+        ->filterTable('tags', [$vipTag])
+        ->assertCanSeeTableRecords([$matching])
+        ->assertCanNotSeeTableRecords([$nonMatching]);
+});

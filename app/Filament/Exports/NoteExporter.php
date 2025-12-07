@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Exports;
 
+use App\Enums\NoteCategory;
+use App\Enums\NoteVisibility;
 use App\Models\Note;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Models\Export;
@@ -24,6 +26,18 @@ final class NoteExporter extends BaseExporter
             ExportColumn::make('creation_source')
                 ->formatStateUsing(fn (mixed $state): string => $state->value ?? (string) $state),
             ExportColumn::make('title'),
+            ExportColumn::make('category')
+                ->formatStateUsing(fn (mixed $state): string => NoteCategory::tryFrom((string) $state)?->label() ?? (string) $state),
+            ExportColumn::make('visibility')
+                ->formatStateUsing(fn (mixed $state): string => $state instanceof NoteVisibility ? $state->getLabel() : (NoteVisibility::tryFrom((string) $state)?->getLabel() ?? (string) $state)),
+            ExportColumn::make('body')
+                ->getStateUsing(fn (Note $note): string => $note->plainBody()),
+            ExportColumn::make('attachments_count')
+                ->label('Attachments')
+                ->getStateUsing(fn (Note $note): int => $note->attachments()->count()),
+            ExportColumn::make('is_template')
+                ->label('Template')
+                ->formatStateUsing(fn (mixed $state): string => $state ? 'Yes' : 'No'),
             ExportColumn::make('created_at'),
             ExportColumn::make('updated_at'),
             ExportColumn::make('deleted_at'),

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Auth\CallbackController;
 use App\Http\Controllers\Auth\RedirectController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NotePrintController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\TermsOfServiceController;
 use Illuminate\Session\Middleware\AuthenticateSession;
@@ -53,6 +54,13 @@ Route::redirect('/dashboard', url()->getAppUrl())->name('dashboard');
 Route::get('/team-invitations/{invitation}', [TeamInvitationController::class, 'accept'])
     ->middleware(['signed', 'verified', 'auth', AuthenticateSession::class])
     ->name('team-invitations.accept');
+
+Route::middleware(['auth', 'verified'])->group(function (): void {
+    Route::get('/notes/{note}/print', NotePrintController::class)->name('notes.print');
+    Route::view('/purchase-orders', 'purchase-orders.index')->name('purchase-orders.index');
+    Route::get('/calendar', [\App\Http\Controllers\CalendarController::class, 'index'])->name('calendar');
+    Route::post('/calendar', [\App\Http\Controllers\CalendarController::class, 'store'])->name('calendar.store');
+});
 
 // Community redirects
 Route::get('/discord', function () {

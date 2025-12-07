@@ -58,10 +58,14 @@ graph TB
 **Purpose**: Extend the existing Company model with additional fields and methods
 
 **Key Additions**:
-- Additional database fields: `website`, `industry`, `revenue`, `employee_count`, `description`
+- Additional database fields: `website`, `industry`, `revenue`, `employee_count`, `description`, `account_type`, `currency_code`, `social_links`, `parent_company_id`
 - Duplicate detection methods
 - Merge operation support
 - Enhanced relationship accessors
+- Account hierarchy methods (parent/child relationships)
+- Account team management
+- Social media profile management
+- Document attachment support via media library
 
 **Interface**:
 ```php
@@ -69,12 +73,31 @@ class Company extends Model
 {
     // Existing traits and relationships remain
     
-    // New methods
+    // Duplicate detection and merging
     public function findPotentialDuplicates(): Collection;
     public function calculateSimilarityScore(Company $other): float;
     public function mergeWith(Company $duplicate, array $fieldSelections): bool;
+    
+    // Financial and pipeline
     public function getTotalPipelineValue(): float;
-    public function getActivityTimeline(): Collection;
+    
+    // Activity and timeline
+    public function getActivityTimeline(int $limit = 25): Collection;
+    
+    // Account hierarchy
+    public function parentCompany(): BelongsTo;
+    public function childCompanies(): HasMany;
+    public function wouldCreateCycle(?int $parentId): bool;
+    
+    // Account team
+    public function accountOwner(): BelongsTo;
+    public function accountTeam(): BelongsToMany;
+    public function accountTeamMembers(): HasMany;
+    public function ensureAccountOwnerOnTeam(): void;
+    
+    // Document management
+    public function attachments(): MorphMany;
+    public function registerMediaCollections(): void;
 }
 ```
 
@@ -129,7 +152,31 @@ class AccountMergeService
 - Activity timeline view
 - Pipeline value display
 
-### 5. Database Schema Extensions
+### 5. AccountTeamMember Model
+
+**Purpose**: Manage team collaboration on accounts with roles and access levels
+
+**Responsibilities**:
+- Track which users are assigned to which accounts
+- Define roles (Owner, Account Manager, Sales Rep, Support Contact, Technical Lead)
+- Define access levels (View, Edit, Manage)
+- Maintain team membership history
+
+**Interface**:
+```php
+class AccountTeamMember extends Model
+{
+    public function company(): BelongsTo;
+    public function user(): BelongsTo;
+    public function team(): BelongsTo;
+    
+    // Enums
+    public AccountTeamRole $role;
+    public AccountTeamAccessLevel $access_level;
+}
+```
+
+### 6. Database Schema Extensions
 
 **New Migration**: Add fields to companies table
 ```php
@@ -138,7 +185,12 @@ $table->string('industry')->nullable();
 $table->decimal('revenue', 15, 2)->nullable();
 $table->integer('employee_count')->nullable();
 $table->text('description')->nullable();
+$table->string('account_type')->nullable(); // Customer, Prospect, Partner, etc.
+$table->string('currency_code', 3)->default('USD');
+$table->json('social_links')->nullable(); // LinkedIn, Twitter, Facebook, Instagram
+$table->foreignId('parent_company_id')->nullable()->constrained('companies');
 $table->index(['name', 'website']); // For duplicate detection
+$table->index('parent_company_id'); // For hierarchy queries
 ```
 
 **New Table**: account_merges (audit trail)
@@ -150,6 +202,18 @@ $table->foreignId('merged_by_user_id');
 $table->json('field_selections');
 $table->json('transferred_relationships');
 $table->timestamps();
+```
+
+**New Table**: account_team_members (already exists)
+```php
+$table->id();
+$table->foreignId('company_id')->constrained()->cascadeOnDelete();
+$table->foreignId('user_id')->constrained()->cascadeOnDelete();
+$table->foreignId('team_id')->constrained()->cascadeOnDelete();
+$table->string('role'); // Owner, Account Manager, Sales Rep, etc.
+$table->string('access_level'); // View, Edit, Manage
+$table->timestamps();
+$table->unique(['company_id', 'user_id']);
 ```
 
 ## Data Models
@@ -167,13 +231,21 @@ $table->timestamps();
 
 **New Fields**:
 - `website`: Company website URL
-- `industry`: Industry classification
-- `revenue`: Annual revenue
-- `employee_count`: Number of employees
-- `description`: Company description
+- `industry`: Industry classification (enum)
+- `revenue`: Annual revenue (decimal)
+- `employee_count`: Number of employees (integer)
+- `description`: Company description (text)
+- `account_type`: Account classification (enum: Customer, Prospect, Partner, Competitor, Investor, Reseller)
+- `currency_code`: Operating currency (ISO code, default: USD)
+- `social_links`: JSON array of social media profiles
+- `parent_company_id`: Foreign key to parent company for hierarchies
 
 **Relationships**:
 - `accountOwner()`: BelongsTo User
+- `accountTeam()`: BelongsToMany User (via account_team_members pivot)
+- `accountTeamMembers()`: HasMany AccountTeamMember
+- `parentCompany()`: BelongsTo Company
+- `childCompanies()`: HasMany Company
 - `people()`: HasMany People
 - `opportunities()`: HasMany Opportunity
 - `tasks()`: MorphToMany Task
@@ -326,15 +398,66 @@ After reviewing all testable properties from the prework, several opportunities 
 *For any* export request, the system should successfully generate files in both CSV and Excel formats with identical data content.
 **Validates: Requirements 10.2**
 
+**Property 27: Account type persistence and filtering**
+*For any* account with an assigned account type (Customer, Prospect, Partner, etc.), the type should be persisted, retrievable, and filterable across all accounts.
+**Validates: Requirements 11.1, 11.2**
+
+**Property 28: Account type change audit trail**
+*For any* account where the account type is changed, the system should update the account and preserve the change in the activity history.
+**Validates: Requirements 11.4**
+
+**Property 29: Account team member assignment**
+*For any* account and user, adding the user to the account team with a specific role should create an AccountTeamMember record that is queryable from both the account and user perspectives.
+**Validates: Requirements 12.1, 12.2**
+
+**Property 30: Account team member removal preserves history**
+*For any* account team member, removing them from the account should delete the team membership while preserving all their historical activities and contributions.
+**Validates: Requirements 12.4**
+
+**Property 31: Account owner team synchronization**
+*For any* account, when the account owner changes, the system should automatically update the account team to ensure the new owner has Owner role and Manage access level.
+**Validates: Requirements 12.5**
+
+**Property 32: Currency code persistence**
+*For any* account with a designated currency code, the currency should be persisted, retrievable, and used for displaying financial data in the correct currency.
+**Validates: Requirements 13.1, 13.2**
+
+**Property 33: Social media profile storage**
+*For any* account with social media profile URLs, the profiles should be stored in a structured format, retrievable, and displayable with appropriate validation.
+**Validates: Requirements 14.1, 14.2, 14.3**
+
+**Property 34: Document attachment lifecycle**
+*For any* document uploaded to an account, the system should store it with metadata (filename, size, upload date, uploader), make it retrievable, and allow deletion with appropriate permissions.
+**Validates: Requirements 15.1, 15.2, 15.5**
+
+**Property 35: Document download logging**
+*For any* document attached to an account, downloading the document should serve the file and log the download activity.
+**Validates: Requirements 15.4**
+
+**Property 36: Hierarchy cycle prevention**
+*For any* account and potential parent account, the system should prevent creating a parent-child relationship if it would create a circular reference (account cannot be its own ancestor).
+**Validates: Requirements 16.3**
+
+**Property 37: Hierarchy relationship persistence**
+*For any* account with a parent account, the parent-child relationship should be persisted, queryable from both directions, and displayable in a hierarchical view.
+**Validates: Requirements 16.1, 16.2**
+
+**Property 38: Hierarchy aggregation**
+*For any* parent account with child accounts, the system should provide the ability to aggregate data (opportunities, revenue, activities) from all child accounts.
+**Validates: Requirements 16.4**
+
 ## Error Handling
 
 ### Validation Errors
 
 **Account Creation/Update**:
 - Required field validation (name is required)
-- Format validation (website URL format, phone number format)
+- Format validation (website URL format, phone number format, social media URLs)
 - Range validation (revenue and employee_count must be positive)
 - Custom field type validation
+- Account type enum validation
+- Currency code validation (must be valid ISO code)
+- Parent company validation (cannot create cycles)
 
 **Error Response**: Return validation errors with specific field-level messages
 
@@ -365,10 +488,50 @@ After reviewing all testable properties from the prework, several opportunities 
 
 **Scenarios**:
 - Attempting to associate deleted records
-- Circular relationship attempts
+- Circular relationship attempts (account hierarchies)
 - Foreign key constraint violations
+- Duplicate team member assignments
+- Invalid role or access level assignments
 
 **Handling**: Validate relationships before creation, return specific error messages
+
+### Account Hierarchy Errors
+
+**Scenarios**:
+- Attempting to set an account as its own parent
+- Creating circular parent-child relationships
+- Setting a child account as parent of its ancestor
+
+**Handling**:
+- Use `wouldCreateCycle()` method to validate before saving
+- Return clear error message explaining the circular reference
+- Suggest alternative hierarchy structures
+
+### Account Team Errors
+
+**Scenarios**:
+- Adding a user who doesn't belong to the account's team
+- Assigning invalid roles or access levels
+- Removing the account owner from the team
+- Duplicate team member assignments
+
+**Handling**:
+- Validate team membership before assignment
+- Prevent removal of account owner
+- Return specific error messages for each scenario
+
+### Document Attachment Errors
+
+**Scenarios**:
+- Uploading files exceeding size limits
+- Uploading unsupported file types
+- Insufficient storage space
+- Permission denied for document operations
+
+**Handling**:
+- Validate file size and type before upload
+- Return clear error messages with size/type requirements
+- Check permissions before allowing upload/download/delete operations
 
 ### Export Errors
 
@@ -390,13 +553,21 @@ The testing approach will use **Pest PHP** (already configured in the project) f
 
 **Unit Test Coverage**:
 - Service method functionality (DuplicateDetectionService, AccountMergeService)
-- Model method behavior (findPotentialDuplicates, calculateSimilarityScore, mergeWith)
-- Validation rules for new fields
+- Model method behavior (findPotentialDuplicates, calculateSimilarityScore, mergeWith, wouldCreateCycle)
+- Validation rules for new fields (account_type, currency_code, social_links, parent_company_id)
+- Account team management (ensureAccountOwnerOnTeam, team member assignment/removal)
+- Account hierarchy operations (parent/child relationships, cycle detection)
+- Document attachment operations (upload, download, delete)
+- Social media profile validation and storage
+- Currency code validation
 - Specific edge cases:
   - Merging accounts with no relationships
   - Duplicate detection with empty fields
   - Export with no results
   - Custom field deletion with existing data
+  - Circular hierarchy prevention
+  - Account owner team synchronization
+  - Document upload with invalid file types
 
 **Example Unit Tests**:
 ```php
@@ -530,11 +701,26 @@ tests/
 
 ### New Components to Build
 
-1. **Database Migration**: Add new fields (website, industry, revenue, employee_count, description)
-2. **DuplicateDetectionService**: New service for finding similar accounts
-3. **AccountMergeService**: New service for merging accounts
-4. **AccountMerge Model**: New model for audit trail
-5. **Filament Actions**: Duplicate detection and merge wizard actions
+1. **Database Migration**: Add new fields (website, industry, revenue, employee_count, description, account_type, currency_code, social_links, parent_company_id)
+2. **DuplicateDetectionService**: New service for finding similar accounts (✅ Completed)
+3. **AccountMergeService**: New service for merging accounts (✅ Completed)
+4. **AccountMerge Model**: New model for audit trail (✅ Completed)
+5. **AccountTeamMember Model**: Model for account team collaboration (✅ Already exists)
+6. **Filament Actions**: 
+   - Duplicate detection action
+   - Merge wizard action
+   - Add team member action
+   - Upload document action
+7. **Filament Form Components**:
+   - Account type selector
+   - Currency selector
+   - Social media profile inputs
+   - Parent company selector with cycle validation
+   - Account team management interface
+8. **Filament Filters**:
+   - Account type filter
+   - Currency filter
+   - Hierarchy level filter
 6. **Enhanced CompanyResource**: Add new fields, actions, and views
 
 ### Technology Stack

@@ -28,7 +28,7 @@ it('can render the view page', function (): void {
 it('can render `:dataset` column', function (string $column): void {
     livewire(App\Filament\Resources\PeopleResource\Pages\ListPeople::class)
         ->assertCanRenderTableColumn($column);
-})->with(['avatar', 'name', 'company.name', 'creator.name']);
+})->with(['avatar', 'name', 'company.name', 'tags', 'creator.name']);
 
 it('cannot render `:dataset` column', function (string $column): void {
     livewire(App\Filament\Resources\PeopleResource\Pages\ListPeople::class)
@@ -38,12 +38,12 @@ it('cannot render `:dataset` column', function (string $column): void {
 it('has `:dataset` column', function (string $column): void {
     livewire(App\Filament\Resources\PeopleResource\Pages\ListPeople::class)
         ->assertTableColumnExists($column);
-})->with(['avatar', 'name', 'company.name', 'creator.name', 'created_at', 'updated_at', 'deleted_at']);
+})->with(['avatar', 'name', 'company.name', 'tags', 'creator.name', 'created_at', 'updated_at', 'deleted_at']);
 
 it('shows `:dataset` column', function (string $column): void {
     livewire(App\Filament\Resources\PeopleResource\Pages\ListPeople::class)
         ->assertTableColumnVisible($column);
-})->with(['avatar', 'name', 'company.name', 'creator.name', 'created_at', 'updated_at', 'deleted_at']);
+})->with(['avatar', 'name', 'company.name', 'tags', 'creator.name', 'created_at', 'updated_at', 'deleted_at']);
 
 it('can sort `:dataset` column', function (string $column): void {
     $records = App\Models\People::factory(3)->for($this->user->personalTeam())->create();
@@ -106,4 +106,20 @@ it('can bulk delete records', function (): void {
 it('has `:dataset` filter', function (string $filter): void {
     livewire(App\Filament\Resources\PeopleResource\Pages\ListPeople::class)
         ->assertTableFilterExists($filter);
-})->with(['creation_source', 'trashed']);
+})->with(['creation_source', 'tags', 'trashed']);
+
+it('can filter by tags', function (): void {
+    $vipTag = App\Models\Tag::factory()->for($this->user->personalTeam(), 'team')->create(['name' => 'VIP']);
+    $otherTag = App\Models\Tag::factory()->for($this->user->personalTeam(), 'team')->create(['name' => 'Partner']);
+
+    $matching = App\Models\People::factory()->for($this->user->personalTeam())->create();
+    $matching->tags()->attach([$vipTag->getKey(), $otherTag->getKey()]);
+
+    $nonMatching = App\Models\People::factory()->for($this->user->personalTeam())->create();
+    $nonMatching->tags()->attach([$otherTag->getKey()]);
+
+    livewire(App\Filament\Resources\PeopleResource\Pages\ListPeople::class)
+        ->filterTable('tags', [$vipTag])
+        ->assertCanSeeTableRecords([$matching])
+        ->assertCanNotSeeTableRecords([$nonMatching]);
+});

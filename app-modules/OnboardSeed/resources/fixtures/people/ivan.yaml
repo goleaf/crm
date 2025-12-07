@@ -3,6 +3,8 @@ company: notion
 custom_fields:
   emails:
     - ivan@notion.com
-  phone_number: 555-789-0123
+  phone_number:
+    - 555-789-0123
+    - 555-789-0100
   job_title: Co-founder
-  linkedin: https://www.linkedin.com/in/ivzhao/ 
+  linkedin: https://www.linkedin.com/in/ivzhao/

@@ -14,6 +14,14 @@ The Accounts Module provides comprehensive management of company-specific inform
 - **Custom Field**: A user-defined data field that extends the standard Account attributes
 - **Duplicate Detection**: The process of identifying potentially duplicate Account records
 - **Merging**: The process of combining two or more duplicate Account records into a single record
+- **Account Type**: A classification of the business relationship (Customer, Prospect, Partner, Competitor, Investor, Reseller)
+- **Account Team**: A group of users assigned to collaborate on an Account with defined roles and access levels
+- **Account Owner**: The primary user responsible for managing an Account
+- **Parent Account**: An Account that has one or more child Accounts in a hierarchical relationship
+- **Child Account**: An Account that belongs to a Parent Account in a hierarchical structure
+- **Currency Code**: The ISO currency code representing the Account's operating currency
+- **Social Media Profile**: A link to the Account's presence on social media platforms
+- **Document Attachment**: A file uploaded and associated with an Account record
 
 ## Requirements
 
@@ -136,3 +144,75 @@ The Accounts Module provides comprehensive management of company-specific inform
 3. WHEN exporting accounts THEN the System SHALL include both standard and custom field data
 4. WHEN a user selects specific accounts THEN the System SHALL export only the selected records
 5. WHEN a user exports all accounts THEN the System SHALL respect current filters and search criteria
+
+### Requirement 11
+
+**User Story:** As a sales manager, I want to categorize accounts by type and relationship, so that I can segment my customer base and tailor my approach.
+
+#### Acceptance Criteria
+
+1. WHEN a user creates an account THEN the System SHALL allow selection of account type from predefined options (Customer, Prospect, Partner, Competitor, Investor, Reseller)
+2. WHEN a user filters accounts THEN the System SHALL support filtering by account type
+3. WHEN a user views reports THEN the System SHALL allow grouping and aggregating by account type
+4. WHEN a user changes an account type THEN the System SHALL update the account and preserve the previous type in the audit trail
+5. WHEN a user views an account THEN the System SHALL display the account type prominently in the account header
+
+### Requirement 12
+
+**User Story:** As an account manager, I want to assign team members to accounts with specific roles, so that we can collaborate effectively on customer relationships.
+
+#### Acceptance Criteria
+
+1. WHEN a user adds a team member to an account THEN the System SHALL assign them a role (Owner, Account Manager, Sales Rep, Support Contact, Technical Lead)
+2. WHEN a user views an account THEN the System SHALL display all team members with their roles and access levels
+3. THE System SHALL allow multiple team members with different roles on the same account
+4. WHEN a team member is removed from an account THEN the System SHALL preserve their historical activity and contributions
+5. WHEN the account owner changes THEN the System SHALL automatically update the account team to reflect the new owner
+
+### Requirement 13
+
+**User Story:** As a global sales representative, I want to manage accounts in their local currencies, so that I can accurately track international business.
+
+#### Acceptance Criteria
+
+1. WHEN a user creates an account THEN the System SHALL allow selection of the account's operating currency from a list of supported currencies
+2. WHEN a user views financial data for an account THEN the System SHALL display amounts in the account's designated currency
+3. THE System SHALL support automatic currency conversion for cross-account reporting and analytics
+4. WHEN displaying converted amounts THEN the System SHALL show both the original currency amount and the converted amount
+5. THE System SHALL support common international currencies including USD, EUR, GBP, JPY, CAD, AUD, and others
+
+### Requirement 14
+
+**User Story:** As a sales representative, I want to track social media profiles and online presence, so that I can research accounts and engage through multiple channels.
+
+#### Acceptance Criteria
+
+1. WHEN a user creates or edits an account THEN the System SHALL allow entry of social media profile URLs (LinkedIn, Twitter, Facebook, Instagram)
+2. WHEN a user views an account THEN the System SHALL display clickable links to social media profiles with appropriate icons
+3. THE System SHALL validate social media URL formats to ensure they are valid URLs
+4. WHEN a user clicks a social media link THEN the System SHALL open the profile in a new browser tab
+5. THE System SHALL support storing multiple social media profiles per account in a structured format
+
+### Requirement 15
+
+**User Story:** As a sales representative, I want to attach documents to accounts, so that I can keep contracts, proposals, and important files organized with each customer.
+
+#### Acceptance Criteria
+
+1. WHEN a user uploads a document THEN the System SHALL attach it to the account and store it securely with metadata (filename, size, upload date, uploader)
+2. WHEN a user views an account THEN the System SHALL display all attached documents in a dedicated section with file details
+3. THE System SHALL support common file formats including PDF, DOCX, XLSX, PPTX, and image files
+4. WHEN a user downloads a document THEN the System SHALL serve the file and log the download activity
+5. WHEN a user deletes a document THEN the System SHALL require appropriate permissions and move the file to a soft-deleted state
+
+### Requirement 16
+
+**User Story:** As a corporate account manager, I want to create parent-child relationships between accounts, so that I can manage complex organizational structures.
+
+#### Acceptance Criteria
+
+1. WHEN a user creates or edits an account THEN the System SHALL allow selection of a parent account from existing accounts
+2. WHEN a user views an account THEN the System SHALL display the parent account and all child accounts in a hierarchical view
+3. THE System SHALL prevent circular relationships by validating that an account cannot be its own ancestor
+4. WHEN viewing a parent account THEN the System SHALL provide an option to view aggregated data from all child accounts
+5. THE System SHALL allow filtering and searching accounts by hierarchy level or parent account

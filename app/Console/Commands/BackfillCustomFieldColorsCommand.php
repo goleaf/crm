@@ -67,7 +67,11 @@ final class BackfillCustomFieldColorsCommand extends Command
                 continue;
             }
 
-            $this->info("Processing: {$field->name} for {$field->entity_type} (Team {$field->tenant_id})");
+            $tenantLabel = is_numeric($field->getAttribute('tenant_id'))
+                ? (string) $field->getAttribute('tenant_id')
+                : 'N/A';
+
+            $this->info("Processing: {$field->name} for {$field->entity_type} (Team {$tenantLabel})");
 
             // Enable colors on the field if not already enabled
             if (! $field->settings->enable_option_colors) {
@@ -138,6 +142,7 @@ final class BackfillCustomFieldColorsCommand extends Command
             [\App\Models\Task::class, 'Status'] => TaskCustomField::STATUS->getOptionColors(),
             [\App\Models\Task::class, 'Priority'] => TaskCustomField::PRIORITY->getOptionColors(),
             [\App\Models\Opportunity::class, 'Stage'] => OpportunityCustomField::STAGE->getOptionColors(),
+            [\App\Models\Opportunity::class, 'Forecast Category'] => OpportunityCustomField::FORECAST_CATEGORY->getOptionColors(),
             default => null,
         };
     }

@@ -4,37 +4,49 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Data\AddressData;
+use App\Enums\AccountTeamAccessLevel;
+use App\Enums\AccountTeamRole;
+use App\Enums\AccountType;
+use App\Enums\AddressType;
 use App\Enums\CreationSource;
 use App\Enums\CustomFields\NoteField;
 use App\Enums\CustomFields\OpportunityField;
 use App\Enums\CustomFields\TaskField;
+use App\Enums\Industry;
 use App\Models\Concerns\HasAiSummary;
 use App\Models\Concerns\HasCreator;
 use App\Models\Concerns\HasNotes;
+use App\Models\Concerns\HasTags;
 use App\Models\Concerns\HasTeam;
-use App\Models\Note;
-use App\Models\Opportunity;
-use App\Models\People;
-use App\Models\Task;
+use App\Models\Concerns\LogsActivity;
 use App\Observers\CompanyObserver;
 use App\Services\AvatarService;
 use App\Services\DuplicateDetectionService;
+use App\Support\Addresses\AddressValidator;
 use Database\Factories\CompanyFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Relaticle\CustomFields\Models\Concerns\UsesCustomFields;
 use Relaticle\CustomFields\Models\Contracts\HasCustomFields;
 use Relaticle\CustomFields\Models\CustomField;
+use Relaticle\CustomFields\Services\TenantContextService;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * @property string $name
@@ -44,6 +56,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * @property Carbon|null $deleted_at
  * @property CreationSource $creation_source
  * @property-read string $created_by
+ * @property array<int, array<string, mixed>>|null $addresses
  */
 #[ObservedBy(CompanyObserver::class)]
 final class Company extends Model implements HasCustomFields, HasMedia
@@ -55,8 +68,10 @@ final class Company extends Model implements HasCustomFields, HasMedia
     use HasFactory;
 
     use HasNotes;
+    use HasTags;
     use HasTeam;
     use InteractsWithMedia;
+    use LogsActivity;
     use SoftDeletes;
     use UsesCustomFields;
 
@@ -65,15 +80,31 @@ final class Company extends Model implements HasCustomFields, HasMedia
      */
     protected $fillable = [
         'name',
-        'address',
-        'country',
+        'account_owner_id',
+        'parent_company_id',
+        'account_type',
+        'ownership',
         'phone',
+        'primary_email',
         'website',
         'industry',
         'revenue',
         'employee_count',
+        'currency_code',
         'description',
+        'billing_street',
+        'billing_city',
+        'billing_state',
+        'billing_postal_code',
+        'billing_country',
+        'shipping_street',
+        'shipping_city',
+        'shipping_state',
+        'shipping_postal_code',
+        'shipping_country',
+        'social_links',
         'creation_source',
+        'addresses',
     ];
 
     /**
@@ -81,6 +112,7 @@ final class Company extends Model implements HasCustomFields, HasMedia
      */
     protected $attributes = [
         'creation_source' => CreationSource::WEB,
+        'currency_code' => 'USD',
     ];
 
     /**
@@ -91,10 +123,21 @@ final class Company extends Model implements HasCustomFields, HasMedia
     protected function casts(): array
     {
         return [
+            'account_type' => AccountType::class,
+            'industry' => Industry::class,
             'creation_source' => CreationSource::class,
             'revenue' => 'decimal:2',
             'employee_count' => 'integer',
+            'social_links' => 'array',
+            'addresses' => 'array',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        self::saving(function (self $company): void {
+            $company->normalizeAddresses();
+        });
     }
 
     /**
@@ -122,6 +165,115 @@ final class Company extends Model implements HasCustomFields, HasMedia
     }
 
     /**
+     * Account team members with their assigned roles and permissions.
+     *
+     * @return HasMany<AccountTeamMember, $this>
+     */
+    public function accountTeamMembers(): HasMany
+    {
+        return $this->hasMany(AccountTeamMember::class);
+    }
+
+    /**
+     * Users collaborating on this account with pivot metadata.
+     *
+     * @return BelongsToMany<User, $this>
+     */
+    public function accountTeam(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'account_team_members')
+            ->withPivot(['role', 'access_level'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Ensure the account owner is always represented on the account team.
+     */
+    public function ensureAccountOwnerOnTeam(): void
+    {
+        if ($this->getKey() === null || $this->team_id === null || $this->account_owner_id === null) {
+            return;
+        }
+
+        AccountTeamMember::query()->updateOrCreate(
+            [
+                'company_id' => $this->getKey(),
+                'user_id' => $this->account_owner_id,
+            ],
+            [
+                'team_id' => $this->team_id,
+                'role' => AccountTeamRole::OWNER,
+                'access_level' => AccountTeamAccessLevel::MANAGE,
+            ]
+        );
+    }
+
+    /**
+     * Parent company in the hierarchy.
+     *
+     * @return BelongsTo<Company, $this>
+     */
+    public function parentCompany(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_company_id');
+    }
+
+    /**
+     * Child companies in the hierarchy.
+     *
+     * @return HasMany<Company, $this>
+     */
+    public function childCompanies(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_company_id');
+    }
+
+    /**
+     * Determine if assigning the given parent would create a cycle in the hierarchy.
+     */
+    public function wouldCreateCycle(?int $parentId): bool
+    {
+        if ($parentId === null || $this->getKey() === null) {
+            return false;
+        }
+
+        if ($parentId === $this->getKey()) {
+            return true;
+        }
+
+        $visited = [];
+        $currentId = $parentId;
+
+        while ($currentId !== null) {
+            if (in_array($currentId, $visited, true)) {
+                break;
+            }
+
+            if ($currentId === $this->getKey()) {
+                return true;
+            }
+
+            $visited[] = $currentId;
+            $currentId = self::query()->whereKey($currentId)->value('parent_company_id');
+        }
+
+        return false;
+    }
+
+    /**
+     * Filter companies within an inclusive employee count range.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function employeeCountBetween(Builder $query, ?int $minEmployees = null, ?int $maxEmployees = null): Builder
+    {
+        return $query
+            ->when($minEmployees !== null, fn (Builder $builder): Builder => $builder->where('employee_count', '>=', $minEmployees))
+            ->when($maxEmployees !== null, fn (Builder $builder): Builder => $builder->where('employee_count', '<=', $maxEmployees));
+    }
+
+    /**
      * @return HasMany<People, $this>
      */
     public function people(): HasMany
@@ -138,11 +290,62 @@ final class Company extends Model implements HasCustomFields, HasMedia
     }
 
     /**
+     * @return HasMany<SupportCase, $this>
+     */
+    public function cases(): HasMany
+    {
+        return $this->hasMany(SupportCase::class, 'company_id');
+    }
+
+    /**
+     * @return HasMany<CompanyRevenue, $this>
+     */
+    public function annualRevenues(): HasMany
+    {
+        return $this->hasMany(CompanyRevenue::class);
+    }
+
+    /**
+     * Latest annual revenue snapshot, preferring the most recent year.
+     *
+     * @return HasOne<CompanyRevenue, $this>
+     */
+    public function latestAnnualRevenue(): HasOne
+    {
+        return $this->hasOne(CompanyRevenue::class)
+            ->ofMany([
+                'year' => 'max',
+                'created_at' => 'max',
+            ], fn (Builder $query): Builder => $query->orderByDesc('year')->orderByDesc('created_at'));
+    }
+
+    /**
      * @return MorphToMany<Task, $this>
      */
     public function tasks(): MorphToMany
     {
         return $this->morphToMany(Task::class, 'taskable');
+    }
+
+    /**
+     * Attachments collection for company files.
+     *
+     * @return MorphMany<Media, $this>
+     */
+    public function attachments(): MorphMany
+    {
+        return $this->media()
+            ->where('collection_name', 'attachments')
+            ->orderByDesc('created_at');
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('logo')
+            ->singleFile();
+
+        $this->addMediaCollection('attachments')
+            ->useDisk(config('filesystems.default', 'public'));
     }
 
     /**
@@ -166,22 +369,24 @@ final class Company extends Model implements HasCustomFields, HasMedia
      */
     public function getTotalPipelineValue(): float
     {
-        /** @var CustomField|null $amountField */
-        $amountField = $this->resolveCustomField(Opportunity::class, OpportunityField::AMOUNT->value);
+        return TenantContextService::withTenant($this->team_id, function (): float {
+            /** @var CustomField|null $amountField */
+            $amountField = $this->resolveCustomField(Opportunity::class, OpportunityField::AMOUNT->value);
 
-        if ($amountField === null) {
-            return 0.0;
-        }
+            if ($amountField === null) {
+                return 0.0;
+            }
 
-        /** @var CustomField|null $stageField */
-        $stageField = $this->resolveCustomField(Opportunity::class, OpportunityField::STAGE->value);
+            /** @var CustomField|null $stageField */
+            $stageField = $this->resolveCustomField(Opportunity::class, OpportunityField::STAGE->value);
 
-        return $this->opportunities()
-            ->with('customFieldValues.customField')
-            ->get()
-            ->map(fn (Opportunity $opportunity): ?float => $this->extractPipelineAmount($opportunity, $amountField, $stageField))
-            ->filter(fn (?float $amount): bool => $amount !== null)
-            ->sum();
+            return $this->opportunities()
+                ->with('customFieldValues.customField')
+                ->get()
+                ->map(fn (Opportunity $opportunity): ?float => $this->extractPipelineAmount($opportunity, $amountField, $stageField))
+                ->filter(fn (?float $amount): bool => $amount !== null)
+                ->sum();
+        });
     }
 
     /**
@@ -191,7 +396,25 @@ final class Company extends Model implements HasCustomFields, HasMedia
      */
     public function getActivityTimeline(int $limit = 25): Collection
     {
-        $timeline = collect();
+        $timeline = collect([
+            [
+                'type' => 'company',
+                'id' => $this->getKey(),
+                'title' => 'Company created',
+                'summary' => $this->creator?->name !== null ? 'Created by '.$this->creator->name : 'Created',
+                'created_at' => $this->created_at,
+            ],
+        ]);
+
+        if ($this->updated_at !== null && $this->updated_at->gt($this->created_at ?? $this->updated_at)) {
+            $timeline = $timeline->push([
+                'type' => 'company',
+                'id' => $this->getKey(),
+                'title' => 'Company updated',
+                'summary' => 'Details updated',
+                'created_at' => $this->updated_at,
+            ]);
+        }
 
         $noteField = $this->resolveCustomField(Note::class, NoteField::BODY->value);
         $taskDescriptionField = $this->resolveCustomField(Task::class, TaskField::DESCRIPTION->value);
@@ -247,12 +470,9 @@ final class Company extends Model implements HasCustomFields, HasMedia
             ->take($limit);
     }
 
-    /**
-     * @param  Opportunity  $opportunity
-     */
     private function extractPipelineAmount(Opportunity $opportunity, CustomField $amountField, ?CustomField $stageField): ?float
     {
-        if ($stageField !== null && ! $this->isOpportunityStageOpen($opportunity, $stageField)) {
+        if ($stageField instanceof \Relaticle\CustomFields\Models\CustomField && ! $this->isOpportunityStageOpen($opportunity, $stageField)) {
             return null;
         }
 
@@ -286,15 +506,15 @@ final class Company extends Model implements HasCustomFields, HasMedia
     ): string {
         $parts = [];
 
-        if ($statusField !== null) {
+        if ($statusField instanceof \Relaticle\CustomFields\Models\CustomField) {
             $parts[] = 'Status: '.$this->optionLabel($statusField, $this->extractCustomFieldValue($statusField, $task));
         }
 
-        if ($priorityField !== null) {
+        if ($priorityField instanceof \Relaticle\CustomFields\Models\CustomField) {
             $parts[] = 'Priority: '.$this->optionLabel($priorityField, $this->extractCustomFieldValue($priorityField, $task));
         }
 
-        if ($descriptionField !== null) {
+        if ($descriptionField instanceof \Relaticle\CustomFields\Models\CustomField) {
             $parts[] = $this->formatRichText($this->extractCustomFieldValue($descriptionField, $task));
         }
 
@@ -305,11 +525,11 @@ final class Company extends Model implements HasCustomFields, HasMedia
     {
         $parts = [];
 
-        if ($stageField !== null) {
+        if ($stageField instanceof \Relaticle\CustomFields\Models\CustomField) {
             $parts[] = 'Stage: '.$this->optionLabel($stageField, $this->extractCustomFieldValue($stageField, $opportunity));
         }
 
-        if ($amountField !== null) {
+        if ($amountField instanceof \Relaticle\CustomFields\Models\CustomField) {
             $amount = $this->extractCustomFieldValue($amountField, $opportunity);
             if (is_numeric($amount)) {
                 $parts[] = 'Amount: $'.number_format((float) $amount, 2);
@@ -319,13 +539,9 @@ final class Company extends Model implements HasCustomFields, HasMedia
         return $this->buildSummary($parts);
     }
 
-    /**
-     * @param  CustomField|null  $field
-     * @param  Model|null  $model
-     */
     private function extractCustomFieldValue(?CustomField $field, ?Model $model): mixed
     {
-        if ($field === null || $model === null) {
+        if (! $field instanceof \Relaticle\CustomFields\Models\CustomField || ! $model instanceof \Illuminate\Database\Eloquent\Model) {
             return null;
         }
 
@@ -380,15 +596,187 @@ final class Company extends Model implements HasCustomFields, HasMedia
 
     private function resolveCustomField(string $entity, string $code): ?CustomField
     {
-        $cacheKey = "{$entity}:{$code}";
+        $tenantId = TenantContextService::getCurrentTenantId() ?? 'global';
+        $cacheKey = "{$tenantId}:{$entity}:{$code}";
 
-        if (! array_key_exists($cacheKey, self::$customFieldCache)) {
-            self::$customFieldCache[$cacheKey] = CustomField::query()
-                ->forEntity($entity)
-                ->where('code', $code)
-                ->first();
+        if (array_key_exists($cacheKey, self::$customFieldCache)) {
+            $cached = self::$customFieldCache[$cacheKey];
+
+            if (! $cached instanceof \Relaticle\CustomFields\Models\CustomField) {
+                return null;
+            }
+
+            if ($cached->exists && CustomField::query()->whereKey($cached->getKey())->exists()) {
+                return $cached;
+            }
+
+            unset(self::$customFieldCache[$cacheKey]);
         }
 
+        self::$customFieldCache[$cacheKey] = CustomField::query()
+            ->forEntity($entity)
+            ->where('code', $code)
+            ->first();
+
         return self::$customFieldCache[$cacheKey];
+    }
+
+    /**
+     * @return Collection<int, AddressData>
+     */
+    public function addressCollection(): Collection
+    {
+        $addresses = $this->addresses ?? [];
+        $addresses = is_array($addresses) ? $addresses : [];
+
+        if ($addresses === []) {
+            $addresses = $this->legacyAddressesFallback();
+        }
+
+        return collect($addresses)
+            ->filter(static fn ($address): bool => is_array($address))
+            ->map(fn (array $address): AddressData => AddressData::fromArray($address))
+            ->values();
+    }
+
+    public function addressFor(AddressType $type): ?AddressData
+    {
+        return $this->addressCollection()
+            ->first(fn (AddressData $address): bool => $address->type === $type);
+    }
+
+    private function normalizeAddresses(): void
+    {
+        $validator = new AddressValidator;
+        $rawAddresses = $this->addresses ?? [];
+
+        if (! is_array($rawAddresses)) {
+            $rawAddresses = [];
+        }
+
+        $addresses = $this->mergeLegacyAddresses($rawAddresses);
+
+        $normalized = collect($addresses)
+            ->filter(static fn ($address): bool => is_array($address))
+            ->map(fn (array $address): AddressData => $validator->validate($address))
+            ->map(fn (AddressData $address): array => $address->toStorageArray())
+            ->values()
+            ->all();
+
+        $this->setAttribute('addresses', $normalized);
+
+        $this->syncLegacyAddressColumns($normalized);
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $addresses
+     */
+    private function syncLegacyAddressColumns(array $addresses): void
+    {
+        $collection = collect($addresses)
+            ->map(fn (array $address): AddressData => AddressData::fromArray($address));
+
+        $billing = $collection->first(fn (AddressData $address): bool => $address->type === AddressType::BILLING);
+        $shipping = $collection->first(fn (AddressData $address): bool => $address->type === AddressType::SHIPPING);
+
+        $this->fillBillingFromAddress($billing);
+        $this->fillShippingFromAddress($shipping);
+    }
+
+    private function fillBillingFromAddress(?AddressData $address): void
+    {
+        if (! $address instanceof \App\Data\AddressData) {
+            return;
+        }
+
+        $this->billing_street = $address->line1;
+        $this->billing_city = $address->city;
+        $this->billing_state = $address->state;
+        $this->billing_postal_code = $address->postal_code;
+        $this->billing_country = $address->country_code;
+    }
+
+    private function fillShippingFromAddress(?AddressData $address): void
+    {
+        if (! $address instanceof \App\Data\AddressData) {
+            return;
+        }
+
+        $this->shipping_street = $address->line1;
+        $this->shipping_city = $address->city;
+        $this->shipping_state = $address->state;
+        $this->shipping_postal_code = $address->postal_code;
+        $this->shipping_country = $address->country_code;
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $addresses
+     * @return array<int, array<string, mixed>>
+     */
+    private function mergeLegacyAddresses(array $addresses): array
+    {
+        $collection = collect($addresses);
+
+        $hasBilling = $collection->contains(fn (array $address): bool => Arr::get($address, 'type') === AddressType::BILLING->value);
+        $hasShipping = $collection->contains(fn (array $address): bool => Arr::get($address, 'type') === AddressType::SHIPPING->value);
+
+        if (! $hasBilling && filled($this->billing_street)) {
+            $collection->push([
+                'type' => AddressType::BILLING->value,
+                'line1' => $this->billing_street,
+                'city' => $this->billing_city,
+                'state' => $this->billing_state,
+                'postal_code' => $this->billing_postal_code,
+                'country_code' => $this->billing_country ?? config('address.default_country', 'US'),
+            ]);
+        }
+
+        if (! $hasShipping && filled($this->shipping_street)) {
+            $collection->push([
+                'type' => AddressType::SHIPPING->value,
+                'line1' => $this->shipping_street,
+                'city' => $this->shipping_city,
+                'state' => $this->shipping_state,
+                'postal_code' => $this->shipping_postal_code,
+                'country_code' => $this->shipping_country ?? config('address.default_country', 'US'),
+            ]);
+        }
+
+        return $collection
+            ->filter(static fn (array $address): bool => isset($address['type']) && isset($address['line1']))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function legacyAddressesFallback(): array
+    {
+        $addresses = [];
+
+        if (filled($this->billing_street)) {
+            $addresses[] = [
+                'type' => AddressType::BILLING->value,
+                'line1' => $this->billing_street,
+                'city' => $this->billing_city,
+                'state' => $this->billing_state,
+                'postal_code' => $this->billing_postal_code,
+                'country_code' => $this->billing_country ?? config('address.default_country', 'US'),
+            ];
+        }
+
+        if (filled($this->shipping_street)) {
+            $addresses[] = [
+                'type' => AddressType::SHIPPING->value,
+                'line1' => $this->shipping_street,
+                'city' => $this->shipping_city,
+                'state' => $this->shipping_state,
+                'postal_code' => $this->shipping_postal_code,
+                'country_code' => $this->shipping_country ?? config('address.default_country', 'US'),
+            ];
+        }
+
+        return $addresses;
     }
 }

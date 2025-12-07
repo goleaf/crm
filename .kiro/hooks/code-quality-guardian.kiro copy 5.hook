@@ -1,0 +1,13 @@
+{
+  "name": "form-request-validator",
+  "description": "Create Form Request validation classes",
+  "trigger": {
+    "type": "file:save",
+    "patterns": ["app/Http/Controllers/**/*.php"]
+  },
+  "agent": {
+    "prompt": "When a controller method uses validation, extract it into a Form Request class:\n1. Create app/Http/Requests/[Action][Model]Request.php\n2. Move validation rules to rules() method\n3. Add authorize() method\n4. Update controller to type-hint the request\n5. Add proper validation messages",
+    "context": ["controller-validation"]
+  },
+  "enabled": true
+}

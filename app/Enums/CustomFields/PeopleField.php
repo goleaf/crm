@@ -22,7 +22,8 @@ enum PeopleField: string
     {
         return match ($this) {
             self::EMAILS => CustomFieldType::TAGS_INPUT->value,
-            self::PHONE_NUMBER, self::JOB_TITLE => CustomFieldType::TEXT->value,
+            self::PHONE_NUMBER => CustomFieldType::TAGS_INPUT->value,
+            self::JOB_TITLE => CustomFieldType::TEXT->value,
             self::LINKEDIN => CustomFieldType::LINK->value,
         };
     }
@@ -30,10 +31,10 @@ enum PeopleField: string
     public function getDisplayName(): string
     {
         return match ($this) {
-            self::EMAILS => 'Emails',
-            self::PHONE_NUMBER => 'Phone Number',
-            self::JOB_TITLE => 'Job Title',
-            self::LINKEDIN => 'LinkedIn',
+            self::EMAILS => __('enums.people_field.emails'),
+            self::PHONE_NUMBER => __('enums.people_field.phone_number'),
+            self::JOB_TITLE => __('enums.people_field.job_title'),
+            self::LINKEDIN => __('enums.people_field.linkedin'),
         };
     }
 

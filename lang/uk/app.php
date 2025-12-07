@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'navigation' => [
         'workspace' => 'Робочий простір',
         'board' => 'Дошка',
         'tasks' => 'Завдання',
+        'cases' => 'Кейси',
     ],
 
     'labels' => [
@@ -13,13 +16,34 @@ return [
         'title' => 'Заголовок',
         'email' => 'Електронна пошта',
         'phone' => 'Телефон',
+        'cases' => 'Кейси',
+        'case_number' => '№ кейсу',
         'company' => 'Компанія',
         'companies' => 'Компанії',
+        'lead' => 'Лід',
+        'leads' => 'Ліди',
         'contact' => 'Контакт',
         'contact_person' => 'Контактна особа',
         'people' => 'Люди',
         'person' => 'Особа',
+        'status' => 'Статус',
+        'priority' => 'Пріоритет',
+        'type' => 'Тип',
+        'queue' => 'Черга',
+        'channel' => 'Канал',
+        'thread_reference' => 'Посилання на тред',
+        'email_message_id' => 'ID email-повідомлення',
+        'customer_portal_url' => 'Посилання на портал клієнта',
+        'knowledge_base_reference' => 'Посилання на базу знань',
+        'source' => 'Джерело',
+        'grade' => 'Оцінка',
+        'score' => 'Бал',
+        'territory' => 'Територія',
+        'assignment_strategy' => 'Стратегія призначення',
+        'nurture_status' => 'Статус розвитку',
+        'tags' => 'Теги',
         'team' => 'Команда',
+        'assigned_team' => 'Призначена команда',
         'assignee' => 'Виконавець',
         'assignees' => 'Виконавці',
         'account_owner' => 'Власник облікового запису',
@@ -35,6 +59,11 @@ return [
         'creation_source' => 'Джерело створення',
         'description' => 'Опис',
         'notes' => 'Нотатки',
+        'resolution' => 'Рішення',
+        'sla_due_at' => 'Дедлайн SLA',
+        'first_response_at' => 'Перша відповідь',
+        'escalated_at' => 'Ескалація',
+        'resolved_at' => 'Закрито',
         'tasks' => 'Завдання',
         'opportunities' => 'Можливості',
         'opportunity_name' => 'Назва можливості',
@@ -56,6 +85,9 @@ return [
         'regenerate' => 'Регенерувати',
         'copy' => 'Копіювати',
         'create_company' => 'Створити компанію',
+        'update_status' => 'Оновити статус',
+        'assign_to' => 'Призначити',
+        'set_nurture_status' => 'Встановити статус розвитку',
     ],
 
     'ai' => [
@@ -69,5 +101,13 @@ return [
 
     'messages' => [
         'confirm_delete' => 'Ви впевнені, що хочете видалити цей елемент?',
+    ],
+
+    'project_status' => [
+        'planning' => 'Планування',
+        'active' => 'Активний',
+        'on_hold' => 'Призупинено',
+        'completed' => 'Завершено',
+        'cancelled' => 'Скасовано',
     ],
 ];

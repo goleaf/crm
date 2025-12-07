@@ -28,9 +28,9 @@ enum CompanyField: string
     public function getDisplayName(): string
     {
         return match ($this) {
-            self::ICP => 'ICP',
-            self::DOMAIN_NAME => 'Domain Name',
-            self::LINKEDIN => 'LinkedIn', // Fixed capitalization
+            self::ICP => __('enums.company_field.icp'),
+            self::DOMAIN_NAME => __('enums.company_field.domain_name'),
+            self::LINKEDIN => __('enums.company_field.linkedin'),
         };
     }
 
@@ -61,9 +61,9 @@ enum CompanyField: string
     public function getDescription(): string
     {
         return match ($this) {
-            self::ICP => 'Indicates whether this company is an Ideal Customer Profile',
-            self::DOMAIN_NAME => 'The website domain of the company (e.g., example.com)',
-            self::LINKEDIN => 'URL to the company\'s LinkedIn profile',
+            self::ICP => __('enums.company_field.icp_description'),
+            self::DOMAIN_NAME => __('enums.company_field.domain_name_description'),
+            self::LINKEDIN => __('enums.company_field.linkedin_description'),
         };
     }
 }

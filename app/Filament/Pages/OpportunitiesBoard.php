@@ -12,9 +12,11 @@ use BackedEnum;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -75,28 +77,54 @@ final class OpportunitiesBoard extends BoardPage
                     })
                     ->select('opportunities.*', 'cfv.integer_value')
                     ->with(['company', 'contact'])
+                    ->withCustomFieldValues()
             )
             ->recordTitleAttribute('name')
             ->columnIdentifier('cfv.integer_value')
             ->positionIdentifier('order_column')
             ->searchable(['name'])
             ->columns($this->getColumns())
-            ->cardSchema(fn (Schema $schema): Schema => $schema->components([
-                CustomFields::infolist()
+            ->cardSchema(function (Schema $schema): Schema {
+                $summaryFields = $this->customFieldEntries($schema, [
+                    OpportunityCustomField::AMOUNT->value,
+                    OpportunityCustomField::PROBABILITY->value,
+                    OpportunityCustomField::CLOSE_DATE->value,
+                    OpportunityCustomField::FORECAST_CATEGORY->value,
+                ]);
+
+                $nextSteps = CustomFields::infolist()
                     ->forSchema($schema)
-                    ->only(['description'])
+                    ->only([OpportunityCustomField::NEXT_STEPS->value])
                     ->hiddenLabels()
                     ->visibleWhenFilled()
                     ->withoutSections()
                     ->values()
-                    ->first()
-                    ?->columnSpanFull()
-                    ->visible(filled(...))
-                    ->formatStateUsing(fn (string $state): string => str($state)->stripTags()->limit()->toString()),
-                CardFlex::make([
+                    ->first();
 
-                ]),
-            ]))
+                if ($nextSteps !== null) {
+                    $nextSteps = $nextSteps
+                        ->columnSpanFull()
+                        ->formatStateUsing(fn (string $state): string => str($state)->stripTags()->limit(140)->toString());
+                }
+
+                $components = [
+                    CardFlex::make([
+                        TextEntry::make('company.name')
+                            ->label(__('app.labels.company'))
+                            ->visible(filled(...)),
+                        TextEntry::make('contact.name')
+                            ->label(__('app.labels.contact'))
+                            ->visible(filled(...)),
+                    ]),
+                    CardFlex::make($summaryFields),
+                ];
+
+                if ($nextSteps !== null) {
+                    $components[] = $nextSteps;
+                }
+
+                return $schema->components($components);
+            })
             ->columnActions([
                 CreateAction::make()
                     ->label(__('app.actions.add_opportunity'))
@@ -107,6 +135,8 @@ final class OpportunitiesBoard extends BoardPage
                     ->model(Opportunity::class)
                     ->schema(OpportunityForm::get(...))
                     ->using(function (array $data, array $arguments): Opportunity {
+                        $collaboratorIds = $this->pullCollaborators($data);
+
                         /** @var Team $currentTeam */
                         $currentTeam = Auth::guard('web')->user()->currentTeam;
 
@@ -116,6 +146,7 @@ final class OpportunitiesBoard extends BoardPage
                         $stageField = $this->stageCustomField();
                         $opportunity->saveCustomFieldValue($stageField, $arguments['column']);
                         $opportunity->order_column = $this->getBoardPositionInColumn((string) $arguments['column']);
+                        $opportunity->collaborators()->sync($collaboratorIds);
 
                         return $opportunity;
                     }),
@@ -131,9 +162,48 @@ final class OpportunitiesBoard extends BoardPage
                         'name' => $record->name,
                         'company_id' => $record->company_id,
                         'contact_id' => $record->contact_id,
+                        'owner_id' => $record->owner_id,
+                        'collaborators' => $record->collaborators->pluck('id')->all(),
                     ])
                     ->action(function (Opportunity $record, array $data): void {
+                        $collaboratorIds = $this->pullCollaborators($data);
+
                         $record->update($data);
+                        $record->collaborators()->sync($collaboratorIds);
+                    }),
+                Action::make('quickUpdate')
+                    ->label('Quick update')
+                    ->icon('heroicon-o-bolt')
+                    ->slideOver()
+                    ->modalWidth(Width::Large)
+                    ->schema(fn (Schema $schema): Schema => $schema->components(
+                        CustomFields::form()
+                            ->forSchema($schema)
+                            ->only([
+                                OpportunityCustomField::PROBABILITY->value,
+                                OpportunityCustomField::CLOSE_DATE->value,
+                                OpportunityCustomField::FORECAST_CATEGORY->value,
+                                OpportunityCustomField::NEXT_STEPS->value,
+                            ])
+                            ->withoutSections()
+                            ->values()
+                            ->all()
+                    ))
+                    ->fillForm(fn (Opportunity $record): array => [
+                        'custom_fields' => $this->prefillCustomFields($record, [
+                            OpportunityCustomField::PROBABILITY,
+                            OpportunityCustomField::CLOSE_DATE,
+                            OpportunityCustomField::FORECAST_CATEGORY,
+                            OpportunityCustomField::NEXT_STEPS,
+                        ]),
+                    ])
+                    ->action(function (Opportunity $record, array $data): void {
+                        $this->updateCustomFields($record, $data, [
+                            OpportunityCustomField::PROBABILITY,
+                            OpportunityCustomField::CLOSE_DATE,
+                            OpportunityCustomField::FORECAST_CATEGORY,
+                            OpportunityCustomField::NEXT_STEPS,
+                        ]);
                     }),
                 Action::make('delete')
                     ->label(__('app.actions.delete'))
@@ -153,6 +223,23 @@ final class OpportunitiesBoard extends BoardPage
                     ->label(__('app.labels.contact'))
                     ->relationship('contact', 'name')
                     ->multiple(),
+                SelectFilter::make('creator_id')
+                    ->label(__('app.labels.owner'))
+                    ->relationship('creator', 'name')
+                    ->multiple(),
+                SelectFilter::make('stage')
+                    ->label(__('app.labels.status'))
+                    ->options($this->stageOptions())
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when($data['value'] ?? null, fn (Builder $builder, $stageId): Builder => $builder->where('cfv.integer_value', $stageId))),
+                SelectFilter::make('board_view')
+                    ->label('Board view')
+                    ->options([
+                        'mine' => 'My deals',
+                        'closing_30' => 'Closing in 30 days',
+                        'stalled' => 'Stalled (14+ days)',
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => $this->applyBoardView($query, $data['value'] ?? null)),
             ])
             ->filtersFormWidth(Width::Medium);
     }
@@ -204,6 +291,21 @@ final class OpportunitiesBoard extends BoardPage
     }
 
     /**
+     * Extract collaborator IDs from the form payload to avoid mass-assigning pivot data.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<int, int|string>
+     */
+    private function pullCollaborators(array &$data): array
+    {
+        $collaborators = $data['collaborators'] ?? [];
+
+        unset($data['collaborators']);
+
+        return array_filter($collaborators);
+    }
+
+    /**
      * Get columns for the board.
      *
      * @return array<Column>
@@ -252,5 +354,112 @@ final class OpportunitiesBoard extends BoardPage
     public static function canAccess(): bool
     {
         return (new self)->stageCustomField() instanceof CustomField;
+    }
+
+    /**
+     * @return array<int|string, string>
+     */
+    private function stageOptions(): array
+    {
+        return $this->stages()
+            ->mapWithKeys(fn (array $stage): array => [$stage['id'] => $stage['name']])
+            ->all();
+    }
+
+    /**
+     * @return array<int, \Filament\Infolists\Components\Entry>
+     */
+    private function customFieldEntries(Schema $schema, array $fieldCodes): array
+    {
+        return CustomFields::infolist()
+            ->forSchema($schema)
+            ->only($fieldCodes)
+            ->hiddenLabels()
+            ->visibleWhenFilled()
+            ->withoutSections()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @param  list<OpportunityCustomField>  $fields
+     */
+    private function prefillCustomFields(Opportunity $record, array $fields): array
+    {
+        $customFields = $this->customFieldsByCodes($fields);
+
+        return collect($fields)
+            ->mapWithKeys(function (OpportunityCustomField $field) use ($record, $customFields): array {
+                $customField = $customFields[$field->value] ?? null;
+
+                return $customField ? [$field->value => $record->getCustomFieldValue($customField)] : [];
+            })
+            ->all();
+    }
+
+    /**
+     * @param  list<OpportunityCustomField>  $fields
+     */
+    private function updateCustomFields(Opportunity $record, array $data, array $fields): void
+    {
+        $customFields = $this->customFieldsByCodes($fields);
+        $values = $data['custom_fields'] ?? [];
+
+        foreach ($fields as $field) {
+            if (! isset($customFields[$field->value])) {
+                continue;
+            }
+
+            if (! array_key_exists($field->value, $values)) {
+                continue;
+            }
+
+            $record->saveCustomFieldValue($customFields[$field->value], $values[$field->value]);
+        }
+    }
+
+    /**
+     * @param  list<OpportunityCustomField>  $codes
+     * @return array<string, CustomField>
+     */
+    private function customFieldsByCodes(array $codes): array
+    {
+        $codeValues = array_map(fn (OpportunityCustomField $field): string => $field->value, $codes);
+
+        return CustomField::query()
+            ->forEntity(Opportunity::class)
+            ->whereIn('code', $codeValues)
+            ->get()
+            ->keyBy('code')
+            ->all();
+    }
+
+    private function applyBoardView(Builder $query, ?string $view): Builder
+    {
+        return match ($view) {
+            'mine' => $query->when(
+                Auth::id(),
+                fn (Builder $builder, int $userId): Builder => $builder->where('creator_id', $userId)
+            ),
+            'closing_30' => $this->applyCloseDateWindow($query, 30),
+            'stalled' => $query->where('updated_at', '<=', now()->subDays(14)),
+            default => $query,
+        };
+    }
+
+    private function applyCloseDateWindow(Builder $query, int $days): Builder
+    {
+        $closeDateField = $this->customFieldsByCodes([OpportunityCustomField::CLOSE_DATE])[OpportunityCustomField::CLOSE_DATE->value] ?? null;
+
+        if (! $closeDateField instanceof CustomField) {
+            return $query;
+        }
+
+        return $query->whereHas(
+            'customFieldValues',
+            fn (Builder $builder): Builder => $builder
+                ->where('custom_field_id', $closeDateField->getKey())
+                ->whereDate('date_value', '<=', now()->addDays($days)->toDateString())
+        );
     }
 }

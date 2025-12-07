@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Enums\NoteVisibility;
 use App\Models\Note;
 use App\Models\User;
 use Filament\Facades\Filament;
@@ -20,7 +21,8 @@ final readonly class NotePolicy
 
     public function view(User $user, Note $note): bool
     {
-        return $user->belongsToTeam($note->team);
+        return $user->belongsToTeam($note->team)
+            && $this->canAccessVisibility($user, $note);
     }
 
     public function create(User $user): bool
@@ -30,12 +32,14 @@ final readonly class NotePolicy
 
     public function update(User $user, Note $note): bool
     {
-        return $user->belongsToTeam($note->team);
+        return $user->belongsToTeam($note->team)
+            && $this->canAccessVisibility($user, $note);
     }
 
     public function delete(User $user, Note $note): bool
     {
-        return $user->belongsToTeam($note->team);
+        return $user->belongsToTeam($note->team)
+            && $this->canAccessVisibility($user, $note);
     }
 
     public function deleteAny(User $user): bool
@@ -45,7 +49,8 @@ final readonly class NotePolicy
 
     public function restore(User $user, Note $note): bool
     {
-        return $user->belongsToTeam($note->team);
+        return $user->belongsToTeam($note->team)
+            && $this->canAccessVisibility($user, $note);
     }
 
     public function restoreAny(User $user): bool
@@ -60,6 +65,18 @@ final readonly class NotePolicy
 
     public function forceDeleteAny(User $user): bool
     {
+        return $user->hasTeamRole(Filament::getTenant(), 'admin');
+    }
+
+    private function canAccessVisibility(User $user, Note $note): bool
+    {
+        if ($note->visibility !== NoteVisibility::PRIVATE) {
+            return true;
+        }
+        if ($note->creator_id === $user->getKey()) {
+            return true;
+        }
+
         return $user->hasTeamRole(Filament::getTenant(), 'admin');
     }
 }

@@ -6,104 +6,215 @@
   - Create account_merges table for audit trail
   - _Requirements: 1.5, 5.1_
 
-- [ ] 2. Update Company model with new fields and methods
-  - [ ] 2.1 Add new fillable fields to Company model
+- [x] 2. Update Company model with new fields and methods
+  - [x] 2.1 Add new fillable fields to Company model
     - Add website, industry, revenue, employee_count, description to fillable array
     - Update casts for numeric fields
     - _Requirements: 1.1, 1.5_
 
-  - [ ] 2.2 Write property test for account creation persistence
+  - [x] 2.2 Write property test for account creation persistence
     - **Property 1: Account creation persistence**
     - **Validates: Requirements 1.1**
 
-  - [ ] 2.3 Write property test for account update persistence
+  - [x] 2.3 Write property test for account update persistence
     - **Property 2: Account update persistence**
     - **Validates: Requirements 1.2**
 
-  - [ ] 2.4 Add duplicate detection methods to Company model
+  - [x] 2.4 Add duplicate detection methods to Company model
     - Implement findPotentialDuplicates() method
     - Implement calculateSimilarityScore() method
     - _Requirements: 5.1, 5.3, 5.4, 5.5_
 
-  - [ ] 2.5 Write property test for fuzzy name matching
+  - [x] 2.5 Write property test for fuzzy name matching
     - **Property 12: Fuzzy name matching**
     - **Validates: Requirements 5.3, 5.4**
 
-  - [ ] 2.6 Write property test for similarity score calculation
+  - [x] 2.6 Write property test for similarity score calculation
     - **Property 13: Similarity score calculation**
     - **Validates: Requirements 5.5**
 
-  - [ ] 2.7 Add pipeline value calculation method
+  - [x] 2.7 Add pipeline value calculation method
     - Implement getTotalPipelineValue() method to sum open opportunities
     - _Requirements: 7.3_
 
-  - [ ] 2.8 Write property test for pipeline value calculation
+  - [x] 2.8 Write property test for pipeline value calculation
     - **Property 19: Pipeline value calculation**
     - **Validates: Requirements 7.3**
 
-  - [ ] 2.9 Add activity timeline method
+  - [x] 2.9 Add activity timeline method
     - Implement getActivityTimeline() method to retrieve chronologically sorted activities
     - _Requirements: 3.1, 3.5_
 
-  - [ ] 2.10 Write property test for activity chronological ordering
+  - [x] 2.10 Write property test for activity chronological ordering
     - **Property 7: Activity chronological ordering**
     - **Validates: Requirements 3.1, 3.5**
 
-- [ ] 3. Create AccountMerge model and migration
-  - [ ] 3.1 Create AccountMerge model
+- [x] 3. Create AccountMerge model and migration
+  - [x] 3.1 Create AccountMerge model
     - Define relationships to Company and User
     - Add casts for JSON fields
     - _Requirements: 6.3_
 
-  - [ ] 3.2 Create factory for AccountMerge model
+  - [x] 3.2 Create factory for AccountMerge model
     - Generate test data for merge audit records
     - _Requirements: 6.3_
 
-- [ ] 4. Implement DuplicateDetectionService
-  - [ ] 4.1 Create DuplicateDetectionService class
+- [x] 4. Implement DuplicateDetectionService
+  - [x] 4.1 Create DuplicateDetectionService class
     - Implement findDuplicates() method with name and domain matching
     - Implement calculateSimilarity() method using Levenshtein distance
     - Implement suggestMerge() method for merge recommendations
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
-  - [ ] 4.2 Write property test for duplicate detection on creation
+  - [x] 4.2 Write property test for duplicate detection on creation
     - **Property 11: Duplicate detection on creation**
     - **Validates: Requirements 5.1, 5.2**
 
-  - [ ] 4.3 Write unit tests for DuplicateDetectionService
+  - [x] 4.3 Write unit tests for DuplicateDetectionService
     - Test edge cases: empty fields, special characters, very long names
     - Test similarity score boundaries
     - _Requirements: 5.1, 5.3, 5.4, 5.5_
 
-- [ ] 5. Implement AccountMergeService
-  - [ ] 5.1 Create AccountMergeService class
+- [x] 5. Implement AccountMergeService
+  - [x] 5.1 Create AccountMergeService class
     - Implement merge() method with database transaction
     - Implement previewMerge() method for field comparison
     - Implement relationship transfer logic
     - Implement rollback() method
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5_
 
-  - [ ] 5.2 Write property test for merge relationship transfer
+  - [x] 5.2 Write property test for merge relationship transfer
     - **Property 15: Merge relationship transfer**
     - **Validates: Requirements 6.2**
 
-  - [ ] 5.3 Write property test for merge data preservation
+  - [x] 5.3 Write property test for merge data preservation
     - **Property 17: Merge data preservation**
     - **Validates: Requirements 6.4**
 
-  - [ ] 5.4 Write property test for merge transaction rollback
+  - [x] 5.4 Write property test for merge transaction rollback
     - **Property 18: Merge transaction rollback**
     - **Validates: Requirements 6.5**
 
-  - [ ] 5.5 Write property test for merge audit trail
+  - [x] 5.5 Write property test for merge audit trail
     - **Property 16: Merge audit trail**
     - **Validates: Requirements 6.3**
 
-  - [ ] 5.6 Write unit tests for AccountMergeService
+  - [x] 5.6 Write unit tests for AccountMergeService
     - Test merging accounts with no relationships
     - Test merge preview completeness
     - Test error handling scenarios
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5_
+
+- [-] 5a. Implement account type and classification features
+  - [x] 5a.1 Update database migration to include account_type field
+    - Add account_type enum field to companies table
+    - _Requirements: 11.1_
+
+  - [x] 5a.2 Create AccountType enum
+    - Define enum values (Customer, Prospect, Partner, Competitor, Investor, Reseller)
+    - Implement getLabel() and getColor() methods
+    - Add translations for enum values
+    - _Requirements: 11.1_
+
+  - [x] 5a.3 Update Company model with account_type cast
+    - Add account_type to fillable array
+    - Add cast to AccountType enum
+    - _Requirements: 11.1_
+
+  - [-] 5a.4 Write property test for account type persistence and filtering
+    - **Property 27: Account type persistence and filtering**
+    - **Validates: Requirements 11.1, 11.2**
+
+  - [ ] 5a.5 Write property test for account type change audit trail
+    - **Property 28: Account type change audit trail**
+    - **Validates: Requirements 11.4**
+
+- [ ] 5b. Implement account team collaboration features
+  - [ ] 5b.1 Verify AccountTeamMember model and relationships
+    - Ensure model has proper relationships to Company, User, Team
+    - Verify role and access_level enums exist
+    - _Requirements: 12.1, 12.2_
+
+  - [ ] 5b.2 Add account team methods to Company model
+    - Verify accountTeam(), accountTeamMembers(), ensureAccountOwnerOnTeam() methods
+    - _Requirements: 12.1, 12.5_
+
+  - [ ] 5b.3 Write property test for account team member assignment
+    - **Property 29: Account team member assignment**
+    - **Validates: Requirements 12.1, 12.2**
+
+  - [ ] 5b.4 Write property test for account team member removal
+    - **Property 30: Account team member removal preserves history**
+    - **Validates: Requirements 12.4**
+
+  - [ ] 5b.5 Write property test for account owner team synchronization
+    - **Property 31: Account owner team synchronization**
+    - **Validates: Requirements 12.5**
+
+- [ ] 5c. Implement multi-currency support
+  - [ ] 5c.1 Update database migration to include currency_code field
+    - Add currency_code field with default 'USD'
+    - _Requirements: 13.1_
+
+  - [ ] 5c.2 Update Company model with currency_code
+    - Add currency_code to fillable array
+    - Verify default value in attributes
+    - _Requirements: 13.1_
+
+  - [ ] 5c.3 Write property test for currency code persistence
+    - **Property 32: Currency code persistence**
+    - **Validates: Requirements 13.1, 13.2**
+
+- [ ] 5d. Implement social media and online presence features
+  - [ ] 5d.1 Update database migration to include social_links field
+    - Add social_links JSON field
+    - _Requirements: 14.1_
+
+  - [ ] 5d.2 Update Company model with social_links
+    - Add social_links to fillable array
+    - Add cast to array
+    - _Requirements: 14.1_
+
+  - [ ] 5d.3 Write property test for social media profile storage
+    - **Property 33: Social media profile storage**
+    - **Validates: Requirements 14.1, 14.2, 14.3**
+
+- [ ] 5e. Implement document management features
+  - [ ] 5e.1 Verify media library integration
+    - Ensure InteractsWithMedia trait is on Company model
+    - Verify attachments() relationship exists
+    - Verify registerMediaCollections() method exists
+    - _Requirements: 15.1, 15.2_
+
+  - [ ] 5e.2 Write property test for document attachment lifecycle
+    - **Property 34: Document attachment lifecycle**
+    - **Validates: Requirements 15.1, 15.2, 15.5**
+
+  - [ ] 5e.3 Write property test for document download logging
+    - **Property 35: Document download logging**
+    - **Validates: Requirements 15.4**
+
+- [ ] 5f. Implement account hierarchy features
+  - [ ] 5f.1 Update database migration to include parent_company_id field
+    - Add parent_company_id foreign key
+    - Add index for hierarchy queries
+    - _Requirements: 16.1_
+
+  - [ ] 5f.2 Verify hierarchy methods on Company model
+    - Ensure parentCompany(), childCompanies(), wouldCreateCycle() methods exist
+    - _Requirements: 16.1, 16.2, 16.3_
+
+  - [ ] 5f.3 Write property test for hierarchy cycle prevention
+    - **Property 36: Hierarchy cycle prevention**
+    - **Validates: Requirements 16.3**
+
+  - [ ] 5f.4 Write property test for hierarchy relationship persistence
+    - **Property 37: Hierarchy relationship persistence**
+    - **Validates: Requirements 16.1, 16.2**
+
+  - [ ] 5f.5 Write property test for hierarchy aggregation
+    - **Property 38: Hierarchy aggregation**
+    - **Validates: Requirements 16.4**
 
 - [ ] 6. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
@@ -111,19 +222,29 @@
 - [ ] 7. Update CompanyResource with new fields
   - [ ] 7.1 Add new fields to form schema
     - Add website, industry, revenue, employee_count, description inputs
-    - Add validation rules
-    - _Requirements: 1.1, 1.5_
+    - Add account_type selector (Customer, Prospect, Partner, etc.)
+    - Add currency_code selector
+    - Add social_links repeater (LinkedIn, Twitter, Facebook, Instagram)
+    - Add parent_company_id selector with cycle validation
+    - Add validation rules for all new fields
+    - _Requirements: 1.1, 1.5, 11.1, 13.1, 14.1, 16.1_
 
   - [ ] 7.2 Add new columns to table
     - Add website, industry, revenue, employee_count columns
+    - Add account_type badge column with colors
+    - Add currency_code column
+    - Add parent company column (if applicable)
     - Configure column visibility and sorting
-    - _Requirements: 1.3_
+    - _Requirements: 1.3, 11.5, 13.2_
 
   - [ ] 7.3 Add filters for new fields
     - Add industry filter
     - Add revenue range filter
     - Add employee count range filter
-    - _Requirements: 9.2, 9.3_
+    - Add account_type filter
+    - Add currency_code filter
+    - Add hierarchy level filter (parent/child/standalone)
+    - _Requirements: 9.2, 9.3, 11.2, 16.5_
 
   - [ ] 7.4 Write property test for filter combination
     - **Property 23: Filter combination**
@@ -266,6 +387,98 @@
     - Test export with selected records
     - Test export with custom fields
     - _Requirements: 10.4, 10.5_
+
+- [ ] 13a. Implement account team UI features
+  - [ ] 13a.1 Create account team relation manager
+    - Display team members with roles and access levels
+    - Allow adding/removing team members
+    - Show account owner prominently
+    - _Requirements: 12.2, 12.3_
+
+  - [ ] 13a.2 Create AddTeamMemberAction
+    - Select user from team
+    - Assign role (Owner, Account Manager, Sales Rep, Support Contact, Technical Lead)
+    - Assign access level (View, Edit, Manage)
+    - _Requirements: 12.1_
+
+  - [ ] 13a.3 Create RemoveTeamMemberAction
+    - Prevent removing account owner
+    - Confirm before removing
+    - _Requirements: 12.4_
+
+  - [ ] 13a.4 Add account team section to view page
+    - Display team members in infolist
+    - Show roles and access levels with badges
+    - _Requirements: 12.2_
+
+- [ ] 13b. Implement social media UI features
+  - [ ] 13b.1 Create social media repeater component
+    - Fields for platform (LinkedIn, Twitter, Facebook, Instagram) and URL
+    - URL validation
+    - _Requirements: 14.1, 14.3_
+
+  - [ ] 13b.2 Add social media display to view page
+    - Show clickable social media icons with links
+    - Open links in new tab
+    - _Requirements: 14.2, 14.4_
+
+- [ ] 13c. Implement document management UI features
+  - [ ] 13c.1 Create document upload action
+    - File upload with validation (PDF, DOCX, XLSX, PPTX, images)
+    - Show file size limits
+    - _Requirements: 15.1, 15.3_
+
+  - [ ] 13c.2 Create attachments relation manager
+    - Display uploaded documents with metadata
+    - Show filename, size, upload date, uploader
+    - Allow download and delete actions
+    - _Requirements: 15.2, 15.4, 15.5_
+
+  - [ ] 13c.3 Add document download logging
+    - Log download activity when user downloads a document
+    - _Requirements: 15.4_
+
+- [ ] 13d. Implement account hierarchy UI features
+  - [ ] 13d.1 Add parent company selector to form
+    - Select from existing accounts
+    - Validate to prevent circular references using wouldCreateCycle()
+    - _Requirements: 16.1, 16.3_
+
+  - [ ] 13d.2 Add hierarchy display to view page
+    - Show parent account (if exists)
+    - Show child accounts list
+    - Display hierarchy breadcrumb
+    - _Requirements: 16.2_
+
+  - [ ] 13d.3 Create child accounts relation manager
+    - Display all child accounts
+    - Allow navigating to child account details
+    - _Requirements: 16.2_
+
+  - [ ] 13d.4 Add hierarchy aggregation widget
+    - Show aggregated data from child accounts
+    - Display total opportunities, revenue, activities
+    - _Requirements: 16.4_
+
+- [ ] 13e. Implement account type UI features
+  - [ ] 13e.1 Add account type to form and view
+    - Display account type prominently in header
+    - Show with appropriate color badge
+    - _Requirements: 11.5_
+
+  - [ ] 13e.2 Add account type change tracking
+    - Log account type changes in activity history
+    - _Requirements: 11.4_
+
+- [ ] 13f. Implement currency UI features
+  - [ ] 13f.1 Add currency selector to form
+    - Dropdown with common currencies (USD, EUR, GBP, JPY, CAD, AUD, etc.)
+    - _Requirements: 13.1_
+
+  - [ ] 13f.2 Display currency in financial data
+    - Show currency symbol/code with amounts
+    - Display pipeline value in account currency
+    - _Requirements: 13.2_
 
 - [ ] 14. Add custom field integration tests
   - [ ] 14.1 Write property test for custom field type validation

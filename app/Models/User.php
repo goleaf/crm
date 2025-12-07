@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -24,6 +25,7 @@ use Illuminate\Support\Collection;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasTeams;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * @property string $name
@@ -44,6 +46,7 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Has
     use HasFactory;
 
     use HasProfilePhoto;
+    use HasRoles;
     use HasTeams;
     use Notifiable;
     use TwoFactorAuthenticatable;
@@ -102,6 +105,24 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Has
     }
 
     /**
+     * @return HasOne<NotificationPreference, $this>
+     */
+    public function notificationPreference(): HasOne
+    {
+        return $this->hasOne(NotificationPreference::class);
+    }
+
+    public function ensureNotificationPreference(): NotificationPreference
+    {
+        return $this->notificationPreference()->firstOrCreate([], [
+            'in_app' => true,
+            'email' => true,
+            'realtime' => true,
+            'activity_alerts' => true,
+        ]);
+    }
+
+    /**
      * @return BelongsToMany<Task, $this>
      */
     public function tasks(): BelongsToMany
@@ -110,11 +131,45 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Has
     }
 
     /**
+     * @return HasMany<SupportCase, $this>
+     */
+    public function assignedCases(): HasMany
+    {
+        return $this->hasMany(SupportCase::class, 'assigned_to_id');
+    }
+
+    /**
+     * @return HasMany<AccountTeamMember, $this>
+     */
+    public function accountTeamMemberships(): HasMany
+    {
+        return $this->hasMany(AccountTeamMember::class);
+    }
+
+    /**
      * @return HasMany<Opportunity, $this>
      */
     public function opportunities(): HasMany
     {
         return $this->hasMany(Opportunity::class, 'creator_id');
+    }
+
+    /**
+     * @return HasMany<SavedSearch, $this>
+     */
+    public function savedSearches(): HasMany
+    {
+        return $this->hasMany(SavedSearch::class);
+    }
+
+    /**
+     * @return BelongsToMany<Opportunity, $this>
+     */
+    public function collaboratingOpportunities(): BelongsToMany
+    {
+        return $this->belongsToMany(Opportunity::class)
+            ->withPivot('role')
+            ->withTimestamps();
     }
 
     public function getDefaultTenant(Panel $panel): ?Model

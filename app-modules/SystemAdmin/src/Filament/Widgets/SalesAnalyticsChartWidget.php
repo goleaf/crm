@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Relaticle\SystemAdmin\Filament\Widgets;
 
 use App\Enums\CreationSource;
+use App\Models\Opportunity;
+use App\Services\Opportunities\OpportunityMetricsService;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Facades\DB;
 
 final class SalesAnalyticsChartWidget extends ChartWidget
 {
@@ -33,7 +34,7 @@ final class SalesAnalyticsChartWidget extends ChartWidget
 
     public function getDescription(): string
     {
-        return 'Track your sales pipeline value and opportunities count over the last 6 months.';
+        return 'Track your sales pipeline value, weighted forecast, and opportunities count over the last 6 months.';
     }
 
     public function getMaxHeight(): string
@@ -56,6 +57,20 @@ final class SalesAnalyticsChartWidget extends ChartWidget
                     'fill' => true,
                     'tension' => 0.4,
                     'pointBackgroundColor' => '#10B981',
+                    'pointBorderColor' => '#ffffff',
+                    'pointBorderWidth' => 2,
+                    'pointRadius' => 6,
+                    'pointHoverRadius' => 8,
+                ],
+                [
+                    'label' => 'Weighted Forecast ($)',
+                    'data' => $salesData['monthly_weighted_values'],
+                    'backgroundColor' => 'rgba(234, 179, 8, 0.12)',
+                    'borderColor' => '#eab308',
+                    'borderWidth' => 3,
+                    'fill' => true,
+                    'tension' => 0.4,
+                    'pointBackgroundColor' => '#eab308',
                     'pointBorderColor' => '#ffffff',
                     'pointBorderWidth' => 2,
                     'pointRadius' => 6,
@@ -87,47 +102,53 @@ final class SalesAnalyticsChartWidget extends ChartWidget
     }
 
     /**
-     * @return array{months: array<int, string>, monthly_values: array<int, float>, monthly_counts: array<int, int>}
+     * @return array{months: array<int, string>, monthly_values: array<int, float>, monthly_weighted_values: array<int, float>, monthly_counts: array<int, int>}
      */
     private function getSalesData(): array
     {
+        $metrics = app(OpportunityMetricsService::class);
+
+        $opportunities = Opportunity::query()
+            ->withCustomFieldValues()
+            ->whereNull('deleted_at')
+            ->where('creation_source', '!=', CreationSource::SYSTEM->value)
+            ->where('created_at', '>=', now()->subMonths(5)->startOfMonth())
+            ->get();
+
         $monthlyData = collect(range(5, 0))
-            ->map($this->getMonthData(...))
+            ->map(fn (int $monthsAgo): array => $this->getMonthData($monthsAgo, $opportunities, $metrics))
             ->values();
 
         return [
             'months' => $monthlyData->pluck('month')->toArray(),
             'monthly_values' => $monthlyData->pluck('value')->toArray(),
+            'monthly_weighted_values' => $monthlyData->pluck('weighted_value')->toArray(),
             'monthly_counts' => $monthlyData->pluck('count')->toArray(),
         ];
     }
 
     /**
-     * @return array{month: string, value: float, count: int}
+     * @param  \Illuminate\Support\Collection<int, Opportunity>  $opportunities
+     * @return array{month: string, value: float, weighted_value: float, count: int}
      */
-    private function getMonthData(int $monthsAgo): array
+    private function getMonthData(int $monthsAgo, \Illuminate\Support\Collection $opportunities, OpportunityMetricsService $metrics): array
     {
         $month = now()->subMonths($monthsAgo);
         $monthStart = $month->startOfMonth();
         $monthEnd = $month->copy()->endOfMonth();
 
-        $monthData = DB::table('opportunities')
-            ->leftJoin('custom_field_values as cfv_amount', fn (mixed $join) => $join->on('opportunities.id', '=', 'cfv_amount.entity_id')
-                ->where('cfv_amount.entity_type', 'opportunity')
-            )
-            ->leftJoin('custom_fields as cf_amount', fn (mixed $join) => $join->on('cfv_amount.custom_field_id', '=', 'cf_amount.id')
-                ->where('cf_amount.code', 'amount')
-            )
-            ->whereNull('opportunities.deleted_at')
-            ->where('opportunities.creation_source', '!=', CreationSource::SYSTEM->value)
-            ->whereBetween('opportunities.created_at', [$monthStart, $monthEnd])
-            ->select('cfv_amount.float_value as amount')
-            ->get();
+        $monthlyOpportunities = $opportunities
+            ->whereBetween('created_at', [$monthStart, $monthEnd]);
 
         return [
             'month' => $month->format('M Y'),
-            'value' => $monthData->sum('amount') ?? 0,
-            'count' => $monthData->count(),
+            'value' => $monthlyOpportunities
+                ->map(fn (Opportunity $opportunity): float => $metrics->amount($opportunity) ?? 0.0)
+                ->sum(),
+            'weighted_value' => $monthlyOpportunities
+                ->map(fn (Opportunity $opportunity): float => $metrics->weightedAmount($opportunity) ?? 0.0)
+                ->sum(),
+            'count' => $monthlyOpportunities->count(),
         ];
     }
 }

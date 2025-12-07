@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\NoteCategory;
+use App\Enums\NoteVisibility;
 use App\Models\Team;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\Sequence;
@@ -23,6 +25,9 @@ final class NoteFactory extends Factory
         return [
             'title' => $this->faker->sentence(),
             'team_id' => Team::factory(),
+            'category' => NoteCategory::GENERAL->value,
+            'visibility' => NoteVisibility::INTERNAL,
+            'is_template' => false,
         ];
     }
 

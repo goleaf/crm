@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Filament\Resources;
 
 use App\Enums\CreationSource;
+use App\Enums\CustomFields\NoteField;
+use App\Enums\NoteCategory;
+use App\Enums\NoteVisibility;
 use App\Filament\Exports\NoteExporter;
 use App\Filament\Resources\NoteResource\Forms\NoteForm;
 use App\Filament\Resources\NoteResource\Pages\ManageNotes;
@@ -57,12 +60,62 @@ final class NoteResource extends Resource
             ->columns([
                 TextColumn::make('title')
                     ->searchable(),
+                TextColumn::make('category')
+                    ->label(__('app.labels.category'))
+                    ->badge()
+                    ->sortable()
+                    ->toggleable()
+                    ->formatStateUsing(fn (?string $state): string => NoteCategory::tryFrom((string) $state)?->label() ?? 'General')
+                    ->color(fn (?string $state): string => NoteCategory::tryFrom((string) $state)?->color() ?? 'gray'),
+                TextColumn::make('visibility')
+                    ->label(__('app.labels.visibility'))
+                    ->badge()
+                    ->sortable()
+                    ->toggleable()
+                    ->formatStateUsing(fn (NoteVisibility|string|null $state): string => $state instanceof NoteVisibility ? $state->getLabel() : (NoteVisibility::tryFrom((string) $state)?->getLabel() ?? 'Internal'))
+                    ->color(fn (NoteVisibility|string|null $state): string => $state instanceof NoteVisibility ? $state->color() : (NoteVisibility::tryFrom((string) $state)?->color() ?? 'primary')),
+                TextColumn::make('is_template')
+                    ->label('Template')
+                    ->badge()
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Template' : 'Note')
+                    ->color(fn (bool $state): string => $state ? 'primary' : 'gray')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('companies.name')
                     ->label(__('app.labels.companies'))
                     ->toggleable(),
                 TextColumn::make('people.name')
                     ->label(__('app.labels.people'))
                     ->toggleable(),
+                TextColumn::make('attachments_count')
+                    ->label(__('app.labels.attachments'))
+                    ->counts('attachments')
+                    ->sortable()
+                    ->toggleable()
+                    ->toggledHiddenByDefault(),
+                TextColumn::make('body_preview')
+                    ->label('Body')
+                    ->getStateUsing(fn (Note $record): string => $record->plainBody())
+                    ->wrap()
+                    ->limit(80)
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(
+                        query: fn (Builder $query, string $search): Builder => $query->where(function (Builder $builder) use ($search): void {
+                            $builder
+                                ->where('title', 'like', "%{$search}%")
+                                ->orWhereHas(
+                                    'customFieldValues',
+                                    function (Builder $cfv) use ($search): void {
+                                        $cfv->whereHas(
+                                            'customField',
+                                            fn (Builder $cf): Builder => $cf->where('code', NoteField::BODY->value)
+                                        )->where(function (Builder $cfvQuery) use ($search): void {
+                                            $cfvQuery->where('string_value', 'like', "%{$search}%")
+                                                ->orWhere('text_value', 'like', "%{$search}%");
+                                        });
+                                    }
+                                );
+                        })
+                    ),
                 TextColumn::make('creator.name')
                     ->label(__('app.labels.created_by'))
                     ->searchable()
@@ -93,11 +146,28 @@ final class NoteResource extends Resource
                     ->label(__('app.labels.creation_source'))
                     ->options(CreationSource::class)
                     ->multiple(),
+                SelectFilter::make('category')
+                    ->label(__('app.labels.category'))
+                    ->options(NoteCategory::options()),
+                SelectFilter::make('visibility')
+                    ->label(__('app.labels.visibility'))
+                    ->options(NoteVisibility::options()),
+                SelectFilter::make('is_template')
+                    ->label('Templates')
+                    ->options([
+                        1 => 'Templates',
+                        0 => 'Notes',
+                    ]),
                 TrashedFilter::make(),
             ])
             ->recordActions([
                 ActionGroup::make([
                     EditAction::make(),
+                    \Filament\Actions\Action::make('print')
+                        ->label('Print')
+                        ->icon('heroicon-o-printer')
+                        ->url(fn (Note $record): string => route('notes.print', $record))
+                        ->openUrlInNewTab(),
                     DeleteAction::make(),
                     ForceDeleteAction::make(),
                     RestoreAction::make(),
@@ -128,6 +198,7 @@ final class NoteResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
+            ->withCount('attachments')
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);

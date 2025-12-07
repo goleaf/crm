@@ -23,6 +23,12 @@ final class OpportunitySeeder extends BaseModelSeeder
         OpportunityCustomField::AMOUNT->value,
         OpportunityCustomField::CLOSE_DATE->value,
         OpportunityCustomField::STAGE->value,
+        OpportunityCustomField::PROBABILITY->value,
+        OpportunityCustomField::FORECAST_CATEGORY->value,
+        OpportunityCustomField::NEXT_STEPS->value,
+        OpportunityCustomField::COMPETITORS->value,
+        OpportunityCustomField::RELATED_QUOTES->value,
+        OpportunityCustomField::OUTCOME_NOTES->value,
     ];
 
     /**
@@ -87,6 +93,7 @@ final class OpportunitySeeder extends BaseModelSeeder
         $fieldMappings = [
             OpportunityCustomField::CLOSE_DATE->value => fn (mixed $value): mixed => is_string($value) ? $this->evaluateTemplateExpression($value) : $value,
             OpportunityCustomField::STAGE->value => 'option',
+            OpportunityCustomField::FORECAST_CATEGORY->value => 'option',
         ];
 
         // Process custom fields using utility method

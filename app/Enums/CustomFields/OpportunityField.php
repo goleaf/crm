@@ -13,6 +13,12 @@ enum OpportunityField: string
     case AMOUNT = 'amount';
     case CLOSE_DATE = 'close_date';
     case STAGE = 'stage';
+    case PROBABILITY = 'probability';
+    case FORECAST_CATEGORY = 'forecast_category';
+    case NEXT_STEPS = 'next_steps';
+    case COMPETITORS = 'competitors';
+    case RELATED_QUOTES = 'related_quotes';
+    case OUTCOME_NOTES = 'outcome_notes';
 
     /**
      * @return string[]|null
@@ -32,6 +38,12 @@ enum OpportunityField: string
                 'Closed Won',
                 'Closed Lost',
             ],
+            self::FORECAST_CATEGORY => [
+                'Pipeline',
+                'Best Case',
+                'Commit',
+                'Closed',
+            ],
             default => null,
         };
     }
@@ -42,21 +54,49 @@ enum OpportunityField: string
             self::AMOUNT => CustomFieldType::CURRENCY->value,
             self::CLOSE_DATE => CustomFieldType::DATE->value,
             self::STAGE => CustomFieldType::SELECT->value,
+            self::PROBABILITY => CustomFieldType::NUMBER->value,
+            self::FORECAST_CATEGORY => CustomFieldType::SELECT->value,
+            self::NEXT_STEPS => CustomFieldType::TEXTAREA->value,
+            self::COMPETITORS => CustomFieldType::TAGS_INPUT->value,
+            self::RELATED_QUOTES => CustomFieldType::TEXTAREA->value,
+            self::OUTCOME_NOTES => CustomFieldType::TEXTAREA->value,
         };
     }
 
     public function getDisplayName(): string
     {
         return match ($this) {
-            self::AMOUNT => 'Amount',
-            self::CLOSE_DATE => 'Close Date',
-            self::STAGE => 'Stage',
+            self::AMOUNT => __('enums.opportunity_field.amount'),
+            self::CLOSE_DATE => __('enums.opportunity_field.close_date'),
+            self::STAGE => __('enums.opportunity_field.stage'),
+            self::PROBABILITY => __('enums.opportunity_field.probability'),
+            self::FORECAST_CATEGORY => __('enums.opportunity_field.forecast_category'),
+            self::NEXT_STEPS => __('enums.opportunity_field.next_steps'),
+            self::COMPETITORS => __('enums.opportunity_field.competitors'),
+            self::RELATED_QUOTES => __('enums.opportunity_field.related_quotes'),
+            self::OUTCOME_NOTES => __('enums.opportunity_field.outcome_notes'),
         };
     }
 
     public function isListToggleableHidden(): bool
     {
-        return false;
+        return match ($this) {
+            self::AMOUNT,
+            self::CLOSE_DATE,
+            self::STAGE,
+            self::PROBABILITY,
+            self::FORECAST_CATEGORY => false,
+            default => true,
+        };
+    }
+
+    public function getWidth(): \Relaticle\CustomFields\Enums\CustomFieldWidth
+    {
+        return match ($this) {
+            self::PROBABILITY,
+            self::FORECAST_CATEGORY => \Relaticle\CustomFields\Enums\CustomFieldWidth::_50,
+            default => \Relaticle\CustomFields\Enums\CustomFieldWidth::_100,
+        };
     }
 
     /**
@@ -84,6 +124,25 @@ enum OpportunityField: string
                 'Closed Won' => '#059669',            // Victory Emerald - Success celebration
                 'Closed Lost' => '#6b7280',           // Silver Acceptance - Respectful closure
             ],
+            self::FORECAST_CATEGORY => [
+                'Pipeline' => '#0ea5e9',
+                'Best Case' => '#22c55e',
+                'Commit' => '#f59e0b',
+                'Closed' => '#94a3b8',
+            ],
+            default => null,
+        };
+    }
+
+    public function getDescription(): ?string
+    {
+        return match ($this) {
+            self::PROBABILITY => __('enums.opportunity_field.probability_description'),
+            self::FORECAST_CATEGORY => __('enums.opportunity_field.forecast_category_description'),
+            self::NEXT_STEPS => __('enums.opportunity_field.next_steps_description'),
+            self::COMPETITORS => __('enums.opportunity_field.competitors_description'),
+            self::RELATED_QUOTES => __('enums.opportunity_field.related_quotes_description'),
+            self::OUTCOME_NOTES => __('enums.opportunity_field.outcome_notes_description'),
             default => null,
         };
     }

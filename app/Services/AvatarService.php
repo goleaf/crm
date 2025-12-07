@@ -156,7 +156,8 @@ final readonly class AvatarService
         // Normalize and trim the name to handle special characters better
         $name = trim($name);
         $normalizedName = Str::ascii($name);
-        $nameParts = array_values(array_filter(preg_split('/[\s\-_\.]+/', $normalizedName)));
+        $splitName = preg_split('/[\s\-_\.]+/', $normalizedName);
+        $nameParts = array_values(array_filter($splitName === false ? [] : $splitName));
 
         if ($nameParts === []) {
             return '?';

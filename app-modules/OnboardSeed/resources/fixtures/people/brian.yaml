@@ -3,6 +3,8 @@ company: airbnb
 custom_fields:
   emails:
     - brian@airbnb.com
-  phone_number: 555-456-7890
+  phone_number:
+    - 555-456-7890
+    - 555-456-7800 ext 12
   job_title: CEO & Co-founder
-  linkedin: https://www.linkedin.com/in/brianchesky/ 
+  linkedin: https://www.linkedin.com/in/brianchesky/

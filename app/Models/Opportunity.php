@@ -8,13 +8,17 @@ use App\Enums\CreationSource;
 use App\Models\Concerns\HasAiSummary;
 use App\Models\Concerns\HasCreator;
 use App\Models\Concerns\HasNotes;
+use App\Models\Concerns\HasTags;
 use App\Models\Concerns\HasTeam;
+use App\Models\Concerns\LogsActivity;
 use App\Observers\OpportunityObserver;
 use Database\Factories\OpportunityFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
@@ -25,6 +29,7 @@ use Spatie\EloquentSortable\SortableTrait;
 /**
  * @property Carbon|null $deleted_at
  * @property CreationSource $creation_source
+ * @property Carbon|null $closed_at
  */
 #[ObservedBy(OpportunityObserver::class)]
 final class Opportunity extends Model implements HasCustomFields
@@ -36,7 +41,9 @@ final class Opportunity extends Model implements HasCustomFields
     use HasFactory;
 
     use HasNotes;
+    use HasTags;
     use HasTeam;
+    use LogsActivity;
     use SoftDeletes;
     use SortableTrait;
     use UsesCustomFields;
@@ -48,6 +55,7 @@ final class Opportunity extends Model implements HasCustomFields
      */
     protected $fillable = [
         'creation_source',
+        'account_id',
     ];
 
     /**
@@ -66,6 +74,7 @@ final class Opportunity extends Model implements HasCustomFields
     {
         return [
             'creation_source' => CreationSource::class,
+            'closed_at' => 'datetime',
         ];
     }
 
@@ -78,6 +87,16 @@ final class Opportunity extends Model implements HasCustomFields
     }
 
     /**
+     * Account associated with this opportunity.
+     *
+     * @return BelongsTo<Account, $this>
+     */
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class);
+    }
+
+    /**
      * @return BelongsTo<People, $this>
      */
     public function contact(): BelongsTo
@@ -86,10 +105,50 @@ final class Opportunity extends Model implements HasCustomFields
     }
 
     /**
+     * Primary owner responsible for the opportunity.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    /**
+     * User who closed out the opportunity (won or lost).
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function closedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'closed_by_id');
+    }
+
+    /**
+     * @return BelongsToMany<User, $this>
+     */
+    public function collaborators(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class)
+            ->withPivot('role')
+            ->withTimestamps();
+    }
+
+    /**
      * @return MorphToMany<Task, $this>
      */
     public function tasks(): MorphToMany
     {
         return $this->morphToMany(Task::class, 'taskable');
+    }
+
+    /**
+     * Order created from this opportunity.
+     *
+     * @return HasOne<Order>
+     */
+    public function order(): HasOne
+    {
+        return $this->hasOne(Order::class);
     }
 }

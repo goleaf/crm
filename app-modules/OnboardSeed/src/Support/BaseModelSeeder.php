@@ -10,6 +10,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Relaticle\CustomFields\Models\Contracts\HasCustomFields;
 use Relaticle\CustomFields\Models\CustomField;
 use Relaticle\OnboardSeed\Contracts\ModelSeederInterface;
 
@@ -118,10 +119,10 @@ abstract class BaseModelSeeder implements ModelSeederInterface
     /**
      * Apply custom fields to a model
      *
-     * @param  object  $model  The model to apply fields to
+     * @param  HasCustomFields  $model  The model to apply fields to
      * @param  array<string, mixed>  $data  The field data
      */
-    protected function applyCustomFields(object $model, array $data): void
+    protected function applyCustomFields(HasCustomFields $model, array $data): void
     {
         foreach ($data as $code => $value) {
             if (isset($this->customFieldDefinitions[$code])) {

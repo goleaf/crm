@@ -24,6 +24,13 @@ final class TaskForm
                 ->columnSpanFull(),
         ];
 
+        $components[] = Select::make('parent_id')
+            ->label('Parent task')
+            ->relationship('parent', 'title')
+            ->searchable()
+            ->preload()
+            ->nullable();
+
         if (! in_array('companies', $excludeFields)) {
             $components[] = Select::make('companies')
                 ->label(__('app.labels.companies'))
@@ -40,11 +47,36 @@ final class TaskForm
                 ->nullable();
         }
 
+        if (! in_array('leads', $excludeFields)) {
+            $components[] = Select::make('leads')
+                ->label(__('app.labels.leads'))
+                ->multiple()
+                ->relationship('leads', 'name')
+                ->nullable();
+        }
+
         $components[] = Select::make('assignees')
             ->label(__('app.labels.assignees'))
             ->multiple()
             ->relationship('assignees', 'name')
             ->nullable();
+
+        $components[] = Select::make('dependencies')
+            ->label('Dependencies')
+            ->helperText('Tasks that must be completed first')
+            ->multiple()
+            ->relationship('dependencies', 'title')
+            ->searchable()
+            ->preload()
+            ->columnSpanFull();
+
+        $components[] = Select::make('categories')
+            ->label('Categories')
+            ->multiple()
+            ->relationship('categories', 'name')
+            ->preload()
+            ->searchable()
+            ->columnSpanFull();
 
         $components[] = CustomFields::form()->forSchema($schema)->except($excludeFields)->build()->columnSpanFull();
 

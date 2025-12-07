@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\Industry;
 use App\Models\Company;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -24,7 +25,7 @@ final class DuplicateDetectionService
                 'company' => $candidate,
                 'score' => $this->calculateSimilarity($company, $candidate),
             ])
-            ->filter(fn (array $candidate) => ($candidate['score'] / 100) >= $thresholdNormalized)
+            ->filter(fn (array $candidate): bool => ($candidate['score'] / 100) >= $thresholdNormalized)
             ->sortByDesc('score')
             ->values()
             ->take($limit);
@@ -69,9 +70,9 @@ final class DuplicateDetectionService
             return [
                 'attribute' => $attribute,
                 'label' => $label,
-                'primary' => $primaryValue,
-                'duplicate' => $duplicateValue,
-                'selected' => $this->preferValue($primaryValue, $duplicateValue),
+                'primary' => $this->formatMergeValue($primaryValue),
+                'duplicate' => $this->formatMergeValue($duplicateValue),
+                'selected' => $this->formatMergeValue($this->preferValue($primaryValue, $duplicateValue)),
             ];
         });
     }
@@ -156,13 +157,35 @@ final class DuplicateDetectionService
         return implode('.', array_slice($segments, -2));
     }
 
-    private function sameIndustry(?string $primary, ?string $duplicate): bool
+    private function sameIndustry(Industry|string|null $primary, Industry|string|null $duplicate): bool
     {
-        if (! $primary || ! $duplicate) {
+        $primaryValue = $this->normalizeIndustry($primary);
+        $duplicateValue = $this->normalizeIndustry($duplicate);
+
+        if ($primaryValue === null || $duplicateValue === null) {
             return false;
         }
 
-        return Str::lower($primary) === Str::lower($duplicate);
+        return $primaryValue === $duplicateValue;
+    }
+
+    private function normalizeIndustry(Industry|string|null $industry): ?string
+    {
+        if ($industry instanceof Industry) {
+            return $industry->value;
+        }
+
+        if (! is_string($industry) || trim($industry) === '') {
+            return null;
+        }
+
+        $normalized = Str::of($industry)
+            ->lower()
+            ->replaceMatches('/[^a-z0-9]+/', '_')
+            ->trim('_')
+            ->toString();
+
+        return $normalized === '' ? null : $normalized;
     }
 
     private function preferValue(mixed $primary, mixed $duplicate): mixed
@@ -184,10 +207,15 @@ final class DuplicateDetectionService
             return false;
         }
 
-        if (is_string($value) && trim($value) === '') {
-            return false;
+        return ! (is_string($value) && trim($value) === '');
+    }
+
+    private function formatMergeValue(mixed $value): mixed
+    {
+        if ($value instanceof Industry) {
+            return $value->label();
         }
 
-        return true;
+        return $value;
     }
 }

@@ -39,10 +39,10 @@ enum TaskField: string
     public function getDisplayName(): string
     {
         return match ($this) {
-            self::STATUS => 'Status',
-            self::PRIORITY => 'Priority',
-            self::DESCRIPTION => 'Description',
-            self::DUE_DATE => 'Due Date',
+            self::STATUS => __('enums.task_field.status'),
+            self::PRIORITY => __('enums.task_field.priority'),
+            self::DESCRIPTION => __('enums.task_field.description'),
+            self::DUE_DATE => __('enums.task_field.due_date'),
         };
     }
 
@@ -108,9 +108,9 @@ enum TaskField: string
     {
         return match ($this) {
             self::STATUS => [
-                'To do',
-                'In progress',
-                'Done',
+                'Not Started',
+                'In Progress',
+                'Completed',
             ],
             self::PRIORITY => [
                 'Low',
@@ -134,9 +134,9 @@ enum TaskField: string
     {
         return match ($this) {
             self::STATUS => [
-                'To do' => '#c4b5fd',       // Soft Periwinkle - Digital Lavender inspired calm potential
-                'In progress' => '#0A80EA', // Professional Blue - Clear active progress state
-                'Done' => '#2A9764',        // Success Green - Confident completion achievement
+                'Not Started' => '#c4b5fd', // Soft Periwinkle - Digital Lavender inspired calm potential
+                'In Progress' => '#0A80EA', // Professional Blue - Clear active progress state
+                'Completed' => '#2A9764',   // Success Green - Confident completion achievement
             ],
             self::PRIORITY => [
                 'Low' => '#94a3b8',         // Sage Whisper - Natural earth tone, subtle presence
@@ -155,10 +155,10 @@ enum TaskField: string
     public function getDescription(): string
     {
         return match ($this) {
-            self::STATUS => 'Current status of the task',
-            self::PRIORITY => 'Priority level for this task',
-            self::DESCRIPTION => 'Detailed description of what needs to be done',
-            self::DUE_DATE => 'When this task needs to be completed by',
+            self::STATUS => __('enums.task_field.status_description'),
+            self::PRIORITY => __('enums.task_field.priority_description'),
+            self::DESCRIPTION => __('enums.task_field.description_description'),
+            self::DUE_DATE => __('enums.task_field.due_date_description'),
         };
     }
 }

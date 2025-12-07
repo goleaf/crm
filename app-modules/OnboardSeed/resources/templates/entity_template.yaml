@@ -55,7 +55,7 @@ custom_fields:
   # Reference to option/dropdown value
   # Will be resolved to option ID using the label
   stage: "Option Label"
-  status: "To do"
+  status: "Not Started"
   
   # Dynamic value using Laravel's date functions
   # These will be evaluated at runtime

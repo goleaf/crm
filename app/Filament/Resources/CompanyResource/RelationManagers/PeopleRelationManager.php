@@ -10,6 +10,7 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
@@ -32,12 +33,29 @@ final class PeopleRelationManager extends RelationManager
             ->components([
                 TextInput::make('name')
                     ->required()
-                    ->maxLength(255)
-                    ->columnSpanFull(),
+                    ->maxLength(255),
+                TextInput::make('job_title')
+                    ->label('Job Title')
+                    ->maxLength(255),
+                TextInput::make('primary_email')
+                    ->label('Primary Email')
+                    ->email()
+                    ->maxLength(255),
+                TextInput::make('phone_mobile')
+                    ->label('Mobile')
+                    ->tel()
+                    ->maxLength(50),
+                TextInput::make('lead_source')
+                    ->label('Lead Source')
+                    ->maxLength(255),
+                TagsInput::make('segments')
+                    ->label('Segments')
+                    ->suggestions(config('contacts.segment_suggestions', [])),
                 CustomFields::form()->forSchema($schema)->build()
                     ->columnSpanFull()
                     ->columns(),
-            ]);
+            ])
+            ->columns(2);
     }
 
     public function table(Table $table): Table
@@ -46,6 +64,18 @@ final class PeopleRelationManager extends RelationManager
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name'),
+                TextColumn::make('job_title')
+                    ->label('Job Title')
+                    ->toggleable(),
+                TextColumn::make('primary_email')
+                    ->label('Email')
+                    ->toggleable(),
+                TextColumn::make('phone_mobile')
+                    ->label('Mobile')
+                    ->toggleable(),
+                TextColumn::make('lead_source')
+                    ->label('Lead Source')
+                    ->toggleable(),
 
                 ...CustomFields::table()->forModel($table->getModel())->columns(),
             ])

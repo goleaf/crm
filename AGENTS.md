@@ -31,3 +31,9 @@
 ## Environment & Configuration Tips
 - Composer scripts already copy `.env.example` and touch the SQLite file, but double-check `.env` values before running `composer dev`.
 - Clear cached config when providers or module bindings change via `php artisan optimize:clear`.
+
+## Repository expectations
+
+- Document public utilities in `docs/` when you change behavior. Also read and use `.kiro/system`, `.kiro/hooks/`, `.kiro/steering/` inside existing files
+- When adjusting model inheritance or shared base models, update the relevant `.kiro/steering` rule (e.g., `laravel-conventions.md`) in the same change so future edits avoid repeating the issue.
+- When fixing enum method/translation issues (label/color), also update the relevant `.kiro/steering` guideline (e.g., `filament-conventions.md`) in the same change to prevent regressions.

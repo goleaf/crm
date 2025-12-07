@@ -1,0 +1,1182 @@
+# SuiteCRM Feature Catalog
+
+## ADDED Requirements
+
+### Core CRM Modules catalog
+- The system shall maintain the SuiteCRM core CRM modules and their capabilities for parity and gap analysis:
+  - **Accounts**
+    - Company information management
+    - Account hierarchies and parent-child relationships
+    - Billing and shipping address tracking
+    - Account type categorization
+    - Industry classification
+    - Annual revenue tracking
+    - Employee count management
+    - Custom field creation
+    - Account team management
+    - Relationship mapping
+    - Multi-currency support
+    - Website and social media links
+    - Ownership and assignment tracking
+    - Activity history and timeline
+    - Document attachment capabilities
+    - **Company information management (details)**
+      - Description: Maintain a complete company profile with legal name, primary website, primary phone/email, HQ address, billing/shipping addresses, industry, ownership, revenue, employee count, currencies used, and optional social links.
+      - Acceptance criteria:
+        - Users can create and edit companies with required fields: name, at least one address, industry, and assigned owner.
+        - Billing and shipping addresses are stored separately with support for copying between them.
+        - Industry, ownership type, account type, and currency are selectable from controlled dropdowns configurable by admins.
+        - Employee count and annual revenue accept numeric input with validation and currency selection for revenue.
+        - Parent account relationship can be set to build hierarchies; changing a parent updates the hierarchy view.
+        - Website and social links validate URL format; phone/email fields validate basic formats.
+        - Attachments can be uploaded and listed on the account record with file name, type, and uploaded-by metadata.
+        - Activity timeline shows recent changes (create/update) to core company fields with user and timestamp.
+  - **Contacts**
+    - Complete contact database
+    - Individual person tracking
+    - Email address management (primary and alternate)
+    - Phone number tracking (office, mobile, home, fax)
+    - Physical address storage
+    - Job title and department
+    - Reporting structure
+    - Birthday and assistant information
+    - Relationship to accounts
+    - Lead source tracking
+    - Portal user capabilities
+    - Contact synchronization
+    - Social media profile links
+    - Custom contact fields
+    - Contact segmentation
+  - **Leads**
+    - Lead capture and tracking
+    - Lead source identification
+    - Lead status management
+    - Lead scoring capabilities
+    - Lead grading
+    - Lead qualification process
+    - Lead conversion (to Contacts, Accounts, Opportunities)
+    - Lead distribution and assignment
+    - Round-robin assignment
+    - Territory-based assignment
+    - Lead nurturing workflows
+    - Lead activity tracking
+    - Duplicate detection
+    - Lead import/export
+    - Web-to-lead forms
+  - **Opportunities**
+    - Sales pipeline management
+    - Customizable sales stages
+    - Opportunity amount tracking
+    - Weighted revenue calculations
+    - Probability of close
+    - Expected close date
+    - Sales cycle tracking
+    - Competitor tracking
+    - Win/loss analysis
+    - Next steps documentation
+    - Sales team collaboration
+    - Multi-user opportunities
+    - Related quotes linkage
+    - Forecasting integration
+    - Opportunity dashboards
+  - **Cases**
+    - Customer support ticket management
+    - Case assignment and routing
+    - Case status tracking (New, Assigned, Closed, Pending Input)
+    - Priority levels (P1, P2, P3, P4)
+    - Case type categorization
+    - SLA tracking and management
+    - Escalation rules
+    - Case resolution tracking
+    - Response time monitoring
+    - Customer portal integration
+    - Knowledge base integration
+    - Case threading
+    - Email-to-case functionality
+    - Case queue management
+    - Team-based case assignment
+#### Scenario: Catalog core CRM modules
+- Given we need to compare core SuiteCRM capabilities
+- When reviewing the catalog
+- Then the capabilities for Accounts, Contacts, Leads, Opportunities, and Cases are available as listed
+
+### Sales and Revenue Management catalog
+- The system shall record SuiteCRM sales and revenue features for reference:
+  - **Quotes**
+    - Professional quote generation
+    - Product catalog integration
+    - Line item management
+    - Pricing and discount management
+    - Tax calculation
+    - Shipping cost calculation
+    - Quote versioning and revisions
+    - Quote templates (PDF)
+    - Quote approval workflows
+    - Quote expiration dates
+    - Quote status tracking
+    - Bundle pricing
+    - Group pricing options
+    - Currency support
+    - Terms and conditions
+  - **Products**
+    - Product catalog management
+    - Product categories and subcategories
+    - Manufacturer tracking
+    - Product type classification
+    - Cost and list pricing
+    - Discount pricing rules
+    - Product status (Active/Inactive)
+    - Product codes (SKU/Part Number)
+    - Product descriptions
+    - Product images and attachments
+    - Inventory tracking
+    - Product bundles
+    - Cross-sell and upsell relationships
+    - Product lifecycle management
+    - Custom product fields
+  - **Contracts**
+    - Contract management
+    - Contract types
+    - Start and end date tracking
+    - Renewal date tracking
+    - Contract value
+    - Contract status
+    - Terms and conditions
+    - Contract templates
+    - Auto-renewal options
+    - Contract expiration notifications
+    - Contract amendments
+    - Service level agreements
+    - Contract approvals
+    - Contract document storage
+    - Contract relationship tracking
+  - **Forecasts**
+    - Sales forecasting by period
+    - Revenue predictions
+    - Pipeline analysis
+    - Committed vs. best case scenarios
+    - Forecast categories
+    - Forecast rollup by user/team
+    - Time-based forecasting
+    - Quota management
+    - Forecast worksheets
+    - Historical forecast tracking
+    - Forecast adjustments
+    - Forecast vs. actual comparison
+    - Forecast reporting
+    - Multi-currency forecasting
+    - Forecast export capabilities
+  - **Invoices (via extensions)**
+    - Invoice creation and tracking
+    - Invoice numbering
+    - Line item invoicing
+    - Payment tracking
+    - Invoice status management
+    - Invoice templates
+    - Tax calculations
+    - Due date tracking
+    - Payment terms
+    - Late payment tracking
+    - Invoice PDF generation
+    - Multi-currency invoices
+    - Recurring invoices
+    - Invoice reminders
+    - Invoice history
+#### Scenario: Catalog sales and revenue features
+- Given sales and revenue capabilities are needed for parity checks
+- When reviewing the catalog
+- Then the features for Quotes, Products, Contracts, Forecasts, and Invoices are documented
+
+### Marketing and Campaign Management catalog
+- The system shall capture marketing and campaign features from SuiteCRM:
+  - **Campaigns**
+    - Email campaign creation
+    - Non-email campaigns (telesales, radio, print)
+    - Campaign budgeting
+    - Expected revenue tracking
+    - Actual cost tracking
+    - Campaign ROI calculation
+    - Campaign status management
+    - Campaign type categorization
+    - Target list integration
+    - Email template design
+    - HTML email support
+    - Campaign wizard interface
+    - Campaign scheduling
+    - Time-zone aware sending
+    - Test email capability
+  - **Campaign Features (continued)**
+    - Tracker URL creation and monitoring
+    - Click-through tracking
+    - Opt-out link management
+    - Campaign response tracking
+    - Real-time campaign metrics
+    - Campaign analytics dashboard
+    - Lead source attribution
+    - Campaign comparison
+    - Multi-touch attribution
+    - Campaign cloning
+    - Campaign archiving
+    - Bounce handling
+    - Unsubscribe management
+    - Email deliverability tracking
+    - Campaign performance reports
+  - **Target Lists**
+    - Distribution list management
+    - Manual list creation
+    - Dynamic list creation
+    - List segmentation
+    - Import/export capabilities
+    - List merging
+    - Duplicate removal
+    - List type classification (Default, Test, Suppression)
+    - List membership tracking
+    - List size management
+    - Cross-module targeting (Accounts, Contacts, Leads, Targets, Users)
+    - Bulk addition from searches
+    - List archiving
+    - List relationship tracking
+    - Subscriber status management
+  - **Targets**
+    - Prospect tracking
+    - Basic contact information
+    - Minimal data requirements
+    - Campaign association
+    - List membership
+    - Target conversion
+    - Target status
+    - Do Not Call flags
+    - Email opt-out status
+    - Target source tracking
+    - Target deletion without impact
+    - Target reusability
+    - Target import
+    - Target deduplication
+    - Target activity history
+  - **Surveys**
+    - Survey creation and design
+    - Question types (multiple choice, text, rating)
+    - Survey templates
+    - Survey distribution via campaigns
+    - Anonymous response options
+    - Survey scheduling
+    - Response collection
+    - Survey results analysis
+    - Response rate tracking
+    - Survey completion tracking
+    - Survey logic and branching
+    - Required question settings
+    - Survey preview
+    - Survey URL generation
+    - Survey embedding
+#### Scenario: Catalog marketing and campaigns
+- Given marketing and campaign capabilities are needed for comparison
+- When reviewing the catalog
+- Then campaign, target list, target, and survey features are available as listed
+
+### Communication and Collaboration catalog
+- The system shall retain communication and collaboration capabilities:
+  - **Emails**
+    - Email client integration
+    - Inbound email management
+    - Outbound email composition
+    - Email templates
+    - Email archiving
+    - Email threading
+    - HTML email support
+    - Email attachments
+    - Email signatures
+    - Email folders
+    - Email search
+    - Email assignment
+    - Group email boxes
+    - Email-to-record association
+    - Email tracking
+  - **Email Features (continued)**
+    - Draft email saving
+    - Email scheduling
+    - Send later functionality
+    - Email forwarding
+    - Email reply and reply-all
+    - CC and BCC support
+    - Email importance flags
+    - Read receipts
+    - Email analytics
+    - Bounce handling configuration
+    - SMTP configuration
+    - IMAP/POP3 support
+    - OAuth email authentication
+    - Microsoft OAuth support
+    - Gmail integration
+  - **Calls**
+    - Call logging and tracking
+    - Call scheduling
+    - Inbound/outbound classification
+    - Call duration tracking
+    - Call status (Planned, Held, Not Held, Cancelled)
+    - Call purpose documentation
+    - Call outcome recording
+    - Call reminders
+    - Call participants
+    - Related record association
+    - Call history
+    - Call notes
+    - Call follow-up tasks
+    - Integration with VOIP systems
+    - Click-to-dial capabilities
+  - **Meetings**
+    - Meeting scheduling
+    - Meeting location tracking
+    - Meeting attendees management
+    - Internal and external invitees
+    - Meeting reminders
+    - Meeting status tracking
+    - Meeting duration
+    - Recurring meetings
+    - Meeting notes
+    - Meeting outcomes
+    - Calendar integration
+    - Meeting room booking
+    - Video conference integration (Zoom, Teams)
+    - Meeting agenda
+    - Meeting minutes
+  - **Calendar**
+    - Unified calendar view
+    - Day/week/month/year views
+    - Activity scheduling
+    - Calendar sharing
+    - Shared calendars
+    - Team calendars
+    - Color-coded events
+    - Drag-and-drop rescheduling
+    - Calendar sync (Google, Outlook)
+    - iCal export
+    - Calendar permissions
+    - Calendar printing
+    - Quick create from calendar
+    - Calendar filters
+    - Calendar search
+  - **Tasks**
+    - Task creation and assignment
+    - Task prioritization (High, Medium, Low)
+    - Task status tracking (Not Started, In Progress, Completed)
+    - Due date management
+    - Task reminders
+    - Task relationships
+    - Subtask capabilities
+    - Task dependencies
+    - Task checklists
+    - Task comments
+    - Task time tracking
+    - Task delegation
+    - Recurring tasks
+    - Task categories
+    - Task filtering and sorting
+  - **Notes**
+    - Note creation on any record
+    - Rich text note editing
+    - Note attachments
+    - Note privacy settings
+    - Note timestamps
+    - Note author tracking
+    - Note search
+    - Note categories
+    - Note relationships
+    - Note history
+    - Shared notes
+    - Note printing
+    - Note export
+    - Note templates
+    - Internal vs. external notes
+#### Scenario: Catalog communications and collaboration
+- Given collaboration features need comparison
+- When reviewing the catalog
+- Then email, call, meeting, calendar, task, and note capabilities are listed
+
+### Project and Resource Management catalog
+- The system shall document SuiteCRM project and resource management features:
+  - **Projects**
+    - Project creation and tracking
+    - Project status management
+    - Project templates
+    - Task assignment and tracking
+    - Project timelines
+    - Project milestones
+    - Project team management
+    - Resource allocation
+    - Project budgeting
+    - Time tracking
+    - Project progress tracking
+    - Gantt charts (via extensions)
+    - Project dependencies
+    - Project deliverables
+    - Project documentation
+    - Project reporting
+    - Project phases
+    - Risk management
+    - Issue tracking
+    - Project dashboards
+  - **Project Tasks (via Projects module)**
+    - Task breakdown structure
+    - Task dependencies
+    - Task duration estimation
+    - Task percentage complete
+    - Task priorities
+    - Predecessor/successor relationships
+    - Critical path identification
+    - Task assignments
+    - Task comments
+    - Task time logging
+    - Task billing
+    - Task templates
+    - Milestone tracking
+    - Task notifications
+    - Task reporting
+  - **Employees**
+    - Employee directory
+    - Employee information management
+    - Contact details
+    - Department assignment
+    - Reporting structure
+    - Employment status
+    - Job title and role
+    - Start date tracking
+    - Emergency contact information
+    - Employee portal access
+    - Skills and certifications
+    - Performance tracking
+    - Employee documents
+    - Payroll integration
+    - Time-off tracking
+#### Scenario: Catalog project and resource management
+- Given project capabilities are needed for planning
+- When reviewing the catalog
+- Then project, project task, and employee-related features are documented
+
+### Knowledge and Document Management catalog
+- The system shall capture SuiteCRM knowledge and document management capabilities:
+  - **Documents**
+    - Document repository
+    - File upload and storage
+    - Document categorization
+    - Version control
+    - Document status (Active, Draft, FAQ)
+    - Document types
+    - Document templates
+    - Document relationships
+    - Document search
+    - Document preview
+    - Document download
+    - Document sharing
+    - Document permissions
+    - Document expiration
+    - Folder structure
+    - Document tags
+    - Document approval workflows
+    - Document check-in/check-out
+    - Document metadata
+    - Cloud storage integration
+  - **Knowledge Base**
+    - Knowledge article creation
+    - Article categories and subcategories
+    - Article status management
+    - Article approval workflows
+    - Article versioning
+    - Article search
+    - Article rating
+    - Article comments
+    - FAQ management
+    - Solution database
+    - Template responses
+    - Article tags
+    - Article permissions
+    - Article analytics
+    - Related article linking
+    - Article export
+    - Public vs. internal articles
+    - Article attachments
+    - SEO optimization for articles
+    - Customer portal integration
+  - **Bugs**
+    - Bug tracking and logging
+    - Bug status management (New, Assigned, Closed, Pending)
+    - Bug priority levels
+    - Bug severity classification
+    - Bug type categorization
+    - Bug source tracking
+    - Product/component association
+    - Version affected tracking
+    - Bug assignment
+    - Bug resolution tracking
+    - Bug fix verification
+    - Bug release notes
+    - Bug relationships and dependencies
+    - Bug comments and history
+    - Bug attachments
+    - Duplicate bug detection
+    - Bug reporting
+    - Bug search and filtering
+    - Bug notifications
+    - Developer integration
+#### Scenario: Catalog knowledge and document management
+- Given knowledge and document features are needed for comparison
+- When reviewing the catalog
+- Then documents, knowledge base, and bug capabilities are listed
+
+### Workflow and Automation catalog
+- The system shall record SuiteCRM workflow and automation capabilities:
+  - **Workflows (Advanced Open Workflow)**
+    - Workflow process creation
+    - Trigger conditions (Create, Edit, After Save)
+    - Multiple condition lines
+    - Condition operators (Equal, Not Equal, Greater Than, Less Than)
+    - Condition types (Value, Field, Date, Multiple)
+    - Scheduled workflows
+    - Time-based triggers
+    - Workflow actions (Create Record, Modify Record, Send Email)
+    - Unlimited actions per workflow
+    - Field value calculations
+    - Date calculations
+    - Workflow status (Active/Inactive)
+    - Repeated run options
+    - Workflow testing
+    - Workflow logs and audit trail
+  - **Workflow Actions**
+    - Record creation automation
+    - Record modification
+    - Email notifications
+    - Task creation
+    - Call scheduling
+    - Meeting creation
+    - Field updates
+    - Status changes
+    - Assignment changes
+    - Relationship creation
+    - Data validation
+    - Record locking
+    - Approval processes
+    - Escalation rules
+    - SLA enforcement
+  - **Workflow Calculated Fields**
+    - Formula-based calculations
+    - Mathematical operations
+    - Date/time calculations
+    - Text concatenation
+    - Conditional logic
+    - Field referencing
+    - Cross-module calculations
+    - Rollup calculations
+    - Count functions
+    - Sum functions
+    - Average calculations
+    - Min/max calculations
+    - Custom formulas
+    - Real-time updates
+    - Scheduled recalculation
+#### Scenario: Catalog workflow and automation
+- Given workflow capabilities are needed for comparison
+- When reviewing the catalog
+- Then workflow processes, actions, and calculated fields are listed
+
+### Reporting and Analytics catalog
+- The system shall maintain SuiteCRM reporting and analytics capabilities:
+  - **Reports (Advanced Open Reports)**
+    - Custom report creation
+    - Report builder interface
+    - Drag-and-drop field selection
+    - Module-based reporting
+    - Cross-module reports
+    - Report conditions and filters
+    - AND/OR logic
+    - Date range filters
+    - Group by functionality
+    - Summary calculations (Count, Sum, Average, Min, Max)
+    - Report sorting
+    - Report charts (Bar, Line, Pie)
+    - Report export (PDF, CSV, Excel)
+    - Report scheduling
+    - Email report delivery
+    - Report permissions
+    - Report templates
+    - Report folders
+    - Report favorites
+    - Dashboard integration
+  - **Report Features (continued)**
+    - Drill-down capabilities
+    - Parameter prompts
+    - Dynamic filters
+    - Saved report views
+    - Report sharing
+    - Report versioning
+    - Real-time data
+    - Historical reporting
+    - Trend analysis
+    - Comparative reporting
+    - Custom report fields
+    - Calculated columns
+    - Report formatting
+    - Report printing
+    - Report subscriptions
+  - **SuiteCRM Analytics (free add-on)**
+    - Business intelligence dashboards
+    - Data warehouse integration
+    - Pre-built reports (100+)
+    - Interactive charts and graphs
+    - Sales performance metrics
+    - Campaign management analytics
+    - Case management reports
+    - Activity tracking reports
+    - ROI analysis
+    - Revenue forecasting
+    - KPI dashboards
+    - Trend visualization
+    - Custom dashboard creation
+    - Data export capabilities
+    - Scheduled report generation
+  - **Analytics Features (continued)**
+    - Pentaho integration
+    - CTools support
+    - Report designer
+    - Data transformation
+    - ETL processes
+    - Dimensional modeling
+    - Fact tables (Leads, Cases, Opportunities, Campaigns, Sales, Activities)
+    - Time-based analysis
+    - Geographic analysis
+    - Team performance metrics
+    - User activity tracking
+    - Call duration analytics
+    - Email engagement metrics
+    - Lead conversion analysis
+    - Customer lifetime value
+#### Scenario: Catalog reporting and analytics
+- Given reporting and analytics parity is needed
+- When reviewing the catalog
+- Then report builder, analytics, and dashboard capabilities are available as listed
+
+### Customization and Administration catalog
+- The system shall preserve SuiteCRM customization and administration capabilities:
+  - **Studio**
+    - Module customization
+    - Field management (add, edit, delete)
+    - Field types (Text, Number, Date, Dropdown, Relate, etc.)
+    - Custom field creation
+    - Field properties configuration
+    - Layout customization (List, Detail, Edit, Search views)
+    - Subpanel customization
+    - Label editing
+    - Relationship creation and management
+    - Module builder
+    - Custom module creation
+    - Module deployment
+    - Module templates
+    - Field validation rules
+    - Dependency settings
+  - **Module Builder**
+    - Custom module creation
+    - Package management
+    - Module deployment
+    - Module templates (Basic, Person, Company, Sale, File)
+    - Field designer
+    - Relationship designer
+    - Layout designer
+    - Module export
+    - Module versioning
+    - Module documentation
+    - Module licensing
+    - Module distribution
+    - Module uninstallation
+    - Package publishing
+    - Module updates
+  - **Developer Tools**
+    - Module loader
+    - Package installer
+    - Module manager
+    - Dropdown editor
+    - Global dropdown management
+    - Language editor
+    - Display modules configuration
+    - Tab configuration
+    - Module rename functionality
+    - Repair tools (Rebuild, Quick Repair)
+    - System diagnostics
+    - Database management
+    - Cache management
+    - Permission repair
+    - Index management
+  - **Admin Panel Features**
+    - User management
+    - User creation and editing
+    - User status management
+    - User type configuration (Admin, Regular User)
+    - Password management
+    - Password policies
+    - Password expiration
+    - LDAP authentication
+    - SAML SSO integration
+    - OAuth authentication
+    - Two-factor authentication
+    - Session management
+    - Login history
+    - User activity tracking
+    - Bulk user operations
+  - **Role Management**
+    - Role creation and configuration
+    - Access level control (None, Owner, Group, All)
+    - Module-level permissions
+    - Field-level security
+    - Action permissions (View, List, Edit, Delete, Import, Export, Mass Update)
+    - Create permissions
+    - Admin rights assignment
+    - Studio rights
+    - Role inheritance
+    - Role copying
+    - Role assignment to users
+    - Role assignment to groups
+    - Role templates
+    - Permission matrix
+    - Role audit trail
+  - **Security Suite / Security Groups**
+    - Security group creation
+    - Group membership management
+    - Group inheritance rules
+    - Non-inheritable groups
+    - Group-based record access
+    - Owner-only permissions
+    - Group-only permissions
+    - Hierarchical security models
+    - Multi-level access control
+    - Custom layouts per group
+    - Group message dashlets
+    - Mass group assignment
+    - Group assignment automation
+    - Record-level security
+    - Login-as functionality
+    - Hookup module tool
+    - Security group fields in Studio
+    - Group filtering in searches
+    - Primary group designation
+    - Broadcast messaging
+#### Scenario: Catalog customization and administration
+- Given admin capabilities are needed for planning
+- When reviewing the catalog
+- Then Studio, module builder, developer tools, admin panel, role management, and security group features are listed
+
+### Integration and API catalog
+- The system shall catalog SuiteCRM integration and API capabilities:
+  - **API Access**
+    - REST API (v8)
+    - Legacy API (v4.1)
+    - JSON API support
+    - OAuth 2.0 authentication
+    - API documentation
+    - Swagger/OpenAPI specs
+    - Rate limiting
+    - API versioning
+    - Webhook support
+    - API permissions
+    - API logging
+    - API error handling
+    - Custom API endpoints
+    - Third-party app integration
+    - Mobile app support
+  - **External Integrations**
+    - Gmail integration with OAuth
+    - Google Calendar sync
+    - Google Drive integration
+    - Google Maps integration
+    - Microsoft Outlook integration
+    - Microsoft Exchange sync
+    - Microsoft OAuth provider
+    - Office 365 integration
+    - Mailchimp integration
+    - SendGrid integration
+    - Mautic integration
+    - Constant Contact integration
+    - Active Campaign integration
+    - Twilio integration
+    - Zoom integration
+    - Slack integration
+    - WooCommerce bridge
+    - Shopify bridge
+    - Magento integration
+    - Xero accounting integration
+    - QuickBooks integration
+    - Zapier connectivity
+    - Make (Integromat) support
+  - **Email Platform Integrations**
+    - SMTP configuration
+    - IMAP/POP3 setup
+    - Bounce handling
+    - Inbound email routing
+    - Email archiving
+    - Email tracking pixels
+    - Email open tracking
+    - Link click tracking
+    - Email deliverability monitoring
+    - Spam filter management
+    - Email authentication (SPF, DKIM, DMARC)
+    - Email queuing
+    - Batch email sending
+    - Email throttling
+    - Email blacklist management
+#### Scenario: Catalog integrations and APIs
+- Given integration capabilities are needed for comparison
+- When reviewing the catalog
+- Then API access, external integrations, and email platform integrations are listed
+
+### Mobile and Portal catalog
+- The system shall capture SuiteCRM mobile and portal capabilities:
+  - **Mobile Access**
+    - Responsive web design
+    - Mobile-optimized interface
+    - Touch-friendly controls
+    - Mobile navigation
+    - Mobile dashboards
+    - Mobile list views
+    - Mobile record editing
+    - Mobile search
+    - Mobile calendar
+    - Mobile task management
+    - Mobile call logging
+    - Mobile email access
+    - Offline capabilities (via apps)
+    - Mobile notifications
+    - Location services
+    - Mobile app availability
+  - **Customer Portal**
+    - Self-service portal
+    - Customer login
+    - Case submission
+    - Case tracking
+    - Knowledge base access
+    - FAQ access
+    - Document download
+    - Portal customization
+    - Portal branding
+    - User registration
+    - Password reset
+    - Portal search
+    - Portal notifications
+    - Multi-language support
+    - Portal analytics
+#### Scenario: Catalog mobile and portal
+- Given mobile and portal capabilities are needed for planning
+- When reviewing the catalog
+- Then mobile access and customer portal features are listed
+
+### Data Management catalog
+- The system shall retain SuiteCRM data management capabilities:
+  - **Import/Export**
+    - CSV import
+    - Excel import (XLSX, XLS)
+    - vCard import
+    - Duplicate checking during import
+    - Field mapping
+    - Data validation
+    - Import preview
+    - Import error handling
+    - Import history
+    - CSV export
+    - Excel export
+    - Custom export templates
+    - Selective field export
+    - Mass export
+    - Export from list views
+  - **Data Management Features**
+    - Duplicate detection
+    - Duplicate merging
+    - Data cleanup tools
+    - Bulk updates
+    - Mass delete
+    - Mass assignment
+    - Data archiving
+    - Data backup
+    - Database repair tools
+    - Data relationships
+    - Data integrity checks
+    - Field validation
+    - Required field enforcement
+    - Data encryption
+    - GDPR compliance tools
+  - **Search Features**
+    - Global search
+    - Module-specific search
+    - Advanced search
+    - Full-text search
+    - Elasticsearch integration
+    - Search filters
+    - Saved searches
+    - Quick filters
+    - Search operators
+    - Wildcard search
+    - Boolean search
+    - Search history
+    - Search suggestions
+    - Search result ranking
+    - Cross-module search
+#### Scenario: Catalog data management
+- Given data management capabilities are needed for comparison
+- When reviewing the catalog
+- Then import/export, data management, and search features are listed
+
+### User Interface and Experience catalog
+- The system shall capture SuiteCRM user interface and experience capabilities:
+  - **Themes**
+    - SuiteP theme (default)
+    - Sub-themes (Dawn, Day, Dusk, Night)
+    - Custom theme creation
+    - Theme customization
+    - Color scheme options
+    - Logo customization
+    - CSS customization
+    - Theme inheritance
+    - Responsive design
+    - Dark mode support
+    - Theme preview
+    - Theme export/import
+    - Per-user theme selection
+    - Theme builder tools
+    - SASS support
+  - **Dashboard and Home Page**
+    - Customizable dashboards
+    - Dashlet widgets
+    - Drag-and-drop layout
+    - Multiple dashboard pages
+    - Dashboard templates
+    - Personal dashboards
+    - Team dashboards
+    - Chart dashlets
+    - List view dashlets
+    - Report dashlets
+    - RSS feed dashlets
+    - Activity stream
+    - Recent items tracking
+    - Upcoming activities
+    - Dashboard sharing
+  - **Navigation**
+    - Top menu bar
+    - Module tabs
+    - Dropdown menus
+    - Quick create menus
+    - Favorites/bookmarks
+    - Recently viewed items
+    - Breadcrumb navigation
+    - Search bar
+    - User menu
+    - Notifications center
+    - Action menus
+    - Bulk action dropdowns
+    - Contextual actions
+    - Keyboard shortcuts
+    - Navigation history
+  - **Views**
+    - List view
+    - Detail view
+    - Edit view
+    - Quick create view
+    - Popup views
+    - Subpanel views
+    - Dashboard view
+    - Calendar view
+    - Timeline view (via extensions)
+    - Kanban view (via extensions)
+    - Map view (via extensions)
+    - Grid view
+    - Card view options
+    - Split view
+    - Preview panels
+  - **User Experience Features**
+    - In-line editing
+    - Auto-save
+    - Undo/redo
+    - Validation messages
+    - Error notifications
+    - Success confirmations
+    - Loading indicators
+    - Progress bars
+    - Tooltips
+    - Help text
+    - Contextual help
+    - Desktop notifications
+    - Browser notifications
+    - Email notifications
+    - Popup alerts
+#### Scenario: Catalog UI and UX
+- Given UI/UX capabilities are needed for planning
+- When reviewing the catalog
+- Then theme, dashboard, navigation, view, and user experience features are listed
+
+### System and Technical catalog
+- The system shall preserve SuiteCRM system and technical capabilities:
+  - **System Administration**
+    - System settings
+    - Company information
+    - Locale settings
+    - Date/time formats
+    - Currency management
+    - Multi-currency support
+    - Exchange rate configuration
+    - Fiscal year settings
+    - Business hours
+    - Holiday calendar
+    - Email settings
+    - System email accounts
+    - Notification settings
+    - Scheduler configuration
+    - Cron job management
+  - **Performance and Optimization**
+    - Query optimization
+    - Database indexing
+    - Cache management
+    - Image optimization
+    - JavaScript minification
+    - CSS compression
+    - Lazy loading
+    - Pagination
+    - Query result limits
+    - Memory management
+    - Session management
+    - Connection pooling
+    - Load balancing support
+    - CDN integration
+    - Performance monitoring
+  - **Logging and Debugging**
+    - System logs
+    - Error logs
+    - Slow query logs
+    - Email logs
+    - Import/export logs
+    - Workflow logs
+    - API logs
+    - Authentication logs
+    - User activity logs
+    - Debug mode
+    - Log levels (Fatal, Error, Warning, Info, Debug)
+    - Log rotation
+    - Log archiving
+    - Log analysis tools
+    - Error reporting
+  - **Security Features**
+    - User authentication
+    - Password encryption
+    - SSL/TLS support
+    - Session security
+    - CSRF protection
+    - XSS prevention
+    - SQL injection protection
+    - File upload restrictions
+    - IP whitelisting/blacklisting
+    - Brute force protection
+    - Login throttling
+    - Account lockout policies
+    - Security audits
+    - Vulnerability scanning
+    - Security patch management
+  - **Backup and Recovery**
+    - Database backup
+    - File system backup
+    - Automated backups
+    - Backup scheduling
+    - Backup compression
+    - Incremental backups
+    - Backup verification
+    - Disaster recovery
+    - Point-in-time recovery
+    - Backup restoration
+    - Data migration tools
+    - Upgrade utilities
+    - Rollback capabilities
+    - Version control
+    - Change tracking
+#### Scenario: Catalog system and technical
+- Given system capabilities are needed for planning
+- When reviewing the catalog
+- Then system administration, performance, logging, security, and backup features are listed
+
+### Advanced Features catalog
+- The system shall record SuiteCRM advanced capabilities:
+  - **Process Management**
+    - Process definition
+    - Process automation
+    - Process monitoring
+    - Process optimization
+    - Approval workflows
+    - Escalation management
+    - SLA management
+    - Business rules engine
+    - Event-driven automation
+    - Process analytics
+    - Process templates
+    - Process versioning
+    - Process documentation
+    - Compliance tracking
+    - Audit trails
+  - **Advanced Customization**
+    - Logic hooks
+    - Custom code deployment
+    - Extension framework
+    - Plugin architecture
+    - Custom entry points
+    - Custom views
+    - Custom controllers
+    - Custom metadata
+    - Custom vardefs
+    - Custom language strings
+    - Custom schedulers
+    - Custom dashlets
+    - Custom modules
+    - Custom relationships
+    - Custom calculations
+  - **PDF Management**
+    - PDF templates
+    - Dynamic PDF generation
+    - PDF email attachments
+    - PDF customization
+    - PDF merge fields
+    - PDF layouts
+    - PDF styling
+    - PDF watermarks
+    - PDF permissions
+    - PDF encryption
+    - Electronic signatures (via extensions)
+    - PDF archiving
+    - PDF versioning
+    - Multi-page PDFs
+    - PDF forms
+  - **Territory Management**
+    - Territory definition
+    - Geographic territories
+    - Product-based territories
+    - Territory hierarchies
+    - Territory assignment rules
+    - Territory-based access
+    - Territory quotas
+    - Territory reporting
+    - Territory balancing
+    - Territory overlap handling
+    - Territory permissions
+    - Territory transfers
+    - Territory analytics
+    - Multi-territory assignment
+    - Territory forecasting
+  - **Advanced Email Features**
+    - Email drip campaigns
+    - Email nurturing sequences
+    - Email automation
+    - Email personalization
+    - Dynamic content
+    - Email A/B testing
+    - Email scoring
+    - Unsubscribe management
+    - Bounce handling
+    - Email deliverability optimization
+    - Email templates with variables
+    - Conditional email sending
+    - Email tracking and analytics
+    - Email queue management
+    - Email archiving
+#### Scenario: Catalog advanced features
+- Given advanced capabilities are needed for comparison
+- When reviewing the catalog
+- Then process management, advanced customization, PDF management, territory management, and advanced email features are listed

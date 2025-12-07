@@ -1,0 +1,13 @@
+{
+  "name": "laravel-controller-docs",
+  "description": "Auto-document Laravel controllers with PHPDoc",
+  "trigger": {
+    "type": "file:save",
+    "patterns": ["app/Http/Controllers/**/*.php"]
+  },
+  "agent": {
+    "prompt": "Add comprehensive PHPDoc blocks to all controller methods:\n1. Method description\n2. @param tags with types\n3. @return tags\n4. @throws tags for exceptions\n5. Route annotations\nFollow Laravel documentation standards.",
+    "context": ["controller-code", "routes"]
+  },
+  "enabled": true
+}

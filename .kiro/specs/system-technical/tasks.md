@@ -1,6 +1,6 @@
 # Implementation Plan: System & Technical
 
-- [ ] 1. System settings
+- [x] 1. System settings
   - Implement configuration for company info, locale, currencies/exchange rates, fiscal year, business hours/holidays, email/system accounts, notification defaults, scheduler/cron.
   - _Requirements: 1.1-1.2_
   - **Property 1: Configuration persistence**

@@ -108,7 +108,7 @@ assigned_people:
 custom_fields:
     description: Weekly team meeting
     due_date: '{{ +2d }}'
-    status: To do
+    status: Not Started
     priority: High
 ```
 

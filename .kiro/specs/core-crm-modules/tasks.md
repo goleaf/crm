@@ -8,24 +8,24 @@
   - Expand Cases with SLA timers, escalation metadata, queue assignment, threading ids, and portal visibility flags.
   - _Requirements: 1.1, 2.1, 3.1, 4.1, 5.1_
 
-- [ ] 2. Relationship wiring
+- [x] 2. Relationship wiring
   - Implement bidirectional Account↔Contact, Account↔Opportunity, Account↔Case, and activity relationships with soft-deletes.
   - Support many-to-many contact-account links and parent-child accounts.
   - _Requirements: 1.2, 2.2, 6.1_
 
-- [ ] 3. Duplicate detection
+- [x] 3. Duplicate detection
   - Add services for fuzzy matching on name/domain/phone for Accounts and Leads with similarity scoring.
   - Surface detections on create/import flows with user prompts.
   - _Requirements: 1.5, 3.4_
   - **Property 10: Duplicate detection for leads/accounts**
 
-- [ ] 4. Lead routing and conversion
+- [x] 4. Lead routing and conversion
   - Implement round-robin/territory assignment services with audit logs.
   - Build conversion wizard to atomically create/link Account, Contact, Opportunity; update lead status.
   - _Requirements: 3.2, 3.5_
   - **Property 3: Lead distribution rules**, **Property 4: Lead conversion integrity**
 
-- [ ] 5. Opportunity management
+- [x] 5. Opportunity management
   - Configure stage pipelines, probability defaults, weighted revenue calculations, and dashboards/forecasts integration.
   - Enforce stage transition rules and close reasons; add competitor tracking.
   - _Requirements: 4.1, 4.3, 4.4_

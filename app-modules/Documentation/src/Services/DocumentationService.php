@@ -65,7 +65,7 @@ final class DocumentationService
         $results = collect();
 
         foreach ($documentTypes as $docType => $document) {
-            $path = $this->getMarkdownPath($document['file']);
+            $path = $this->getMarkdownPath($document);
 
             if (! file_exists($path)) {
                 continue;
@@ -158,8 +158,10 @@ final class DocumentationService
     /**
      * Get the path to the markdown file
      */
-    private function getMarkdownPath(string $file): string
+    private function getMarkdownPath(array $document): string
     {
-        return config('documentation.markdown.base_path').'/'.$file;
+        $basePath = $document['base_path'] ?? config('documentation.markdown.base_path');
+
+        return rtrim((string) $basePath, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$document['file'];
     }
 }
