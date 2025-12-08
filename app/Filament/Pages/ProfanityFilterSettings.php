@@ -21,6 +21,8 @@ final class ProfanityFilterSettings extends Page implements HasForms
 {
     use InteractsWithForms;
 
+    protected string $view = 'filament.pages.profanity-filter-settings';
+
     public static function getNavigationIcon(): ?string
     {
         return 'heroicon-o-shield-check';
@@ -40,8 +42,6 @@ final class ProfanityFilterSettings extends Page implements HasForms
     {
         return 'Profanity Filter Settings';
     }
-
-    protected static string $view = 'filament.pages.profanity-filter-settings';
 
     public ?array $data = [];
 
