@@ -18,6 +18,7 @@ use App\Filament\Resources\PeopleResource\RelationManagers\NotesRelationManager;
 use App\Filament\Resources\PeopleResource\RelationManagers\TasksRelationManager;
 use App\Models\Company;
 use App\Models\People;
+use App\Support\Helpers\ArrayHelper;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -149,7 +150,7 @@ final class PeopleResource extends Resource
                                     ->label('Lead Source')
                                     ->maxLength(255)
                                     ->placeholder('Website, Referral, Event...')
-                                    ->hint(implode(', ', config('contacts.lead_sources', []))),
+                                    ->hint(ArrayHelper::joinList(config('contacts.lead_sources', []), ', ', emptyPlaceholder: null)),
                                 Select::make('reports_to_id')
                                     ->relationship(
                                         'reportsTo',
@@ -282,6 +283,7 @@ final class PeopleResource extends Resource
                                     ->inline(false),
                                 TextInput::make('portal_username')
                                     ->label('Portal Username')
+                                    ->rules(['nullable', 'username'])
                                     ->maxLength(255),
                                 Toggle::make('sync_enabled')
                                     ->label('Sync Enabled')
@@ -361,29 +363,12 @@ final class PeopleResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('segments')
                     ->label('Segments')
-                    ->formatStateUsing(function (mixed $state): string {
-                        if (in_array($state, [null, '', []], true)) {
-                            return '—';
-                        }
-
-                        // Handle JSON string
-                        if (is_string($state)) {
-                            $decoded = json_decode($state, true);
-                            $state = is_array($decoded) ? $decoded : [$state];
-                        }
-
-                        // Handle array
-                        if (is_array($state)) {
-                            return implode(', ', $state);
-                        }
-
-                        return (string) $state;
-                    })
+                    ->formatStateUsing(fn (mixed $state): string => ArrayHelper::joinList($state) ?? '—')
                     ->wrap()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('tags')
                     ->label('Tags')
-                    ->getStateUsing(fn (People $record): string => $record->tags->pluck('name')->implode(', ') ?: '—')
+                    ->getStateUsing(fn (People $record): string => ArrayHelper::joinList($record->tags->pluck('name')) ?? '—')
                     ->wrap()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('creator.name')

@@ -70,12 +70,16 @@ final class TaskForm
             ->preload()
             ->columnSpanFull();
 
-        $components[] = Select::make('categories')
-            ->label('Categories')
+        $components[] = Select::make('taskTaxonomies')
+            ->label(__('app.labels.categories'))
+            ->options(fn () => \App\Models\Taxonomy::query()
+                ->where('type', 'task_category')
+                ->orderBy('name')
+                ->pluck('name', 'id'))
             ->multiple()
-            ->relationship('categories', 'name')
             ->preload()
             ->searchable()
+            ->relationship('taskTaxonomies')
             ->columnSpanFull();
 
         $components[] = CustomFields::form()->forSchema($schema)->except($excludeFields)->build()->columnSpanFull();

@@ -9,6 +9,7 @@ use App\Enums\LeadGrade;
 use App\Enums\LeadNurtureStatus;
 use App\Enums\LeadSource;
 use App\Enums\LeadStatus;
+use App\Rules\CleanContent;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -30,13 +31,13 @@ final class StoreLeadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'job_title' => ['nullable', 'string', 'max:255'],
-            'company_name' => ['nullable', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', new CleanContent],
+            'job_title' => ['nullable', 'string', 'max:255', new CleanContent],
+            'company_name' => ['nullable', 'string', 'max:255', new CleanContent],
             'company_id' => ['nullable', 'integer', 'exists:companies,id'],
             'email' => ['nullable', 'email', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:50'],
-            'mobile' => ['nullable', 'string', 'max:50'],
+            'phone' => ['nullable', 'string', 'max:50', new CleanContent],
+            'mobile' => ['nullable', 'string', 'max:50', new CleanContent],
             'website' => ['nullable', 'url', 'max:255'],
             'source' => ['required', Rule::enum(LeadSource::class)],
             'status' => ['required', Rule::enum(LeadStatus::class)],
@@ -44,13 +45,13 @@ final class StoreLeadRequest extends FormRequest
             'grade' => ['nullable', Rule::enum(LeadGrade::class)],
             'assignment_strategy' => ['required', Rule::enum(LeadAssignmentStrategy::class)],
             'assigned_to_id' => ['nullable', 'integer', 'exists:users,id'],
-            'territory' => ['nullable', 'string', 'max:255'],
+            'territory' => ['nullable', 'string', 'max:255', new CleanContent],
             'nurture_status' => ['nullable', Rule::enum(LeadNurtureStatus::class)],
-            'nurture_program' => ['nullable', 'string', 'max:255'],
+            'nurture_program' => ['nullable', 'string', 'max:255', new CleanContent],
             'next_nurture_touch_at' => ['nullable', 'date'],
             'qualified_at' => ['nullable', 'date'],
             'qualified_by_id' => ['nullable', 'integer', 'exists:users,id'],
-            'qualification_notes' => ['nullable', 'string'],
+            'qualification_notes' => ['nullable', 'string', new CleanContent],
             'converted_at' => ['nullable', 'date'],
             'converted_by_id' => ['nullable', 'integer', 'exists:users,id'],
             'converted_company_id' => ['nullable', 'integer', 'exists:companies,id'],
@@ -58,7 +59,7 @@ final class StoreLeadRequest extends FormRequest
             'converted_opportunity_id' => ['nullable', 'integer', 'exists:opportunities,id'],
             'duplicate_of_id' => ['nullable', 'integer', 'exists:leads,id'],
             'duplicate_score' => ['nullable', 'numeric', 'min:0', 'max:100'],
-            'web_form_key' => ['nullable', 'string', 'max:255'],
+            'web_form_key' => ['nullable', 'string', 'max:255', new CleanContent],
             'web_form_payload' => ['nullable', 'array'],
             'tags' => ['nullable', 'array'],
             'tags.*' => ['integer', 'exists:tags,id'],

@@ -1,5 +1,6 @@
 @php
     use App\Enums\CalendarEventType;
+    use Illuminate\Support\Carbon;
 @endphp
 
 <x-layout.app-shell
@@ -117,6 +118,49 @@
                         </ul>
                     @endif
                 </form>
+            </div>
+
+            <div class="p-4 rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 space-y-3">
+                <div class="flex items-start justify-between gap-2">
+                    <div>
+                        <p class="text-xs uppercase tracking-wide text-gray-500">{{ __('app.labels.bookable_slots') }}</p>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Zap bookable slots</h3>
+                        <p class="text-xs text-gray-500">{{ __('app.messages.zap_managed_slots') }}</p>
+                    </div>
+                    @if($nextBookableSlot)
+                        <div class="text-right">
+                            <p class="text-xs text-gray-500 font-semibold">{{ __('app.labels.next_available_slot') }}</p>
+                            <p class="text-sm font-semibold text-primary">
+                                {{ Carbon::parse($nextBookableSlot['date'])->format('M d') }}
+                                · {{ $nextBookableSlot['start_time'] }} – {{ $nextBookableSlot['end_time'] }}
+                            </p>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="space-y-2">
+                    @forelse(array_slice($bookableSlots, 0, 5) as $slot)
+                        <div class="flex items-center justify-between border border-gray-100 dark:border-gray-800 rounded-lg px-3 py-2">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-900 dark:text-white">
+                                    {{ $slot['start_time'] }} – {{ $slot['end_time'] }}
+                                </p>
+                                <p class="text-xs text-gray-500">{{ Carbon::now()->format('D, M j') }}</p>
+                            </div>
+                            <span @class([
+                                'text-xs font-semibold px-2 py-1 rounded-full',
+                                'bg-green-100 text-green-700' => $slot['is_available'] ?? false,
+                                'bg-amber-100 text-amber-700' => ! ($slot['is_available'] ?? false),
+                            ])>
+                                {{ ($slot['is_available'] ?? false) ? __('app.labels.available') : __('app.labels.unavailable') }}
+                            </span>
+                        </div>
+                    @empty
+                        <p class="text-sm text-gray-500 dark:text-gray-300">
+                            {{ __('app.messages.no_bookable_slots') }}
+                        </p>
+                    @endforelse
+                </div>
             </div>
 
             <div class="p-4 rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 space-y-3">

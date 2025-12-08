@@ -66,10 +66,10 @@ final class PropertyTestCaseTest extends PropertyTestCase
 
     public function test_run_property_test_throws_exception_for_invalid_iterations(): void
     {
-        expect(fn () => $this->runPropertyTest(fn () => null, 0))
+        expect(fn () => $this->runPropertyTest(fn (): null => null, 0))
             ->toThrow(\InvalidArgumentException::class, 'Iterations must be at least 1');
 
-        expect(fn () => $this->runPropertyTest(fn () => null, -1))
+        expect(fn () => $this->runPropertyTest(fn (): null => null, -1))
             ->toThrow(\InvalidArgumentException::class, 'Iterations must be at least 1');
     }
 
@@ -122,7 +122,7 @@ final class PropertyTestCaseTest extends PropertyTestCase
 
         // Try multiple times to get an empty subset
         for ($i = 0; $i < 50; $i++) {
-            if (empty($this->randomSubset($items))) {
+            if ($this->randomSubset($items) === []) {
                 $foundEmpty = true;
                 break;
             }
@@ -156,8 +156,8 @@ final class PropertyTestCaseTest extends PropertyTestCase
 
     public function test_random_date_respects_range(): void
     {
-        $start = Carbon::parse('-1 year');
-        $end = Carbon::parse('+1 year');
+        $start = \Illuminate\Support\Facades\Date::parse('-1 year');
+        $end = \Illuminate\Support\Facades\Date::parse('+1 year');
 
         for ($i = 0; $i < 20; $i++) {
             $date = $this->randomDate('-1 year', '+1 year');
@@ -169,8 +169,8 @@ final class PropertyTestCaseTest extends PropertyTestCase
 
     public function test_random_date_with_custom_range(): void
     {
-        $start = Carbon::parse('2020-01-01');
-        $end = Carbon::parse('2020-12-31');
+        $start = \Illuminate\Support\Facades\Date::parse('2020-01-01');
+        $end = \Illuminate\Support\Facades\Date::parse('2020-12-31');
 
         for ($i = 0; $i < 20; $i++) {
             $date = $this->randomDate('2020-01-01', '2020-12-31');
@@ -236,10 +236,10 @@ final class PropertyTestCaseTest extends PropertyTestCase
 
     public function test_random_boolean_throws_exception_for_invalid_probability(): void
     {
-        expect(fn () => $this->randomBoolean(-0.1))
+        expect(fn (): bool => $this->randomBoolean(-0.1))
             ->toThrow(\InvalidArgumentException::class, 'Probability must be between 0.0 and 1.0');
 
-        expect(fn () => $this->randomBoolean(1.1))
+        expect(fn (): bool => $this->randomBoolean(1.1))
             ->toThrow(\InvalidArgumentException::class, 'Probability must be between 0.0 and 1.0');
     }
 
@@ -272,7 +272,7 @@ final class PropertyTestCaseTest extends PropertyTestCase
 
     public function test_random_int_throws_exception_for_invalid_range(): void
     {
-        expect(fn () => $this->randomInt(20, 10))
+        expect(fn (): int => $this->randomInt(20, 10))
             ->toThrow(\InvalidArgumentException::class, 'Minimum value cannot be greater than maximum value');
     }
 
@@ -299,10 +299,10 @@ final class PropertyTestCaseTest extends PropertyTestCase
 
     public function test_random_string_throws_exception_for_invalid_length(): void
     {
-        expect(fn () => $this->randomString(0))
+        expect(fn (): string => $this->randomString(0))
             ->toThrow(\InvalidArgumentException::class, 'Length must be at least 1');
 
-        expect(fn () => $this->randomString(-1))
+        expect(fn (): string => $this->randomString(-1))
             ->toThrow(\InvalidArgumentException::class, 'Length must be at least 1');
     }
 
@@ -356,17 +356,15 @@ final class PropertyTestCaseTest extends PropertyTestCase
 
     public function test_create_team_users_throws_exception_for_invalid_count(): void
     {
-        expect(fn () => $this->createTeamUsers(0))
+        expect(fn (): array => $this->createTeamUsers(0))
             ->toThrow(\InvalidArgumentException::class, 'Count must be at least 1');
 
-        expect(fn () => $this->createTeamUsers(-1))
+        expect(fn (): array => $this->createTeamUsers(-1))
             ->toThrow(\InvalidArgumentException::class, 'Count must be at least 1');
     }
 
     public function test_reset_property_test_state_refreshes_models(): void
     {
-        // Modify the team name
-        $originalName = $this->team->name;
         $this->team->update(['name' => 'Modified Name']);
 
         // Reset state

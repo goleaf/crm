@@ -19,7 +19,7 @@ final class ApplyCustomMiddleware
             return $next($request);
         }
 
-        return app(Pipeline::class)
+        return resolve(Pipeline::class)
             ->send($request)
             ->through($custom)
             ->then(static fn (Request $request): Response => $next($request));

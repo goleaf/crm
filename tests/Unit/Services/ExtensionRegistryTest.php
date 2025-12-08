@@ -40,7 +40,7 @@ final class ExtensionRegistryTest extends TestCase
             type: ExtensionType::LOGIC_HOOK,
             handlerClass: TestHandler::class,
             description: 'Test description',
-            targetModel: 'App\\Models\\Company',
+            targetModel: \App\Models\Company::class,
             targetEvent: HookEvent::AFTER_SAVE,
             priority: 100
         );
@@ -123,25 +123,25 @@ final class ExtensionRegistryTest extends TestCase
 
         Extension::factory()->active()->logicHook()->create([
             'team_id' => $team->id,
-            'target_model' => 'App\\Models\\Company',
+            'target_model' => \App\Models\Company::class,
             'target_event' => HookEvent::AFTER_SAVE,
             'priority' => 100,
         ]);
 
         Extension::factory()->active()->logicHook()->create([
             'team_id' => $team->id,
-            'target_model' => 'App\\Models\\Company',
+            'target_model' => \App\Models\Company::class,
             'target_event' => HookEvent::AFTER_SAVE,
             'priority' => 50,
         ]);
 
         Extension::factory()->active()->logicHook()->create([
             'team_id' => $team->id,
-            'target_model' => 'App\\Models\\Contact',
+            'target_model' => \App\Models\Contact::class,
             'target_event' => HookEvent::AFTER_SAVE,
         ]);
 
-        $hooks = $this->registry->getHooksFor('App\\Models\\Company', HookEvent::AFTER_SAVE);
+        $hooks = $this->registry->getHooksFor(\App\Models\Company::class, HookEvent::AFTER_SAVE);
 
         expect($hooks)->toHaveCount(2);
         expect($hooks->first()->priority)->toBe(50); // Lower priority first
@@ -250,10 +250,7 @@ final class ExtensionRegistryTest extends TestCase
 
 final class FailingHandler
 {
-    /**
-     * @param  array<string, mixed>  $_context
-     */
-    public function handle(array $_context): never
+    public function handle(): never
     {
         throw new \RuntimeException('Handler failed');
     }

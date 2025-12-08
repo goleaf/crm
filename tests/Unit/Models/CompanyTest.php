@@ -25,7 +25,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 uses(RefreshDatabase::class);
 
-test('company belongs to team', function () {
+test('company belongs to team', function (): void {
     $team = Team::factory()->create();
     $company = Company::factory()->create([
         'team_id' => $team->getKey(),
@@ -35,7 +35,7 @@ test('company belongs to team', function () {
         ->and($company->team->getKey())->toBe($team->getKey());
 });
 
-test('company belongs to creator', function () {
+test('company belongs to creator', function (): void {
     $user = User::factory()->create();
     $company = Company::factory()->create([
         'creator_id' => $user->getKey(),
@@ -45,7 +45,7 @@ test('company belongs to creator', function () {
         ->and($company->creator->getKey())->toBe($user->getKey());
 });
 
-test('company belongs to account owner', function () {
+test('company belongs to account owner', function (): void {
     $user = User::factory()->create();
     $company = Company::factory()->create([
         'account_owner_id' => $user->getKey(),
@@ -63,7 +63,7 @@ test('company casts account type to enum', function (): void {
     expect($company->account_type)->toBe(AccountType::CUSTOMER);
 });
 
-test('company has many people', function () {
+test('company has many people', function (): void {
     $company = Company::factory()->create();
     $people = People::factory()->create([
         'company_id' => $company->getKey(),
@@ -73,7 +73,7 @@ test('company has many people', function () {
         ->and($company->people->first()->getKey())->toBe($people->getKey());
 });
 
-test('company has many opportunities', function () {
+test('company has many opportunities', function (): void {
     $company = Company::factory()->create();
     $opportunity = Opportunity::factory()->create([
         'company_id' => $company->getKey(),
@@ -83,7 +83,7 @@ test('company has many opportunities', function () {
         ->and($company->opportunities->first()->getKey())->toBe($opportunity->getKey());
 });
 
-test('company morph to many tasks', function () {
+test('company morph to many tasks', function (): void {
     $company = Company::factory()->create();
     $task = Task::factory()->create();
 
@@ -93,7 +93,7 @@ test('company morph to many tasks', function () {
         ->and($company->tasks->first()->getKey())->toBe($task->getKey());
 });
 
-test('company morph to many notes', function () {
+test('company morph to many notes', function (): void {
     $company = Company::factory()->create();
     $note = Note::factory()->create();
 
@@ -103,7 +103,7 @@ test('company morph to many notes', function () {
         ->and($company->notes->first()->getKey())->toBe($note->getKey());
 });
 
-test('company has logo attribute', function () {
+test('company has logo attribute', function (): void {
     $company = Company::factory()->create([
         'name' => 'Test Company',
     ]);
@@ -111,21 +111,21 @@ test('company has logo attribute', function () {
     expect($company->logo)->not->toBeNull();
 });
 
-test('company uses media library', function () {
+test('company uses media library', function (): void {
     $company = Company::factory()->create();
 
     expect(class_implements($company))->toContain(HasMedia::class)
         ->and(class_uses_recursive($company))->toContain(InteractsWithMedia::class);
 });
 
-test('company uses custom fields', function () {
+test('company uses custom fields', function (): void {
     $company = Company::factory()->create();
 
     expect(class_implements($company))->toContain(HasCustomFields::class)
         ->and(class_uses_recursive($company))->toContain(UsesCustomFields::class);
 });
 
-test('company calculates total pipeline value using open opportunities', function () {
+test('company calculates total pipeline value using open opportunities', function (): void {
     $company = Company::factory()->create();
     TenantContextService::setTenantId($company->team_id);
 
@@ -175,7 +175,7 @@ test('company calculates total pipeline value using open opportunities', functio
     expect($company->getTotalPipelineValue())->toBe(150000.0);
 });
 
-test('company activity timeline aggregates notes tasks and opportunities in order', function () {
+test('company activity timeline aggregates notes tasks and opportunities in order', function (): void {
     $company = Company::factory()->create();
     TenantContextService::setTenantId($company->team_id);
 
@@ -276,7 +276,7 @@ test('company activity timeline aggregates notes tasks and opportunities in orde
 });
 
 // Feature: accounts-module, Property 1: Account creation persistence
-test('account creation persists data correctly', function () {
+test('account creation persists data correctly', function (): void {
     $industry = fake()->randomElement(Industry::cases());
     $data = [
         'name' => fake()->company(),
@@ -302,7 +302,7 @@ test('account creation persists data correctly', function () {
 })->repeat(10);
 
 // Feature: accounts-module, Property 2: Account update persistence
-test('account update persists changes correctly', function () {
+test('account update persists changes correctly', function (): void {
     $company = Company::factory()->create();
     $industry = fake()->randomElement(Industry::cases());
 
@@ -326,7 +326,7 @@ test('account update persists changes correctly', function () {
         ->and($retrieved->description)->toBe($updates['description']);
 })->repeat(10);
 
-test('employee count scope filters by inclusive range', function () {
+test('employee count scope filters by inclusive range', function (): void {
     $small = Company::factory()->create(['employee_count' => 25]);
     $mid = Company::factory()->create(['employee_count' => 250]);
     $large = Company::factory()->create(['employee_count' => 1250]);
@@ -340,7 +340,7 @@ test('employee count scope filters by inclusive range', function () {
         ->and($results)->not->toContain($large->getKey());
 });
 
-test('employee count scope supports open ended ranges', function () {
+test('employee count scope supports open ended ranges', function (): void {
     $tiny = Company::factory()->create(['employee_count' => 5]);
     $mid = Company::factory()->create(['employee_count' => 200]);
     $huge = Company::factory()->create(['employee_count' => 4000]);
@@ -361,7 +361,7 @@ test('employee count scope supports open ended ranges', function () {
 });
 
 // Feature: accounts-module, Property 12: Fuzzy name matching
-test('duplicate detection identifies similar names', function () {
+test('duplicate detection identifies similar names', function (): void {
     $team = Team::factory()->create();
     $baseName = fake()->company();
     $website = 'https://example.test';
@@ -393,7 +393,7 @@ test('duplicate detection identifies similar names', function () {
 })->repeat(5);
 
 // Feature: accounts-module, Property 13: Similarity score calculation
-test('similarity score is between 0 and 100', function () {
+test('similarity score is between 0 and 100', function (): void {
     $team = Team::factory()->create();
     $company1 = Company::factory()->for($team)->create([
         'name' => fake()->company(),
@@ -412,7 +412,7 @@ test('similarity score is between 0 and 100', function () {
 })->repeat(10);
 
 // Feature: accounts-module, Property 19: Pipeline value calculation
-test('pipeline value equals sum of open opportunity amounts', function () {
+test('pipeline value equals sum of open opportunity amounts', function (): void {
     $company = Company::factory()->create();
     TenantContextService::setTenantId($company->team_id);
 
@@ -479,7 +479,7 @@ test('pipeline value equals sum of open opportunity amounts', function () {
 })->repeat(5);
 
 // Feature: accounts-module, Property 7: Activity chronological ordering
-test('activity timeline returns items in descending chronological order', function () {
+test('activity timeline returns items in descending chronological order', function (): void {
     $company = Company::factory()->create();
     TenantContextService::setTenantId($company->team_id);
 
@@ -561,7 +561,7 @@ test('activity timeline returns items in descending chronological order', functi
     }
 })->repeat(5);
 
-test('company hierarchy cycle detection prevents assigning self or descendant as parent', function () {
+test('company hierarchy cycle detection prevents assigning self or descendant as parent', function (): void {
     $root = Company::factory()->create();
     $child = Company::factory()->create(['parent_company_id' => $root->getKey()]);
     $grandchild = Company::factory()->create(['parent_company_id' => $child->getKey()]);
@@ -579,8 +579,8 @@ test('company hierarchy cycle detection prevents assigning self or descendant as
 });
 
 // Feature: accounts-module, Property 15: Merge relationship transfer
-test('merge transfers all relationships from duplicate to primary', function () {
-    $service = app(\App\Services\AccountMergeService::class);
+test('merge transfers all relationships from duplicate to primary', function (): void {
+    $service = resolve(\App\Services\AccountMergeService::class);
 
     $primary = Company::factory()->create();
     $duplicate = Company::factory()->create();
@@ -634,8 +634,8 @@ test('merge transfers all relationships from duplicate to primary', function () 
 })->repeat(10);
 
 // Feature: accounts-module, Property 17: Merge data preservation
-test('merge preserves all unique data based on field selections', function () {
-    $service = app(\App\Services\AccountMergeService::class);
+test('merge preserves all unique data based on field selections', function (): void {
+    $service = resolve(\App\Services\AccountMergeService::class);
 
     // Create companies with different non-null field values
     $primary = Company::factory()->create([
@@ -691,8 +691,8 @@ test('merge preserves all unique data based on field selections', function () {
 })->repeat(10);
 
 // Feature: accounts-module, Property 18: Merge transaction rollback
-test('merge operation rolls back all changes on error', function () {
-    $service = app(\App\Services\AccountMergeService::class);
+test('merge operation rolls back all changes on error', function (): void {
+    $service = resolve(\App\Services\AccountMergeService::class);
 
     $primary = Company::factory()->create([
         'name' => fake()->company(),
@@ -743,8 +743,8 @@ test('merge operation rolls back all changes on error', function () {
 })->repeat(10);
 
 // Feature: accounts-module, Property 16: Merge audit trail
-test('merge creates audit trail and soft deletes duplicate', function () {
-    $service = app(\App\Services\AccountMergeService::class);
+test('merge creates audit trail and soft deletes duplicate', function (): void {
+    $service = resolve(\App\Services\AccountMergeService::class);
 
     $user = User::factory()->create();
     $this->actingAs($user);
@@ -794,8 +794,8 @@ test('merge creates audit trail and soft deletes duplicate', function () {
 })->repeat(10);
 
 // Feature: accounts-module, Property 11: Duplicate detection on creation
-test('duplicate detection identifies similar accounts on creation', function () {
-    $service = app(\App\Services\DuplicateDetectionService::class);
+test('duplicate detection identifies similar accounts on creation', function (): void {
+    $service = resolve(\App\Services\DuplicateDetectionService::class);
 
     // Create an existing company
     $existing = Company::factory()->create([
@@ -854,19 +854,17 @@ test('duplicate detection identifies similar accounts on creation', function () 
 })->repeat(3);
 
 // Feature: accounts-module, Property 27: Account type persistence and filtering
-test('account type persists and can be filtered', function () {
+test('account type persists and can be filtered', function (): void {
     $team = Team::factory()->create();
 
     // Generate random account types
     $accountTypes = fake()->randomElements(AccountType::cases(), fake()->numberBetween(2, 6));
 
     // Create companies with different account types
-    $companies = collect($accountTypes)->map(function (AccountType $type) use ($team) {
-        return Company::factory()->create([
-            'team_id' => $team->getKey(),
-            'account_type' => $type,
-        ]);
-    });
+    $companies = collect($accountTypes)->map(fn (AccountType $type) => Company::factory()->create([
+        'team_id' => $team->getKey(),
+        'account_type' => $type,
+    ]));
 
     // Test persistence: verify each company has the correct account type
     foreach ($companies as $company) {
@@ -884,16 +882,16 @@ test('account type persists and can be filtered', function () {
             ->get();
 
         // All filtered companies should have the specified type
-        expect($filtered->every(fn (Company $c) => $c->account_type === $type))->toBeTrue();
+        expect($filtered->every(fn (Company $c): bool => $c->account_type === $type))->toBeTrue();
 
         // Count should match the number of companies created with this type
-        $expectedCount = $companies->filter(fn (Company $c) => $c->account_type === $type)->count();
+        $expectedCount = $companies->filter(fn (Company $c): bool => $c->account_type === $type)->count();
         expect($filtered->count())->toBe($expectedCount);
     }
 })->repeat(100);
 
 // Feature: accounts-module, Property 28: Account type change audit trail
-test('account type changes are preserved in activity history', function () {
+test('account type changes are preserved in activity history', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create(['current_team_id' => $team->getKey()]);
     $this->actingAs($user);
@@ -911,7 +909,7 @@ test('account type changes are preserved in activity history', function () {
     // Change the account type to a different random type
     $availableTypes = array_filter(
         AccountType::cases(),
-        fn (AccountType $type) => $type !== $initialType
+        fn (AccountType $type): bool => $type !== $initialType
     );
     $newType = fake()->randomElement($availableTypes);
 
@@ -928,7 +926,7 @@ test('account type changes are preserved in activity history', function () {
     expect($activities->isNotEmpty())->toBeTrue('Expected at least one update activity');
 
     // Find the activity that logged the account_type change
-    $accountTypeChangeActivity = $activities->first(function ($activity) {
+    $accountTypeChangeActivity = $activities->first(function ($activity): bool {
         $changes = $activity->changes;
 
         return is_array($changes)

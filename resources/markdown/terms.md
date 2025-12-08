@@ -18,4 +18,4 @@ particular purpose.
 
 ## Modification of Agreement
 
-Relaticle reserves the right to change this agreement at any time without notice.
+[Brand] reserves the right to change this agreement at any time without notice.

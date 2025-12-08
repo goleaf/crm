@@ -16,6 +16,6 @@ final class AddressLine
      */
     public static function format(AddressData|array|null $address, bool $multiline = false): string
     {
-        return app(AddressFormatter::class)->format($address, $multiline);
+        return resolve(AddressFormatter::class)->format($address, $multiline);
     }
 }

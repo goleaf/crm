@@ -7,7 +7,7 @@ use Filament\Facades\Filament;
 
 use function Pest\Livewire\livewire;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->withPersonalTeam()->create();
     $this->actingAs($this->user);
     Filament::setTenant($this->user->personalTeam());
@@ -63,7 +63,7 @@ it('can search `:dataset` column', function (string $column): void {
     $records = App\Models\Company::factory(3)->for($this->user->personalTeam())->create();
     $search = data_get($records->first(), $column);
 
-    $visibleRecords = $records->filter(fn (Illuminate\Database\Eloquent\Model $record) => data_get($record, $column) === $search);
+    $visibleRecords = $records->filter(fn (Illuminate\Database\Eloquent\Model $record): bool => data_get($record, $column) === $search);
 
     livewire(App\Filament\Resources\CompanyResource\Pages\ListCompanies::class)
         ->searchTable($search instanceof BackedEnum ? $search->value : $search)
@@ -86,8 +86,7 @@ it('can paginate records', function (): void {
 
     // Fetch records with the same sort order as the table (created_at DESC)
     $sortedRecords = App\Models\Company::query()
-        ->whereIn('id', $records->pluck('id'))
-        ->orderBy('created_at', 'desc')
+        ->whereIn('id', $records->pluck('id'))->latest()
         ->get();
 
     livewire(App\Filament\Resources\CompanyResource\Pages\ListCompanies::class)

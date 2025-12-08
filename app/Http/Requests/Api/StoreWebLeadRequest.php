@@ -7,6 +7,7 @@ namespace App\Http\Requests\Api;
 use App\Enums\LeadAssignmentStrategy;
 use App\Enums\LeadSource;
 use App\Enums\LeadStatus;
+use App\Rules\CleanContent;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -23,18 +24,18 @@ final class StoreWebLeadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'job_title' => ['nullable', 'string', 'max:255'],
-            'company_name' => ['nullable', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', new CleanContent],
+            'job_title' => ['nullable', 'string', 'max:255', new CleanContent],
+            'company_name' => ['nullable', 'string', 'max:255', new CleanContent],
             'email' => ['required', 'email', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:50', 'regex:/^[0-9+\\-\\s\\(\\)\\.]+$/'],
-            'mobile' => ['nullable', 'string', 'max:50', 'regex:/^[0-9+\\-\\s\\(\\)\\.]+$/'],
+            'phone' => ['nullable', 'string', 'max:50', 'regex:/^[0-9+\\-\\s\\(\\)\\.]+$/', new CleanContent],
+            'mobile' => ['nullable', 'string', 'max:50', 'regex:/^[0-9+\\-\\s\\(\\)\\.]+$/', new CleanContent],
             'website' => ['nullable', 'url', 'max:255'],
             'source' => ['nullable', Rule::enum(LeadSource::class)],
             'status' => ['nullable', Rule::enum(LeadStatus::class)],
             'assignment_strategy' => ['nullable', Rule::enum(LeadAssignmentStrategy::class)],
-            'nurture_program' => ['nullable', 'string', 'max:255'],
-            'web_form_key' => ['nullable', 'string', 'max:255'],
+            'nurture_program' => ['nullable', 'string', 'max:255', new CleanContent],
+            'web_form_key' => ['nullable', 'string', 'max:255', new CleanContent],
             'tags' => ['nullable', 'array'],
             'tags.*' => ['integer', 'exists:tags,id'],
         ];

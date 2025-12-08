@@ -9,6 +9,7 @@ use App\Models\PdfTemplate;
 use App\Models\Team;
 use App\Models\User;
 use App\Services\PdfService;
+use Hdaklue\PathBuilder\PathBuilder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 
@@ -31,12 +32,16 @@ test('generates PDF from template and entity', function (): void {
         'company_name' => 'Test Company',
     ]);
 
+    $hashedTeam = md5((string) $team->id);
+
     expect($generation)->toBeInstanceOf(PdfGeneration::class)
         ->and($generation->status)->toBe(PdfGenerationStatus::COMPLETED)
         ->and($generation->pdf_template_id)->toBe($template->id)
         ->and($generation->entity_type)->toBe(Invoice::class)
         ->and($generation->entity_id)->toBe($invoice->id)
         ->and($generation->file_path)->not->toBeNull()
+        ->and($generation->file_path)->toStartWith("pdfs/{$hashedTeam}/")
+        ->and(PathBuilder::isSafe($generation->file_path))->toBeTrue()
         ->and(Storage::disk('local')->exists($generation->file_path))->toBeTrue();
 });
 
@@ -80,7 +85,7 @@ test('handles generation failure gracefully', function (): void {
 
     try {
         $this->service->generate($template, $invoice);
-    } catch (\Throwable $e) {
+    } catch (\Throwable) {
         $generation = PdfGeneration::where('pdf_template_id', $template->id)->first();
         expect($generation)->not->toBeNull()
             ->and($generation->status)->toBe(PdfGenerationStatus::FAILED)
@@ -120,7 +125,7 @@ test('retrieves PDF content from generation', function (): void {
     $content = $this->service->getContent($generation);
 
     expect($content)->not->toBeEmpty()
-        ->and(str_contains($content, '%PDF'))->toBeTrue();
+        ->and(str_contains((string) $content, '%PDF'))->toBeTrue();
 });
 
 test('deletes PDF file and generation record', function (): void {
@@ -211,16 +216,18 @@ test('property: generated PDFs match template specifications with merge field fi
         $generation = $this->service->generate($templateState, $invoice, $mergeFields);
 
         // Property assertions
-        expect($generation->status)->toBe(PdfGenerationStatus::COMPLETED, "Generation {$i} should complete successfully");
-        expect($generation->has_watermark)->toBe($hasWatermark, "Generation {$i} watermark flag should match template");
-        expect($generation->is_encrypted)->toBe($hasEncryption, "Generation {$i} encryption flag should match template");
-        expect($generation->merge_data)->toBe($mergeFields, "Generation {$i} should store merge data");
+        expect($generation->status)->toBe(PdfGenerationStatus::COMPLETED);
+        expect($generation->has_watermark)->toBe($hasWatermark);
+        expect($generation->is_encrypted)->toBe($hasEncryption);
+        expect($generation->merge_data)->toBe($mergeFields);
 
         $content = $this->service->getContent($generation);
-        expect($content)->toContain('%PDF', "Generation {$i} should produce valid PDF");
+        expect($content)->toContain('%PDF');
 
-        foreach ($mergeFields as $value) {
-            expect($content)->toContain((string) $value, "Generation {$i} PDF should contain merge field value: {$value}");
+        if (! $generation->is_encrypted) {
+            foreach ($mergeFields as $value) {
+                expect($content)->toContain((string) $value);
+            }
         }
     }
 })->group('property');

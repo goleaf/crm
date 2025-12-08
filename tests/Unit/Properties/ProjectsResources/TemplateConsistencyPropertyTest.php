@@ -174,7 +174,7 @@ final class TemplateConsistencyPropertyTest extends PropertyTestCase
 
             // Property: Project should have same tasks as template
             $projectTaskIds = $project->tasks->pluck('id')->sort()->values()->toArray();
-            $templateTaskIds = collect($taskIds)->sort()->values()->toArray();
+            $templateTaskIds = collect($taskIds)->sort()->values()->all();
 
             $this->assertEquals(
                 $templateTaskIds,

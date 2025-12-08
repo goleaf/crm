@@ -6,7 +6,6 @@ namespace App\Services;
 
 use App\Models\Project;
 use App\Models\Task;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 /**
@@ -256,7 +255,7 @@ final class ProjectSchedulingService
         $latestTimes = $this->calculateLatestTimes($tasks, $earliestTimes);
 
         // Calculate project start date
-        $projectStart = $project->start_date ?? Carbon::today();
+        $projectStart = $project->start_date ?? \Illuminate\Support\Facades\Date::today();
 
         $taskTimeline = $tasks->map(function (Task $task) use ($earliestTimes, $latestTimes, $projectStart): array {
             $earliestStart = $earliestTimes[$task->id]['start'];
@@ -280,13 +279,13 @@ final class ProjectSchedulingService
                 'assignees' => $task->assignees->pluck('name')->toArray(),
                 'dependencies' => $task->dependencies->pluck('id')->toArray(),
             ];
-        })->toArray();
+        })->all();
 
         // Extract milestones
         $milestones = collect($taskTimeline)
             ->filter(fn (array $task) => $task['is_milestone'])
             ->values()
-            ->toArray();
+            ->all();
 
         return [
             'project_id' => $project->id,
@@ -333,7 +332,7 @@ final class ProjectSchedulingService
         // Check if project is on schedule
         $onSchedule = true;
         if ($project->end_date !== null) {
-            $projectStart = $project->start_date ?? Carbon::today();
+            $projectStart = $project->start_date ?? \Illuminate\Support\Facades\Date::today();
             $estimatedEnd = $projectStart->copy()->addDays($criticalPathLength);
             $onSchedule = $estimatedEnd->lessThanOrEqualTo($project->end_date);
         }

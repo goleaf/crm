@@ -31,7 +31,7 @@ uses(RefreshDatabase::class);
  */
 
 // Property: Round-robin distributes leads evenly across users
-test('property: round-robin assignment distributes leads evenly without skips', function () {
+test('property: round-robin assignment distributes leads evenly without skips', function (): void {
     $team = Team::factory()->create();
     $users = User::factory()->count(3)->create();
 
@@ -65,7 +65,7 @@ test('property: round-robin assignment distributes leads evenly without skips', 
 })->repeat(100);
 
 // Property: Round-robin maintains sequence across multiple assignments
-test('property: round-robin maintains deterministic sequence', function () {
+test('property: round-robin maintains deterministic sequence', function (): void {
     $team = Team::factory()->create();
     $users = User::factory()->count(4)->create();
 
@@ -96,7 +96,7 @@ test('property: round-robin maintains deterministic sequence', function () {
 })->repeat(50);
 
 // Property: Territory assignment respects territory rules
-test('property: territory assignment assigns leads to correct territory owners', function () {
+test('property: territory assignment assigns leads to correct territory owners', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);
@@ -128,7 +128,7 @@ test('property: territory assignment assigns leads to correct territory owners',
 })->repeat(50);
 
 // Property: Weighted assignment favors users with lower load
-test('property: weighted assignment assigns to users with fewer active leads', function () {
+test('property: weighted assignment assigns to users with fewer active leads', function (): void {
     $team = Team::factory()->create();
     $user1 = User::factory()->create();
     $user2 = User::factory()->create();
@@ -163,7 +163,7 @@ test('property: weighted assignment assigns to users with fewer active leads', f
 })->repeat(50);
 
 // Property: Assignment respects team boundaries
-test('property: lead assignment only considers users within the same team', function () {
+test('property: lead assignment only considers users within the same team', function (): void {
     $team1 = Team::factory()->create();
     $team2 = Team::factory()->create();
 
@@ -197,7 +197,7 @@ test('property: lead assignment only considers users within the same team', func
  */
 
 // Property: Lead conversion creates exactly one company when requested
-test('property: lead conversion creates exactly one company', function () {
+test('property: lead conversion creates exactly one company', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);
@@ -225,7 +225,7 @@ test('property: lead conversion creates exactly one company', function () {
 })->repeat(100);
 
 // Property: Lead conversion creates exactly one contact when requested
-test('property: lead conversion creates exactly one contact when requested', function () {
+test('property: lead conversion creates exactly one contact when requested', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);
@@ -254,7 +254,7 @@ test('property: lead conversion creates exactly one contact when requested', fun
 })->repeat(100);
 
 // Property: Lead conversion creates exactly one opportunity when requested
-test('property: lead conversion creates exactly one opportunity when requested', function () {
+test('property: lead conversion creates exactly one opportunity when requested', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);
@@ -283,7 +283,7 @@ test('property: lead conversion creates exactly one opportunity when requested',
 })->repeat(100);
 
 // Property: Lead conversion marks lead as converted atomically
-test('property: lead conversion atomically updates lead status and timestamps', function () {
+test('property: lead conversion atomically updates lead status and timestamps', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);
@@ -311,7 +311,7 @@ test('property: lead conversion atomically updates lead status and timestamps', 
 })->repeat(100);
 
 // Property: Lead conversion links all created records bidirectionally
-test('property: lead conversion creates bidirectional links between records', function () {
+test('property: lead conversion creates bidirectional links between records', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);
@@ -347,7 +347,7 @@ test('property: lead conversion creates bidirectional links between records', fu
 })->repeat(100);
 
 // Property: Lead conversion prevents double conversion
-test('property: lead conversion prevents converting the same lead twice', function () {
+test('property: lead conversion prevents converting the same lead twice', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);
@@ -365,13 +365,13 @@ test('property: lead conversion prevents converting the same lead twice', functi
     ]);
 
     // Second conversion should throw exception
-    expect(fn () => $service->convert($lead->fresh(), [
+    expect(fn (): \App\Services\LeadConversionResult => $service->convert($lead->fresh(), [
         'new_company_name' => fake()->company(),
     ]))->toThrow(\RuntimeException::class);
 })->repeat(50);
 
 // Property: Lead conversion is transactional
-test('property: lead conversion is atomic - all or nothing', function () {
+test('property: lead conversion is atomic - all or nothing', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);
@@ -411,7 +411,7 @@ test('property: lead conversion is atomic - all or nothing', function () {
         $service->convert($lead->fresh(), [
             'new_company_name' => fake()->company(),
         ]);
-    } catch (\RuntimeException $e) {
+    } catch (\RuntimeException) {
         // Expected to fail
     }
 
@@ -422,7 +422,7 @@ test('property: lead conversion is atomic - all or nothing', function () {
 })->repeat(50);
 
 // Property: Bulk assignment maintains distribution
-test('property: bulk assignment maintains round-robin distribution', function () {
+test('property: bulk assignment maintains round-robin distribution', function (): void {
     $team = Team::factory()->create();
     $users = User::factory()->count(3)->create();
 
@@ -449,7 +449,7 @@ test('property: bulk assignment maintains round-robin distribution', function ()
 })->repeat(50);
 
 // Property: Reassignment preserves team boundaries
-test('property: lead reassignment only affects leads within specified team', function () {
+test('property: lead reassignment only affects leads within specified team', function (): void {
     $team1 = Team::factory()->create();
     $team2 = Team::factory()->create();
 

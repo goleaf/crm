@@ -39,7 +39,7 @@ final readonly class LeadObserver
 
     private function refreshDuplicateSignals(Lead $lead): void
     {
-        $duplicates = app(LeadDuplicateDetectionService::class)
+        $duplicates = resolve(LeadDuplicateDetectionService::class)
             ->find($lead, threshold: 60.0, limit: 1);
 
         if ($duplicates->isEmpty()) {

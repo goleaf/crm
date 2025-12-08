@@ -287,12 +287,12 @@ describe('HasNotes trait', function (): void {
         $note1 = Note::factory()->create(['created_at' => now()->subHours(3)]);
         $company->addNote($note1);
 
-        sleep(1);
+        \Illuminate\Support\Sleep::sleep(1);
 
         $note2 = Note::factory()->create(['created_at' => now()->subHours(2)]);
         $company->addNote($note2);
 
-        sleep(1);
+        \Illuminate\Support\Sleep::sleep(1);
 
         $note3 = Note::factory()->create(['created_at' => now()->subHour()]);
         $company->addNote($note3);

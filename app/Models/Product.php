@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTaxonomies;
 use App\Models\Concerns\HasTeam;
+use App\Models\Concerns\HasUniqueSlug;
 use Carbon\CarbonInterface;
 use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -24,7 +24,9 @@ final class Product extends Model implements HasMedia
     /** @use HasFactory<ProductFactory> */
     use HasFactory;
 
+    use HasTaxonomies;
     use HasTeam;
+    use HasUniqueSlug;
     use InteractsWithMedia;
     use SoftDeletes;
 
@@ -97,6 +99,18 @@ final class Product extends Model implements HasMedia
     }
 
     /**
+     * Taxonomy-based product categories.
+     *
+     * @return MorphToMany<Taxonomy, $this>
+     */
+    public function taxonomyCategories(): MorphToMany
+    {
+        return $this->taxonomies()
+            ->where('type', 'product_category')
+            ->withPivot('created_at', 'updated_at');
+    }
+
+    /**
      * @return BelongsToMany<ProductAttribute, $this>
      */
     public function configurableAttributes(): BelongsToMany
@@ -105,7 +119,7 @@ final class Product extends Model implements HasMedia
     }
 
     /**
-     * @return HasMany<ProductPriceTier>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\ProductPriceTier, $this>
      */
     public function priceTiers(): HasMany
     {
@@ -113,7 +127,7 @@ final class Product extends Model implements HasMedia
     }
 
     /**
-     * @return HasMany<ProductDiscountRule>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\ProductDiscountRule, $this>
      */
     public function discountRules(): HasMany
     {
@@ -121,7 +135,7 @@ final class Product extends Model implements HasMedia
     }
 
     /**
-     * @return HasMany<ProductRelationship>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\ProductRelationship, $this>
      */
     public function relationships(): HasMany
     {
@@ -161,7 +175,7 @@ final class Product extends Model implements HasMedia
     }
 
     /**
-     * @return HasMany<ProductAttributeAssignment>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\ProductAttributeAssignment, $this>
      */
     public function attributeAssignments(): HasMany
     {
@@ -169,7 +183,7 @@ final class Product extends Model implements HasMedia
     }
 
     /**
-     * @return HasMany<ProductVariation>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\ProductVariation, $this>
      */
     public function variations(): HasMany
     {
@@ -185,7 +199,7 @@ final class Product extends Model implements HasMedia
 
     public function priceFor(int $quantity = 1, ?Company $company = null, ?CarbonInterface $date = null): float
     {
-        $date ??= Carbon::now();
+        $date ??= \Illuminate\Support\Facades\Date::now();
         $baseWindowActive = ($this->price_effective_from === null || $date->greaterThanOrEqualTo($this->price_effective_from))
             && ($this->price_effective_to === null || $date->lessThanOrEqualTo($this->price_effective_to));
         $basePrice = $baseWindowActive ? (float) $this->price : 0.0;
@@ -276,26 +290,6 @@ final class Product extends Model implements HasMedia
             }
 
             $product->currency_code ??= config('company.default_currency', 'USD');
-            $product->slug ??= self::generateUniqueSlug($product->name ?? '', $product->team_id);
         });
-
-        self::saving(function (self $product): void {
-            $product->slug ??= self::generateUniqueSlug($product->name ?? '', $product->team_id);
-        });
-    }
-
-    private static function generateUniqueSlug(string $name, ?int $teamId): string
-    {
-        $baseSlug = Str::slug($name) ?: Str::random(6);
-        $slug = $baseSlug;
-        $suffix = 1;
-        $team = $teamId ?? 0;
-
-        while (self::where('team_id', $team)->where('slug', $slug)->exists()) {
-            $slug = $baseSlug.'-'.$suffix;
-            $suffix++;
-        }
-
-        return $slug;
     }
 }

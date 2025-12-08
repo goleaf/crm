@@ -8,6 +8,7 @@ file_patterns:
 
 ## Types & usage
 - **StatsOverview** for KPIs; **TableWidget** for recent items; **ChartWidget** for trends; **CustomWidget** for bespoke layouts.
+- For quick trends, use Filament Chart widgets (Line/Bar) with Flowframe Trend; prefer the shared `ChartJsTrendWidget`/`LeadTrendChart` pattern to keep cache keys tenant-scoped and avoid duplicate query logic.
 - Keep per-widget queries light; cache results (per-tenant) when feasible.
 
 ## Performance

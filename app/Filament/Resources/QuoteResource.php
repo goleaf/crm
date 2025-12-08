@@ -17,11 +17,13 @@ use App\Models\Quote;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -84,6 +86,20 @@ final class QuoteResource extends Resource
                 ->columnSpan(2),
             Repeater::make('line_items')
                 ->label('Line Items')
+                ->table([
+                    TableColumn::make('Product'),
+                    TableColumn::make('Name / Description')
+                        ->markAsRequired(),
+                    TableColumn::make('Qty')
+                        ->markAsRequired()
+                        ->alignment(Alignment::End),
+                    TableColumn::make('Unit price')
+                        ->markAsRequired()
+                        ->alignment(Alignment::End),
+                    TableColumn::make('Tax %')
+                        ->alignment(Alignment::End),
+                ])
+                ->compact()
                 ->schema([
                     Select::make('product_id')
                         ->label('Product')
@@ -96,23 +112,25 @@ final class QuoteResource extends Resource
                         ->required()
                         ->columnSpan(3),
                     TextInput::make('quantity')
+                        ->label('Qty')
                         ->numeric()
                         ->default(1)
                         ->minValue(0)
                         ->columnSpan(1),
                     TextInput::make('unit_price')
+                        ->label('Unit price')
                         ->numeric()
                         ->default(0)
                         ->minValue(0)
                         ->columnSpan(2),
                     TextInput::make('tax_rate')
+                        ->label('Tax %')
                         ->numeric()
                         ->default(0)
                         ->suffix('%')
                         ->minValue(0)
                         ->columnSpan(2),
                 ])
-                ->columns(6)
                 ->addActionLabel('Add line')
                 ->default([])
                 ->columnSpanFull(),

@@ -74,7 +74,7 @@ final class OpportunityMetricsService
         }
 
         if (is_string($value)) {
-            return Carbon::parse($value);
+            return \Illuminate\Support\Facades\Date::parse($value);
         }
 
         return null;

@@ -6,7 +6,7 @@ use App\Livewire\App\Teams\UpdateTeamName;
 use App\Models\User;
 use Livewire\Livewire;
 
-test('team names can be updated', function () {
+test('team names can be updated', function (): void {
     $this->actingAs($user = User::factory()->withPersonalTeam()->create());
 
     Livewire::test(UpdateTeamName::class, ['team' => $user->currentTeam])

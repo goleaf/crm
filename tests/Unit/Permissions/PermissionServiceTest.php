@@ -11,10 +11,10 @@ use Spatie\Permission\Models\Permission;
 
 uses(RefreshDatabase::class);
 
-it('seeds default roles and permissions for a team', function () {
+it('seeds default roles and permissions for a team', function (): void {
     $team = Team::factory()->create();
 
-    app(PermissionService::class)->syncTeamDefinitions($team);
+    resolve(PermissionService::class)->syncTeamDefinitions($team);
 
     setPermissionsTeamId($team->getKey());
 
@@ -22,11 +22,11 @@ it('seeds default roles and permissions for a team', function () {
     expect(Role::findByName('editor')->hasPermissionTo('companies.view'))->toBeTrue();
 });
 
-it('assigns mapped team roles to users', function () {
+it('assigns mapped team roles to users', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
 
-    app(PermissionService::class)->syncMembership($user, $team, 'admin');
+    resolve(PermissionService::class)->syncMembership($user, $team, 'admin');
 
     setPermissionsTeamId($team->getKey());
 

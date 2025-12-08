@@ -6,15 +6,22 @@ use App\Services\GitHubService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
-beforeEach(function () {
+beforeEach(function (): void {
     // Create a new instance of the service for each test
     $this->service = new GitHubService;
 
     // Clear any cached values before each test
+    config([
+        'laravel-crm.ui.github_owner' => 'Relaticle',
+        'laravel-crm.ui.github_repo' => 'relaticle',
+        'laravel-crm.ui.brand_name' => 'Relaticle CRM',
+        'app.url' => 'https://crm.test',
+    ]);
+
     Cache::forget('github_stars_Relaticle_relaticle');
 });
 
-it('gets stars count from GitHub API', function () {
+it('gets stars count from GitHub API', function (): void {
     // Mock HTTP response
     Http::fake([
         'api.github.com/repos/Relaticle/relaticle' => Http::response([
@@ -29,13 +36,12 @@ it('gets stars count from GitHub API', function () {
     expect($result)->toBe(125);
 
     // Verify the HTTP request was made
-    Http::assertSent(function ($request) {
-        return $request->url() === 'https://api.github.com/repos/Relaticle/relaticle' &&
-               $request->hasHeader('Accept', 'application/vnd.github.v3+json');
-    });
+    Http::assertSent(fn ($request): bool => $request->url() === 'https://api.github.com/repos/Relaticle/relaticle'
+        && $request->hasHeader('Accept', 'application/vnd.github+json')
+        && $request->hasHeader('User-Agent', 'Relaticle CRM HTTP Client (https://crm.test)'));
 });
 
-it('uses cached stars count on subsequent calls', function () {
+it('uses cached stars count on subsequent calls', function (): void {
     // Mock HTTP response
     Http::fake([
         'api.github.com/repos/Relaticle/relaticle' => Http::response([
@@ -58,7 +64,7 @@ it('uses cached stars count on subsequent calls', function () {
     Http::assertSentCount(1);
 });
 
-it('returns 0 when API call fails', function () {
+it('returns 0 when API call fails', function (): void {
     // Mock HTTP failure response
     Http::fake([
         'api.github.com/repos/Relaticle/relaticle' => Http::response(null, 500),
@@ -71,9 +77,9 @@ it('returns 0 when API call fails', function () {
     expect($result)->toBe(0);
 });
 
-it('returns 0 when API throws exception', function () {
+it('returns 0 when API throws exception', function (): void {
     // Mock HTTP exception
-    Http::fake(function () {
+    Http::fake(function (): void {
         throw new \Exception('Network error');
     });
 
@@ -84,7 +90,7 @@ it('returns 0 when API throws exception', function () {
     expect($result)->toBe(0);
 });
 
-it('formats small numbers as plain numbers', function () {
+it('formats small numbers as plain numbers', function (): void {
     // Mock HTTP response
     Http::fake([
         'api.github.com/repos/Relaticle/relaticle' => Http::response([
@@ -99,7 +105,7 @@ it('formats small numbers as plain numbers', function () {
     expect($result)->toBe('42');
 });
 
-it('uses abbreviation for large star counts', function () {
+it('uses abbreviation for large star counts', function (): void {
     // Mock HTTP response with large value
     Http::fake([
         'api.github.com/repos/Relaticle/relaticle' => Http::response([

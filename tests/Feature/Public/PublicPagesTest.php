@@ -4,15 +4,21 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Http;
 
-describe('Home page', function () {
-    it('returns a successful response', function () {
+describe('Home page', function (): void {
+    it('returns a successful response', function (): void {
         $response = $this->get('/');
 
-        $response->assertStatus(200);
-        $response->assertSee('Relaticle');
+        expect($response)
+            ->toBeOk()
+            ->toContainText(brand_name());
     });
 
-    it('displays the GitHub stars count', function () {
+    it('displays the GitHub stars count', function (): void {
+        config([
+            'laravel-crm.ui.github_owner' => 'Relaticle',
+            'laravel-crm.ui.github_repo' => 'relaticle',
+        ]);
+
         Http::fake([
             'api.github.com/repos/Relaticle/relaticle' => Http::response([
                 'stargazers_count' => 125,
@@ -21,95 +27,102 @@ describe('Home page', function () {
 
         $response = $this->get('/');
 
-        $response->assertStatus(200);
-        $response->assertSee('125');
+        expect($response)
+            ->toBeOk()
+            ->toContainText('125');
     });
 });
 
-describe('Legal pages', function () {
-    it('displays the terms of service page', function () {
+describe('Legal pages', function (): void {
+    it('displays the terms of service page', function (): void {
         $response = $this->get('/terms-of-service');
 
-        $response->assertStatus(200);
-        $response->assertSee('Terms of Service');
+        expect($response)
+            ->toBeOk()
+            ->toContainText('Terms of Service');
     });
 
-    it('displays the privacy policy page', function () {
+    it('displays the privacy policy page', function (): void {
         $response = $this->get('/privacy-policy');
 
-        $response->assertStatus(200);
-        $response->assertSee('Privacy Policy');
+        expect($response)
+            ->toBeOk()
+            ->toContainText('Privacy Policy');
     });
 });
 
-describe('Documentation pages', function () {
-    it('displays the documentation index', function () {
+describe('Documentation pages', function (): void {
+    it('displays the documentation index', function (): void {
         $response = $this->get('/documentation');
 
-        $response->assertStatus(200);
-        $response->assertSee('Documentation');
+        expect($response)
+            ->toBeOk()
+            ->toContainText('Documentation');
     });
 
-    it('renders the SuiteCRM feature catalog', function () {
+    it('renders the SuiteCRM feature catalog', function (): void {
         $response = $this->get('/documentation/suitecrm-features');
 
-        $response->assertStatus(200);
-        $response->assertSee('SuiteCRM Features');
-        $response->assertSee('Core CRM Modules');
+        expect($response)
+            ->toBeOk()
+            ->toContainTextInOrder([
+                'SuiteCRM Features',
+                'Core CRM Modules',
+            ]);
     });
 
-    it('returns 404 for non-existent documentation page', function () {
+    it('returns 404 for non-existent documentation page', function (): void {
         $response = $this->get('/documentation/non-existent-page');
 
-        $response->assertStatus(404);
+        expect($response)->toBeNotFound();
     });
 
-    it('can search documentation', function () {
+    it('can search documentation', function (): void {
         $response = $this->get('/documentation/search?query=test');
 
-        $response->assertStatus(200);
+        expect($response)->toBeOk();
     });
 });
 
-describe('Authentication redirects', function () {
-    it('redirects login to app subdomain', function () {
+describe('Authentication redirects', function (): void {
+    it('redirects login to app subdomain', function (): void {
         $response = $this->get('/login');
 
-        $response->assertRedirect(url()->getAppUrl('login'));
+        expect($response)->toBeRedirect(url()->getAppUrl('login'));
     });
 
-    it('redirects register to app subdomain', function () {
+    it('redirects register to app subdomain', function (): void {
         $response = $this->get('/register');
 
-        $response->assertRedirect(url()->getAppUrl('register'));
+        expect($response)->toBeRedirect(url()->getAppUrl('register'));
     });
 
-    it('redirects forgot password to app subdomain', function () {
+    it('redirects forgot password to app subdomain', function (): void {
         $response = $this->get('/forgot-password');
 
-        $response->assertRedirect(url()->getAppUrl('forgot-password'));
+        expect($response)->toBeRedirect(url()->getAppUrl('forgot-password'));
     });
 
-    it('redirects dashboard to app subdomain', function () {
+    it('redirects dashboard to app subdomain', function (): void {
         $response = $this->get('/dashboard');
 
         $expectedUrl = rtrim(url()->getAppUrl(), '/');
-        $response->assertRedirect($expectedUrl);
+        expect($response)->toBeRedirect($expectedUrl);
     });
 });
 
-describe('Community redirects', function () {
-    it('redirects to discord', function () {
+describe('Community redirects', function (): void {
+    it('redirects to discord', function (): void {
         config(['services.discord.invite_url' => 'https://discord.gg/example']);
 
         $response = $this->get('/discord');
 
-        $response->assertRedirect('https://discord.gg/example');
+        expect($response)->toBeRedirect('https://discord.gg/example');
     });
 });
 
-describe('Social authentication routes', function () {
-    it('throttles authentication redirect attempts', function () {
+describe('Social authentication routes', function (): void {
+    it('throttles authentication redirect attempts', function (): void {
         // Make 10 requests (the limit)
         for ($i = 0; $i < 10; $i++) {
             $this->get('/auth/redirect/github');
@@ -118,35 +131,36 @@ describe('Social authentication routes', function () {
         // The 11th request should be throttled
         $response = $this->get('/auth/redirect/github');
 
-        $response->assertStatus(429); // Too Many Requests
+        expect($response)->toHaveStatus(429);
     });
 
-    it('accepts github as a provider for redirect', function () {
+    it('accepts github as a provider for redirect', function (): void {
         $response = $this->get('/auth/redirect/github');
 
-        $response->assertStatus(302); // Redirect to GitHub
+        expect($response)->toBeRedirect();
     });
 
-    it('accepts google as a provider for redirect', function () {
+    it('accepts google as a provider for redirect', function (): void {
         $response = $this->get('/auth/redirect/google');
 
-        $response->assertStatus(302); // Redirect to Google
+        expect($response)->toBeRedirect();
     });
 });
 
-describe('Error handling', function () {
-    it('returns 404 for non-existent routes', function () {
+describe('Error handling', function (): void {
+    it('returns 404 for non-existent routes', function (): void {
         $response = $this->get('/non-existent-page');
 
-        $response->assertStatus(404);
+        expect($response)->toBeNotFound();
     });
 });
 
-describe('Response meta', function () {
-    it('returns proper content type', function () {
+describe('Response meta', function (): void {
+    it('returns proper content type', function (): void {
         $response = $this->get('/');
 
-        $response->assertHeader('Content-Type');
-        $response->assertSuccessful();
+        expect($response)
+            ->toHaveHeader('Content-Type')
+            ->toBeSuccessful();
     });
 });

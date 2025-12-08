@@ -6,12 +6,12 @@ use App\Enums\InvoiceStatus;
 use App\Models\Invoice;
 use App\Models\User;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->withPersonalTeam()->create();
     $this->team = $this->user->currentTeam;
 });
 
-test('registers invoice number on creating', function () {
+test('registers invoice number on creating', function (): void {
     $this->actingAs($this->user);
 
     $invoice = Invoice::factory()->make([
@@ -24,7 +24,7 @@ test('registers invoice number on creating', function () {
     expect($invoice->invoice_number)->not()->toBeNull();
 });
 
-test('records status change on created', function () {
+test('records status change on created', function (): void {
     $this->actingAs($this->user);
 
     $invoice = Invoice::factory()->create([
@@ -36,7 +36,7 @@ test('records status change on created', function () {
         ->and($invoice->statusHistories()->first()->to_status)->toBe(InvoiceStatus::DRAFT);
 });
 
-test('records status change on update', function () {
+test('records status change on update', function (): void {
     $this->actingAs($this->user);
 
     $invoice = Invoice::factory()->create([
@@ -51,7 +51,7 @@ test('records status change on update', function () {
         ->and($invoice->statusHistories()->latest()->first()->from_status)->toBe(InvoiceStatus::DRAFT);
 });
 
-test('syncs financials on created', function () {
+test('syncs financials on created', function (): void {
     $this->actingAs($this->user);
 
     $invoice = Invoice::factory()->create([
@@ -65,7 +65,7 @@ test('syncs financials on created', function () {
         ->and($invoice->fresh()->total)->toBe(1100.00);
 });
 
-test('syncs financials on saved', function () {
+test('syncs financials on saved', function (): void {
     $this->actingAs($this->user);
 
     $invoice = Invoice::factory()->create([

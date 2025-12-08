@@ -97,7 +97,7 @@ CREATE INDEX companies_team_created_index ON companies(team_id, created_at);
 ```
 
 **Impact:**
-- Correct Filament v4 signature
+- Correct Filament v4.3+ signature
 - Direct array access (no nesting)
 - Pre-computed enum colors (called once during mapping)
 

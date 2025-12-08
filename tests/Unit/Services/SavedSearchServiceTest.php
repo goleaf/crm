@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Services\Search\SavedSearchService;
 
 it('saves and lists searches per team', function (): void {
-    $service = app(SavedSearchService::class);
+    $service = resolve(SavedSearchService::class);
     $user = User::factory()->withPersonalTeam()->create();
 
     $this->actingAs($user);

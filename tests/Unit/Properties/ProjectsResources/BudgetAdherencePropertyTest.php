@@ -6,7 +6,6 @@ namespace Tests\Unit\Properties\ProjectsResources;
 
 use App\Models\Project;
 use App\Models\TaskTimeEntry;
-use Illuminate\Support\Carbon;
 use Tests\Support\Generators\ProjectGenerator;
 use Tests\Support\Generators\TaskGenerator;
 use Tests\Support\PropertyTestCase;
@@ -51,8 +50,8 @@ final class BudgetAdherencePropertyTest extends PropertyTestCase
                         'duration_minutes' => $duration,
                         'is_billable' => $isBillable,
                         'billing_rate' => $isBillable ? $rate : null,
-                        'started_at' => Carbon::now()->subHours(2),
-                        'ended_at' => Carbon::now()->subHours(2)->addMinutes($duration),
+                        'started_at' => \Illuminate\Support\Facades\Date::now()->subHours(2),
+                        'ended_at' => \Illuminate\Support\Facades\Date::now()->subHours(2)->addMinutes($duration),
                     ]);
 
                     if ($isBillable) {
@@ -99,8 +98,8 @@ final class BudgetAdherencePropertyTest extends PropertyTestCase
                 'duration_minutes' => $minutes,
                 'is_billable' => true,
                 'billing_rate' => $rate,
-                'started_at' => Carbon::now()->subHours(2),
-                'ended_at' => Carbon::now()->subHours(2)->addMinutes($minutes),
+                'started_at' => \Illuminate\Support\Facades\Date::now()->subHours(2),
+                'ended_at' => \Illuminate\Support\Facades\Date::now()->subHours(2)->addMinutes($minutes),
             ]);
 
             // Property: Project should be flagged as over budget
@@ -146,8 +145,8 @@ final class BudgetAdherencePropertyTest extends PropertyTestCase
                 'duration_minutes' => $minutes,
                 'is_billable' => true,
                 'billing_rate' => $rate,
-                'started_at' => Carbon::now()->subHours(2),
-                'ended_at' => Carbon::now()->subHours(2)->addMinutes($minutes),
+                'started_at' => \Illuminate\Support\Facades\Date::now()->subHours(2),
+                'ended_at' => \Illuminate\Support\Facades\Date::now()->subHours(2)->addMinutes($minutes),
             ]);
 
             // Property: Budget variance = budget - actual cost
@@ -189,8 +188,8 @@ final class BudgetAdherencePropertyTest extends PropertyTestCase
                 'duration_minutes' => $minutes,
                 'is_billable' => true,
                 'billing_rate' => $rate,
-                'started_at' => Carbon::now()->subHours(2),
-                'ended_at' => Carbon::now()->subHours(2)->addMinutes($minutes),
+                'started_at' => \Illuminate\Support\Facades\Date::now()->subHours(2),
+                'ended_at' => \Illuminate\Support\Facades\Date::now()->subHours(2)->addMinutes($minutes),
             ]);
 
             // Property: Budget utilization = (actual cost / budget) * 100
@@ -230,8 +229,8 @@ final class BudgetAdherencePropertyTest extends PropertyTestCase
                     'duration_minutes' => $duration,
                     'is_billable' => false,
                     'billing_rate' => null,
-                    'started_at' => Carbon::now()->subHours(2),
-                    'ended_at' => Carbon::now()->subHours(2)->addMinutes($duration),
+                    'started_at' => \Illuminate\Support\Facades\Date::now()->subHours(2),
+                    'ended_at' => \Illuminate\Support\Facades\Date::now()->subHours(2)->addMinutes($duration),
                 ]);
             }
 

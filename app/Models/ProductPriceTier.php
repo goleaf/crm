@@ -10,7 +10,6 @@ use Carbon\CarbonInterface;
 use Database\Factories\ProductPriceTierFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
@@ -71,8 +70,8 @@ final class ProductPriceTier extends Model
     protected function activeOn(Builder $query, CarbonInterface $date): Builder
     {
         return $query
-            ->where(fn ($q) => $q->whereNull('starts_at')->orWhere('starts_at', '<=', $date))
-            ->where(fn ($q) => $q->whereNull('ends_at')->orWhere('ends_at', '>=', $date));
+            ->where(fn (\Illuminate\Contracts\Database\Query\Builder $q) => $q->whereNull('starts_at')->orWhere('starts_at', '<=', $date))
+            ->where(fn (\Illuminate\Contracts\Database\Query\Builder $q) => $q->whereNull('ends_at')->orWhere('ends_at', '>=', $date));
     }
 
     protected static function booted(): void

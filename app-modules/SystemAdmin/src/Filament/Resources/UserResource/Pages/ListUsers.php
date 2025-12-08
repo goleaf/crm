@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Relaticle\SystemAdmin\Filament\Resources\UserResource\Pages;
 
+use App\Filament\Resources\Pages\BaseListRecords;
 use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
 use Override;
 use Relaticle\SystemAdmin\Filament\Resources\UserResource;
 
-final class ListUsers extends ListRecords
+final class ListUsers extends BaseListRecords
 {
     protected static string $resource = UserResource::class;
 

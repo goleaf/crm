@@ -43,7 +43,7 @@ beforeEach(function (): void {
  * Property: For any opportunity with an amount and probability,
  * weighted revenue equals amount * probability and totals roll up correctly.
  */
-test('property: weighted revenue equals amount times probability', function () {
+test('property: weighted revenue equals amount times probability', function (): void {
     $company = Company::factory()->for($this->team)->create();
     $opportunity = Opportunity::factory()
         ->for($this->team)
@@ -84,7 +84,7 @@ test('property: weighted revenue equals amount times probability', function () {
  * Property: For any opportunity with a stage but no explicit probability,
  * the probability should be derived from the stage's default probability.
  */
-test('property: probability derived from stage when not explicitly set', function () {
+test('property: probability derived from stage when not explicitly set', function (): void {
     $company = Company::factory()->for($this->team)->create();
     $opportunity = Opportunity::factory()
         ->for($this->team)
@@ -127,7 +127,7 @@ test('property: probability derived from stage when not explicitly set', functio
  * Property: For any opportunity, stage changes must honor allowed transitions.
  * Invalid transitions should be rejected.
  */
-test('property: stage transitions must follow allowed progression rules', function () {
+test('property: stage transitions must follow allowed progression rules', function (): void {
     $company = Company::factory()->for($this->team)->create();
     $opportunity = Opportunity::factory()
         ->for($this->team)
@@ -168,7 +168,7 @@ test('property: stage transitions must follow allowed progression rules', functi
  * Property: For any opportunity, attempting to transition to a disallowed stage
  * should be rejected.
  */
-test('property: invalid stage transitions are rejected', function () {
+test('property: invalid stage transitions are rejected', function (): void {
     $company = Company::factory()->for($this->team)->create();
     $opportunity = Opportunity::factory()
         ->for($this->team)
@@ -204,7 +204,7 @@ test('property: invalid stage transitions are rejected', function () {
  * Property: For any opportunity transitioning to Closed Won or Closed Lost,
  * the closed_at timestamp and closed_by_id must be set.
  */
-test('property: closing an opportunity sets closed_at and closed_by_id', function () {
+test('property: closing an opportunity sets closed_at and closed_by_id', function (): void {
     $this->actingAs($this->user);
 
     $company = Company::factory()->for($this->team)->create();

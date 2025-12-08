@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Binafy\LaravelReaction\Contracts\HasReaction;
+use Binafy\LaravelReaction\Traits\Reactable;
 use Database\Factories\TaskCommentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-final class TaskComment extends Model
+final class TaskComment extends Model implements HasReaction
 {
     /** @use HasFactory<TaskCommentFactory> */
     use HasFactory;
+
+    use Reactable;
 
     protected $fillable = [
         'task_id',
@@ -47,7 +50,7 @@ final class TaskComment extends Model
     }
 
     /**
-     * @return HasMany<self>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\TaskComment, $this>
      */
     public function replies(): HasMany
     {

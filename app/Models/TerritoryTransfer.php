@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -27,11 +26,17 @@ final class TerritoryTransfer extends Model
         'transferred_at' => 'datetime',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Territory, $this>
+     */
     public function fromTerritory(): BelongsTo
     {
         return $this->belongsTo(Territory::class, 'from_territory_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Territory, $this>
+     */
     public function toTerritory(): BelongsTo
     {
         return $this->belongsTo(Territory::class, 'to_territory_id');
@@ -42,6 +47,9 @@ final class TerritoryTransfer extends Model
         return $this->morphTo();
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\User, $this>
+     */
     public function initiator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'initiated_by');

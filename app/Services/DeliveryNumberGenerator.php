@@ -15,7 +15,7 @@ final class DeliveryNumberGenerator
      */
     public function generate(int $teamId, ?Carbon $deliveryDate = null): array
     {
-        $deliveryDate ??= Carbon::now();
+        $deliveryDate ??= \Illuminate\Support\Facades\Date::now();
 
         $sequence = DB::transaction(function () use ($teamId): int {
             $latest = Delivery::query()

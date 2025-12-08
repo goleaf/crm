@@ -11,7 +11,6 @@ use App\Models\Opportunity;
 use App\Models\Task;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Support\Carbon;
 
 final class CrmStatsOverview extends StatsOverviewWidget
 {
@@ -24,7 +23,7 @@ final class CrmStatsOverview extends StatsOverviewWidget
      */
     protected function getStats(): array
     {
-        $weekStart = Carbon::now()->startOfWeek();
+        $weekStart = \Illuminate\Support\Facades\Date::now()->startOfWeek();
 
         $openLeads = Lead::whereIn('status', [
             LeadStatus::NEW,

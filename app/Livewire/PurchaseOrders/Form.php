@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderLineItem;
 use App\Models\Vendor;
+use App\Rules\CleanContent;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -116,18 +117,18 @@ final class Form extends BaseLivewireComponent
             'order_id' => ['nullable', 'integer', 'exists:orders,id'],
             'ordered_at' => ['nullable', 'date'],
             'expected_delivery_date' => ['nullable', 'date', 'after_or_equal:ordered_at'],
-            'payment_terms' => ['nullable', 'string', 'max:255'],
-            'shipping_terms' => ['nullable', 'string', 'max:255'],
-            'ship_method' => ['nullable', 'string', 'max:255'],
-            'ship_to_address' => ['nullable', 'string'],
-            'bill_to_address' => ['nullable', 'string'],
+            'payment_terms' => ['nullable', 'string', 'max:255', new CleanContent],
+            'shipping_terms' => ['nullable', 'string', 'max:255', new CleanContent],
+            'ship_method' => ['nullable', 'string', 'max:255', new CleanContent],
+            'ship_to_address' => ['nullable', 'string', new CleanContent],
+            'bill_to_address' => ['nullable', 'string', new CleanContent],
             'currency_code' => ['required', 'string', 'size:3'],
-            'notes' => ['nullable', 'string'],
-            'terms' => ['nullable', 'string'],
+            'notes' => ['nullable', 'string', new CleanContent],
+            'terms' => ['nullable', 'string', new CleanContent],
             'lineItems' => ['required', 'array', 'min:1'],
             'lineItems.*.id' => ['nullable', 'integer'],
-            'lineItems.*.name' => ['required', 'string', 'max:255'],
-            'lineItems.*.description' => ['nullable', 'string'],
+            'lineItems.*.name' => ['required', 'string', 'max:255', new CleanContent],
+            'lineItems.*.description' => ['nullable', 'string', new CleanContent],
             'lineItems.*.quantity' => ['required', 'numeric', 'min:0.01'],
             'lineItems.*.unit_cost' => ['required', 'numeric', 'min:0'],
             'lineItems.*.tax_rate' => ['nullable', 'numeric', 'min:0'],

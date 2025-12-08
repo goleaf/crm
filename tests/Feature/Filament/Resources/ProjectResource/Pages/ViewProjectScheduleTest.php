@@ -8,19 +8,18 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Support\Carbon;
 
 use function Pest\Livewire\livewire;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
     $this->team = Team::factory()->create();
     $this->user->teams()->attach($this->team);
     $this->actingAs($this->user);
 });
 
-describe('ViewProjectSchedule Page', function () {
-    it('can render the page', function () {
+describe('ViewProjectSchedule Page', function (): void {
+    it('can render the page', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
             'name' => 'Test Project',
@@ -30,7 +29,7 @@ describe('ViewProjectSchedule Page', function () {
             ->assertSuccessful();
     });
 
-    it('displays project schedule title', function () {
+    it('displays project schedule title', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
         ]);
@@ -39,7 +38,7 @@ describe('ViewProjectSchedule Page', function () {
             ->assertSee(__('app.labels.project_schedule'));
     });
 
-    it('can access the page from project resource', function () {
+    it('can access the page from project resource', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
         ]);
@@ -49,11 +48,11 @@ describe('ViewProjectSchedule Page', function () {
     });
 });
 
-describe('Gantt Chart Data', function () {
-    it('displays gantt chart export section', function () {
+describe('Gantt Chart Data', function (): void {
+    it('displays gantt chart export section', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
-            'start_date' => Carbon::parse('2025-01-01'),
+            'start_date' => \Illuminate\Support\Facades\Date::parse('2025-01-01'),
         ]);
 
         livewire(ViewProjectSchedule::class, ['record' => $project->id])
@@ -61,11 +60,11 @@ describe('Gantt Chart Data', function () {
             ->assertSee(__('app.actions.export_json'));
     });
 
-    it('provides gantt data with project details', function () {
+    it('provides gantt data with project details', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
             'name' => 'Export Test Project',
-            'start_date' => Carbon::parse('2025-01-01'),
+            'start_date' => \Illuminate\Support\Facades\Date::parse('2025-01-01'),
             'percent_complete' => 50,
         ]);
 
@@ -90,10 +89,10 @@ describe('Gantt Chart Data', function () {
             ->toHaveKey('critical_path');
     });
 
-    it('includes task details in gantt data', function () {
+    it('includes task details in gantt data', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
-            'start_date' => Carbon::parse('2025-01-01'),
+            'start_date' => \Illuminate\Support\Facades\Date::parse('2025-01-01'),
         ]);
 
         $task = Task::factory()->create([
@@ -118,10 +117,10 @@ describe('Gantt Chart Data', function () {
             ->toHaveKey('is_milestone', false);
     });
 
-    it('identifies critical path tasks in gantt data', function () {
+    it('identifies critical path tasks in gantt data', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
-            'start_date' => Carbon::parse('2025-01-01'),
+            'start_date' => \Illuminate\Support\Facades\Date::parse('2025-01-01'),
         ]);
 
         $taskA = Task::factory()->create([
@@ -143,10 +142,10 @@ describe('Gantt Chart Data', function () {
             ->toContain($taskA->id, $taskB->id);
     });
 
-    it('includes milestones in gantt data', function () {
+    it('includes milestones in gantt data', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
-            'start_date' => Carbon::parse('2025-01-01'),
+            'start_date' => \Illuminate\Support\Facades\Date::parse('2025-01-01'),
         ]);
 
         $milestone = Task::factory()->create([
@@ -164,8 +163,8 @@ describe('Gantt Chart Data', function () {
     });
 });
 
-describe('Budget Summary', function () {
-    it('displays budget summary section', function () {
+describe('Budget Summary', function (): void {
+    it('displays budget summary section', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
             'budget' => 10000,
@@ -179,7 +178,7 @@ describe('Budget Summary', function () {
             ->assertSee(__('app.labels.utilization'));
     });
 
-    it('shows budget details correctly', function () {
+    it('shows budget details correctly', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
             'budget' => 10000,
@@ -199,7 +198,7 @@ describe('Budget Summary', function () {
             ->toHaveKey('is_over_budget', false);
     });
 
-    it('indicates when project is over budget', function () {
+    it('indicates when project is over budget', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
             'budget' => 5000,
@@ -214,7 +213,7 @@ describe('Budget Summary', function () {
             ->and($budgetSummary['utilization_percentage'])->toBe(120.0);
     });
 
-    it('handles projects without budget', function () {
+    it('handles projects without budget', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
             'budget' => null,
@@ -230,7 +229,7 @@ describe('Budget Summary', function () {
             ->and($budgetSummary['is_over_budget'])->toBeFalse();
     });
 
-    it('displays task breakdown in budget summary', function () {
+    it('displays task breakdown in budget summary', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
             'budget' => 10000,
@@ -252,7 +251,7 @@ describe('Budget Summary', function () {
             ->toBeArray();
     });
 
-    it('calculates total billable hours correctly', function () {
+    it('calculates total billable hours correctly', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
         ]);
@@ -266,8 +265,8 @@ describe('Budget Summary', function () {
     });
 });
 
-describe('Project Schedule Widget', function () {
-    it('includes project schedule widget in header', function () {
+describe('Project Schedule Widget', function (): void {
+    it('includes project schedule widget in header', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
         ]);
@@ -279,7 +278,7 @@ describe('Project Schedule Widget', function () {
         expect($widgets)->toHaveCount(1);
     });
 
-    it('passes project to widget', function () {
+    it('passes project to widget', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
             'name' => 'Widget Test Project',
@@ -291,10 +290,10 @@ describe('Project Schedule Widget', function () {
         expect($widgets[0]->project->id)->toBe($project->id);
     });
 
-    it('widget returns correct view data structure', function () {
+    it('widget returns correct view data structure', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
-            'start_date' => Carbon::parse('2025-01-01'),
+            'start_date' => \Illuminate\Support\Facades\Date::parse('2025-01-01'),
         ]);
 
         $task = Task::factory()->create([
@@ -319,8 +318,8 @@ describe('Project Schedule Widget', function () {
     });
 });
 
-describe('Authorization', function () {
-    it('requires authentication', function () {
+describe('Authorization', function (): void {
+    it('requires authentication', function (): void {
         auth()->logout();
 
         $project = Project::factory()->create([
@@ -331,7 +330,7 @@ describe('Authorization', function () {
             ->assertRedirect();
     });
 
-    it('respects team boundaries', function () {
+    it('respects team boundaries', function (): void {
         $otherTeam = Team::factory()->create();
         $project = Project::factory()->create([
             'team_id' => $otherTeam->id,
@@ -342,8 +341,8 @@ describe('Authorization', function () {
     });
 });
 
-describe('Edge Cases', function () {
-    it('handles project with no tasks', function () {
+describe('Edge Cases', function (): void {
+    it('handles project with no tasks', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
         ]);
@@ -357,7 +356,7 @@ describe('Edge Cases', function () {
             ->and($ganttData['critical_path'])->toBeEmpty();
     });
 
-    it('handles project with no start date', function () {
+    it('handles project with no start date', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
             'start_date' => null,
@@ -367,7 +366,7 @@ describe('Edge Cases', function () {
             ->assertSuccessful();
     });
 
-    it('handles zero budget project', function () {
+    it('handles zero budget project', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
             'budget' => 0,
@@ -380,10 +379,10 @@ describe('Edge Cases', function () {
         expect($budgetSummary['utilization_percentage'])->toBeNull();
     });
 
-    it('handles complex task dependencies', function () {
+    it('handles complex task dependencies', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
-            'start_date' => Carbon::parse('2025-01-01'),
+            'start_date' => \Illuminate\Support\Facades\Date::parse('2025-01-01'),
         ]);
 
         // Create diamond dependency: A -> B,C -> D
@@ -402,7 +401,7 @@ describe('Edge Cases', function () {
             ->assertSuccessful();
     });
 
-    it('handles project with both budget and no budget tasks', function () {
+    it('handles project with both budget and no budget tasks', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
             'budget' => 10000,
@@ -426,10 +425,10 @@ describe('Edge Cases', function () {
         expect($budgetSummary['task_breakdown'])->toHaveCount(2);
     });
 
-    it('returns correct view data structure', function () {
+    it('returns correct view data structure', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
-            'start_date' => Carbon::parse('2025-01-01'),
+            'start_date' => \Illuminate\Support\Facades\Date::parse('2025-01-01'),
         ]);
 
         $component = livewire(ViewProjectSchedule::class, ['record' => $project->id]);
@@ -444,7 +443,7 @@ describe('Edge Cases', function () {
             ->and($viewData['budgetSummary'])->toBeArray();
     });
 
-    it('page title is translatable', function () {
+    it('page title is translatable', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
         ]);

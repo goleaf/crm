@@ -24,7 +24,7 @@ final class ProjectGenerator
         ?User $creator = null,
         array $overrides = []
     ): Project {
-        $creator = $creator ?? User::factory()->create();
+        $creator ??= User::factory()->create();
 
         $startDate = fake()->optional(0.8)->dateTimeBetween('-1 year', '+1 month');
         $endDate = $startDate ? fake()->optional(0.7)->dateTimeBetween($startDate, '+1 year') : null;

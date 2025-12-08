@@ -12,6 +12,7 @@ use App\Filament\Resources\OpportunityResource\Pages\ListOpportunities;
 use App\Filament\Resources\OpportunityResource\Pages\ViewOpportunity;
 use App\Filament\Resources\OpportunityResource\RelationManagers\NotesRelationManager;
 use App\Filament\Resources\OpportunityResource\RelationManagers\TasksRelationManager;
+use App\Filament\Support\Filters\DateScopeFilter;
 use App\Models\Opportunity;
 use App\Models\Tag;
 use Filament\Actions\ActionGroup;
@@ -102,6 +103,7 @@ final class OpportunityResource extends Resource
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
+                DateScopeFilter::make(),
                 SelectFilter::make('creation_source')
                     ->label(__('app.labels.creation_source'))
                     ->options(CreationSource::class)

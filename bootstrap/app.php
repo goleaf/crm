@@ -2,11 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Http\Middleware\ApplySecurityHeaders;
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Sentry\Laravel\Integration;
+use Vectorial1024\LaravelCacheEvict\CacheEvictCommand;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -21,6 +24,16 @@ return Application::configure(basePath: dirname(__DIR__))
             'crm.permission' => \App\Http\Middleware\EnsurePermission::class,
             'crm.team' => \App\Http\Middleware\EnsureTeamContext::class,
             'crm.custom' => \App\Http\Middleware\ApplyCustomMiddleware::class,
+        ]);
+
+        $middleware->append([
+            ApplySecurityHeaders::class,
+            SecurityHeaders::class,
+        ]);
+
+        // Enable Laravel Precognition for API routes
+        $middleware->api(prepend: [
+            \Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class,
         ]);
 
         $middleware->group('crm', [
@@ -47,6 +60,23 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withSchedule(function (Schedule $schedule): void {
         $schedule->command('app:generate-sitemap')->daily();
+
+        $supportedDrivers = ['database', 'file'];
+
+        $evictableStores = collect([config('cache.default')])
+            ->merge(array_keys(config('cache.stores', [])))
+            ->filter(fn (?string $store): bool => $store !== null
+                && in_array(config("cache.stores.{$store}.driver"), $supportedDrivers, true))
+            ->unique()
+            ->values();
+
+        $evictableStores->each(function (string $store) use ($schedule): void {
+            $schedule->command(CacheEvictCommand::class, [$store])
+                ->name("cache:evict-{$store}")
+                ->hourly()
+                ->runInBackground()
+                ->withoutOverlapping();
+        });
     })
     ->booting(function (): void {
         //        Model::automaticallyEagerLoadRelationships(); TODO: Before enabling this, check the test suite for any issues with eager loading.

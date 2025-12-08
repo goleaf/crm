@@ -23,7 +23,7 @@ it('respects notification channel preferences', function (): void {
         'activity_alerts' => true,
     ]);
 
-    app(NotificationService::class)->sendActivityAlert(
+    resolve(NotificationService::class)->sendActivityAlert(
         $user,
         'Order updated',
         'Order ORD-1 moved forward',
@@ -33,7 +33,7 @@ it('respects notification channel preferences', function (): void {
     Notification::assertSentTo(
         $user,
         ActivityAlertNotification::class,
-        function (ActivityAlertNotification $notification, array $channels) {
+        function (ActivityAlertNotification $notification, array $channels): true {
             expect($channels)->toContain('database')
                 ->and($channels)->toContain('broadcast')
                 ->and($channels)->not()->toContain('mail');
@@ -51,7 +51,7 @@ it('skips alerts when activity notifications are disabled', function (): void {
         'activity_alerts' => false,
     ]);
 
-    app(NotificationService::class)->sendActivityAlert(
+    resolve(NotificationService::class)->sendActivityAlert(
         $user,
         'Update',
         'Body'

@@ -99,7 +99,7 @@ abstract class PropertyTestCase extends TestCase
      */
     protected function randomSubset(array $items): array
     {
-        if (empty($items)) {
+        if ($items === []) {
             return [];
         }
 
@@ -127,7 +127,7 @@ abstract class PropertyTestCase extends TestCase
      */
     protected function randomDate(?string $startDate = '-1 year', ?string $endDate = '+1 year'): Carbon
     {
-        return Carbon::parse(
+        return \Illuminate\Support\Facades\Date::parse(
             fake()->dateTimeBetween($startDate, $endDate)
         );
     }

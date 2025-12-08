@@ -24,7 +24,7 @@ final readonly class InvoiceObserver
 
             if ($invoice->creator !== null) {
                 /** @var NotificationService $notifications */
-                $notifications = app(NotificationService::class);
+                $notifications = resolve(NotificationService::class);
                 $url = Route::has('filament.app.resources.invoices.view')
                     ? route('filament.app.resources.invoices.view', ['record' => $invoice])
                     : null;

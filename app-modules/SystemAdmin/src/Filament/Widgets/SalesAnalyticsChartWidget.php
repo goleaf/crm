@@ -106,17 +106,15 @@ final class SalesAnalyticsChartWidget extends ChartWidget
      */
     private function getSalesData(): array
     {
-        $metrics = app(OpportunityMetricsService::class);
+        $metrics = resolve(OpportunityMetricsService::class);
 
-        $opportunities = Opportunity::query()
+        $baseQuery = Opportunity::query()
             ->withCustomFieldValues()
             ->whereNull('deleted_at')
-            ->where('creation_source', '!=', CreationSource::SYSTEM->value)
-            ->where('created_at', '>=', now()->subMonths(5)->startOfMonth())
-            ->get();
+            ->where('creation_source', '!=', CreationSource::SYSTEM->value);
 
         $monthlyData = collect(range(5, 0))
-            ->map(fn (int $monthsAgo): array => $this->getMonthData($monthsAgo, $opportunities, $metrics))
+            ->map(fn (int $monthsAgo): array => $this->getMonthData($monthsAgo, $baseQuery, $metrics))
             ->values();
 
         return [
@@ -128,17 +126,17 @@ final class SalesAnalyticsChartWidget extends ChartWidget
     }
 
     /**
-     * @param  \Illuminate\Support\Collection<int, Opportunity>  $opportunities
+     * @param  \Illuminate\Database\Eloquent\Builder<Opportunity>  $opportunities
      * @return array{month: string, value: float, weighted_value: float, count: int}
      */
-    private function getMonthData(int $monthsAgo, \Illuminate\Support\Collection $opportunities, OpportunityMetricsService $metrics): array
+    private function getMonthData(int $monthsAgo, \Illuminate\Database\Eloquent\Builder $opportunities, OpportunityMetricsService $metrics): array
     {
         $month = now()->subMonths($monthsAgo);
-        $monthStart = $month->startOfMonth();
-        $monthEnd = $month->copy()->endOfMonth();
-
-        $monthlyOpportunities = $opportunities
-            ->whereBetween('created_at', [$monthStart, $monthEnd]);
+        $startFrom = $monthsAgo === 0 ? now() : now()->subMonths($monthsAgo - 1);
+        $monthlyOpportunities = ($monthsAgo === 0
+            ? (clone $opportunities)->monthToDate()
+            : (clone $opportunities)->ofLastMonth(startFrom: $startFrom))
+            ->get();
 
         return [
             'month' => $month->format('M Y'),

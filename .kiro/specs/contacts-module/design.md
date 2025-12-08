@@ -2,9 +2,9 @@
 
 ## Overview
 
-The Contacts Module extends the existing People model to provide comprehensive contact management capabilities including role assignments, communication preferences, interaction tracking, portal access, duplicate detection, and vCard import/export. The design leverages Laravel's Eloquent ORM, Filament for UI components, and follows the existing architectural patterns established in the Relaticle CRM application.
+The Contacts Module extends the existing People model to provide comprehensive contact management capabilities including role assignments, communication preferences, interaction tracking, portal access, duplicate detection, document attachment, and vCard import/export. The design leverages Laravel's Eloquent ORM, Filament for UI components, and follows the existing architectural patterns established in the Relaticle CRM application.
 
-The module integrates seamlessly with existing Account (Company), Opportunity, Task, and Note modules while adding new capabilities for contact segmentation, self-service portal access, and advanced data quality management.
+The module integrates seamlessly with existing Account (Company), Opportunity, Task, and Note modules while adding new capabilities for contact segmentation, self-service portal access, document management, and advanced data quality management.
 
 ## Architecture
 
@@ -58,13 +58,15 @@ app/
 │   ├── ContactRole.php
 │   ├── CommunicationPreference.php
 │   ├── ContactPersona.php
-│   └── PortalUser.php
+│   ├── PortalUser.php
+│   └── ContactDocument.php
 ├── Services/
 │   ├── Contact/
 │   │   ├── DuplicateDetectionService.php
 │   │   ├── ContactMergeService.php
 │   │   ├── VCardService.php
-│   │   └── PortalAccessService.php
+│   │   ├── PortalAccessService.php
+│   │   └── ContactDocumentService.php
 ├── Actions/
 │   ├── Contact/
 │   │   ├── CreateContact.php
@@ -107,6 +109,7 @@ class People extends Model
     public function persona(): BelongsTo;
     public function portalUser(): HasOne;
     public function accounts(): BelongsToMany; // Multiple account associations
+    public function documents(): HasMany;
     
     // New methods
     public function assignRole(string $role): void;
@@ -115,6 +118,8 @@ class People extends Model
     public function grantPortalAccess(): PortalUser;
     public function revokePortalAccess(): void;
     public function getSimilarityScore(People $other): float;
+    public function attachDocument(UploadedFile $file, array $metadata = []): ContactDocument;
+    public function removeDocument(ContactDocument $document): void;
 }
 ```
 
@@ -292,6 +297,70 @@ class PortalAccessService
 }
 ```
 
+### 10. ContactDocument Model
+
+Manages document attachments for contacts:
+
+```php
+class ContactDocument extends Model
+{
+    use SoftDeletes;
+    
+    protected $fillable = [
+        'people_id',
+        'filename',
+        'original_filename',
+        'file_path',
+        'file_size',
+        'mime_type',
+        'uploaded_by',
+        'team_id'
+    ];
+    
+    protected $casts = [
+        'file_size' => 'integer',
+        'uploaded_at' => 'datetime',
+        'deleted_at' => 'datetime',
+    ];
+    
+    public function contact(): BelongsTo;
+    public function uploader(): BelongsTo;
+    public function team(): BelongsTo;
+    public function getDownloadUrl(): string;
+    public function logDownload(User $user): void;
+}
+```
+
+### 11. ContactDocumentService
+
+Handles document upload, storage, and retrieval:
+
+```php
+class ContactDocumentService
+{
+    public function upload(People $contact, UploadedFile $file, User $uploader): ContactDocument;
+    public function download(ContactDocument $document, User $user): StreamedResponse;
+    public function delete(ContactDocument $document, User $user): void;
+    public function validateFileType(UploadedFile $file): bool;
+    private function generateUniqueFilename(UploadedFile $file): string;
+    private function storeFile(UploadedFile $file, string $filename): string;
+    private function logActivity(ContactDocument $document, string $action, User $user): void;
+}
+```
+
+**Supported File Types:**
+- Documents: PDF, DOCX, XLSX, PPTX, TXT
+- Images: JPG, JPEG, PNG, GIF, SVG
+- Archives: ZIP (if needed for bulk documents)
+
+**Storage Strategy:**
+- Files stored using Laravel's Storage facade
+- Path structure: `contacts/{team_id}/{people_id}/{filename}`
+- Unique filenames generated using UUID to prevent collisions
+- Original filename preserved in database for display
+- Soft delete preserves files for recovery period
+```
+
 ## Data Models
 
 ### Database Schema
@@ -407,6 +476,43 @@ CREATE TABLE contact_merge_log (
 );
 ```
 
+#### contact_documents table
+```sql
+CREATE TABLE contact_documents (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    people_id BIGINT UNSIGNED NOT NULL,
+    filename VARCHAR(255) NOT NULL,
+    original_filename VARCHAR(255) NOT NULL,
+    file_path VARCHAR(500) NOT NULL,
+    file_size BIGINT UNSIGNED NOT NULL,
+    mime_type VARCHAR(100) NOT NULL,
+    uploaded_by BIGINT UNSIGNED NOT NULL,
+    team_id BIGINT UNSIGNED NOT NULL,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    deleted_at TIMESTAMP NULL,
+    FOREIGN KEY (people_id) REFERENCES people(id) ON DELETE CASCADE,
+    FOREIGN KEY (uploaded_by) REFERENCES users(id),
+    FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE,
+    INDEX idx_people_documents (people_id, deleted_at),
+    INDEX idx_team_documents (team_id, deleted_at)
+);
+```
+
+#### contact_document_downloads table
+```sql
+CREATE TABLE contact_document_downloads (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    contact_document_id BIGINT UNSIGNED NOT NULL,
+    downloaded_by BIGINT UNSIGNED NOT NULL,
+    downloaded_at TIMESTAMP NOT NULL,
+    ip_address VARCHAR(45),
+    FOREIGN KEY (contact_document_id) REFERENCES contact_documents(id) ON DELETE CASCADE,
+    FOREIGN KEY (downloaded_by) REFERENCES users(id),
+    INDEX idx_document_downloads (contact_document_id, downloaded_at)
+);
+```
+
 ### Entity Relationships
 
 ```mermaid
@@ -417,6 +523,7 @@ erDiagram
     PEOPLE }o--|| CONTACT_PERSONAS : belongs_to
     PEOPLE ||--o| PORTAL_USERS : has
     PEOPLE }o--o{ COMPANIES : associated_with
+    PEOPLE ||--o{ CONTACT_DOCUMENTS : has
     ACCOUNT_PEOPLE }o--|| PEOPLE : links
     ACCOUNT_PEOPLE }o--|| COMPANIES : links
     PEOPLE ||--o{ TASKS : assigned
@@ -424,6 +531,9 @@ erDiagram
     PEOPLE ||--o{ OPPORTUNITIES : related_to
     TEAMS ||--o{ CONTACT_ROLES : owns
     TEAMS ||--o{ CONTACT_PERSONAS : owns
+    TEAMS ||--o{ CONTACT_DOCUMENTS : owns
+    USERS ||--o{ CONTACT_DOCUMENTS : uploads
+    CONTACT_DOCUMENTS ||--o{ CONTACT_DOCUMENT_DOWNLOADS : tracked_by
 ```
 
 
@@ -571,6 +681,26 @@ erDiagram
 *For any* contact associated with multiple accounts, designating one as primary should mark that account as primary while others remain non-primary.
 **Validates: Requirements 13.5**
 
+### Property 36: Document upload with metadata
+*For any* contact and any valid file upload, uploading the document should result in a persisted document record with all required metadata (filename, size, upload date, uploader) correctly stored.
+**Validates: Requirements 14.1**
+
+### Property 37: Document display completeness
+*For any* contact with attached documents, viewing the contact should display all attached documents with their file details in a dedicated section.
+**Validates: Requirements 14.2**
+
+### Property 38: File type validation
+*For any* file of a supported type (PDF, DOCX, XLSX, PPTX, images), the system should accept the upload, and for any unsupported file type, the system should reject the upload.
+**Validates: Requirements 14.3**
+
+### Property 39: Document download with logging
+*For any* attached document, downloading the document should serve the correct file and create a download activity log entry with user and timestamp.
+**Validates: Requirements 14.4**
+
+### Property 40: Document soft delete with permissions
+*For any* document and any user, attempting to delete the document should check permissions and, if authorized, move the document to a soft-deleted state rather than permanently removing it.
+**Validates: Requirements 14.5**
+
 ## Error Handling
 
 ### Validation Errors
@@ -602,6 +732,14 @@ erDiagram
 - **Account Disabled**: Block access with account status message
 - **Permission Denied**: Show authorization error for restricted resources
 - **Session Expired**: Redirect to login with session timeout message
+
+### Document Management Errors
+- **Unsupported File Type**: Reject upload with list of supported formats
+- **File Size Exceeded**: Reject with maximum file size message
+- **Storage Failure**: Log error and show user-friendly message
+- **Permission Denied**: Block upload/download/delete with authorization error
+- **File Not Found**: Handle missing files gracefully with error message
+- **Virus Detection**: Reject file and notify administrators (if virus scanning enabled)
 
 ### General Error Handling Strategy
 - All errors logged with context (user, action, timestamp, stack trace)
@@ -644,6 +782,11 @@ test('vCard export includes all standard fields')
 test('merge transfers all relationships')
 test('portal user can authenticate with valid credentials')
 test('communication preference blocks opted-out channels')
+test('document can be attached to contact')
+test('document upload stores correct metadata')
+test('unsupported file types are rejected')
+test('document download is logged')
+test('document deletion requires permissions')
 ```
 
 ### Property-Based Testing
@@ -702,6 +845,26 @@ Property-based tests will verify universal properties across many randomly gener
    - Sort by field
    - Verify order is correct
 
+9. **Document Upload Property** (Property 36)
+   - Generate random contacts and valid file uploads
+   - Upload documents to contacts
+   - Verify all metadata is correctly stored
+
+10. **File Type Validation Property** (Property 38)
+   - Generate files of various types (supported and unsupported)
+   - Attempt uploads
+   - Verify supported types accepted and unsupported rejected
+
+11. **Document Download Logging Property** (Property 39)
+   - Generate random documents attached to contacts
+   - Download documents
+   - Verify download logs are created with correct data
+
+12. **Document Soft Delete Property** (Property 40)
+   - Generate random documents
+   - Delete with various permission levels
+   - Verify permission checks and soft-delete behavior
+
 **Example Property Test Structure:**
 ```php
 use function Pest\Property\property;
@@ -742,6 +905,9 @@ function generateRandomPersona(): ContactPersona
 function generateRandomCommunicationPreferences(): array
 function generateRandomVCard(string $version = '4.0'): string
 function generateSimilarContact(People $contact, float $similarity): array
+function generateRandomDocument(string $type = 'pdf'): UploadedFile
+function generateRandomFileType(): string
+function generateUnsupportedFileType(): string
 ```
 
 ### Testing Best Practices
@@ -810,7 +976,16 @@ function generateSimilarContact(People $contact, float $similarity): array
 - Add primary account designation
 - Update UI to show all associated accounts
 
-### Phase 10: Search and Export Enhancements
+### Phase 10: Document Management
+- Create ContactDocument model and migrations
+- Implement ContactDocumentService
+- Add document upload functionality to contact forms
+- Create document display section in contact view
+- Implement download with activity logging
+- Add soft delete with permission checks
+- Integrate with existing file storage system
+
+### Phase 11: Search and Export Enhancements
 - Enhance search to include new fields
 - Add role and persona filters
 - Update export to include new data
@@ -842,6 +1017,15 @@ function generateSimilarContact(People $contact, float $similarity): array
 - Password reset functionality with token expiration
 - Account lockout after failed login attempts
 
+### Document Security
+- File uploads validated for type and size
+- Files stored outside public web root
+- Access controlled through authorization policies
+- Download activity logged for audit trail
+- Soft delete preserves files for recovery
+- Team-scoped access prevents cross-tenant data leaks
+- Optional virus scanning integration for uploaded files
+
 ## Performance Considerations
 
 ### Database Optimization
@@ -867,6 +1051,15 @@ function generateSimilarContact(People $contact, float $similarity): array
 - Implement session management
 - Use database indexes for portal queries
 - Limit data returned to portal users
+
+### Document Management Performance
+- Stream large file downloads instead of loading into memory
+- Implement file size limits (e.g., 10MB per file)
+- Use database indexes on people_id and team_id for document queries
+- Lazy load document lists in contact views
+- Consider CDN integration for frequently accessed documents
+- Implement pagination for contacts with many documents
+- Background job processing for virus scanning (if enabled)
 
 ## Dependencies
 
@@ -925,6 +1118,11 @@ function generateSimilarContact(People $contact, float $similarity): array
 - vCard import/export volume
 - Portal login frequency
 - Search query performance
+- Document upload volume and success rate
+- Document download frequency
+- Storage usage per team
+- Average document size
+- File type distribution
 
 ### Logging
 - All contact operations logged with user context
@@ -932,6 +1130,11 @@ function generateSimilarContact(People $contact, float $similarity): array
 - Merge operations logged with full audit trail
 - Portal access logged for security
 - vCard import errors logged with details
+- Document uploads logged with file metadata
+- Document downloads logged with user and timestamp
+- Document deletions logged with user context
+- File validation failures logged with reason
+- Storage errors logged with full context
 
 ### Alerts
 - Failed merge operations
@@ -939,3 +1142,7 @@ function generateSimilarContact(People $contact, float $similarity): array
 - Portal authentication failures (potential security issue)
 - vCard import failures
 - Database query performance degradation
+- Storage quota approaching limit
+- High rate of file upload failures
+- Suspicious download patterns (potential data exfiltration)
+- Virus detection in uploaded files (if scanning enabled)

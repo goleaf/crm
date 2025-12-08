@@ -23,7 +23,7 @@ uses(RefreshDatabase::class);
  * Tests the complete workflow of registering, activating, and executing
  * an extension with proper isolation and error handling.
  */
-test('complete extension deployment and execution workflow', function () {
+test('complete extension deployment and execution workflow', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $team->users()->attach($user);
@@ -38,11 +38,11 @@ test('complete extension deployment and execution workflow', function () {
         slug: 'company-data-enrichment',
         type: ExtensionType::LOGIC_HOOK,
         handlerClass: TestHandler::class,
-        handlerMethod: 'handle',
         description: 'Enriches company data on save',
         targetModel: Company::class,
         targetEvent: HookEvent::AFTER_SAVE,
-        priority: 100
+        priority: 100,
+        handlerMethod: 'handle'
     );
 
     expect($extension->status)->toBe(ExtensionStatus::INACTIVE)
@@ -91,7 +91,7 @@ test('complete extension deployment and execution workflow', function () {
 /**
  * Integration test: Extension isolation and permission enforcement
  */
-test('extension cannot bypass team permissions', function () {
+test('extension cannot bypass team permissions', function (): void {
     $team1 = Team::factory()->create();
     $team2 = Team::factory()->create();
     $user = User::factory()->create();
@@ -130,7 +130,7 @@ test('extension cannot bypass team permissions', function () {
 /**
  * Integration test: Extension error handling and graceful failure
  */
-test('extension failures are isolated and logged', function () {
+test('extension failures are isolated and logged', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
 
@@ -165,7 +165,7 @@ test('extension failures are isolated and logged', function () {
 /**
  * Integration test: Multiple extensions with priority ordering
  */
-test('multiple extensions execute in priority order', function () {
+test('multiple extensions execute in priority order', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
 
@@ -210,7 +210,7 @@ test('multiple extensions execute in priority order', function () {
 /**
  * Integration test: Extension statistics and monitoring
  */
-test('extension statistics track performance accurately', function () {
+test('extension statistics track performance accurately', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
 
@@ -239,10 +239,7 @@ test('extension statistics track performance accurately', function () {
 // Test handler that fails
 final class FailingExtensionHandler
 {
-    /**
-     * @param  array<string, mixed>  $_context
-     */
-    public function handle(array $_context): never
+    public function handle(): never
     {
         throw new \RuntimeException('Extension handler failed');
     }

@@ -39,7 +39,7 @@ final class OrderObserver
 
         if ($order->wasChanged(['status', 'fulfillment_status']) && $order->creator !== null) {
             /** @var NotificationService $notifications */
-            $notifications = app(NotificationService::class);
+            $notifications = resolve(NotificationService::class);
             $url = Route::has('filament.app.resources.orders.view')
                 ? route('filament.app.resources.orders.view', ['record' => $order])
                 : null;

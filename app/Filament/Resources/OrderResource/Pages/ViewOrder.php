@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\OrderResource\Pages;
 
 use App\Filament\Resources\OrderResource;
+use App\Models\Order;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -39,7 +40,7 @@ final class ViewOrder extends ViewRecord
                     TextEntry::make('contact.name')->label('Contact'),
                     TextEntry::make('opportunity.name')->label('Deal'),
                     TextEntry::make('quote.title')->label('Quote'),
-                    TextEntry::make('total')->money(fn ($record): string => $record->currency_code ?? 'USD'),
+                    TextEntry::make('total')->money(fn (Order $record): string => $record->currency_code ?? 'USD'),
                     TextEntry::make('expected_delivery_date')->date(),
                 ]),
                 TextEntry::make('notes')->label('Internal Notes')->columnSpanFull()->wrap(),

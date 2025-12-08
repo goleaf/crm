@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!-- Shared PHPCS ruleset; see https://laravel-news.com/sharing-phpcs-rules -->
+<ruleset name="Relaticle">
+    <description>Common PHPCS rules for CRM apps.</description>
+
+    <!-- Output configuration -->
+    <arg name="colors"/>
+    <arg value="p"/>
+    <arg value="s"/>
+
+    <!-- Base rules -->
+    <rule ref="PSR12">
+        <!-- Allow grouped trait imports for Laravel macros -->
+        <exclude name="PSR12.Traits.UseDeclaration.MultipleImport"/>
+    </rule>
+
+    <!-- Keep long lines visible but lenient -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="160"/>
+            <property name="absoluteLineLimit" value="200"/>
+            <property name="ignoreComments" value="true"/>
+        </properties>
+    </rule>
+
+    <!-- Avoid noisy trailing whitespace warnings from Blade exports -->
+    <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace">
+        <exclude name="Squiz.WhiteSpace.SuperfluousWhitespace.EndLine"/>
+    </rule>
+</ruleset>

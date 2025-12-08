@@ -11,7 +11,6 @@ use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Number;
 use Relaticle\CustomFields\Facades\CustomFields;
 
@@ -165,7 +164,7 @@ final class PeopleImporter extends BaseImporter
                 ->guess(['birthday', 'birthdate', 'dob'])
                 ->rules(['nullable', 'date'])
                 ->fillRecordUsing(function (People $record, ?string $state): void {
-                    $record->birthdate = blank($state) ? null : Carbon::parse($state)->toDateString();
+                    $record->birthdate = blank($state) ? null : \Illuminate\Support\Facades\Date::parse($state)->toDateString();
                 }),
 
             ImportColumn::make('assistant_name')
@@ -320,7 +319,7 @@ final class PeopleImporter extends BaseImporter
             ->map(fn (mixed $email): string => trim((string) $email))
             ->filter(fn (string $email): bool => filter_var($email, FILTER_VALIDATE_EMAIL) !== false)
             ->values()
-            ->toArray();
+            ->all();
     }
 
     protected function afterSave(): void

@@ -7,11 +7,13 @@ namespace App\Providers;
 use App\Events\CrmModelCreated;
 use App\Events\CrmModelDeleted;
 use App\Events\CrmModelUpdated;
+use App\Listeners\Auth\BackfillTimezoneFromGeoGenius;
 use App\Listeners\Crm\CrmEventSubscriber;
 use App\Listeners\Crm\LogCrmModelEvent;
 use App\Listeners\Permissions\RemoveTeamRole;
 use App\Listeners\Permissions\SeedTeamPermissions;
 use App\Listeners\Permissions\SyncTeamMemberRole;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Laravel\Jetstream\Events\TeamCreated;
 use Laravel\Jetstream\Events\TeamMemberAdded;
@@ -44,6 +46,9 @@ final class EventServiceProvider extends ServiceProvider
         ],
         CrmModelDeleted::class => [
             LogCrmModelEvent::class,
+        ],
+        Login::class => [
+            BackfillTimezoneFromGeoGenius::class,
         ],
     ];
 

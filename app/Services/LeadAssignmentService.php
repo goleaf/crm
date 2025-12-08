@@ -153,7 +153,7 @@ final readonly class LeadAssignmentService
         }
 
         // Get all active users in the team
-        return User::whereHas('teams', function ($query) use ($lead): void {
+        return User::whereHas('teams', function (\Illuminate\Contracts\Database\Query\Builder $query) use ($lead): void {
             $query->where('teams.id', $lead->team_id);
         })
             ->where('email_verified_at', '!=', null)

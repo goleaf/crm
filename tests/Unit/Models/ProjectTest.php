@@ -8,7 +8,7 @@ use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
 
-test('project can be created with basic attributes', function () {
+test('project can be created with basic attributes', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
 
@@ -26,7 +26,7 @@ test('project can be created with basic attributes', function () {
         ->and($project->slug)->not->toBeNull();
 });
 
-test('slug is generated and stays unique when omitted', function () {
+test('slug is generated and stays unique when omitted', function (): void {
     $team = Team::factory()->create();
 
     $first = Project::create([
@@ -44,7 +44,7 @@ test('slug is generated and stays unique when omitted', function () {
         ->and($first->slug)->not->toBe($second->slug);
 });
 
-test('project can have team members', function () {
+test('project can have team members', function (): void {
     $project = Project::factory()->create();
     $user = User::factory()->create();
 
@@ -59,7 +59,7 @@ test('project can have team members', function () {
         ->and((float) $project->teamMembers->first()->pivot->allocation_percentage)->toBe(50.0);
 });
 
-test('project can have tasks', function () {
+test('project can have tasks', function (): void {
     $project = Project::factory()->create();
     $task = Task::factory()->create(['team_id' => $project->team_id]);
 
@@ -69,7 +69,7 @@ test('project can have tasks', function () {
         ->and($project->tasks->first()->id)->toBe($task->id);
 });
 
-test('project calculates percent complete based on empty task list', function () {
+test('project calculates percent complete based on empty task list', function (): void {
     $project = Project::factory()->create();
 
     $percentComplete = $project->calculatePercentComplete();
@@ -78,7 +78,7 @@ test('project calculates percent complete based on empty task list', function ()
     expect($percentComplete)->toBe(0.0);
 });
 
-test('project can check if over budget', function () {
+test('project can check if over budget', function (): void {
     $project = Project::factory()->create([
         'budget' => 10000,
         'actual_cost' => 12000,
@@ -90,7 +90,7 @@ test('project can check if over budget', function () {
     expect($project->isOverBudget())->toBeFalse();
 });
 
-test('project calculates budget variance', function () {
+test('project calculates budget variance', function (): void {
     $project = Project::factory()->create([
         'budget' => 10000,
         'actual_cost' => 7000,
@@ -102,14 +102,14 @@ test('project calculates budget variance', function () {
     expect($project->budgetVariance())->toBe(-2000.0);
 });
 
-test('project can be marked as template', function () {
+test('project can be marked as template', function (): void {
     $project = Project::factory()->template()->create();
 
     expect($project->is_template)->toBeTrue()
         ->and($project->status)->toBe(ProjectStatus::PLANNING);
 });
 
-test('project can export data for gantt chart', function () {
+test('project can export data for gantt chart', function (): void {
     $project = Project::factory()->create([
         'name' => 'Test Project',
         'start_date' => now(),
@@ -124,7 +124,7 @@ test('project can export data for gantt chart', function () {
         ->and((float) $ganttData['progress'])->toBe(25.0);
 });
 
-test('cannot create project from non-template', function () {
+test('cannot create project from non-template', function (): void {
     $project = Project::factory()->create(['is_template' => false]);
 
     expect(fn () => $project->createFromTemplate('New Project'))

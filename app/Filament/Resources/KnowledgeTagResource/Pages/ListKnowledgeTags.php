@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Filament\Resources\KnowledgeTagResource\Pages;
 
 use App\Filament\Resources\KnowledgeTagResource;
+use App\Filament\Resources\Pages\BaseListRecords;
 use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\Size;
 use Override;
 
-final class ListKnowledgeTags extends ListRecords
+final class ListKnowledgeTags extends BaseListRecords
 {
     protected static string $resource = KnowledgeTagResource::class;
 

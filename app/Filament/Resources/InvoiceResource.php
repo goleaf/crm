@@ -21,6 +21,7 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -29,6 +30,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -138,20 +140,34 @@ final class InvoiceResource extends Resource
                                     ->relationship()
                                     ->orderColumn('sort_order')
                                     ->addActionLabel('Add line item')
+                                    ->table([
+                                        TableColumn::make('Item')
+                                            ->markAsRequired(),
+                                        TableColumn::make('Qty')
+                                            ->markAsRequired()
+                                            ->alignment(Alignment::End),
+                                        TableColumn::make('Unit price')
+                                            ->markAsRequired()
+                                            ->alignment(Alignment::End),
+                                        TableColumn::make('Tax %')
+                                            ->alignment(Alignment::End),
+                                        TableColumn::make('Description'),
+                                    ])
+                                    ->compact()
                                     ->schema([
                                         TextInput::make('name')
+                                            ->label('Item')
                                             ->required()
                                             ->maxLength(255),
-                                        Textarea::make('description')
-                                            ->rows(2)
-                                            ->columnSpanFull(),
                                         TextInput::make('quantity')
+                                            ->label('Qty')
                                             ->numeric()
                                             ->required()
                                             ->default(1)
                                             ->minValue(0.01)
                                             ->step(0.01),
                                         TextInput::make('unit_price')
+                                            ->label('Unit price')
                                             ->numeric()
                                             ->required()
                                             ->default(0)
@@ -164,8 +180,9 @@ final class InvoiceResource extends Resource
                                             ->minValue(0)
                                             ->maxValue(100)
                                             ->step(0.01),
+                                        Textarea::make('description')
+                                            ->rows(2),
                                     ])
-                                    ->columns(2)
                                     ->columnSpanFull(),
                             ])
                             ->collapsible()

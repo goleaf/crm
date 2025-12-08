@@ -41,7 +41,7 @@ final class KnowledgeTemplateResponseResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = null;
 
-    public static function getNavigationGroup(): ?string
+    public static function getNavigationGroup(): string
     {
         return __('app.navigation.knowledge_base');
     }
@@ -112,10 +112,22 @@ final class KnowledgeTemplateResponseResource extends Resource
             ])
             ->defaultSort('updated_at', 'desc')
             ->filters([
+                SelectFilter::make('category_id')
+                    ->label(__('app.labels.category'))
+                    ->relationship('category', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->multiple(),
                 SelectFilter::make('visibility')
                     ->label(__('app.labels.visibility'))
                     ->options(ArticleVisibility::class)
                     ->multiple(),
+                SelectFilter::make('is_active')
+                    ->label(__('app.labels.active'))
+                    ->options([
+                        '1' => __('app.labels.active'),
+                        '0' => __('app.labels.inactive'),
+                    ]),
                 TrashedFilter::make(),
             ])
             ->recordActions([

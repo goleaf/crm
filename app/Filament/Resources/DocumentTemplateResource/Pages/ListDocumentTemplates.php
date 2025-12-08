@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Filament\Resources\DocumentTemplateResource\Pages;
 
 use App\Filament\Resources\DocumentTemplateResource;
+use App\Filament\Resources\Pages\BaseListRecords;
 use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\Size;
 use Override;
 
-final class ListDocumentTemplates extends ListRecords
+final class ListDocumentTemplates extends BaseListRecords
 {
     /** @var class-string<DocumentTemplateResource> */
     protected static string $resource = DocumentTemplateResource::class;

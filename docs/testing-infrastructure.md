@@ -8,6 +8,18 @@
 
 The testing infrastructure provides a comprehensive framework for property-based testing of the Tasks & Activities system. It includes base test cases, data generators, helper functions, and utilities designed to validate correctness properties across multiple iterations with randomly generated data.
 
+## Laravel expectations plugin
+
+- The suite now ships with `defstudio/pest-plugin-laravel-expectations`; prefer its expectations for HTTP/model/storage assertions so Filament v4.3+ and API tests stay readable (e.g., `expect($response)->toBeOk()->toContainText('Dashboard')`, `expect($model)->toExist()->toBelongTo($team)`, `expect('report.pdf')->toExistInStorage()`).
+
+## Stress testing with Pest Stressless
+
+- We ship `pestphp/pest-plugin-stressless` for lightweight load testing built on k6 (AGPL binary is downloaded on first run). Use it for perf/stability spot-checks on API/Filament entry points without wiring a separate tool.
+- Quick CLI probe: `./vendor/bin/pest stress https://staging.example.com/filament/app --concurrency=5 --duration=10`.
+- Expectation-driven checks live under `tests/Stressless` and are opt-in: `RUN_STRESS_TESTS=1 STRESSLESS_TARGET=https://staging.example.com/health STRESSLESS_CONCURRENCY=3 STRESSLESS_DURATION=5 ./vendor/bin/pest --group=stressless`.
+- Keep concurrency/duration small for shared/staging infra and set `STRESSLESS_P95_THRESHOLD_MS` to guard acceptable latency. Never point stress runs at production without explicit approval.
+- Favor HTTP endpoints that exercise Filament dashboards/pages over long-running jobs so results reflect UI responsiveness (e.g., `filament.app.pages.dashboard`, calendar endpoints).
+
 ## Architecture
 
 ### Core Components

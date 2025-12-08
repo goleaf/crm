@@ -7,8 +7,9 @@ namespace App\Observers;
 use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
+use App\Services\ActivityService;
 
-final readonly class TaskObserver
+final class TaskObserver
 {
     public function creating(Task $task): void
     {
@@ -39,13 +40,34 @@ final readonly class TaskObserver
         }
     }
 
-    public function saved(Task $task): void
+    public function created(Task $task): void
     {
-        //
+        resolve(ActivityService::class)->log(
+            $task,
+            'created',
+            ['title' => $task->title]
+        );
+    }
+
+    public function updated(Task $task): void
+    {
+        $changes = $task->getChanges();
+
+        if (! empty($changes)) {
+            resolve(ActivityService::class)->log(
+                $task,
+                'updated',
+                $changes
+            );
+        }
     }
 
     public function deleted(Task $task): void
     {
-        //
+        resolve(ActivityService::class)->log(
+            $task,
+            'deleted',
+            ['title' => $task->title]
+        );
     }
 }

@@ -6,8 +6,9 @@ namespace App\Models;
 
 use App\Enums\EmployeeStatus;
 use App\Models\Concerns\HasTeam;
+use HosmelQ\NameOfPerson\PersonName;
+use HosmelQ\NameOfPerson\PersonNameCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -67,6 +68,7 @@ final class Employee extends Model implements HasMedia
         'team_id',
         'user_id',
         'manager_id',
+        'name',
         'first_name',
         'last_name',
         'email',
@@ -133,6 +135,7 @@ final class Employee extends Model implements HasMedia
             'has_portal_access' => 'boolean',
             'payroll_metadata' => 'array',
             'capacity_hours_per_week' => 'decimal:2',
+            'name' => PersonNameCast::using('first_name', 'last_name'),
         ];
     }
 
@@ -164,7 +167,7 @@ final class Employee extends Model implements HasMedia
     }
 
     /**
-     * @return HasMany<self>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Employee, $this>
      */
     public function directReports(): HasMany
     {
@@ -172,7 +175,7 @@ final class Employee extends Model implements HasMedia
     }
 
     /**
-     * @return HasMany<EmployeeDocument>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\EmployeeDocument, $this>
      */
     public function documents(): HasMany
     {
@@ -180,7 +183,7 @@ final class Employee extends Model implements HasMedia
     }
 
     /**
-     * @return HasMany<EmployeeTimeOff>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\EmployeeTimeOff, $this>
      */
     public function timeOffRequests(): HasMany
     {
@@ -188,7 +191,7 @@ final class Employee extends Model implements HasMedia
     }
 
     /**
-     * @return HasMany<EmployeeAllocation>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\EmployeeAllocation, $this>
      */
     public function allocations(): HasMany
     {
@@ -214,15 +217,21 @@ final class Employee extends Model implements HasMedia
     /**
      * Get the employee's full name.
      */
-    public function getFullNameAttribute(): string
+    protected function getFullNameAttribute(): string
     {
+        $name = $this->name;
+
+        if ($name instanceof PersonName) {
+            return $name->full();
+        }
+
         return trim("{$this->first_name} {$this->last_name}");
     }
 
     /**
      * Get remaining vacation days.
      */
-    public function getRemainingVacationDaysAttribute(): float
+    protected function getRemainingVacationDaysAttribute(): float
     {
         return max(0, $this->vacation_days_total - $this->vacation_days_used);
     }
@@ -230,7 +239,7 @@ final class Employee extends Model implements HasMedia
     /**
      * Get remaining sick days.
      */
-    public function getRemainingSickDaysAttribute(): float
+    protected function getRemainingSickDaysAttribute(): float
     {
         return max(0, $this->sick_days_total - $this->sick_days_used);
     }
@@ -263,16 +272,16 @@ final class Employee extends Model implements HasMedia
         $query = $this->allocations();
 
         if ($startDate instanceof \Illuminate\Support\Carbon && $endDate instanceof \Illuminate\Support\Carbon) {
-            $query->where(function ($q) use ($startDate, $endDate): void {
-                $q->where(function ($subQ) use ($startDate, $endDate): void {
+            $query->where(function (\Illuminate\Contracts\Database\Query\Builder $q) use ($startDate, $endDate): void {
+                $q->where(function (\Illuminate\Contracts\Database\Query\Builder $subQ) use ($startDate, $endDate): void {
                     // Allocation overlaps with the period
                     $subQ->where('start_date', '<=', $endDate)
-                        ->where(function ($dateQ) use ($startDate): void {
+                        ->where(function (\Illuminate\Contracts\Database\Query\Builder $dateQ) use ($startDate): void {
                             $dateQ->where('end_date', '>=', $startDate)
                                 ->orWhereNull('end_date');
                         });
                 })
-                    ->orWhere(function ($subQ): void {
+                    ->orWhere(function (\Illuminate\Contracts\Database\Query\Builder $subQ): void {
                         // Open-ended allocations
                         $subQ->whereNull('start_date')
                             ->whereNull('end_date');
@@ -280,7 +289,7 @@ final class Employee extends Model implements HasMedia
             });
         } elseif (! $startDate instanceof \Illuminate\Support\Carbon && ! $endDate instanceof \Illuminate\Support\Carbon) {
             // Current allocations (no end date or end date in future)
-            $query->where(function ($q): void {
+            $query->where(function (\Illuminate\Contracts\Database\Query\Builder $q): void {
                 $q->whereNull('end_date')
                     ->orWhere('end_date', '>=', now());
             });
@@ -348,10 +357,10 @@ final class Employee extends Model implements HasMedia
     {
         return $this->timeOffRequests()
             ->where('status', 'approved')
-            ->where(function ($query) use ($startDate, $endDate): void {
+            ->where(function (\Illuminate\Contracts\Database\Query\Builder $query) use ($startDate, $endDate): void {
                 $query->whereBetween('start_date', [$startDate, $endDate])
                     ->orWhereBetween('end_date', [$startDate, $endDate])
-                    ->orWhere(function ($q) use ($startDate, $endDate): void {
+                    ->orWhere(function (\Illuminate\Contracts\Database\Query\Builder $q) use ($startDate, $endDate): void {
                         $q->where('start_date', '<=', $startDate)
                             ->where('end_date', '>=', $endDate);
                     });

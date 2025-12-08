@@ -71,9 +71,7 @@ describe('ViewCompany Performance', function (): void {
         $queries = DB::getQueryLog();
 
         // Count User::find() queries - should be 0 or 1 (batch query)
-        $userFindQueries = collect($queries)->filter(function ($query) {
-            return str_contains($query['query'], 'select * from "users" where "users"."id" = ?');
-        })->count();
+        $userFindQueries = collect($queries)->filter(fn (array $query): bool => str_contains((string) $query['query'], 'select * from "users" where "users"."id" = ?'))->count();
 
         expect($userFindQueries)->toBe(0, 'Should not have individual User::find() queries');
     });
@@ -94,10 +92,8 @@ describe('ViewCompany Performance', function (): void {
         $queries = DB::getQueryLog();
 
         // Should not have separate queries for creator, accountOwner, parentCompany
-        $relationQueries = collect($queries)->filter(function ($query) {
-            return str_contains($query['query'], 'select * from "users" where "users"."id" in')
-                || str_contains($query['query'], 'select * from "companies" where "companies"."id" in');
-        })->count();
+        $relationQueries = collect($queries)->filter(fn (array $query): bool => str_contains((string) $query['query'], 'select * from "users" where "users"."id" in')
+            || str_contains((string) $query['query'], 'select * from "companies" where "companies"."id" in'))->count();
 
         // Should have at most 2 queries (one for users, one for companies)
         expect($relationQueries)->toBeLessThanOrEqual(2);

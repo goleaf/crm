@@ -7,6 +7,12 @@ inclusion: always
 ## Overview
 All models that need notes functionality should use the `HasNotes` trait. This provides a consistent, polymorphic many-to-many relationship for attaching notes to any entity.
 
+### Lightweight text notes (Notable package)
+- Use `App\Models\Concerns\HasNotableEntries` when you need quick, plain-text notes powered by `eg-mohamed/notable` (`NotableEntry` extends the vendor model so you still get the package scopes). For models that already have `HasNotes`, pull in `HasNotesAndNotables` to expose both APIs without collisions.
+- Call `addNotableNote()` / `notableNotes()` / `notableNotesByCreator()` instead of the vendor `addNote()` to avoid clashing with our existing `HasNotes` trait.
+- The `team_id` column is required—`addNotableNote()` injects the owning model’s team and `HasTeam` on `NotableEntry` backfills from the current team; don’t bypass the trait or you’ll hit integrity errors.
+- Keep rich notes (attachments, categories, visibility) on the existing `Note` model; use Notable entries for lightweight audit-style text.
+
 ## Implementation
 
 ### Adding Notes to a Model
@@ -99,4 +105,3 @@ it('can add notes to model', function () {
     expect($model->hasNote($note))->toBeTrue();
 });
 ```
-

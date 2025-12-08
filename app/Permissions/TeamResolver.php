@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Permissions;
 
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Contracts\PermissionsTeamResolver;
 
@@ -24,11 +25,11 @@ final class TeamResolver implements PermissionsTeamResolver
     }
 
     /**
-     * @param  int|string|\Illuminate\Database\Eloquent\Model|null  $id
+     * @param  int|string|Model|null  $id
      */
     public function setPermissionsTeamId($id): void
     {
-        if ($id instanceof \Illuminate\Database\Eloquent\Model) {
+        if ($id instanceof Model) {
             $id = $id->getKey();
         }
 

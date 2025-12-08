@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\DocumentResource\RelationManagers;
 
+use App\Support\Paths\StoragePaths;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -15,6 +16,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Enums\Size;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 final class VersionsRelationManager extends RelationManager
 {
@@ -29,7 +31,12 @@ final class VersionsRelationManager extends RelationManager
                 \Filament\Forms\Components\FileUpload::make('file_path')
                     ->label('File')
                     ->disk('public')
-                    ->directory('documents')
+                    ->directory(fn (): string => StoragePaths::documentsDirectory($this->ownerRecord?->team_id))
+                    ->getUploadedFileNameForStorageUsing(
+                        fn (TemporaryUploadedFile $file): string => StoragePaths::documentFileName(
+                            $file->getClientOriginalName()
+                        )
+                    )
                     ->required(),
                 \Filament\Forms\Components\Textarea::make('notes')
                     ->rows(3),

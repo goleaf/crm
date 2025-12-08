@@ -8,17 +8,21 @@ use App\Enums\InvoiceStatus;
 use App\Filament\Resources\InvoiceResource;
 use App\Models\Invoice;
 use App\Services\InvoicePdfService;
+use App\Support\Helpers\StringHelper;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\RepeatableEntry\TableColumn;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Alignment;
+use Illuminate\Support\HtmlString;
 use Override;
 
 final class ViewInvoice extends ViewRecord
@@ -101,12 +105,34 @@ final class ViewInvoice extends ViewRecord
                     ->collapsed()
                     ->schema([
                         RepeatableEntry::make('lineItems')
+                            ->table([
+                                TableColumn::make('Item'),
+                                TableColumn::make('Description'),
+                                TableColumn::make('Qty')
+                                    ->alignment(Alignment::End),
+                                TableColumn::make('Unit Price')
+                                    ->alignment(Alignment::End),
+                                TableColumn::make('Tax %')
+                                    ->alignment(Alignment::End),
+                                TableColumn::make('Line Total')
+                                    ->alignment(Alignment::End),
+                                TableColumn::make('Tax')
+                                    ->alignment(Alignment::End),
+                            ])
                             ->schema([
                                 TextEntry::make('name')
                                     ->weight('bold'),
                                 TextEntry::make('description')
                                     ->color('gray')
-                                    ->columnSpan(2)
+                                    ->formatStateUsing(
+                                        fn (?string $state): HtmlString|string|null => StringHelper::wordWrap(
+                                            value: $state,
+                                            characters: 80,
+                                            break: '<br>',
+                                            cutLongWords: true,
+                                            emptyPlaceholder: null,
+                                        ),
+                                    )
                                     ->placeholder('—'),
                                 TextEntry::make('quantity')
                                     ->label('Qty')

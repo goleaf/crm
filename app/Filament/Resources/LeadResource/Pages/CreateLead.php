@@ -8,6 +8,7 @@ use App\Filament\Resources\LeadResource;
 use App\Filament\Resources\LeadResource\Forms\CreateLeadForm;
 use App\Models\Lead;
 use App\Services\LeadDuplicateDetectionService;
+use App\Support\Helpers\ArrayHelper;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Schemas\Schema;
@@ -33,7 +34,7 @@ final class CreateLead extends CreateRecord
         /** @var Lead $lead */
         $lead = $this->getRecord();
 
-        $service = app(LeadDuplicateDetectionService::class);
+        $service = resolve(LeadDuplicateDetectionService::class);
         $duplicates = $service->find($lead, threshold: 60.0, limit: 5);
 
         if ($duplicates->isEmpty()) {
@@ -70,7 +71,7 @@ final class CreateLead extends CreateRecord
             );
         }
 
-        return implode("\n", $lines);
+        return ArrayHelper::joinList($lines, PHP_EOL, emptyPlaceholder: '');
     }
 
     private function getFormColumns(): int

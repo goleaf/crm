@@ -18,7 +18,7 @@ TextEntry::make('role')
 **Analysis:**
 - The state mapping creates nested arrays: `['label' => ..., 'color' => ...]`
 - Color callback correctly accesses `$state['color']` from the nested structure
-- This is the proper implementation for Filament v4 RepeatableEntry components
+- This is the proper implementation for Filament v4.3+ RepeatableEntry components
 - The diff shown was the problematic version that was already corrected
 
 **Why This Works:**
@@ -68,7 +68,7 @@ Cannot redeclare static Filament\Widgets\TableWidget::$heading as non static
 **Solution:**
 - Removed the `protected ?string $heading` property declaration
 - Used `->heading(__('app.labels.notes'))` directly in the table configuration
-- This aligns with Filament v4 best practices
+- This aligns with Filament v4.3+ best practices
 
 ## Code Quality Metrics
 
@@ -211,7 +211,7 @@ vendor/bin/phpstan analyse app/Filament/Resources/CompanyResource/Pages/ViewComp
 3. **app/Filament/Widgets/RecentNotes.php**
    - Fixed property declaration issue
    - Added translation for heading
-   - Aligned with Filament v4 patterns
+   - Aligned with Filament v4.3+ patterns
 
 4. **tests/Feature/Filament/Resources/CompanyResource/README.md**
    - Updated badge color documentation

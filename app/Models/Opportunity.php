@@ -6,15 +6,15 @@ namespace App\Models;
 
 use App\Enums\CreationSource;
 use App\Models\Concerns\HasCreator;
-use App\Models\Concerns\HasNotes;
+use App\Models\Concerns\HasNotesAndNotables;
 use App\Models\Concerns\HasTags;
+use App\Models\Concerns\HasTaxonomies;
 use App\Models\Concerns\HasTeam;
 use App\Models\Concerns\LogsActivity;
 use App\Observers\OpportunityObserver;
 use Database\Factories\OpportunityFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -38,8 +38,9 @@ final class Opportunity extends Model implements HasCustomFields
     /** @use HasFactory<OpportunityFactory> */
     use HasFactory;
 
-    use HasNotes;
+    use HasNotesAndNotables;
     use HasTags;
+    use HasTaxonomies;
     use HasTeam;
     use LogsActivity;
     use SoftDeletes;
@@ -143,7 +144,7 @@ final class Opportunity extends Model implements HasCustomFields
     /**
      * Order created from this opportunity.
      *
-     * @return HasOne<Order>
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<\App\Models\Order, $this>
      */
     public function order(): HasOne
     {

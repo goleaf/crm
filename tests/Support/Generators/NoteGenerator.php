@@ -23,11 +23,11 @@ final class NoteGenerator
      */
     public static function generate(Team $team, ?User $creator = null, array $overrides = []): Note
     {
-        $creator = $creator ?? User::factory()->create();
+        $creator ??= User::factory()->create();
 
         $data = array_merge([
             'team_id' => $team->id,
-            'user_id' => $creator->id,
+            'creator_id' => $creator->id,
             'title' => fake()->sentence(),
             'category' => fake()->randomElement(NoteCategory::cases())->value,
             'visibility' => fake()->randomElement(NoteVisibility::cases()),
@@ -85,11 +85,11 @@ final class NoteGenerator
      */
     public static function generateData(Team $team, ?User $creator = null): array
     {
-        $creator = $creator ?? User::factory()->create();
+        $creator ??= User::factory()->create();
 
         return [
             'team_id' => $team->id,
-            'user_id' => $creator->id,
+            'creator_id' => $creator->id,
             'title' => fake()->sentence(),
             'category' => fake()->randomElement(NoteCategory::cases())->value,
             'visibility' => fake()->randomElement(NoteVisibility::cases()),

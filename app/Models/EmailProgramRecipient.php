@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\EmailSendStatus;
+use App\Support\PersonNameFormatter;
+use HosmelQ\NameOfPerson\PersonNameCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -18,6 +19,7 @@ final class EmailProgramRecipient extends Model
         'email_program_id',
         'email_program_step_id',
         'email',
+        'name',
         'first_name',
         'last_name',
         'custom_fields',
@@ -40,6 +42,7 @@ final class EmailProgramRecipient extends Model
     ];
 
     protected $casts = [
+        'name' => PersonNameCast::class,
         'custom_fields' => 'array',
         'status' => EmailSendStatus::class,
         'scheduled_send_at' => 'datetime',
@@ -51,11 +54,17 @@ final class EmailProgramRecipient extends Model
         'unsubscribed_at' => 'datetime',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\EmailProgram, $this>
+     */
     public function emailProgram(): BelongsTo
     {
         return $this->belongsTo(EmailProgram::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\EmailProgramStep, $this>
+     */
     public function emailProgramStep(): BelongsTo
     {
         return $this->belongsTo(EmailProgramStep::class);
@@ -64,5 +73,12 @@ final class EmailProgramRecipient extends Model
     public function recipient(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    protected function getFullNameAttribute(): string
+    {
+        $name = $this->name ?? trim(trim((string) $this->first_name).' '.trim((string) $this->last_name));
+
+        return PersonNameFormatter::full($name, (string) $this->email);
     }
 }

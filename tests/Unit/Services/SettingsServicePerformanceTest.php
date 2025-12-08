@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 uses(RefreshDatabase::class);
 
 beforeEach(function (): void {
-    $this->service = app(SettingsService::class);
+    $this->service = resolve(SettingsService::class);
 });
 
 it('caches settings to reduce database queries', function (): void {

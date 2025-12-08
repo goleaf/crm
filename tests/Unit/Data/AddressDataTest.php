@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Data\AddressData;
 use App\Enums\AddressType;
 
-test('can create address data', function () {
+test('can create address data', function (): void {
     $address = new AddressData(
         type: AddressType::BILLING,
         line1: '123 Main St',
@@ -31,7 +31,7 @@ test('can create address data', function () {
         ->and($address->label)->toBe('Home');
 });
 
-test('can create address from array', function () {
+test('can create address from array', function (): void {
     $payload = [
         'type' => 'billing',
         'line1' => '456 Oak Ave',
@@ -51,7 +51,7 @@ test('can create address from array', function () {
         ->and($address->country_code)->toBe('US');
 });
 
-test('handles legacy field names in fromArray', function () {
+test('handles legacy field names in fromArray', function (): void {
     $payload = [
         'street' => '789 Elm St',
         'street2' => 'Suite 100',
@@ -71,7 +71,7 @@ test('handles legacy field names in fromArray', function () {
         ->and($address->country_code)->toBe('US');
 });
 
-test('uses fallback type when type not provided', function () {
+test('uses fallback type when type not provided', function (): void {
     $payload = ['line1' => '123 Main St'];
 
     $address = AddressData::fromArray($payload, AddressType::SHIPPING);
@@ -79,7 +79,7 @@ test('uses fallback type when type not provided', function () {
     expect($address->type)->toBe(AddressType::SHIPPING);
 });
 
-test('converts to legacy array format', function () {
+test('converts to legacy array format', function (): void {
     $address = new AddressData(
         type: AddressType::BILLING,
         line1: '123 Main St',
@@ -100,7 +100,7 @@ test('converts to legacy array format', function () {
         ->and($legacy)->toHaveKey('country', 'US');
 });
 
-test('filters null values in legacy array', function () {
+test('filters null values in legacy array', function (): void {
     $address = new AddressData(
         type: AddressType::BILLING,
         line1: '123 Main St',
@@ -114,7 +114,7 @@ test('filters null values in legacy array', function () {
         ->and($legacy)->not()->toHaveKey('state');
 });
 
-test('can add coordinates to address', function () {
+test('can add coordinates to address', function (): void {
     $address = new AddressData(
         type: AddressType::BILLING,
         line1: '123 Main St',
@@ -128,7 +128,7 @@ test('can add coordinates to address', function () {
         ->and($withCoords->line1)->toBe('123 Main St');
 });
 
-test('detects empty address', function () {
+test('detects empty address', function (): void {
     $address = new AddressData(
         type: AddressType::BILLING,
         line1: '',
@@ -138,7 +138,7 @@ test('detects empty address', function () {
     expect($address->isEmpty())->toBeTrue();
 });
 
-test('detects non-empty address', function () {
+test('detects non-empty address', function (): void {
     $address = new AddressData(
         type: AddressType::BILLING,
         line1: '123 Main St',
@@ -148,7 +148,7 @@ test('detects non-empty address', function () {
     expect($address->isEmpty())->toBeFalse();
 });
 
-test('trims whitespace from string fields', function () {
+test('trims whitespace from string fields', function (): void {
     $payload = [
         'line1' => '  123 Main St  ',
         'city' => '  New York  ',
@@ -162,7 +162,7 @@ test('trims whitespace from string fields', function () {
         ->and($address->state)->toBe('NY');
 });
 
-test('converts empty strings to null', function () {
+test('converts empty strings to null', function (): void {
     $payload = [
         'line1' => '123 Main St',
         'line2' => '   ',
@@ -175,7 +175,7 @@ test('converts empty strings to null', function () {
         ->and($address->city)->toBeNull();
 });
 
-test('uppercases country code', function () {
+test('uppercases country code', function (): void {
     $payload = [
         'line1' => '123 Main St',
         'country_code' => 'us',

@@ -20,26 +20,48 @@ final readonly class GitHubService
      * @param  string  $repo  The repository name
      * @param  int  $cacheMinutes  Minutes to cache the result (default: 15)
      */
-    public function getStarsCount(string $owner = 'Relaticle', string $repo = 'relaticle', int $cacheMinutes = 15): int
+    public function getStarsCount(?string $owner = null, ?string $repo = null, int $cacheMinutes = 15): int
     {
+        $owner ??= config('laravel-crm.ui.github_owner');
+        $repo ??= config('laravel-crm.ui.github_repo');
+
+        $defaultCacheMinutes = (int) config('http-clients.services.github.cache_minutes', $cacheMinutes);
+        $cacheMinutes = $cacheMinutes === 15 ? $defaultCacheMinutes : $cacheMinutes;
+        $cacheMinutes = $cacheMinutes > 0 ? $cacheMinutes : 1;
+
+        if (! $owner || ! $repo) {
+            return 0;
+        }
+
         $cacheKey = "github_stars_{$owner}_{$repo}";
 
         $cachedValue = Cache::remember($cacheKey, now()->addMinutes($cacheMinutes), function () use ($owner, $repo): int {
             try {
                 /** @var Response $response */
-                $response = Http::withHeaders([
-                    'Accept' => 'application/vnd.github.v3+json',
-                ])->get("https://api.github.com/repos/{$owner}/{$repo}");
+                $response = Http::github()
+                    ->withUrlParameters([
+                        'owner' => $owner,
+                        'repo' => $repo,
+                    ])
+                    ->get('/repos/{owner}/{repo}');
 
                 if ($response->successful()) {
                     return (int) $response->json('stargazers_count', 0);
                 }
 
-                Log::warning('Failed to fetch GitHub stars: '.$response->status());
+                Log::warning('Failed to fetch GitHub stars', [
+                    'status' => $response->status(),
+                    'owner' => $owner,
+                    'repo' => $repo,
+                ]);
 
                 return 0;
             } catch (Exception $e) {
-                Log::error('Error fetching GitHub stars: '.$e->getMessage());
+                Log::error('Error fetching GitHub stars', [
+                    'owner' => $owner,
+                    'repo' => $repo,
+                    'message' => $e->getMessage(),
+                ]);
 
                 return 0;
             }
@@ -55,7 +77,7 @@ final readonly class GitHubService
      * @param  string  $repo  The repository name
      * @param  int  $cacheMinutes  Minutes to cache the result (default: 15)
      */
-    public function getFormattedStarsCount(string $owner = 'Relaticle', string $repo = 'relaticle', int $cacheMinutes = 15): string
+    public function getFormattedStarsCount(?string $owner = null, ?string $repo = null, int $cacheMinutes = 15): string
     {
         $starsCount = $this->getStarsCount($owner, $repo, $cacheMinutes);
 

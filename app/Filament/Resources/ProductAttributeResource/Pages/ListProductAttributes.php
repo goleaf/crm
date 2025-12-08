@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\ProductAttributeResource\Pages;
 
+use App\Filament\Resources\Pages\BaseListRecords;
 use App\Filament\Resources\ProductAttributeResource;
 use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\Size;
 use Override;
 
-final class ListProductAttributes extends ListRecords
+final class ListProductAttributes extends BaseListRecords
 {
     /** @var class-string<ProductAttributeResource> */
     protected static string $resource = ProductAttributeResource::class;

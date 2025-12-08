@@ -7,7 +7,6 @@ namespace Tests\Unit\Properties\ProjectsResources;
 use App\Models\Project;
 use App\Models\Task;
 use App\Services\ProjectSchedulingService;
-use Illuminate\Support\Carbon;
 use Tests\Support\Generators\ProjectGenerator;
 use Tests\Support\Generators\TaskGenerator;
 use Tests\Support\PropertyTestCase;
@@ -26,7 +25,7 @@ final class DependencyEnforcementPropertyTest extends PropertyTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->schedulingService = app(ProjectSchedulingService::class);
+        $this->schedulingService = resolve(ProjectSchedulingService::class);
     }
 
     /**
@@ -65,15 +64,15 @@ final class DependencyEnforcementPropertyTest extends PropertyTestCase
 
             // Property: Task B must start after Task A finishes
             $this->assertGreaterThanOrEqual(
-                Carbon::parse($taskASchedule['scheduled_end']),
-                Carbon::parse($taskBSchedule['scheduled_start']),
+                \Illuminate\Support\Facades\Date::parse($taskASchedule['scheduled_end']),
+                \Illuminate\Support\Facades\Date::parse($taskBSchedule['scheduled_start']),
                 'Task B must start on or after Task A finishes'
             );
 
             // Property: Task C must start after Task B finishes
             $this->assertGreaterThanOrEqual(
-                Carbon::parse($taskBSchedule['scheduled_end']),
-                Carbon::parse($taskCSchedule['scheduled_start']),
+                \Illuminate\Support\Facades\Date::parse($taskBSchedule['scheduled_end']),
+                \Illuminate\Support\Facades\Date::parse($taskCSchedule['scheduled_start']),
                 'Task C must start on or after Task B finishes'
             );
         }, 100);
@@ -171,8 +170,8 @@ final class DependencyEnforcementPropertyTest extends PropertyTestCase
             $this->assertCount($taskCount, $criticalPath, 'All tasks in chain should be critical');
 
             // Property: Project duration should equal sum of task durations
-            $projectStart = Carbon::parse($timeline['start_date']);
-            $projectEnd = Carbon::parse($timeline['end_date']);
+            $projectStart = \Illuminate\Support\Facades\Date::parse($timeline['start_date']);
+            $projectEnd = \Illuminate\Support\Facades\Date::parse($timeline['end_date']);
             $actualDuration = $projectStart->diffInDays($projectEnd);
 
             $this->assertEquals(

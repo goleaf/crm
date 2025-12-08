@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use Relaticle\Documentation\Data\DocumentData;
 
-describe('SuiteCRM feature catalog documentation', function () {
-    it('renders the feature catalog with anchors for each category', function () {
+describe('SuiteCRM feature catalog documentation', function (): void {
+    it('renders the feature catalog with anchors for each category', function (): void {
         $document = DocumentData::fromType('suitecrm-features');
 
         $expectedTableOfContents = [

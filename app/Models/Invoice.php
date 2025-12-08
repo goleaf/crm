@@ -9,19 +9,18 @@ use App\Enums\InvoicePaymentStatus;
 use App\Enums\InvoiceRecurrenceFrequency;
 use App\Enums\InvoiceStatus;
 use App\Models\Concerns\HasCreator;
+use App\Models\Concerns\HasReferenceNumbering;
 use App\Models\Concerns\HasTeam;
 use App\Observers\InvoiceObserver;
-use App\Services\InvoiceNumberGenerator;
 use Database\Factories\InvoiceFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Date;
+use MohamedSaid\Referenceable\Traits\HasReference;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -53,9 +52,31 @@ final class Invoice extends Model implements HasMedia
     /** @use HasFactory<InvoiceFactory> */
     use HasFactory;
 
+    use HasReference;
+    use HasReferenceNumbering;
     use HasTeam;
     use InteractsWithMedia;
     use SoftDeletes;
+
+    protected string $referenceColumn = 'number';
+
+    protected string $referenceStrategy = 'template';
+
+    /**
+     * @var array{format: string, sequence_length: int}
+     */
+    protected array $referenceTemplate = [
+        'format' => 'INV-{YEAR}-{SEQ}',
+        'sequence_length' => 5,
+    ];
+
+    /**
+     * @var array{min_digits: int, reset_frequency: string}
+     */
+    protected array $referenceSequential = [
+        'min_digits' => 5,
+        'reset_frequency' => 'yearly',
+    ];
 
     /**
      * @var list<string>
@@ -111,6 +132,14 @@ final class Invoice extends Model implements HasMedia
         'discount_total' => 0,
         'late_fee_rate' => 0,
     ];
+
+    /**
+     * Reference generation is coordinated through registerNumberIfMissing to seed counters.
+     */
+    protected static function bootHasReference(): void
+    {
+        // Override trait boot hook to avoid premature generation.
+    }
 
     /**
      * @return array<string, string|class-string>
@@ -183,7 +212,7 @@ final class Invoice extends Model implements HasMedia
     }
 
     /**
-     * @return HasMany<Invoice>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Invoice, $this>
      */
     public function children(): HasMany
     {
@@ -191,7 +220,7 @@ final class Invoice extends Model implements HasMedia
     }
 
     /**
-     * @return HasMany<InvoiceLineItem>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\InvoiceLineItem, $this>
      */
     public function lineItems(): HasMany
     {
@@ -199,7 +228,7 @@ final class Invoice extends Model implements HasMedia
     }
 
     /**
-     * @return HasMany<InvoicePayment>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\InvoicePayment, $this>
      */
     public function payments(): HasMany
     {
@@ -207,7 +236,7 @@ final class Invoice extends Model implements HasMedia
     }
 
     /**
-     * @return HasMany<InvoiceReminder>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\InvoiceReminder, $this>
      */
     public function reminders(): HasMany
     {
@@ -215,7 +244,7 @@ final class Invoice extends Model implements HasMedia
     }
 
     /**
-     * @return HasMany<InvoiceStatusHistory>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\InvoiceStatusHistory, $this>
      */
     public function statusHistories(): HasMany
     {
@@ -228,19 +257,19 @@ final class Invoice extends Model implements HasMedia
             return;
         }
 
-        if ($this->number !== null && $this->sequence !== null) {
-            return;
+        $this->primeReferenceCounter('issue_date');
+
+        if ($this->number === null) {
+            $this->number = $this->generateReference();
         }
 
-        /** @var InvoiceNumberGenerator $generator */
-        $generator = App::make(InvoiceNumberGenerator::class);
-        $payload = $generator->generate(
-            teamId: $this->team_id,
-            issueDate: $this->issue_date ?? Date::now()
-        );
+        if ($this->sequence === null) {
+            $sequence = $this->extractSequenceNumber($this->number);
 
-        $this->number = $payload['number'];
-        $this->sequence = $payload['sequence'];
+            if ($sequence !== null) {
+                $this->sequence = $sequence;
+            }
+        }
     }
 
     /**

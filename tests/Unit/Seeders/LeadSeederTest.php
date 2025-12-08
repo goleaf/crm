@@ -14,12 +14,12 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->seeder = new LeadSeeder;
 });
 
-describe('LeadSeeder', function () {
-    it('creates 600 leads with teams and users', function () {
+describe('LeadSeeder', function (): void {
+    it('creates 600 leads with teams and users', function (): void {
         Team::factory()->count(3)->create();
         User::factory()->count(5)->create();
 
@@ -28,7 +28,7 @@ describe('LeadSeeder', function () {
         expect(Lead::count())->toBe(600);
     });
 
-    it('warns and returns early when no teams exist', function () {
+    it('warns and returns early when no teams exist', function (): void {
         User::factory()->count(5)->create();
 
         $this->seeder->run();
@@ -36,7 +36,7 @@ describe('LeadSeeder', function () {
         expect(Lead::count())->toBe(0);
     });
 
-    it('warns and returns early when no users exist', function () {
+    it('warns and returns early when no users exist', function (): void {
         // Create teams but no users
         Team::factory()->count(3)->create();
 
@@ -52,7 +52,7 @@ describe('LeadSeeder', function () {
         expect(Lead::count())->toBe(0);
     });
 
-    it('assigns leads to random teams', function () {
+    it('assigns leads to random teams', function (): void {
         $teams = Team::factory()->count(3)->create();
         User::factory()->count(5)->create();
 
@@ -64,7 +64,7 @@ describe('LeadSeeder', function () {
             ->and($leadTeamIds->every(fn ($id) => $teams->pluck('id')->contains($id)))->toBeTrue();
     });
 
-    it('assigns leads to random users', function () {
+    it('assigns leads to random users', function (): void {
         Team::factory()->count(3)->create();
         $users = User::factory()->count(5)->create();
 
@@ -79,7 +79,7 @@ describe('LeadSeeder', function () {
             ->and($creatorUserIds->every(fn ($id) => $users->pluck('id')->contains($id)))->toBeTrue();
     });
 
-    it('assigns leads to companies when companies exist', function () {
+    it('assigns leads to companies when companies exist', function (): void {
         Team::factory()->count(3)->create();
         User::factory()->count(5)->create();
         $companies = Company::factory()->count(10)->create();
@@ -91,7 +91,7 @@ describe('LeadSeeder', function () {
         expect($leadsWithCompanies)->toBeGreaterThan(0);
     });
 
-    it('creates leads without companies when no companies exist', function () {
+    it('creates leads without companies when no companies exist', function (): void {
         Team::factory()->count(3)->create();
         User::factory()->count(5)->create();
 
@@ -102,7 +102,7 @@ describe('LeadSeeder', function () {
         expect($leadsWithoutCompanies)->toBe(600);
     });
 
-    it('creates tasks for each lead', function () {
+    it('creates tasks for each lead', function (): void {
         Team::factory()->count(2)->create();
         User::factory()->count(3)->create();
 
@@ -110,13 +110,13 @@ describe('LeadSeeder', function () {
 
         $leads = Lead::with('tasks')->get();
 
-        $leads->each(function ($lead) {
+        $leads->each(function ($lead): void {
             expect($lead->tasks->count())->toBeGreaterThanOrEqual(1)
                 ->and($lead->tasks->count())->toBeLessThanOrEqual(3);
         });
     });
 
-    it('creates notes for each lead', function () {
+    it('creates notes for each lead', function (): void {
         Team::factory()->count(2)->create();
         User::factory()->count(3)->create();
 
@@ -124,13 +124,13 @@ describe('LeadSeeder', function () {
 
         $leads = Lead::with('notes')->get();
 
-        $leads->each(function ($lead) {
+        $leads->each(function ($lead): void {
             expect($lead->notes->count())->toBeGreaterThanOrEqual(1)
                 ->and($lead->notes->count())->toBeLessThanOrEqual(5);
         });
     });
 
-    it('creates activities for each lead', function () {
+    it('creates activities for each lead', function (): void {
         Team::factory()->count(2)->create();
         User::factory()->count(3)->create();
 
@@ -138,7 +138,7 @@ describe('LeadSeeder', function () {
 
         $leads = Lead::all();
 
-        $leads->each(function ($lead) {
+        $leads->each(function ($lead): void {
             $activityCount = Activity::where('subject_type', Lead::class)
                 ->where('subject_id', $lead->id)
                 ->count();
@@ -148,7 +148,7 @@ describe('LeadSeeder', function () {
         });
     });
 
-    it('assigns correct team_id to tasks', function () {
+    it('assigns correct team_id to tasks', function (): void {
         Team::factory()->count(2)->create();
         User::factory()->count(3)->create();
 
@@ -156,14 +156,14 @@ describe('LeadSeeder', function () {
 
         $leads = Lead::with('tasks')->get();
 
-        $leads->each(function ($lead) {
-            $lead->tasks->each(function ($task) use ($lead) {
+        $leads->each(function ($lead): void {
+            $lead->tasks->each(function ($task) use ($lead): void {
                 expect($task->team_id)->toBe($lead->team_id);
             });
         });
     });
 
-    it('assigns correct creator_id to tasks', function () {
+    it('assigns correct creator_id to tasks', function (): void {
         Team::factory()->count(2)->create();
         User::factory()->count(3)->create();
 
@@ -171,14 +171,14 @@ describe('LeadSeeder', function () {
 
         $leads = Lead::with('tasks')->get();
 
-        $leads->each(function ($lead) {
-            $lead->tasks->each(function ($task) use ($lead) {
+        $leads->each(function ($lead): void {
+            $lead->tasks->each(function ($task) use ($lead): void {
                 expect($task->creator_id)->toBe($lead->creator_id);
             });
         });
     });
 
-    it('assigns correct team_id to notes', function () {
+    it('assigns correct team_id to notes', function (): void {
         Team::factory()->count(2)->create();
         User::factory()->count(3)->create();
 
@@ -186,14 +186,14 @@ describe('LeadSeeder', function () {
 
         $leads = Lead::with('notes')->get();
 
-        $leads->each(function ($lead) {
-            $lead->notes->each(function ($note) use ($lead) {
+        $leads->each(function ($lead): void {
+            $lead->notes->each(function ($note) use ($lead): void {
                 expect($note->team_id)->toBe($lead->team_id);
             });
         });
     });
 
-    it('assigns correct creator_id to notes', function () {
+    it('assigns correct creator_id to notes', function (): void {
         Team::factory()->count(2)->create();
         User::factory()->count(3)->create();
 
@@ -201,14 +201,14 @@ describe('LeadSeeder', function () {
 
         $leads = Lead::with('notes')->get();
 
-        $leads->each(function ($lead) {
-            $lead->notes->each(function ($note) use ($lead) {
+        $leads->each(function ($lead): void {
+            $lead->notes->each(function ($note) use ($lead): void {
                 expect($note->creator_id)->toBe($lead->creator_id);
             });
         });
     });
 
-    it('creates activities with valid event types', function () {
+    it('creates activities with valid event types', function (): void {
         Team::factory()->count(2)->create();
         User::factory()->count(3)->create();
 
@@ -217,12 +217,12 @@ describe('LeadSeeder', function () {
         $validEvents = ['created', 'updated', 'status_changed', 'assigned', 'contacted'];
         $activities = Activity::where('subject_type', Lead::class)->get();
 
-        $activities->each(function ($activity) use ($validEvents) {
+        $activities->each(function ($activity) use ($validEvents): void {
             expect($activity->event)->toBeIn($validEvents);
         });
     });
 
-    it('creates activities with changes data', function () {
+    it('creates activities with changes data', function (): void {
         Team::factory()->count(2)->create();
         User::factory()->count(3)->create();
 
@@ -230,14 +230,14 @@ describe('LeadSeeder', function () {
 
         $activities = Activity::where('subject_type', Lead::class)->get();
 
-        $activities->each(function ($activity) {
+        $activities->each(function ($activity): void {
             expect($activity->changes)->toBeArray()
                 ->and($activity->changes)->toHaveKey('old')
                 ->and($activity->changes)->toHaveKey('new');
         });
     });
 
-    it('processes leads in chunks for memory efficiency', function () {
+    it('processes leads in chunks for memory efficiency', function (): void {
         Team::factory()->count(2)->create();
         User::factory()->count(3)->create();
 
@@ -247,14 +247,14 @@ describe('LeadSeeder', function () {
         expect(Lead::count())->toBe(600);
     });
 
-    it('handles exceptions gracefully when creating leads', function () {
+    it('handles exceptions gracefully when creating leads', function (): void {
         // No teams or users - should warn and return
         $this->seeder->run();
 
         expect(Lead::count())->toBe(0);
     });
 
-    it('creates total expected number of tasks', function () {
+    it('creates total expected number of tasks', function (): void {
         Team::factory()->count(2)->create();
         User::factory()->count(3)->create();
 
@@ -267,7 +267,7 @@ describe('LeadSeeder', function () {
             ->and($totalTasks)->toBeLessThanOrEqual(1800);
     });
 
-    it('creates total expected number of notes', function () {
+    it('creates total expected number of notes', function (): void {
         Team::factory()->count(2)->create();
         User::factory()->count(3)->create();
 
@@ -280,7 +280,7 @@ describe('LeadSeeder', function () {
             ->and($totalNotes)->toBeLessThanOrEqual(3000);
     });
 
-    it('creates total expected number of activities', function () {
+    it('creates total expected number of activities', function (): void {
         Team::factory()->count(2)->create();
         User::factory()->count(3)->create();
 
@@ -293,7 +293,7 @@ describe('LeadSeeder', function () {
             ->and($totalActivities)->toBeLessThanOrEqual(3000);
     });
 
-    it('maintains referential integrity between leads and tasks', function () {
+    it('maintains referential integrity between leads and tasks', function (): void {
         Team::factory()->count(2)->create();
         User::factory()->count(3)->create();
 
@@ -301,8 +301,8 @@ describe('LeadSeeder', function () {
 
         $leads = Lead::with('tasks')->get();
 
-        $leads->each(function ($lead) {
-            $lead->tasks->each(function ($task) use ($lead) {
+        $leads->each(function ($lead): void {
+            $lead->tasks->each(function ($task) use ($lead): void {
                 $pivotExists = \DB::table('lead_task')
                     ->where('lead_id', $lead->id)
                     ->where('task_id', $task->id)
@@ -313,7 +313,7 @@ describe('LeadSeeder', function () {
         });
     });
 
-    it('maintains referential integrity between leads and notes', function () {
+    it('maintains referential integrity between leads and notes', function (): void {
         Team::factory()->count(2)->create();
         User::factory()->count(3)->create();
 
@@ -321,8 +321,8 @@ describe('LeadSeeder', function () {
 
         $leads = Lead::with('notes')->get();
 
-        $leads->each(function ($lead) {
-            $lead->notes->each(function ($note) use ($lead) {
+        $leads->each(function ($lead): void {
+            $lead->notes->each(function ($note) use ($lead): void {
                 $pivotExists = \DB::table('lead_note')
                     ->where('lead_id', $lead->id)
                     ->where('note_id', $note->id)

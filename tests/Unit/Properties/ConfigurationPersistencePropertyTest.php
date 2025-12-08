@@ -19,7 +19,7 @@ uses(RefreshDatabase::class);
  * settings persist across cache clears and apply consistently.
  */
 it('persists configuration settings across cache clears', function (): void {
-    $service = app(SettingsService::class);
+    $service = resolve(SettingsService::class);
 
     // Generate random settings with different types
     $testCases = [
@@ -62,7 +62,7 @@ it('persists configuration settings across cache clears', function (): void {
  * persist independently from global settings with the same key.
  */
 it('persists team-specific settings independently from global settings', function (): void {
-    $service = app(SettingsService::class);
+    $service = resolve(SettingsService::class);
     $team = \App\Models\Team::factory()->create();
 
     $key = 'test.team.setting.'.uniqid();
@@ -70,14 +70,14 @@ it('persists team-specific settings independently from global settings', functio
     $teamValue = fake()->sentence();
 
     // Store both global and team-specific settings
-    $service->set($key, $globalValue, 'string', 'general', null);
+    $service->set($key, $globalValue, 'string', 'general');
     $service->set($key, $teamValue, 'string', 'general', $team->id);
 
     // Clear cache
     Cache::flush();
 
     // Verify both persist independently
-    expect($service->get($key, null, null))->toBe($globalValue)
+    expect($service->get($key))->toBe($globalValue)
         ->and($service->get($key, null, $team->id))->toBe($teamValue);
 })->repeat(10);
 
@@ -86,7 +86,7 @@ it('persists team-specific settings independently from global settings', functio
  * form in the database but decrypt correctly when retrieved.
  */
 it('persists encrypted settings securely', function (): void {
-    $service = app(SettingsService::class);
+    $service = resolve(SettingsService::class);
 
     $key = 'secret.key.'.uniqid();
     $secretValue = fake()->password(20);
@@ -111,7 +111,7 @@ it('persists encrypted settings securely', function (): void {
  * and be retrievable by group.
  */
 it('persists settings by group independently', function (): void {
-    $service = app(SettingsService::class);
+    $service = resolve(SettingsService::class);
 
     $groups = ['company', 'locale', 'currency', 'fiscal', 'notification'];
     $settingsByGroup = [];
@@ -141,7 +141,7 @@ it('persists settings by group independently', function (): void {
  * Property: Updating a setting should persist the new value and not create duplicates.
  */
 it('persists setting updates without creating duplicates', function (): void {
-    $service = app(SettingsService::class);
+    $service = resolve(SettingsService::class);
 
     $key = 'test.update.'.uniqid();
     $initialValue = fake()->word();
@@ -165,7 +165,7 @@ it('persists setting updates without creating duplicates', function (): void {
  * Property: Complex nested array settings should persist with full structure intact.
  */
 it('persists complex nested array settings correctly', function (): void {
-    $service = app(SettingsService::class);
+    $service = resolve(SettingsService::class);
 
     $key = 'test.complex.'.uniqid();
     $complexValue = [

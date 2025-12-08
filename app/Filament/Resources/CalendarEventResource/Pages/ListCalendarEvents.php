@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Filament\Resources\CalendarEventResource\Pages;
 
 use App\Filament\Resources\CalendarEventResource;
+use App\Filament\Resources\Pages\BaseListRecords;
 use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\Size;
 use Override;
 
-final class ListCalendarEvents extends ListRecords
+final class ListCalendarEvents extends BaseListRecords
 {
     protected static string $resource = CalendarEventResource::class;
 

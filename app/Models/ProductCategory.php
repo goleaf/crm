@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\Concerns\HasTeam;
+use App\Models\Concerns\HasUniqueSlug;
 use App\Models\Concerns\LogsActivity;
 use Database\Factories\ProductCategoryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 
 /**
  * @property int $team_id
@@ -23,6 +22,7 @@ final class ProductCategory extends Model
     use HasFactory;
 
     use HasTeam;
+    use HasUniqueSlug;
     use LogsActivity;
 
     /**
@@ -37,7 +37,7 @@ final class ProductCategory extends Model
     ];
 
     /**
-     * @return BelongsToMany<Product>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\Product, $this, \Illuminate\Database\Eloquent\Relations\Pivot>
      */
     public function products(): BelongsToMany
     {
@@ -60,7 +60,7 @@ final class ProductCategory extends Model
         return $this->hasMany(self::class, 'parent_id');
     }
 
-    public function getBreadcrumbAttribute(): string
+    protected function getBreadcrumbAttribute(): string
     {
         $segments = [$this->name];
         $current = $this->parent;
@@ -79,27 +79,6 @@ final class ProductCategory extends Model
             if ($category->team_id === null && auth('web')->check()) {
                 $category->team_id = auth('web')->user()?->currentTeam?->getKey();
             }
-
-            $category->slug ??= self::generateUniqueSlug($category->name ?? '', $category->team_id);
         });
-
-        self::saving(function (self $category): void {
-            $category->slug ??= self::generateUniqueSlug($category->name ?? '', $category->team_id);
-        });
-    }
-
-    private static function generateUniqueSlug(string $name, ?int $teamId): string
-    {
-        $baseSlug = Str::slug($name) ?: Str::random(6);
-        $slug = $baseSlug;
-        $suffix = 1;
-        $team = $teamId ?? 0;
-
-        while (self::where('team_id', $team)->where('slug', $slug)->exists()) {
-            $slug = $baseSlug.'-'.$suffix;
-            $suffix++;
-        }
-
-        return $slug;
     }
 }

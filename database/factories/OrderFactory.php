@@ -11,7 +11,6 @@ use App\Models\Order;
 use App\Models\People;
 use App\Models\Team;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Carbon;
 
 /**
  * @extends Factory<Order>
@@ -20,6 +19,13 @@ final class OrderFactory extends Factory
 {
     protected $model = Order::class;
 
+    public function configure(): static
+    {
+        return $this->afterMaking(function (Order $order): void {
+            $order->registerNumberIfMissing();
+        });
+    }
+
     /**
      * Define the model's default state.
      *
@@ -27,7 +33,7 @@ final class OrderFactory extends Factory
      */
     public function definition(): array
     {
-        $orderedAt = Carbon::now();
+        $orderedAt = \Illuminate\Support\Facades\Date::now();
 
         return [
             'team_id' => Team::factory(),

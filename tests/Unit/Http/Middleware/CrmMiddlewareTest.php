@@ -41,12 +41,12 @@ it('sets permission team id via team context middleware', function (): void {
     $user->switchTeam($team);
     Auth::login($user);
 
-    app(TeamResolver::class)->setPermissionsTeamId(null);
+    resolve(TeamResolver::class)->setPermissionsTeamId(null);
 
     $middleware = new EnsureTeamContext;
     $middleware->handle(Request::create('/crm', 'GET'), fn (): \Symfony\Component\HttpFoundation\Response => response('ok'));
 
-    expect(app(TeamResolver::class)->getPermissionsTeamId())->toBe($team->getKey());
+    expect(resolve(TeamResolver::class)->getPermissionsTeamId())->toBe($team->getKey());
 });
 
 it('denies missing permissions and allows granted permissions', function (): void {
@@ -56,7 +56,7 @@ it('denies missing permissions and allows granted permissions', function (): voi
     $user->switchTeam($team);
     Auth::login($user);
 
-    $permissionRegistrar = app(PermissionRegistrar::class);
+    $permissionRegistrar = resolve(PermissionRegistrar::class);
     $permissionRegistrar->setPermissionsTeamId($team->getKey());
     $permissionRegistrar->forgetCachedPermissions();
 

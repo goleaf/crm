@@ -1,6 +1,6 @@
 {
-  "name": "Relaticle",
-  "short_name": "Relaticle",
+  "name": "CRM App",
+  "short_name": "CRM",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",

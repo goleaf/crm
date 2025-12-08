@@ -8,7 +8,6 @@ use App\Enums\PdfGenerationStatus;
 use App\Models\Concerns\HasTeam;
 use Database\Factories\PdfGenerationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;

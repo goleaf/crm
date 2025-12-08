@@ -6,11 +6,11 @@ namespace App\Models;
 
 use App\Models\Concerns\HasCreator;
 use App\Models\Concerns\HasTeam;
+use App\Models\Concerns\HasUniqueSlug;
 use App\Observers\KnowledgeTagObserver;
 use Database\Factories\KnowledgeTagFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -23,6 +23,7 @@ final class KnowledgeTag extends Model
     use HasFactory;
 
     use HasTeam;
+    use HasUniqueSlug;
     use SoftDeletes;
 
     /**
@@ -33,6 +34,8 @@ final class KnowledgeTag extends Model
         'slug',
         'description',
     ];
+
+    protected bool $reslugOnBaseChange = true;
 
     /**
      * @return BelongsToMany<KnowledgeArticle, $this>

@@ -17,12 +17,15 @@ use App\Filament\Resources\KnowledgeArticleResource\RelationManagers\RatingsRela
 use App\Filament\Resources\KnowledgeArticleResource\RelationManagers\RelatedArticlesRelationManager;
 use App\Filament\Resources\KnowledgeArticleResource\RelationManagers\VersionsRelationManager;
 use App\Models\KnowledgeArticle;
+use App\Support\Reactions\ReactionOptions;
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
@@ -64,7 +67,20 @@ final class KnowledgeArticleResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query): Builder => $query->withAvg('ratings', 'rating'))
+            ->modifyQueryUsing(
+                fn (Builder $query): Builder => $query
+                    ->withAvg('ratings', 'rating')
+                    ->withCount('reactions')
+                    ->when(
+                        auth()->check(),
+                        fn (Builder $builder): Builder => $builder->withExists([
+                            'reactions as reacted_by_me' => fn (Builder $reactionQuery): Builder => $reactionQuery->where(
+                                config('laravel-reactions.user.foreign_key', 'user_id'),
+                                auth()->id()
+                            ),
+                        ])
+                    )
+            )
             ->columns([
                 TextColumn::make('title')
                     ->label(__('app.labels.title'))
@@ -82,10 +98,16 @@ final class KnowledgeArticleResource extends Resource
                     ->badge()
                     ->color(fn (ArticleVisibility|string|null $state): string => $state instanceof ArticleVisibility ? $state->getColor() : (ArticleVisibility::tryFrom((string) $state)?->getColor() ?? 'gray'))
                     ->formatStateUsing(fn (ArticleVisibility|string|null $state): string => $state instanceof ArticleVisibility ? $state->getLabel() : (ArticleVisibility::tryFrom((string) $state)?->getLabel() ?? Str::headline((string) $state))),
-                TextColumn::make('category.name')
+                TextColumn::make('taxonomyCategories.name')
                     ->label(__('app.labels.category'))
-                    ->toggleable()
-                    ->sortable(),
+                    ->badge()
+                    ->separator(',')
+                    ->toggleable(),
+                TextColumn::make('taxonomyTags.name')
+                    ->label(__('app.labels.tags'))
+                    ->badge()
+                    ->separator(',')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('author.name')
                     ->label(__('app.labels.author'))
                     ->toggleable(),
@@ -99,6 +121,15 @@ final class KnowledgeArticleResource extends Resource
                     ->numeric()
                     ->sortable()
                     ->toggleable(),
+                TextColumn::make('reactions_count')
+                    ->label(__('app.labels.reactions'))
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                IconColumn::make('reacted_by_me')
+                    ->label(__('app.labels.my_reaction'))
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('published_at')
                     ->label(__('app.labels.published_at'))
                     ->dateTime()
@@ -124,14 +155,16 @@ final class KnowledgeArticleResource extends Resource
                     ->label(__('app.labels.visibility'))
                     ->options(ArticleVisibility::class)
                     ->multiple(),
-                SelectFilter::make('category_id')
-                    ->relationship('category', 'name')
+                SelectFilter::make('taxonomyCategories')
                     ->label(__('app.labels.category'))
-                    ->searchable(),
-                SelectFilter::make('tags')
-                    ->relationship('tags', 'name')
+                    ->multiple()
+                    ->relationship('taxonomyCategories', 'name')
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('taxonomyTags')
                     ->label(__('app.labels.tags'))
                     ->multiple()
+                    ->relationship('taxonomyTags', 'name')
                     ->searchable()
                     ->preload(),
                 TrashedFilter::make(),
@@ -140,6 +173,38 @@ final class KnowledgeArticleResource extends Resource
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make(),
+                    Action::make('react')
+                        ->label(__('app.actions.react'))
+                        ->icon('heroicon-o-hand-thumb-up')
+                        ->form([
+                            Select::make('type')
+                                ->label(__('app.labels.reaction_type'))
+                                ->options(ReactionOptions::options())
+                                ->default(ReactionOptions::default())
+                                ->required(),
+                        ])
+                        ->action(function (KnowledgeArticle $record, array $data): void {
+                            $user = auth()->user();
+
+                            if ($user === null) {
+                                return;
+                            }
+
+                            $user->reaction($data['type'], $record);
+                        }),
+                    Action::make('removeReaction')
+                        ->label(__('app.actions.remove_reaction'))
+                        ->color('gray')
+                        ->visible(fn (): bool => auth()->check())
+                        ->action(function (KnowledgeArticle $record): void {
+                            $user = auth()->user();
+
+                            if ($user === null) {
+                                return;
+                            }
+
+                            $user->removeReactions($record);
+                        }),
                     RestoreAction::make(),
                     DeleteAction::make(),
                     ForceDeleteAction::make(),

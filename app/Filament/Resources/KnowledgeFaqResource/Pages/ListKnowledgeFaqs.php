@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Filament\Resources\KnowledgeFaqResource\Pages;
 
 use App\Filament\Resources\KnowledgeFaqResource;
+use App\Filament\Resources\Pages\BaseListRecords;
 use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\Size;
 use Override;
 
-final class ListKnowledgeFaqs extends ListRecords
+final class ListKnowledgeFaqs extends BaseListRecords
 {
     protected static string $resource = KnowledgeFaqResource::class;
 

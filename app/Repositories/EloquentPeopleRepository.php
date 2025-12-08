@@ -7,6 +7,7 @@ namespace App\Repositories;
 use App\Contracts\Repositories\PeopleRepositoryInterface;
 use App\Models\People;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
@@ -24,13 +25,12 @@ final class EloquentPeopleRepository implements PeopleRepositoryInterface
     {
         return People::query()
             ->with('company')
-            ->when($term !== '', function ($query) use ($term): void {
+            ->when($term !== '', function (Builder $query) use ($term): void {
                 $query
                     ->where('name', 'like', "%{$term}%")
                     ->orWhere('primary_email', 'like', "%{$term}%")
                     ->orWhere('phone_mobile', 'like', "%{$term}%");
-            })
-            ->orderByDesc('created_at')
+            })->latest()
             ->paginate($perPage);
     }
 

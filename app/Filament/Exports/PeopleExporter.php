@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Exports;
 
 use App\Models\People;
+use App\Support\Helpers\ArrayHelper;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Models\Export;
 use Illuminate\Support\Number;
@@ -65,24 +66,7 @@ final class PeopleExporter extends BaseExporter
                 ->label('Country'),
             ExportColumn::make('segments')
                 ->label('Segments')
-                ->formatStateUsing(function (mixed $state): ?string {
-                    if (in_array($state, [null, '', []], true)) {
-                        return null;
-                    }
-
-                    // Handle JSON string
-                    if (is_string($state)) {
-                        $decoded = json_decode($state, true);
-                        $state = is_array($decoded) ? $decoded : [$state];
-                    }
-
-                    // Handle array
-                    if (is_array($state)) {
-                        return implode(', ', $state);
-                    }
-
-                    return (string) $state;
-                }),
+                ->formatStateUsing(fn (mixed $state): ?string => ArrayHelper::joinList($state, ', ', emptyPlaceholder: null)),
             ExportColumn::make('social_links')
                 ->label('Social Links')
                 ->formatStateUsing(function (mixed $state): ?string {

@@ -9,7 +9,6 @@ use App\Enums\AccountType;
 use App\Enums\AddressType;
 use App\Enums\Industry;
 use App\Models\Account;
-use App\Rules\PostalCode;
 use Closure;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Repeater;
@@ -22,6 +21,7 @@ use Filament\Forms\Set;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
+use Intervention\Validation\Rules\Postalcode;
 
 final class AccountForm
 {
@@ -209,7 +209,13 @@ final class AccountForm
                                     ->columnSpan(2),
                                 TextInput::make('postal_code')
                                     ->label('Postal Code')
-                                    ->rule(fn (Get $get): \App\Rules\PostalCode => new PostalCode($get('country_code') ?? config('address.default_country', 'US')))
+                                    ->maxLength(20)
+                                    ->rules([
+                                        'nullable',
+                                        fn (Get $get): Postalcode => new Postalcode([
+                                            strtolower((string) ($get('country_code') ?? config('address.default_country', 'US'))),
+                                        ]),
+                                    ])
                                     ->columnSpan(2),
                                 TextInput::make('latitude')
                                     ->label('Latitude')

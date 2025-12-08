@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Models\Concerns\HasNotes;
+use App\Models\Concerns\HasNotesAndNotables;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -16,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 final class Delivery extends Model
 {
     use HasFactory;
-    use HasNotes;
+    use HasNotesAndNotables;
     use SoftDeletes;
 
     /**

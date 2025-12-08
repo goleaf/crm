@@ -17,13 +17,13 @@
         <div class="flex items-center justify-between">
             <!-- Logo (Left Column) -->
             <div class="flex-shrink-0 w-1/4">
-                <a href="{{ url('/') }}" class="flex items-center space-x-2.5 group" aria-label="Relaticle Home">
+                <a href="{{ url('/') }}" class="flex items-center space-x-2.5 group" aria-label="{{ brand_name() }} Home">
                     <div class="relative overflow-hidden group-hover:scale-105 transition-transform duration-300">
                         <img class="h-8 w-auto"
-                             src="{{ asset('relaticle-logomark.svg') }}" alt="Relaticle Logo">
+                             src="{{ asset('relaticle-logomark.svg') }}" alt="{{ brand_name() }} Logo">
                     </div>
                     <span
-                        class="font-bold text-lg text-black dark:text-white hidden sm:block transition-opacity duration-300 group-hover:opacity-80">Relaticle</span>
+                        class="font-bold text-lg text-black dark:text-white hidden sm:block transition-opacity duration-300 group-hover:opacity-80">{{ brand_name() }}</span>
                 </a>
             </div>
 
@@ -36,7 +36,9 @@
                     <a href="{{ route('documentation.index') }}"
                        class="text-gray-700 dark:text-white hover:text-primary dark:hover:text-primary-400 text-sm font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:w-0 after:bg-primary dark:after:bg-primary after:transition-all hover:after:w-full"
                        aria-label="Documentation">Documentation</a>
-                    <a href="https://github.com/Relaticle/relaticle" target="_blank" rel="noopener"
+                    @php $githubUrl = brand_social_url('github'); @endphp
+                    @if($githubUrl)
+                    <a href="{{ $githubUrl }}" target="_blank" rel="noopener"
                        class="text-gray-700 dark:text-white hover:text-primary dark:hover:text-primary-400 text-sm font-medium transition-all duration-200 flex items-center gap-1.5 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:w-0 after:bg-primary dark:after:bg-primary after:transition-all hover:after:w-full"
                        aria-label="GitHub Repository">
                         <x-icon-github class="w-4 h-4"/>
@@ -45,6 +47,7 @@
                         @endif
                         <x-heroicon-o-arrow-up-right class="h-3 w-3 text-gray-400"/>
                     </a>
+                    @endif
                     <a href="{{ route('discord') }}" target="_blank"
                        class="text-gray-700 dark:text-white hover:text-primary dark:hover:text-primary-400 text-sm font-medium transition-all duration-200 flex items-center gap-1.5 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:w-0 after:bg-primary dark:after:bg-primary after:transition-all hover:after:w-full"
                        aria-label="Join Discord Community">

@@ -22,7 +22,7 @@ uses(RefreshDatabase::class);
  * Tests the complete workflow of a process with multiple steps,
  * approval requirements, and escalation handling.
  */
-test('complete process execution with approvals and escalations', function () {
+test('complete process execution with approvals and escalations', function (): void {
     $team = Team::factory()->create();
     $initiator = User::factory()->create();
     $approver = User::factory()->create();
@@ -127,7 +127,7 @@ test('complete process execution with approvals and escalations', function () {
 /**
  * Integration test: Process rollback after partial execution
  */
-test('process rollback after partial execution', function () {
+test('process rollback after partial execution', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $team->users()->attach($user);
@@ -177,7 +177,7 @@ test('process rollback after partial execution', function () {
 /**
  * Integration test: Process with approval rejection
  */
-test('process fails when approval is rejected', function () {
+test('process fails when approval is rejected', function (): void {
     $team = Team::factory()->create();
     $initiator = User::factory()->create();
     $approver = User::factory()->create();
@@ -220,7 +220,7 @@ test('process fails when approval is rejected', function () {
 /**
  * Integration test: Process version adherence across updates
  */
-test('process execution maintains version consistency', function () {
+test('process execution maintains version consistency', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $team->users()->attach($user);

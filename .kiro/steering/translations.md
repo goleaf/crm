@@ -10,7 +10,7 @@ inclusion_mode: "always"
 
 ## Coding rules
 - Never hardcode user-facing strings in PHP/Filament; always wrap with `__()`/`@lang`. Avoid adding Blade views for copy—use Filament schemas/labels instead.
-- In Filament v4, set labels/placeholders/descriptions/headings via translation keys: `->label(__('app.labels.name'))`, `->helperText(__('app.helpers.name_format'))`, `->modalHeading(__('app.modals.edit_record'))`, etc.
+- In Filament v4.3+, set labels/placeholders/descriptions/headings via translation keys: `->label(__('app.labels.name'))`, `->helperText(__('app.helpers.name_format'))`, `->modalHeading(__('app.modals.edit_record'))`, etc.
 - Keep keys stable and descriptive; avoid dynamic keys. Use placeholders (`:name`, `:count`) and pass replacements.
 
 ## Key naming
@@ -27,3 +27,8 @@ inclusion_mode: "always"
 - No inline strings in Filament resources/pages/widgets/actions/notifications.
 - Modal headings/descriptions, empty states, table column labels, filter labels, bulk action labels all use translations.
 - English remains base locale; keep structure mirrored when adding locales.
+
+## Automated Checks
+- Use `php artisan translations:check` to identify missing translations.
+- This check is part of the CI pipeline (`composer test:translations`).
+- You can also view the translation status in the Filament admin panel under **System > Translation Status**.

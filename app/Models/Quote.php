@@ -6,17 +6,16 @@ namespace App\Models;
 
 use App\Enums\QuoteStatus;
 use App\Models\Concerns\HasCreator;
-use App\Models\Concerns\HasNotes;
+use App\Models\Concerns\HasNotesAndNotables;
 use App\Models\Concerns\HasTeam;
 use App\Models\Concerns\LogsActivity;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class Quote extends Model
 {
     use HasCreator;
-    use HasNotes;
+    use HasNotesAndNotables;
     use HasTeam;
     use LogsActivity;
     use SoftDeletes;

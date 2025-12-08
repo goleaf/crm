@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Filament\Resources\EmployeeResource\Pages;
 
 use App\Filament\Resources\EmployeeResource;
+use App\Filament\Resources\Pages\BaseListRecords;
 use Filament\Actions;
-use Filament\Resources\Pages\ListRecords;
 
-final class ListEmployees extends ListRecords
+final class ListEmployees extends BaseListRecords
 {
     protected static string $resource = EmployeeResource::class;
 

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Cache;
 uses(RefreshDatabase::class);
 
 beforeEach(function (): void {
-    $this->service = app(SettingsService::class);
+    $this->service = resolve(SettingsService::class);
 });
 
 it('persists settings to database', function (): void {
@@ -63,7 +63,7 @@ it('rolls back on transaction failure', function (): void {
             $this->service->set('rollback.key', 'value', 'string', 'general');
             throw new \Exception('Force rollback');
         });
-    } catch (\Exception $e) {
+    } catch (\Exception) {
         // Expected
     }
 

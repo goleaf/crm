@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\OrderResource\RelationManagers;
 
+use App\Models\Invoice;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -18,7 +19,7 @@ final class InvoicesRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('number')->label('Invoice #')->sortable(),
                 Tables\Columns\TextColumn::make('status')->badge()->sortable(),
-                Tables\Columns\TextColumn::make('total')->money(fn ($record): string => $record->currency_code ?? 'USD'),
+                Tables\Columns\TextColumn::make('total')->money(fn (Invoice $record): string => $record->currency_code ?? 'USD'),
                 Tables\Columns\TextColumn::make('due_date')->date(),
             ]);
     }

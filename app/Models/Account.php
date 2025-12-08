@@ -9,9 +9,9 @@ use App\Enums\AccountType;
 use App\Enums\AddressType;
 use App\Enums\Industry;
 use App\Models\Concerns\HasTeam;
+use App\Models\Concerns\HasUniqueSlug;
 use App\Support\Addresses\AddressValidator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -36,6 +35,7 @@ final class Account extends Model implements HasMedia
     use HasFactory;
 
     use HasTeam;
+    use HasUniqueSlug;
     use InteractsWithMedia;
     use SoftDeletes;
 
@@ -69,6 +69,8 @@ final class Account extends Model implements HasMedia
         'currency' => 'USD',
     ];
 
+    protected string $uniqueSuffixFormat = '-{n}';
+
     /**
      * @return array<string, string>
      */
@@ -91,15 +93,6 @@ final class Account extends Model implements HasMedia
     {
         parent::boot();
 
-        $ensureSlug = static function (self $account): void {
-            if (blank($account->slug)) {
-                $account->slug = self::generateUniqueSlug($account->name ?? '');
-            }
-        };
-
-        self::creating($ensureSlug);
-        self::saving($ensureSlug);
-
         self::creating(static function (self $account): void {
             if ($account->team_id === null && auth()->check() && auth()->user()?->currentTeam !== null) {
                 $account->team_id = auth()->user()->currentTeam->getKey();
@@ -111,30 +104,33 @@ final class Account extends Model implements HasMedia
         });
     }
 
-    public function setNameAttribute(string $value): void
-    {
-        $this->attributes['name'] = $value;
-
-        if (! array_key_exists('slug', $this->attributes) || blank($this->attributes['slug'])) {
-            $this->attributes['slug'] = self::generateUniqueSlug($value);
-        }
-    }
-
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Account, $this>
+     */
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Account, $this>
+     */
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\User, $this>
+     */
     public function assignedTo(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\User, $this>
+     */
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
@@ -226,20 +222,6 @@ final class Account extends Model implements HasMedia
         return false;
     }
 
-    private static function generateUniqueSlug(string $name): string
-    {
-        $baseSlug = Str::slug($name) ?: Str::random(6);
-        $slug = $baseSlug;
-        $suffix = 1;
-
-        while (self::where('slug', $slug)->exists()) {
-            $slug = $baseSlug.'-'.$suffix;
-            $suffix++;
-        }
-
-        return $slug;
-    }
-
     /**
      * Attachments collection for account files.
      *
@@ -248,8 +230,7 @@ final class Account extends Model implements HasMedia
     public function attachments(): MorphMany
     {
         return $this->media()
-            ->where('collection_name', 'attachments')
-            ->orderByDesc('created_at');
+            ->where('collection_name', 'attachments')->latest();
     }
 
     public function registerMediaCollections(): void
@@ -404,7 +385,7 @@ final class Account extends Model implements HasMedia
         }
 
         return collect($addresses)
-            ->filter(static fn ($address): bool => is_array($address))
+            ->filter(static fn (mixed $address): bool => is_array($address))
             ->map(fn (array $address): AddressData => AddressData::fromArray($address))
             ->values();
     }
@@ -427,7 +408,7 @@ final class Account extends Model implements HasMedia
         $addresses = $this->mergeLegacyAddresses($rawAddresses);
 
         $normalized = collect($addresses)
-            ->filter(static fn ($address): bool => is_array($address))
+            ->filter(static fn (mixed $address): bool => is_array($address))
             ->map(fn (array $address): AddressData => $validator->validate($address))
             ->map(fn (AddressData $address): array => $address->toStorageArray())
             ->values()

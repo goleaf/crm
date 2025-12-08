@@ -23,7 +23,7 @@ final class EnsureTeamContext
                 : abort(403, 'Team context required.');
         }
 
-        app(PermissionTeamResolver::class)->setPermissionsTeamId($team);
+        resolve(PermissionTeamResolver::class)->setPermissionsTeamId($team);
 
         try {
             Filament::setTenant($team);

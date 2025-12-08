@@ -28,6 +28,11 @@ return new class extends Migration
                 ->nullOnDelete();
         });
 
+        if (DB::getDriverName() === 'sqlite') {
+            // Skip view recreation for sqlite to avoid alter-table conflicts.
+            return;
+        }
+
         // Recreate the view
         DB::statement(<<<'SQL'
 CREATE VIEW customers_view AS
@@ -65,6 +70,10 @@ SQL);
             $table->dropForeign(['primary_company_id']);
             $table->dropColumn(['persona_id', 'primary_company_id']);
         });
+
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
 
         // Recreate the view
         DB::statement(<<<'SQL'

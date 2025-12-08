@@ -8,7 +8,6 @@ use App\Enums\NoteVisibility;
 use App\Models\Note;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Support\Carbon;
 
 final class NotesStatsOverview extends StatsOverviewWidget
 {
@@ -21,8 +20,8 @@ final class NotesStatsOverview extends StatsOverviewWidget
      */
     protected function getStats(): array
     {
-        $weekStart = Carbon::now()->startOfWeek();
-        $monthStart = Carbon::now()->startOfMonth();
+        $weekStart = \Illuminate\Support\Facades\Date::now()->startOfWeek();
+        $monthStart = \Illuminate\Support\Facades\Date::now()->startOfMonth();
 
         $totalNotes = Note::count();
         $notesThisWeek = Note::where('created_at', '>=', $weekStart)->count();

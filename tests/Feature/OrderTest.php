@@ -9,13 +9,12 @@ use App\Models\Order;
 use App\Models\OrderLineItem;
 use App\Services\OrderInvoiceService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Carbon;
 
 uses(RefreshDatabase::class);
 
 it('calculates totals and fulfillment status from line items', function (): void {
     $order = Order::factory()->create([
-        'ordered_at' => Carbon::now(),
+        'ordered_at' => \Illuminate\Support\Facades\Date::now(),
         'currency_code' => 'EUR',
     ]);
 
@@ -71,7 +70,7 @@ it('generates an invoice from an order and syncs payments to balance', function 
         'tax_rate' => 5,
     ]);
 
-    $service = app(OrderInvoiceService::class);
+    $service = resolve(OrderInvoiceService::class);
     $invoice = $service->createFromOrder($order, 'minimal');
 
     $order->refresh();

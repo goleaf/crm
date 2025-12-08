@@ -14,7 +14,7 @@
                 Collaborate and Grow Together
             </h2>
             <p class="mt-5 text-base md:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
-                As an open-source platform, Relaticle thrives on community collaboration. Join our growing community to
+                As an open-source platform, {{ brand_name() }} thrives on community collaboration. Join our growing community to
                 get help, share ideas, and contribute.
             </p>
         </div>
@@ -31,18 +31,21 @@
                         </div>
                         <h3 class="text-xl font-semibold text-black dark:text-white mb-3">GitHub</h3>
                         <p class="text-gray-600 dark:text-gray-300 mb-6 text-sm">Star our repo, report issues, and
-                            contribute code. Relaticle is completely open source and free to use, modify and
+                            contribute code. {{ brand_name() }} is completely open source and free to use, modify and
                             distribute.</p>
                         <div class="mt-auto">
-                            <a href="https://github.com/relaticle/relaticle" target="_blank"
-                               class="inline-flex items-center text-primary dark:text-primary-400 hover:text-primary-600 dark:hover:text-primary-300 font-medium text-sm transition-colors">
-                                View Repository
-                                <svg xmlns="http://www.w3.org/2000/svg" class="ml-1.5 h-4 w-4" fill="none"
-                                     viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                          d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                                </svg>
-                            </a>
+                            @php $githubUrl = brand_social_url('github'); @endphp
+                            @if($githubUrl)
+                                <a href="{{ $githubUrl }}" target="_blank"
+                                   class="inline-flex items-center text-primary dark:text-primary-400 hover:text-primary-600 dark:hover:text-primary-300 font-medium text-sm transition-colors">
+                                    View Repository
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-1.5 h-4 w-4" fill="none"
+                                         viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                              d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                    </svg>
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -56,7 +59,7 @@
                         </div>
                         <h3 class="text-xl font-semibold text-black dark:text-white mb-3">Discord Community</h3>
                         <p class="text-gray-600 dark:text-gray-300 mb-6 text-sm">Chat with developers, get help, and
-                            share ideas. Join our growing community and connect with other Relaticle users.</p>
+                            share ideas. Join our growing community and connect with other {{ brand_name() }} users.</p>
                         <div class="mt-auto">
                             <a href="{{ route('discord') }}" target="_blank"
                                class="inline-flex items-center text-primary dark:text-primary-400 hover:text-primary-600 dark:hover:text-primary-300 font-medium text-sm transition-colors">
@@ -79,7 +82,7 @@
                             <x-heroicon-o-document class="w-6 h-6 text-primary dark:text-primary-400" />
                         </div>
                         <h3 class="text-xl font-semibold text-black dark:text-white mb-3">Documentation</h3>
-                        <p class="text-gray-600 dark:text-gray-300 mb-6 text-sm">Learn how to use Relaticle and help
+                        <p class="text-gray-600 dark:text-gray-300 mb-6 text-sm">Learn how to use {{ brand_name() }} and help
                             improve our docs. Comprehensive guides for users and developers alike.</p>
                         <div class="mt-auto">
                             <a href="{{ route('documentation.index') }}"

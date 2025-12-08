@@ -200,7 +200,7 @@ test('user time entries do not overlap on same date', function (): void {
         $task1 = Task::factory()->for($team)->create();
         $task2 = Task::factory()->for($team)->create();
 
-        $baseTime = now()->startOfDay()->addHours(fake()->numberBetween(8, 12));
+        $baseTime = today()->addHours(fake()->numberBetween(8, 12));
 
         // Create first time entry
         $entry1Start = $baseTime;

@@ -174,7 +174,7 @@ if (! function_exists('randomSubset')) {
      */
     function randomSubset(array $items): array
     {
-        if (empty($items)) {
+        if ($items === []) {
             return [];
         }
 
@@ -194,7 +194,7 @@ if (! function_exists('randomDate')) {
      */
     function randomDate(?string $startDate = '-1 year', ?string $endDate = '+1 year'): \Illuminate\Support\Carbon
     {
-        return \Illuminate\Support\Carbon::parse(
+        return \Illuminate\Support\Facades\Date::parse(
             fake()->dateTimeBetween($startDate, $endDate)
         );
     }

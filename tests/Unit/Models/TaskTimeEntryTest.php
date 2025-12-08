@@ -7,7 +7,7 @@ use App\Models\TaskTimeEntry;
 use App\Models\Team;
 use App\Models\User;
 
-test('time entry can be created with valid data', function () {
+test('time entry can be created with valid data', function (): void {
     $team = Team::factory()->create();
     $task = Task::factory()->create(['team_id' => $team->id]);
     $user = User::factory()->create();
@@ -29,7 +29,7 @@ test('time entry can be created with valid data', function () {
         ->and((float) $entry->billing_rate)->toBe(100.00);
 });
 
-test('time entry prevents overlapping entries for same user', function () {
+test('time entry prevents overlapping entries for same user', function (): void {
     $team = Team::factory()->create();
     $task = Task::factory()->create(['team_id' => $team->id]);
     $user = User::factory()->create();
@@ -53,7 +53,7 @@ test('time entry prevents overlapping entries for same user', function () {
     ]))->toThrow(\DomainException::class, 'Time entry overlaps with an existing entry for this user.');
 });
 
-test('time entry prevents duplicate entries', function () {
+test('time entry prevents duplicate entries', function (): void {
     $team = Team::factory()->create();
     $task = Task::factory()->create(['team_id' => $team->id]);
     $user = User::factory()->create();
@@ -77,7 +77,7 @@ test('time entry prevents duplicate entries', function () {
     ]))->toThrow(\DomainException::class, 'This time entry already exists.');
 });
 
-test('time entry allows non-overlapping entries for same user', function () {
+test('time entry allows non-overlapping entries for same user', function (): void {
     $team = Team::factory()->create();
     $task = Task::factory()->create(['team_id' => $team->id]);
     $user = User::factory()->create();
@@ -104,7 +104,7 @@ test('time entry allows non-overlapping entries for same user', function () {
         ->and($entry->user_id)->toBe($user->id);
 });
 
-test('time entry allows overlapping entries for different users', function () {
+test('time entry allows overlapping entries for different users', function (): void {
     $team = Team::factory()->create();
     $task = Task::factory()->create(['team_id' => $team->id]);
     $user1 = User::factory()->create();
@@ -132,7 +132,7 @@ test('time entry allows overlapping entries for different users', function () {
         ->and($entry->user_id)->toBe($user2->id);
 });
 
-test('time entry can be updated without triggering overlap validation for itself', function () {
+test('time entry can be updated without triggering overlap validation for itself', function (): void {
     $team = Team::factory()->create();
     $task = Task::factory()->create(['team_id' => $team->id]);
     $user = User::factory()->create();
@@ -154,7 +154,7 @@ test('time entry can be updated without triggering overlap validation for itself
     expect($entry->duration_minutes)->toBe(150);
 });
 
-test('time entry skips overlap validation when started_at or ended_at is null', function () {
+test('time entry skips overlap validation when started_at or ended_at is null', function (): void {
     $team = Team::factory()->create();
     $task = Task::factory()->create(['team_id' => $team->id]);
     $user = User::factory()->create();
@@ -171,7 +171,7 @@ test('time entry skips overlap validation when started_at or ended_at is null', 
     expect($entry)->not->toBeNull();
 });
 
-test('time entry detects overlap when new entry starts during existing entry', function () {
+test('time entry detects overlap when new entry starts during existing entry', function (): void {
     $team = Team::factory()->create();
     $task = Task::factory()->create(['team_id' => $team->id]);
     $user = User::factory()->create();
@@ -195,7 +195,7 @@ test('time entry detects overlap when new entry starts during existing entry', f
     ]))->toThrow(\DomainException::class);
 });
 
-test('time entry detects overlap when new entry ends during existing entry', function () {
+test('time entry detects overlap when new entry ends during existing entry', function (): void {
     $team = Team::factory()->create();
     $task = Task::factory()->create(['team_id' => $team->id]);
     $user = User::factory()->create();
@@ -219,7 +219,7 @@ test('time entry detects overlap when new entry ends during existing entry', fun
     ]))->toThrow(\DomainException::class);
 });
 
-test('time entry detects overlap when new entry completely contains existing entry', function () {
+test('time entry detects overlap when new entry completely contains existing entry', function (): void {
     $team = Team::factory()->create();
     $task = Task::factory()->create(['team_id' => $team->id]);
     $user = User::factory()->create();

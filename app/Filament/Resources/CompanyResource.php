@@ -14,17 +14,14 @@ use App\Enums\Industry;
 use App\Filament\Exports\CompanyExporter;
 use App\Filament\Resources\CompanyResource\Pages\ListCompanies;
 use App\Filament\Resources\CompanyResource\Pages\ViewCompany;
+use App\Filament\Support\Filters\DateScopeFilter;
 use App\Models\Company;
-use App\Rules\PostalCode;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\ExportBulkAction;
-use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
@@ -51,6 +48,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use Intervention\Validation\Rules\Postalcode;
 use Relaticle\CustomFields\Facades\CustomFields;
 
 final class CompanyResource extends Resource
@@ -99,7 +97,7 @@ final class CompanyResource extends Resource
             }
 
             return $record->addressCollection()
-                ->filter(fn (AddressData $address): bool => ! in_array($address->type, [AddressType::BILLING, AddressType::SHIPPING], true))
+                ->reject(fn (AddressData $address): bool => in_array($address->type, [AddressType::BILLING, AddressType::SHIPPING], true))
                 ->map(fn (AddressData $address): array => $address->toStorageArray())
                 ->all();
         };
@@ -292,6 +290,13 @@ final class CompanyResource extends Resource
                                         TextInput::make('billing_postal_code')
                                             ->label('Billing Postal Code')
                                             ->live()
+                                            ->maxLength(20)
+                                            ->rules([
+                                                'nullable',
+                                                fn (Get $get): Postalcode => new Postalcode([
+                                                    strtolower((string) ($get('billing_country') ?? config('address.default_country', 'US'))),
+                                                ]),
+                                            ])
                                             ->afterStateUpdated(fn (string|int|null $state, Set $set, Get $get) => $get('copy_billing_to_shipping') ? $copyBillingToShipping($set, $get) : null),
                                         TextInput::make('billing_country')
                                             ->label('Billing Country')
@@ -309,7 +314,14 @@ final class CompanyResource extends Resource
                                         TextInput::make('shipping_state')
                                             ->label('Shipping State/Province'),
                                         TextInput::make('shipping_postal_code')
-                                            ->label('Shipping Postal Code'),
+                                            ->label('Shipping Postal Code')
+                                            ->maxLength(20)
+                                            ->rules([
+                                                'nullable',
+                                                fn (Get $get): Postalcode => new Postalcode([
+                                                    strtolower((string) ($get('shipping_country') ?? config('address.default_country', 'US'))),
+                                                ]),
+                                            ]),
                                         TextInput::make('shipping_country')
                                             ->label('Shipping Country'),
                                     ]),
@@ -358,7 +370,13 @@ final class CompanyResource extends Resource
                                             ->columnSpan(2),
                                         TextInput::make('postal_code')
                                             ->label('Postal Code')
-                                            ->rule(fn (Get $get): \App\Rules\PostalCode => new PostalCode($get('country_code') ?? config('address.default_country', 'US')))
+                                            ->maxLength(20)
+                                            ->rules([
+                                                'nullable',
+                                                fn (Get $get): Postalcode => new Postalcode([
+                                                    strtolower((string) ($get('country_code') ?? config('address.default_country', 'US'))),
+                                                ]),
+                                            ])
                                             ->columnSpan(2),
                                         TextInput::make('latitude')
                                             ->label('Latitude')
@@ -555,6 +573,7 @@ final class CompanyResource extends Resource
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
+                DateScopeFilter::make(),
                 SelectFilter::make('account_type')
                     ->label('Account Type')
                     ->options(AccountType::options())
@@ -603,10 +622,7 @@ final class CompanyResource extends Resource
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make(),
                     RestoreAction::make(),
-                    DeleteAction::make(),
-                    ForceDeleteAction::make(),
                 ]),
             ])
             ->toolbarActions([

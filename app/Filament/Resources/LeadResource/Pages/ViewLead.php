@@ -19,6 +19,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Get;
 use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\RepeatableEntry\TableColumn;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
@@ -26,6 +27,7 @@ use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\TextSize;
 use Filament\Support\Enums\Width;
 use Relaticle\CustomFields\Facades\CustomFields;
@@ -251,6 +253,13 @@ final class ViewLead extends ViewRecord
                         ])
                         ->all())
                     ->visible(fn (?array $state): bool => count($state ?? []) > 0)
+                    ->table([
+                        TableColumn::make('Entry'),
+                        TableColumn::make('Type'),
+                        TableColumn::make('Summary'),
+                        TableColumn::make('When')
+                            ->alignment(Alignment::End),
+                    ])
                     ->schema([
                         TextEntry::make('title')
                             ->label('Entry')
@@ -276,6 +285,6 @@ final class ViewLead extends ViewRecord
      */
     private function stageOptions(): array
     {
-        return app(LeadConversionService::class)->stageOptions();
+        return resolve(LeadConversionService::class)->stageOptions();
     }
 }

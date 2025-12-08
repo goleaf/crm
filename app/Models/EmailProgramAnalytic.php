@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class EmailProgramAnalytic extends Model
@@ -41,11 +40,17 @@ final class EmailProgramAnalytic extends Model
         'unsubscribe_rate' => 'decimal:2',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\EmailProgram, $this>
+     */
     public function emailProgram(): BelongsTo
     {
         return $this->belongsTo(EmailProgram::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\EmailProgramStep, $this>
+     */
     public function emailProgramStep(): BelongsTo
     {
         return $this->belongsTo(EmailProgramStep::class);

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Data\SubscriberData;
 
-test('can create subscriber data', function () {
+test('can create subscriber data', function (): void {
     $subscriber = new SubscriberData(
         email: 'test@example.com',
         first_name: 'John',
@@ -20,7 +20,7 @@ test('can create subscriber data', function () {
         ->and($subscriber->skip_confirmation)->toBeTrue();
 });
 
-test('has default values', function () {
+test('has default values', function (): void {
     $subscriber = new SubscriberData(email: 'test@example.com');
 
     expect($subscriber->first_name)->toBe('')
@@ -29,7 +29,7 @@ test('has default values', function () {
         ->and($subscriber->skip_confirmation)->toBeTrue();
 });
 
-test('can create with minimal data', function () {
+test('can create with minimal data', function (): void {
     $subscriber = new SubscriberData(email: 'minimal@example.com');
 
     expect($subscriber->email)->toBe('minimal@example.com');

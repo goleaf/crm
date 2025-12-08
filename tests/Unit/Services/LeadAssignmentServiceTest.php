@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Cache;
 
 uses(RefreshDatabase::class);
 
-test('assigns lead using round-robin strategy', function () {
+test('assigns lead using round-robin strategy', function (): void {
     $team = Team::factory()->create();
     $users = User::factory()->count(3)->create();
 
@@ -37,7 +37,7 @@ test('assigns lead using round-robin strategy', function () {
         ->and($lead->fresh()->assigned_to_id)->toBe($assignedUser->id);
 });
 
-test('assigns lead using territory strategy', function () {
+test('assigns lead using territory strategy', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);
@@ -70,7 +70,7 @@ test('assigns lead using territory strategy', function () {
     }
 });
 
-test('assigns lead using weighted strategy', function () {
+test('assigns lead using weighted strategy', function (): void {
     $team = Team::factory()->create();
     $user1 = User::factory()->create();
     $user2 = User::factory()->create();
@@ -97,7 +97,7 @@ test('assigns lead using weighted strategy', function () {
         ->and($lead->fresh()->assigned_to_id)->toBe($assignedUser->id);
 });
 
-test('returns null for manual assignment strategy', function () {
+test('returns null for manual assignment strategy', function (): void {
     $team = Team::factory()->create();
     $lead = Lead::factory()->create([
         'team_id' => $team->id,
@@ -111,7 +111,7 @@ test('returns null for manual assignment strategy', function () {
         ->and($lead->fresh()->assigned_to_id)->toBeNull();
 });
 
-test('bulk assigns multiple leads', function () {
+test('bulk assigns multiple leads', function (): void {
     $team = Team::factory()->create();
     $users = User::factory()->count(2)->create();
 
@@ -133,7 +133,7 @@ test('bulk assigns multiple leads', function () {
         ->and($results->pluck('user')->filter())->toHaveCount(4);
 });
 
-test('reassigns leads from one user to another', function () {
+test('reassigns leads from one user to another', function (): void {
     $team = Team::factory()->create();
     $user1 = User::factory()->create();
     $user2 = User::factory()->create();
@@ -155,7 +155,7 @@ test('reassigns leads from one user to another', function () {
         ->and(Lead::where('assigned_to_id', $user1->id)->count())->toBe(0);
 });
 
-test('reassignment does not affect converted leads', function () {
+test('reassignment does not affect converted leads', function (): void {
     $team = Team::factory()->create();
     $user1 = User::factory()->create();
     $user2 = User::factory()->create();

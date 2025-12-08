@@ -19,7 +19,7 @@ use App\Services\LeadDuplicateDetectionService;
  */
 
 // Property: Duplicate detection scores are bounded
-test('property: duplicate detection scores are always between 0 and 100', function () {
+test('property: duplicate detection scores are always between 0 and 100', function (): void {
     $team = Team::factory()->create();
 
     // Test with Accounts
@@ -44,7 +44,7 @@ test('property: duplicate detection scores are always between 0 and 100', functi
 })->repeat(100);
 
 // Property: Identical records score 100%
-test('property: identical records always score 100 percent', function () {
+test('property: identical records always score 100 percent', function (): void {
     $team = Team::factory()->create();
 
     // Test with Accounts
@@ -63,7 +63,7 @@ test('property: identical records always score 100 percent', function () {
 })->repeat(50);
 
 // Property: Exact name matches score highly
-test('property: exact name matches produce high similarity scores', function () {
+test('property: exact name matches produce high similarity scores', function (): void {
     $team = Team::factory()->create();
     $name = fake()->company();
 
@@ -100,7 +100,7 @@ test('property: exact name matches produce high similarity scores', function () 
 })->repeat(100);
 
 // Property: Exact email matches for leads score highly
-test('property: exact email matches for leads produce high similarity scores', function () {
+test('property: exact email matches for leads produce high similarity scores', function (): void {
     $team = Team::factory()->create();
     $email = fake()->unique()->safeEmail();
 
@@ -120,7 +120,7 @@ test('property: exact email matches for leads produce high similarity scores', f
 })->repeat(100);
 
 // Property: Exact domain matches for accounts score highly
-test('property: exact domain matches for accounts produce high similarity scores', function () {
+test('property: exact domain matches for accounts produce high similarity scores', function (): void {
     $team = Team::factory()->create();
     $domain = 'https://'.fake()->unique()->domainName();
 
@@ -140,7 +140,7 @@ test('property: exact domain matches for accounts produce high similarity scores
 })->repeat(100);
 
 // Property: Phone number matches increase similarity
-test('property: matching phone numbers increase similarity scores', function () {
+test('property: matching phone numbers increase similarity scores', function (): void {
     $team = Team::factory()->create();
     $phone = fake()->unique()->phoneNumber();
 
@@ -176,7 +176,7 @@ test('property: matching phone numbers increase similarity scores', function () 
 })->repeat(100);
 
 // Property: Duplicate detection respects team boundaries
-test('property: duplicate detection only finds records within the same team', function () {
+test('property: duplicate detection only finds records within the same team', function (): void {
     $team1 = Team::factory()->create();
     $team2 = Team::factory()->create();
 
@@ -200,7 +200,7 @@ test('property: duplicate detection only finds records within the same team', fu
 })->repeat(50);
 
 // Property: Threshold filtering works correctly
-test('property: duplicate detection respects threshold parameter', function () {
+test('property: duplicate detection respects threshold parameter', function (): void {
     $team = Team::factory()->create();
 
     // Test with Accounts
@@ -225,7 +225,7 @@ test('property: duplicate detection respects threshold parameter', function () {
 })->repeat(50);
 
 // Property: Limit parameter constrains results
-test('property: duplicate detection respects limit parameter', function () {
+test('property: duplicate detection respects limit parameter', function (): void {
     $team = Team::factory()->create();
     $limit = fake()->numberBetween(1, 5);
 
@@ -249,7 +249,7 @@ test('property: duplicate detection respects limit parameter', function () {
 })->repeat(50);
 
 // Property: Similarity is symmetric
-test('property: similarity scores are symmetric', function () {
+test('property: similarity scores are symmetric', function (): void {
     $team = Team::factory()->create();
 
     // Test with Accounts
@@ -274,7 +274,7 @@ test('property: similarity scores are symmetric', function () {
 })->repeat(100);
 
 // Property: Results are sorted by score descending
-test('property: duplicate detection results are sorted by score in descending order', function () {
+test('property: duplicate detection results are sorted by score in descending order', function (): void {
     $team = Team::factory()->create();
 
     // Test with Accounts
@@ -303,7 +303,7 @@ test('property: duplicate detection results are sorted by score in descending or
 })->repeat(50);
 
 // Property: Case-insensitive matching
-test('property: duplicate detection is case-insensitive', function () {
+test('property: duplicate detection is case-insensitive', function (): void {
     $team = Team::factory()->create();
 
     // Test with Accounts

@@ -7,6 +7,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductCategoryResource\Pages\CreateProductCategory;
 use App\Filament\Resources\ProductCategoryResource\Pages\EditProductCategory;
 use App\Filament\Resources\ProductCategoryResource\Pages\ListProductCategories;
+use App\Filament\Support\SlugHelper;
 use App\Models\ProductCategory;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
@@ -36,9 +37,12 @@ final class ProductCategoryResource extends Resource
         return $schema->components([
             TextInput::make('name')
                 ->required()
-                ->maxLength(255),
+                ->maxLength(255)
+                ->live(onBlur: true)
+                ->afterStateUpdated(SlugHelper::updateSlug()),
             TextInput::make('slug')
                 ->maxLength(255)
+                ->rules(['nullable', 'slug'])
                 ->helperText('Auto-generated from the name if left blank'),
             Select::make('parent_id')
                 ->label('Parent Category')

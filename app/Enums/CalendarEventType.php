@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
+use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 
-enum CalendarEventType: string implements HasLabel
+enum CalendarEventType: string implements HasColor, HasLabel
 {
     case MEETING = 'meeting';
     case CALL = 'call';
@@ -28,5 +29,21 @@ enum CalendarEventType: string implements HasLabel
     public function label(): string
     {
         return $this->getLabel();
+    }
+
+    public function getColor(): string
+    {
+        return match ($this) {
+            self::MEETING => '#3b82f6',
+            self::CALL => '#10b981',
+            self::DEMO => '#f59e0b',
+            self::FOLLOW_UP => '#8b5cf6',
+            self::OTHER => '#6b7280',
+        };
+    }
+
+    public function color(): string
+    {
+        return $this->getColor();
     }
 }

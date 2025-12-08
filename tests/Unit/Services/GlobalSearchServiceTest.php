@@ -11,7 +11,7 @@ use App\Services\Search\GlobalSearchService;
 use Illuminate\Support\Arr;
 
 beforeEach(function (): void {
-    $this->service = app(GlobalSearchService::class);
+    $this->service = resolve(GlobalSearchService::class);
 });
 
 it('returns team-scoped results across entities', function (): void {

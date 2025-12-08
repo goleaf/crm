@@ -10,10 +10,10 @@
 @endphp
 
 <x-guest-layout 
-    :title="!empty($documentTitle) ? $documentTitle . ' - ' . config('app.name') . ' ' . __('Documentation') : config('app.name') . ' - ' . __('Documentation')"
-    :description="!empty($documentTitle) ? $documentTitle . ' - Relaticle Documentation' : 'Comprehensive documentation for Relaticle - The Next-Generation Open-Source CRM Platform. Learn how to install, configure, and use Relaticle effectively.'"
-    :ogTitle="!empty($documentTitle) ? $documentTitle . ' - ' . config('app.name') . ' ' . __('Documentation') : config('app.name') . ' - Documentation'"
-    :ogDescription="!empty($documentTitle) ? 'Learn about ' . $documentTitle . ' in the Relaticle documentation.' : 'Explore the Relaticle documentation. Learn how to get started, configuration options, and advanced features of our open-source CRM platform.'">
+    :title="!empty($documentTitle) ? $documentTitle . ' - ' . brand_name() . ' ' . __('Documentation') : brand_name() . ' - ' . __('Documentation')"
+    :description="!empty($documentTitle) ? $documentTitle . ' - ' . brand_name() . ' Documentation' : 'Comprehensive documentation for ' . brand_name() . ' - The Next-Generation Open-Source CRM Platform. Learn how to install, configure, and use ' . brand_name() . ' effectively.'"
+    :ogTitle="!empty($documentTitle) ? $documentTitle . ' - ' . brand_name() . ' ' . __('Documentation') : brand_name() . ' - Documentation'"
+    :ogDescription="!empty($documentTitle) ? 'Learn about ' . $documentTitle . ' in the ' . brand_name() . ' documentation.' : 'Explore the ' . brand_name() . ' documentation. Learn how to get started, configuration options, and advanced features of our open-source CRM platform.'">
     @pushonce('header')
         @vite(['app-modules/Documentation/resources/js/documentation.js', 'app-modules/Documentation/resources/css/documentation.css'])
     @endpushonce

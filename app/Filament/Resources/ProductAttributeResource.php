@@ -7,6 +7,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductAttributeResource\Pages\CreateProductAttribute;
 use App\Filament\Resources\ProductAttributeResource\Pages\EditProductAttribute;
 use App\Filament\Resources\ProductAttributeResource\Pages\ListProductAttributes;
+use App\Filament\Support\SlugHelper;
 use App\Models\ProductAttribute;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
@@ -14,6 +15,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -22,6 +24,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -57,10 +60,13 @@ final class ProductAttributeResource extends Resource
                                 TextInput::make('name')
                                     ->label('Name')
                                     ->required()
-                                    ->maxLength(255),
+                                    ->maxLength(255)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(SlugHelper::updateSlug()),
                                 TextInput::make('slug')
                                     ->label('Slug')
                                     ->helperText('Automatically generated if left blank.')
+                                    ->rules(['nullable', 'slug'])
                                     ->maxLength(255),
                                 Select::make('data_type')
                                     ->label('Data type')
@@ -92,6 +98,14 @@ final class ProductAttributeResource extends Resource
                                 Repeater::make('values')
                                     ->relationship()
                                     ->addActionLabel('Add value')
+                                    ->table([
+                                        TableColumn::make('Value')
+                                            ->markAsRequired(),
+                                        TableColumn::make('Code'),
+                                        TableColumn::make('Order')
+                                            ->alignment(Alignment::End),
+                                    ])
+                                    ->compact()
                                     ->schema([
                                         TextInput::make('value')
                                             ->label('Value')
@@ -105,7 +119,6 @@ final class ProductAttributeResource extends Resource
                                             ->numeric()
                                             ->default(0),
                                     ])
-                                    ->columns(3)
                                     ->columnSpanFull(),
                             ])
                             ->columnSpan(7),

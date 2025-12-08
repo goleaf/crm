@@ -7,12 +7,12 @@ use App\Models\Company;
 use App\Models\User;
 use Illuminate\Support\Facades\Queue;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->withPersonalTeam()->create();
     $this->team = $this->user->currentTeam;
 });
 
-test('sets creator and team on creating', function () {
+test('sets creator and team on creating', function (): void {
     $this->actingAs($this->user);
 
     $company = Company::factory()->make([
@@ -26,7 +26,7 @@ test('sets creator and team on creating', function () {
         ->and($company->team_id)->toBe($this->team->id);
 });
 
-test('dispatches favicon fetch job on created', function () {
+test('dispatches favicon fetch job on created', function (): void {
     Queue::fake();
 
     $this->actingAs($this->user);
@@ -35,12 +35,10 @@ test('dispatches favicon fetch job on created', function () {
         'team_id' => $this->team->id,
     ]);
 
-    Queue::assertPushed(FetchFaviconForCompany::class, function ($job) use ($company) {
-        return $job->company->id === $company->id;
-    });
+    Queue::assertPushed(FetchFaviconForCompany::class, fn ($job): bool => $job->company->id === $company->id);
 });
 
-test('ensures account owner on team when saved', function () {
+test('ensures account owner on team when saved', function (): void {
     $this->actingAs($this->user);
 
     $company = Company::factory()->create([

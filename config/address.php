@@ -28,20 +28,7 @@ return [
         'ZA' => 'South Africa',
     ],
 
-    /**
-     * @var array<string, string>
-     */
-    'postal_code_patterns' => [
-        'US' => '/^\\d{5}(?:-\\d{4})?$/',
-        'CA' => '/^[A-Za-z]\\d[A-Za-z][ -]?\\d[A-Za-z]\\d$/',
-        'GB' => '/^(GIR 0AA|[A-Z]{1,2}\\d[A-Z\\d]? \\d[ABD-HJLNP-UW-Z]{2})$/i',
-        'FR' => '/^\\d{2}[ ]?\\d{3}$/',
-        'DE' => '/^\\d{5}$/',
-        'NL' => '/^\\d{4}\\s?[A-Za-z]{2}$/',
-        'AU' => '/^\\d{4}$/',
-        'NZ' => '/^\\d{4}$/',
-        'BR' => '/^\\d{5}-?\\d{3}$/',
-    ],
+    // Postal codes are validated with intervention/validation using the selected country code.
 
     'geocoding' => [
         'enabled' => env('GEOCODING_ENABLED', false),

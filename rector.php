@@ -8,18 +8,29 @@ use Rector\DeadCode\Rector\ClassMethod\RemoveUnusedPrivateMethodRector;
 use Rector\Php81\Rector\Array_\FirstClassCallableRector;
 use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
 use Rector\Privatization\Rector\ClassMethod\PrivatizeFinalClassMethodRector;
+use RectorLaravel\Rector\FuncCall\RemoveDumpDataDeadCodeRector;
+use RectorLaravel\Set\LaravelSetList;
 use RectorLaravel\Set\LaravelSetProvider;
 
 return RectorConfig::configure()
     ->withSetProviders(LaravelSetProvider::class)
     ->withComposerBased(laravel: true)
+    ->withSets([
+        LaravelSetList::LARAVEL_CODE_QUALITY,
+        LaravelSetList::LARAVEL_COLLECTION,
+        LaravelSetList::LARAVEL_TESTING,
+        LaravelSetList::LARAVEL_TYPE_DECLARATIONS,
+    ])
     ->withPaths([
         __DIR__.'/app',
         __DIR__.'/app-modules',
         __DIR__.'/bootstrap/app.php',
         __DIR__.'/config',
         __DIR__.'/database',
+        __DIR__.'/lang',
         __DIR__.'/public',
+        __DIR__.'/routes',
+        __DIR__.'/tests',
     ])
     ->withSkip([
         AddOverrideAttributeToOverriddenMethodsRector::class,
@@ -47,4 +58,11 @@ return RectorConfig::configure()
         privatization: true,
         earlyReturn: true,
     )
+    ->withConfiguredRule(RemoveDumpDataDeadCodeRector::class, [
+        'dd',
+        'ddd',
+        'dump',
+        'ray',
+        'var_dump',
+    ])
     ->withPhpSets();

@@ -6,7 +6,6 @@ namespace App\Models;
 
 use App\Enums\TerritoryType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -40,51 +39,81 @@ final class Territory extends Model
         'level' => 'integer',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Team, $this>
+     */
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Territory, $this>
+     */
     public function parent(): BelongsTo
     {
         return $this->belongsTo(Territory::class, 'parent_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Territory, $this>
+     */
     public function children(): HasMany
     {
         return $this->hasMany(Territory::class, 'parent_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\TerritoryAssignment, $this>
+     */
     public function assignments(): HasMany
     {
         return $this->hasMany(TerritoryAssignment::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\TerritoryRecord, $this>
+     */
     public function records(): HasMany
     {
         return $this->hasMany(TerritoryRecord::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\TerritoryQuota, $this>
+     */
     public function quotas(): HasMany
     {
         return $this->hasMany(TerritoryQuota::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\TerritoryTransfer, $this>
+     */
     public function transfersFrom(): HasMany
     {
         return $this->hasMany(TerritoryTransfer::class, 'from_territory_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\TerritoryTransfer, $this>
+     */
     public function transfersTo(): HasMany
     {
         return $this->hasMany(TerritoryTransfer::class, 'to_territory_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\TerritoryOverlap, $this>
+     */
     public function overlapsA(): HasMany
     {
         return $this->hasMany(TerritoryOverlap::class, 'territory_a_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\TerritoryOverlap, $this>
+     */
     public function overlapsB(): HasMany
     {
         return $this->hasMany(TerritoryOverlap::class, 'territory_b_id');

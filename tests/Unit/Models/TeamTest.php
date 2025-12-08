@@ -16,7 +16,7 @@ use Laravel\Jetstream\Events\TeamUpdated;
 
 uses(RefreshDatabase::class);
 
-test('team has many people', function () {
+test('team has many people', function (): void {
     $team = Team::factory()->create();
     $people = People::factory()->create([
         'team_id' => $team->id,
@@ -26,7 +26,7 @@ test('team has many people', function () {
         ->and($team->people()->firstWhere('id', $people->id)?->id)->toBe($people->id);
 });
 
-test('team has many companies', function () {
+test('team has many companies', function (): void {
     $team = Team::factory()->create();
     $company = Company::factory()->create([
         'team_id' => $team->id,
@@ -36,7 +36,7 @@ test('team has many companies', function () {
         ->and($team->companies()->firstWhere('id', $company->id)?->id)->toBe($company->id);
 });
 
-test('team has many tasks', function () {
+test('team has many tasks', function (): void {
     $team = Team::factory()->create();
     $task = Task::factory()->create([
         'team_id' => $team->id,
@@ -48,7 +48,7 @@ test('team has many tasks', function () {
         ->and($teamTask?->id)->toBe($task->id);
 });
 
-test('team has many opportunities', function () {
+test('team has many opportunities', function (): void {
     $team = Team::factory()->create();
     $opportunity = Opportunity::factory()->create([
         'team_id' => $team->id,
@@ -60,7 +60,7 @@ test('team has many opportunities', function () {
         ->and($teamOpportunity?->id)->toBe($opportunity->id);
 });
 
-test('team has many notes', function () {
+test('team has many notes', function (): void {
     $team = Team::factory()->create();
     $note = Note::factory()->create([
         'team_id' => $team->id,
@@ -72,7 +72,7 @@ test('team has many notes', function () {
         ->and($teamNote?->id)->toBe($note->id);
 });
 
-test('team is personal team', function () {
+test('team is personal team', function (): void {
     $personalTeam = Team::factory()->create([
         'personal_team' => true,
     ]);
@@ -85,7 +85,7 @@ test('team is personal team', function () {
         ->and($regularTeam->isPersonalTeam())->toBeFalse();
 });
 
-test('team has avatar', function () {
+test('team has avatar', function (): void {
     $team = Team::factory()->create([
         'name' => 'Test Team',
     ]);
@@ -93,7 +93,7 @@ test('team has avatar', function () {
     expect($team->getFilamentAvatarUrl())->not->toBeNull();
 });
 
-test('team events are dispatched', function () {
+test('team events are dispatched', function (): void {
     Event::fake();
 
     $team = Team::factory()->create([

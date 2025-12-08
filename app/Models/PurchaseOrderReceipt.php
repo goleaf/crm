@@ -7,10 +7,10 @@ namespace App\Models;
 use App\Enums\PurchaseOrderReceiptType;
 use App\Models\Concerns\HasTeam;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Date;
+use MohamedSaid\Referenceable\Traits\HasReference;
 
 /**
  * @property PurchaseOrderReceiptType $receipt_type
@@ -22,7 +22,28 @@ use Illuminate\Support\Facades\Date;
 final class PurchaseOrderReceipt extends Model
 {
     use HasFactory;
+    use HasReference;
     use HasTeam;
+
+    protected string $referenceColumn = 'reference';
+
+    protected string $referenceStrategy = 'template';
+
+    /**
+     * @var array{format: string, sequence_length: int}
+     */
+    protected array $referenceTemplate = [
+        'format' => 'POR-{YEAR}-{SEQ}',
+        'sequence_length' => 5,
+    ];
+
+    /**
+     * @var array{min_digits: int, reset_frequency: string}
+     */
+    protected array $referenceSequential = [
+        'min_digits' => 5,
+        'reset_frequency' => 'yearly',
+    ];
 
     /**
      * @var list<string>
@@ -40,6 +61,14 @@ final class PurchaseOrderReceipt extends Model
         'reference',
         'notes',
     ];
+
+    /**
+     * Reference assignment is coordinated during lifecycle hooks.
+     */
+    protected static function bootHasReference(): void
+    {
+        // Avoid the trait's automatic generation; we seed references manually.
+    }
 
     /**
      * @return array<string, string|class-string>
@@ -79,6 +108,17 @@ final class PurchaseOrderReceipt extends Model
         return $this->belongsTo(User::class, 'received_by_id');
     }
 
+    public function registerReferenceIfMissing(): void
+    {
+        if ($this->team_id === null) {
+            return;
+        }
+
+        if ($this->reference === null) {
+            $this->reference = $this->generateReference();
+        }
+    }
+
     public function signedTotal(): float
     {
         return ((float) $this->line_total) * $this->receipt_type->multiplier();
@@ -102,9 +142,11 @@ final class PurchaseOrderReceipt extends Model
             }
 
             $receipt->received_at ??= Date::now();
+            $receipt->registerReferenceIfMissing();
         });
 
         self::saving(function (self $receipt): void {
+            $receipt->registerReferenceIfMissing();
             $receipt->line_total ??= round(((float) $receipt->quantity) * ((float) $receipt->unit_cost), 2);
         });
 

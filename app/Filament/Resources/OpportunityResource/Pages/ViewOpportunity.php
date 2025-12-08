@@ -180,7 +180,7 @@ final class ViewOpportunity extends ViewRecord
         }
 
         /** @var OpportunityMetricsService $metrics */
-        $metrics = app(OpportunityMetricsService::class);
+        $metrics = resolve(OpportunityMetricsService::class);
 
         $amount = $metrics->amount($record);
         $expectedClose = $metrics->expectedCloseDate($record);

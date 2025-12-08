@@ -6,7 +6,7 @@ use App\Models\User;
 use Laravel\Jetstream\Http\Livewire\CreateTeamForm;
 use Livewire\Livewire;
 
-test('teams can be created', function () {
+test('teams can be created', function (): void {
     $this->actingAs($user = User::factory()->withPersonalTeam()->create());
 
     Livewire::test(CreateTeamForm::class)

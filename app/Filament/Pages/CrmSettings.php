@@ -369,7 +369,7 @@ final class CrmSettings extends Page
 
     private function getSettingsData(): array
     {
-        $service = app(SettingsService::class);
+        $service = resolve(SettingsService::class);
         $teamId = auth()->user()?->currentTeam?->id;
 
         return [
@@ -407,7 +407,7 @@ final class CrmSettings extends Page
     public function save(): void
     {
         $data = $this->form->getState();
-        $service = app(SettingsService::class);
+        $service = resolve(SettingsService::class);
         $teamId = auth()->user()?->currentTeam?->id;
 
         // Save company settings

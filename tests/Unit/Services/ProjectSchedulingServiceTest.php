@@ -6,9 +6,8 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Models\Team;
 use App\Services\ProjectSchedulingService;
-use Illuminate\Support\Carbon;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->service = new ProjectSchedulingService;
     $this->team = Team::factory()->create();
 });
@@ -18,7 +17,7 @@ beforeEach(function () {
  * Property 1: Dependency enforcement
  * Validates: Requirements 1.2, 2.3
  */
-test('critical path respects task dependencies', function () {
+test('critical path respects task dependencies', function (): void {
     $project = Project::factory()->create(['team_id' => $this->team->id]);
 
     // Create a chain of dependent tasks: A -> B -> C
@@ -65,10 +64,10 @@ test('critical path respects task dependencies', function () {
  * Property 1: Dependency enforcement
  * Validates: Requirements 2.3
  */
-test('timeline schedules tasks after their dependencies', function () {
+test('timeline schedules tasks after their dependencies', function (): void {
     $project = Project::factory()->create([
         'team_id' => $this->team->id,
-        'start_date' => Carbon::parse('2025-01-01'),
+        'start_date' => \Illuminate\Support\Facades\Date::parse('2025-01-01'),
     ]);
 
     $taskA = Task::factory()->create([
@@ -91,8 +90,8 @@ test('timeline schedules tasks after their dependencies', function () {
     $taskBTimeline = collect($timeline['tasks'])->firstWhere('task_id', $taskB->id);
 
     // Task B should start after Task A ends
-    $taskAEnd = Carbon::parse($taskATimeline['scheduled_end']);
-    $taskBStart = Carbon::parse($taskBTimeline['scheduled_start']);
+    $taskAEnd = \Illuminate\Support\Facades\Date::parse($taskATimeline['scheduled_end']);
+    $taskBStart = \Illuminate\Support\Facades\Date::parse($taskBTimeline['scheduled_start']);
 
     expect($taskBStart->greaterThanOrEqualTo($taskAEnd))->toBeTrue();
 });
@@ -102,7 +101,7 @@ test('timeline schedules tasks after their dependencies', function () {
  * Property 2: Progress accuracy
  * Validates: Requirements 1.2
  */
-test('schedule summary reflects accurate task progress', function () {
+test('schedule summary reflects accurate task progress', function (): void {
     $project = Project::factory()->create(['team_id' => $this->team->id]);
 
     $completedTask = Task::factory()->create([
@@ -128,7 +127,7 @@ test('schedule summary reflects accurate task progress', function () {
         ->and($summary['completed_tasks'] + $summary['in_progress_tasks'])->toBeLessThanOrEqual(3);
 });
 
-test('critical path handles parallel tasks correctly', function () {
+test('critical path handles parallel tasks correctly', function (): void {
     $project = Project::factory()->create(['team_id' => $this->team->id]);
 
     // Create tasks: A -> B and A -> C (B and C are parallel)
@@ -156,7 +155,7 @@ test('critical path handles parallel tasks correctly', function () {
     expect($criticalPath->pluck('id')->toArray())->toContain($taskA->id, $taskB->id);
 });
 
-test('slack calculation identifies non-critical tasks', function () {
+test('slack calculation identifies non-critical tasks', function (): void {
     $project = Project::factory()->create(['team_id' => $this->team->id]);
 
     $taskA = Task::factory()->create([
@@ -186,10 +185,10 @@ test('slack calculation identifies non-critical tasks', function () {
         ->and($slackC)->toBeGreaterThan(0);
 });
 
-test('timeline includes milestone information', function () {
+test('timeline includes milestone information', function (): void {
     $project = Project::factory()->create([
         'team_id' => $this->team->id,
-        'start_date' => Carbon::parse('2025-01-01'),
+        'start_date' => \Illuminate\Support\Facades\Date::parse('2025-01-01'),
     ]);
 
     $regularTask = Task::factory()->create([
@@ -210,7 +209,7 @@ test('timeline includes milestone information', function () {
         ->and($timeline['milestones'][0]['task_id'])->toBe($milestoneTask->id);
 });
 
-test('schedule summary detects blocked tasks', function () {
+test('schedule summary detects blocked tasks', function (): void {
     $project = Project::factory()->create(['team_id' => $this->team->id]);
 
     $blockingTask = Task::factory()->create([
@@ -229,7 +228,7 @@ test('schedule summary detects blocked tasks', function () {
     expect($summary['blocked_tasks'])->toBeGreaterThanOrEqual(1);
 });
 
-test('empty project returns empty critical path', function () {
+test('empty project returns empty critical path', function (): void {
     $project = Project::factory()->create(['team_id' => $this->team->id]);
 
     $criticalPath = $this->service->calculateCriticalPath($project);
@@ -237,10 +236,10 @@ test('empty project returns empty critical path', function () {
     expect($criticalPath)->toBeEmpty();
 });
 
-test('timeline calculates project end date from critical path', function () {
+test('timeline calculates project end date from critical path', function (): void {
     $project = Project::factory()->create([
         'team_id' => $this->team->id,
-        'start_date' => Carbon::parse('2025-01-01'),
+        'start_date' => \Illuminate\Support\Facades\Date::parse('2025-01-01'),
     ]);
 
     $task = Task::factory()->create([
@@ -252,18 +251,18 @@ test('timeline calculates project end date from critical path', function () {
 
     $timeline = $this->service->generateTimeline($project);
 
-    $startDate = Carbon::parse($timeline['start_date']);
-    $endDate = Carbon::parse($timeline['end_date']);
+    $startDate = \Illuminate\Support\Facades\Date::parse($timeline['start_date']);
+    $endDate = \Illuminate\Support\Facades\Date::parse($timeline['end_date']);
 
     expect($endDate->greaterThan($startDate))->toBeTrue()
         ->and($startDate->diffInDays($endDate))->toBeGreaterThanOrEqual(5);
 });
 
-test('schedule summary indicates if project is on schedule', function () {
+test('schedule summary indicates if project is on schedule', function (): void {
     $project = Project::factory()->create([
         'team_id' => $this->team->id,
-        'start_date' => Carbon::parse('2025-01-01'),
-        'end_date' => Carbon::parse('2025-01-31'), // 30 days
+        'start_date' => \Illuminate\Support\Facades\Date::parse('2025-01-01'),
+        'end_date' => \Illuminate\Support\Facades\Date::parse('2025-01-31'), // 30 days
     ]);
 
     $task = Task::factory()->create([

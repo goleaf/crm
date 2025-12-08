@@ -113,13 +113,13 @@ test('overlapping allocations are correctly summed', function (): void {
                     'start' => $startDate,
                     'end' => $endDate,
                 ];
-            } catch (\DomainException $e) {
+            } catch (\DomainException) {
                 // Skip if over-allocated
                 continue;
             }
         }
 
-        if (empty($allocations)) {
+        if ($allocations === []) {
             continue;
         }
 

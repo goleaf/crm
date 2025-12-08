@@ -11,7 +11,6 @@ use App\Models\SupportCase;
 use App\Models\Task;
 use App\Services\Tenancy\CurrentTeamResolver;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,7 +24,7 @@ final class GlobalSearchService
     public function quickFilters(): array
     {
         $userId = Auth::id();
-        $recentThreshold = Carbon::now()->subDays(7);
+        $recentThreshold = \Illuminate\Support\Facades\Date::now()->subDays(7);
 
         return [
             'recent' => [

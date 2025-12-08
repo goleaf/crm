@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models\Concerns;
 
+use App\Models\Model;
 use App\Models\Scopes\TeamScope;
 use App\Models\Team;
 use App\Services\Tenancy\CurrentTeamResolver;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 

@@ -10,13 +10,13 @@ use App\Enums\CaseStatus;
 use App\Enums\CaseType;
 use App\Enums\CreationSource;
 use App\Models\Concerns\HasCreator;
-use App\Models\Concerns\HasNotes;
+use App\Models\Concerns\HasNotesAndNotables;
+use App\Models\Concerns\HasTaxonomies;
 use App\Models\Concerns\HasTeam;
 use App\Observers\SupportCaseObserver;
 use Database\Factories\SupportCaseFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -40,7 +40,8 @@ final class SupportCase extends Model implements HasCustomFields
     /** @use HasFactory<SupportCaseFactory> */
     use HasFactory;
 
-    use HasNotes;
+    use HasNotesAndNotables;
+    use HasTaxonomies;
     use HasTeam;
     use SoftDeletes;
     use UsesCustomFields;

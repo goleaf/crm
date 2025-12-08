@@ -9,6 +9,7 @@ use App\Filament\Resources\CompanyResource;
 use App\Filament\Resources\PeopleResource;
 use App\Models\People;
 use App\Models\Tag;
+use App\Support\Helpers\ArrayHelper;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -235,22 +236,7 @@ final class ViewPeople extends ViewRecord
                     TextEntry::make('segments')
                         ->label('Segments')
                         ->icon('heroicon-o-squares-2x2')
-                        ->formatStateUsing(function (mixed $state): ?string {
-                            if (in_array($state, [null, '', []], true)) {
-                                return null;
-                            }
-
-                            if (is_string($state)) {
-                                $decoded = json_decode($state, true);
-                                $state = is_array($decoded) ? $decoded : [$state];
-                            }
-
-                            if (is_array($state)) {
-                                return implode(', ', $state);
-                            }
-
-                            return (string) $state;
-                        })
+                        ->formatStateUsing(fn (mixed $state): ?string => ArrayHelper::joinList($state, ', ', emptyPlaceholder: null))
                         ->badge()
                         ->separator(','),
                     TextEntry::make('tags')
@@ -310,16 +296,6 @@ final class ViewPeople extends ViewRecord
             return null;
         }
 
-        $value = $record->getCustomFieldValue($field);
-
-        if ($value instanceof \Illuminate\Support\Collection) {
-            $value = $value->toArray();
-        }
-
-        $phones = is_array($value) ? $value : [$value];
-
-        $phones = array_values(array_filter(array_map(trim(...), $phones)));
-
-        return $phones === [] ? null : implode(', ', $phones);
+        return ArrayHelper::joinList($record->getCustomFieldValue($field), ', ', emptyPlaceholder: null);
     }
 }

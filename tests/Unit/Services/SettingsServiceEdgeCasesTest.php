@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Cache;
 uses(RefreshDatabase::class);
 
 beforeEach(function (): void {
-    $this->service = app(SettingsService::class);
+    $this->service = resolve(SettingsService::class);
 });
 
 it('handles very long keys', function (): void {

@@ -6,7 +6,6 @@ namespace App\Services;
 
 use App\Models\Invoice;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 final class InvoiceNumberGenerator
 {
@@ -15,22 +14,16 @@ final class InvoiceNumberGenerator
      */
     public function generate(int $teamId, ?Carbon $issueDate = null): array
     {
-        $issueDate ??= Carbon::now();
-        $year = $issueDate->format('Y');
-
-        $sequence = DB::transaction(function () use ($teamId, $year): int {
-            $latest = Invoice::query()
-                ->where('team_id', $teamId)
-                ->whereYear('issue_date', $year)
-                ->lockForUpdate()
-                ->max('sequence');
-
-            return ((int) $latest) + 1;
-        }, attempts: 1);
+        $issueDate ??= \Illuminate\Support\Facades\Date::now();
+        $invoice = new Invoice([
+            'team_id' => $teamId,
+            'issue_date' => $issueDate,
+        ]);
+        $invoice->registerNumberIfMissing();
 
         return [
-            'sequence' => $sequence,
-            'number' => sprintf('INV-%s-%05d', $year, $sequence),
+            'sequence' => (int) $invoice->sequence,
+            'number' => (string) $invoice->number,
         ];
     }
 }

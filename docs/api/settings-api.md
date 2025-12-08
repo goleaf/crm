@@ -771,7 +771,7 @@ $settings->set('key', 'value', 'string', 'general', $teamId);
 
 - [Performance Optimization Guide](./performance-settings-optimization.md)
 - [System Settings Quick Reference](./system-settings-quick-reference.md)
-- [Filament v4 Conventions](../.kiro/steering/filament-conventions.md)
+- [Filament v4.3+ Conventions](../.kiro/steering/filament-conventions.md)
 - [Translation Guide](./TRANSLATION_GUIDE.md)
 
 ---

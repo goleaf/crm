@@ -6,6 +6,7 @@ namespace App\Livewire\App\Profile;
 
 use App\Actions\Fortify\UpdateUserProfileInformation as UpdateUserProfileInformationAction;
 use App\Livewire\BaseLivewireComponent;
+use App\Support\Paths\StoragePaths;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
@@ -14,6 +15,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 final class UpdateProfileInformation extends BaseLivewireComponent
 {
@@ -41,7 +43,15 @@ final class UpdateProfileInformation extends BaseLivewireComponent
                             ->image()
                             ->imageEditor()
                             ->disk(config('jetstream.profile_photo_disk'))
-                            ->directory('profile-photos')
+                            ->directory(fn (): string => StoragePaths::profilePhotoDirectory(
+                                $this->authUser()->getKey(),
+                                Filament::getTenant()?->getKey() ?? $this->authUser()->currentTeam?->getKey()
+                            ))
+                            ->getUploadedFileNameForStorageUsing(
+                                fn (TemporaryUploadedFile $file): string => StoragePaths::profilePhotoFileName(
+                                    $file->getClientOriginalName()
+                                )
+                            )
                             ->visibility('public')
                             ->formatStateUsing(fn () => auth('web')->user()?->profile_photo_path),
                         TextInput::make('name')
@@ -76,7 +86,7 @@ final class UpdateProfileInformation extends BaseLivewireComponent
 
         $data = $this->form->getState();
 
-        app(UpdateUserProfileInformationAction::class)->update($this->authUser(), $data);
+        resolve(UpdateUserProfileInformationAction::class)->update($this->authUser(), $data);
 
         $this->sendNotification();
     }

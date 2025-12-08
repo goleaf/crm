@@ -6,6 +6,8 @@ namespace App\Filament\Resources\KnowledgeArticleResource\Forms;
 
 use App\Enums\Knowledge\ArticleStatus;
 use App\Enums\Knowledge\ArticleVisibility;
+use App\Filament\Support\SlugHelper;
+use App\Models\KnowledgeArticle;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -21,6 +23,10 @@ final class KnowledgeArticleForm
 {
     public static function get(Schema $schema): Schema
     {
+        $lockSlug = static fn (?string $operation, ?KnowledgeArticle $record): bool => $operation === 'edit'
+            && $record instanceof \App\Models\KnowledgeArticle
+            && in_array($record->status, [ArticleStatus::PUBLISHED, ArticleStatus::ARCHIVED], true);
+
         return $schema
             ->components([
                 Section::make('Article Details')
@@ -29,11 +35,16 @@ final class KnowledgeArticleForm
                             ->label(__('app.labels.title'))
                             ->required()
                             ->maxLength(255)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(SlugHelper::updateSlug(lockCondition: $lockSlug))
                             ->columnSpanFull(),
                         TextInput::make('slug')
                             ->label(__('app.labels.slug'))
                             ->helperText('Generated automatically from the title; change only if you need a custom URL.')
-                            ->maxLength(255),
+                            ->rules(['nullable', 'slug'])
+                            ->maxLength(255)
+                            ->disabled(fn (?string $operation, ?KnowledgeArticle $record): bool => SlugHelper::isLocked($operation, $record, $lockSlug))
+                            ->dehydrated(fn (?string $operation, ?KnowledgeArticle $record): bool => ! SlugHelper::isLocked($operation, $record, $lockSlug)),
                         Textarea::make('summary')
                             ->label(__('app.labels.summary'))
                             ->rows(3)
@@ -58,18 +69,28 @@ final class KnowledgeArticleForm
                             ->options(ArticleVisibility::class)
                             ->default(ArticleVisibility::INTERNAL)
                             ->required(),
-                        Select::make('category_id')
-                            ->relationship('category', 'name')
+                        Select::make('taxonomyCategories')
                             ->label(__('app.labels.category'))
-                            ->searchable()
-                            ->preload()
-                            ->columnSpan(2),
-                        Select::make('tags')
-                            ->relationship('tags', 'name')
-                            ->label(__('app.labels.tags'))
+                            ->options(fn () => \App\Models\Taxonomy::query()
+                                ->where('type', 'knowledge_category')
+                                ->orderBy('name')
+                                ->pluck('name', 'id'))
+                            ->relationship('taxonomyCategories')
                             ->multiple()
                             ->searchable()
                             ->preload()
+                            ->nullable()
+                            ->columnSpan(2),
+                        Select::make('taxonomyTags')
+                            ->label(__('app.labels.tags'))
+                            ->options(fn () => \App\Models\Taxonomy::query()
+                                ->where('type', 'knowledge_tag')
+                                ->orderBy('name')
+                                ->pluck('name', 'id'))
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->relationship('taxonomyTags')
                             ->columnSpan(2),
                         Select::make('author_id')
                             ->relationship('author', 'name')

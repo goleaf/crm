@@ -6,85 +6,132 @@ namespace App\Filament\Widgets;
 
 use App\Enums\NoteCategory;
 use App\Models\Note;
-use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Facades\DB;
+use App\Support\Metrics\EasyMetrics;
+use Filament\Facades\Filament;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
+use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
-final class NotesByCategoryChart extends ChartWidget
+final class NotesByCategoryChart extends ApexChartWidget
 {
-    protected ?string $heading = 'Notes by Category';
+    protected static ?string $chartId = 'notesByCategoryChart';
 
-    protected ?string $description = 'Distribution of notes across categories.';
+    protected static ?int $contentHeight = 300;
 
     protected int|string|array $columnSpan = 'full';
 
-    protected ?string $maxHeight = '300px';
-
-    protected function getData(): array
+    protected function getHeading(): ?string
     {
-        $categoryCounts = Note::query()
-            ->select('category', DB::raw('count(*) as count'))
-            ->groupBy('category')
-            ->get()
-            ->mapWithKeys(function ($item): array {
-                $category = NoteCategory::tryFrom($item->category);
-                $label = $category?->label() ?? 'General';
-
-                return [$label => $item->count];
-            })
-            ->toArray();
-
-        // Ensure all categories are represented
-        $allCategories = collect(NoteCategory::cases())
-            ->mapWithKeys(fn (NoteCategory $category): array => [$category->label() => 0])
-            ->toArray();
-
-        $data = array_merge($allCategories, $categoryCounts);
-
-        return [
-            'datasets' => [
-                [
-                    'label' => __('app.labels.notes'),
-                    'data' => array_values($data),
-                    'backgroundColor' => [
-                        'rgba(59, 130, 246, 0.5)',  // blue
-                        'rgba(16, 185, 129, 0.5)',  // green
-                        'rgba(245, 158, 11, 0.5)',  // amber
-                        'rgba(239, 68, 68, 0.5)',   // red
-                        'rgba(139, 92, 246, 0.5)',  // purple
-                        'rgba(236, 72, 153, 0.5)',  // pink
-                        'rgba(107, 114, 128, 0.5)', // gray
-                    ],
-                    'borderColor' => [
-                        'rgb(59, 130, 246)',
-                        'rgb(16, 185, 129)',
-                        'rgb(245, 158, 11)',
-                        'rgb(239, 68, 68)',
-                        'rgb(139, 92, 246)',
-                        'rgb(236, 72, 153)',
-                        'rgb(107, 114, 128)',
-                    ],
-                    'borderWidth' => 1,
-                ],
-            ],
-            'labels' => array_keys($data),
-        ];
+        return __('app.charts.notes_by_category');
     }
 
-    protected function getType(): string
+    protected function getSubheading(): ?string
     {
-        return 'doughnut';
+        return __('app.charts.notes_by_category_subheading');
     }
 
     protected function getOptions(): array
     {
+        $data = $this->getChartData();
+
         return [
-            'plugins' => [
-                'legend' => [
-                    'display' => true,
-                    'position' => 'bottom',
+            'chart' => [
+                'type' => 'donut',
+                'height' => self::$contentHeight,
+            ],
+            'series' => array_values($data),
+            'labels' => array_keys($data),
+            'legend' => [
+                'position' => 'bottom',
+                'fontFamily' => 'inherit',
+            ],
+            'dataLabels' => [
+                'enabled' => true,
+                'style' => [
+                    'fontFamily' => 'inherit',
                 ],
             ],
-            'maintainAspectRatio' => false,
+            'colors' => $this->getPalette(count($data)),
+            'plotOptions' => [
+                'pie' => [
+                    'donut' => [
+                        'size' => '65%',
+                    ],
+                ],
+            ],
+            'stroke' => [
+                'width' => 0,
+            ],
         ];
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private function getChartData(): array
+    {
+        return Cache::remember(
+            $this->cacheKey(),
+            600,
+            function (): array {
+                $result = EasyMetrics::doughnutCounts(
+                    $this->baseQuery(),
+                    'category',
+                    NoteCategory::class,
+                );
+
+                $data = [];
+
+                foreach ($result['labels'] as $index => $label) {
+                    $data[$label] = $result['data'][$index] ?? 0;
+                }
+
+                return $data;
+            }
+        );
+    }
+
+    private function baseQuery(): Builder
+    {
+        $query = Note::query();
+        $model = new Note;
+        $tenant = Filament::getTenant();
+        $table = $model->getTable();
+
+        if ($tenant && Schema::connection($model->getConnectionName())->hasColumn($table, 'team_id')) {
+            $query->where($model->qualifyColumn('team_id'), $tenant->getKey());
+        }
+
+        return $query;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function getPalette(int $count): array
+    {
+        $colors = [
+            '#3b82f6',
+            '#10b981',
+            '#f59e0b',
+            '#ef4444',
+            '#8b5cf6',
+            '#ec4899',
+            '#6b7280',
+        ];
+
+        if ($count <= count($colors)) {
+            return array_slice($colors, 0, $count);
+        }
+
+        return $colors;
+    }
+
+    private function cacheKey(): string
+    {
+        $tenant = Filament::getTenant()?->getKey() ?? 'public';
+
+        return "apex:notes_category:{$tenant}";
     }
 }

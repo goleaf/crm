@@ -47,7 +47,7 @@ final class SavedSearchService
             ->where('team_id', $teamId)
             ->where('user_id', $user->getKey())
             ->when($resource, fn ($query) => $query->where('resource', $resource))
-            ->orderByDesc('updated_at')
+            ->latest('updated_at')
             ->get();
     }
 }

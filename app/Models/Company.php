@@ -15,9 +15,11 @@ use App\Enums\CustomFields\OpportunityField;
 use App\Enums\CustomFields\TaskField;
 use App\Enums\Industry;
 use App\Models\Concerns\HasCreator;
-use App\Models\Concerns\HasNotes;
+use App\Models\Concerns\HasNotesAndNotables;
 use App\Models\Concerns\HasTags;
+use App\Models\Concerns\HasTaxonomies;
 use App\Models\Concerns\HasTeam;
+use App\Models\Concerns\HasUnsplashAssets;
 use App\Models\Concerns\LogsActivity;
 use App\Observers\CompanyObserver;
 use App\Services\AvatarService;
@@ -27,7 +29,6 @@ use Database\Factories\CompanyFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -65,9 +66,11 @@ final class Company extends Model implements HasCustomFields, HasMedia
     /** @use HasFactory<CompanyFactory> */
     use HasFactory;
 
-    use HasNotes;
+    use HasNotesAndNotables;
     use HasTags;
+    use HasTaxonomies;
     use HasTeam;
+    use HasUnsplashAssets;
     use InteractsWithMedia;
     use LogsActivity;
     use SoftDeletes;
@@ -145,11 +148,11 @@ final class Company extends Model implements HasCustomFields, HasMedia
      */
     private static array $customFieldCache = [];
 
-    public function getLogoAttribute(): string
+    protected function getLogoAttribute(): string
     {
         $logo = $this->getFirstMediaUrl('logo');
 
-        return $logo === '' || $logo === '0' ? app(AvatarService::class)->generateAuto(name: $this->name) : $logo;
+        return $logo === '' || $logo === '0' ? resolve(AvatarService::class)->generateAuto(name: $this->name) : $logo;
     }
 
     /**
@@ -314,7 +317,7 @@ final class Company extends Model implements HasCustomFields, HasMedia
             ->ofMany([
                 'year' => 'max',
                 'created_at' => 'max',
-            ], fn (Builder $query): Builder => $query->orderByDesc('year')->orderByDesc('created_at'));
+            ], fn (Builder $query): Builder => $query->orderByDesc('year')->latest());
     }
 
     /**
@@ -333,8 +336,7 @@ final class Company extends Model implements HasCustomFields, HasMedia
     public function attachments(): MorphMany
     {
         return $this->media()
-            ->where('collection_name', 'attachments')
-            ->orderByDesc('created_at');
+            ->where('collection_name', 'attachments')->latest();
     }
 
     public function registerMediaCollections(): void
@@ -351,7 +353,7 @@ final class Company extends Model implements HasCustomFields, HasMedia
      */
     public function findPotentialDuplicates(): Collection
     {
-        return app(DuplicateDetectionService::class)->findDuplicates($this);
+        return resolve(DuplicateDetectionService::class)->findDuplicates($this);
     }
 
     /**
@@ -359,7 +361,7 @@ final class Company extends Model implements HasCustomFields, HasMedia
      */
     public function calculateSimilarityScore(self $company): float
     {
-        return app(DuplicateDetectionService::class)->calculateSimilarity(primary: $this, duplicate: $company);
+        return resolve(DuplicateDetectionService::class)->calculateSimilarity(primary: $this, duplicate: $company);
     }
 
     /**
@@ -632,7 +634,7 @@ final class Company extends Model implements HasCustomFields, HasMedia
         }
 
         return collect($addresses)
-            ->filter(static fn ($address): bool => is_array($address))
+            ->filter(static fn (mixed $address): bool => is_array($address))
             ->map(fn (array $address): AddressData => AddressData::fromArray($address))
             ->values();
     }
@@ -655,7 +657,7 @@ final class Company extends Model implements HasCustomFields, HasMedia
         $addresses = $this->mergeLegacyAddresses($rawAddresses);
 
         $normalized = collect($addresses)
-            ->filter(static fn ($address): bool => is_array($address))
+            ->filter(static fn (mixed $address): bool => is_array($address))
             ->map(fn (array $address): AddressData => $validator->validate($address))
             ->map(fn (AddressData $address): array => $address->toStorageArray())
             ->values()

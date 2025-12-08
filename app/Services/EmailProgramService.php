@@ -12,6 +12,7 @@ use App\Models\EmailProgramBounce;
 use App\Models\EmailProgramRecipient;
 use App\Models\EmailProgramStep;
 use App\Models\EmailProgramUnsubscribe;
+use App\Support\PersonNameFormatter;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -334,6 +335,7 @@ final class EmailProgramService
     private function createRecipient(EmailProgram $program, object $recipient): void
     {
         $firstStep = $program->steps()->orderBy('step_order')->first();
+        $personName = PersonNameFormatter::make($recipient->name ?? null) ?? $recipient->name ?? null;
 
         if (! $firstStep) {
             return;
@@ -345,8 +347,9 @@ final class EmailProgramService
             'email_program_id' => $program->id,
             'email_program_step_id' => $firstStep->id,
             'email' => $recipient->email,
-            'first_name' => $this->extractFirstName($recipient->name ?? ''),
-            'last_name' => $this->extractLastName($recipient->name ?? ''),
+            'name' => $personName,
+            'first_name' => PersonNameFormatter::first($personName),
+            'last_name' => PersonNameFormatter::last($personName),
             'recipient_type' => \App\Models\People::class,
             'recipient_id' => $recipient->id,
             'status' => EmailSendStatus::PENDING,
@@ -411,7 +414,7 @@ final class EmailProgramService
     private function rescheduleAfterQuietHours(EmailProgramRecipient $recipient, Carbon $now): void
     {
         $program = $recipient->emailProgram;
-        $quietHoursEnd = Carbon::parse($program->quiet_hours_end);
+        $quietHoursEnd = \Illuminate\Support\Facades\Date::parse($program->quiet_hours_end);
 
         $newScheduledTime = $now->copy()->setTimeFromTimeString($quietHoursEnd->format('H:i:s'));
 
@@ -532,31 +535,5 @@ final class EmailProgramService
             'bounce_rate' => $sentCount > 0 ? round(($bouncedCount / $sentCount) * 100, 2) : 0,
             'unsubscribe_rate' => $deliveredCount > 0 ? round(($unsubscribedCount / $deliveredCount) * 100, 2) : 0,
         ];
-    }
-
-    /**
-     * Extract first name from full name
-     */
-    private function extractFirstName(string $name): string
-    {
-        $parts = explode(' ', trim($name));
-
-        return $parts[0] ?? '';
-    }
-
-    /**
-     * Extract last name from full name
-     */
-    private function extractLastName(string $name): string
-    {
-        $parts = explode(' ', trim($name));
-
-        if (count($parts) > 1) {
-            array_shift($parts);
-
-            return implode(' ', $parts);
-        }
-
-        return '';
     }
 }

@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-test('people supports contact hierarchy and contact field casts', function () {
+test('people supports contact hierarchy and contact field casts', function (): void {
     $manager = People::factory()->create();
 
     $report = People::factory()->create([

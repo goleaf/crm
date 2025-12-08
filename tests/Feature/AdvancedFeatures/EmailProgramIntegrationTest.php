@@ -16,7 +16,6 @@ use App\Models\EmailProgramStep;
 use App\Models\EmailProgramUnsubscribe;
 use App\Models\Team;
 use App\Services\EmailProgramService;
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -27,7 +26,7 @@ uses(RefreshDatabase::class);
  * Tests the complete workflow of a drip campaign from scheduling
  * through execution, tracking, and analytics generation.
  */
-test('complete drip campaign execution with analytics', function () {
+test('complete drip campaign execution with analytics', function (): void {
     $team = Team::factory()->create();
     $service = new EmailProgramService;
 
@@ -91,7 +90,7 @@ test('complete drip campaign execution with analytics', function () {
         ]);
 
     // Process pending sends (step 1)
-    $processed = $service->processPendingSends(Carbon::now());
+    $processed = $service->processPendingSends(\Illuminate\Support\Facades\Date::now());
     expect($processed)->toBeGreaterThan(0);
 
     // Mark as delivered
@@ -116,14 +115,14 @@ test('complete drip campaign execution with analytics', function () {
         ->and($recipient2->fresh()->open_count)->toBe(1);
 
     // Track clicks
-    $service->trackClick($recipient1->id, 'https://example.com/feature');
+    $service->trackClick($recipient1->id);
 
     expect($recipient1->fresh()->click_count)->toBe(1)
         ->and($recipient1->fresh()->clicked_at)->not->toBeNull()
         ->and($recipient1->fresh()->engagement_score)->toBeGreaterThan(0);
 
     // Calculate daily analytics
-    $date = Carbon::today();
+    $date = \Illuminate\Support\Facades\Date::today();
     $service->calculateDailyAnalytics($program, $date);
 
     $analytics = EmailProgramAnalytic::where('email_program_id', $program->id)
@@ -147,7 +146,7 @@ test('complete drip campaign execution with analytics', function () {
 /**
  * Integration test: A/B test winner selection
  */
-test('A/B test selects winner based on performance metrics', function () {
+test('A/B test selects winner based on performance metrics', function (): void {
     $team = Team::factory()->create();
     $service = new EmailProgramService;
 
@@ -203,7 +202,7 @@ test('A/B test selects winner based on performance metrics', function () {
 /**
  * Integration test: Unsubscribe and bounce handling
  */
-test('unsubscribes and bounces are honored in future sends', function () {
+test('unsubscribes and bounces are honored in future sends', function (): void {
     $team = Team::factory()->create();
     $service = new EmailProgramService;
 
@@ -276,7 +275,7 @@ test('unsubscribes and bounces are honored in future sends', function () {
 /**
  * Integration test: Email personalization
  */
-test('email content is personalized for each recipient', function () {
+test('email content is personalized for each recipient', function (): void {
     $team = Team::factory()->create();
     $service = new EmailProgramService;
 
@@ -324,7 +323,7 @@ test('email content is personalized for each recipient', function () {
 /**
  * Integration test: Throttling enforcement
  */
-test('email sending respects throttling limits', function () {
+test('email sending respects throttling limits', function (): void {
     $team = Team::factory()->create();
     $service = new EmailProgramService;
 
@@ -348,7 +347,7 @@ test('email sending respects throttling limits', function () {
         ]);
 
     // Process sends - should only process 5 due to throttling
-    $processed = $service->processPendingSends(Carbon::now());
+    $processed = $service->processPendingSends(\Illuminate\Support\Facades\Date::now());
 
     expect($processed)->toBe(5);
 
@@ -370,7 +369,7 @@ test('email sending respects throttling limits', function () {
 /**
  * Integration test: Conditional sending based on engagement
  */
-test('conditional sending based on engagement scores', function () {
+test('conditional sending based on engagement scores', function (): void {
     $team = Team::factory()->create();
     $service = new EmailProgramService;
 
@@ -412,7 +411,7 @@ test('conditional sending based on engagement scores', function () {
 
     // Track additional engagement
     $service->trackOpen($lowEngagement->id);
-    $service->trackClick($lowEngagement->id, 'https://example.com');
+    $service->trackClick($lowEngagement->id);
 
     // Verify score increased
     expect($lowEngagement->fresh()->engagement_score)->toBeGreaterThan(15);

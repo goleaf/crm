@@ -16,7 +16,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->team = Team::factory()->create();
     $this->user = User::factory()->create();
     $this->team->users()->attach($this->user);
@@ -31,7 +31,7 @@ beforeEach(function () {
  * Property: Processes execute steps/approvals/escalations in defined order
  * with audit trails and version adherence.
  */
-test('process executes steps in defined order', function () {
+test('process executes steps in defined order', function (): void {
     $definition = ProcessDefinition::factory()
         ->for($this->team)
         ->withSimpleSteps()
@@ -52,7 +52,7 @@ test('process executes steps in defined order', function () {
         ->and($auditLog->event_description)->toBe('Process execution started');
 });
 
-test('process steps execute in sequential order', function () {
+test('process steps execute in sequential order', function (): void {
     $definition = ProcessDefinition::factory()
         ->for($this->team)
         ->withSimpleSteps()
@@ -89,7 +89,7 @@ test('process steps execute in sequential order', function () {
         ->and($execution->completed_at)->not->toBeNull();
 });
 
-test('process maintains audit trail for all events', function () {
+test('process maintains audit trail for all events', function (): void {
     $definition = ProcessDefinition::factory()
         ->for($this->team)
         ->withSimpleSteps()
@@ -120,7 +120,7 @@ test('process maintains audit trail for all events', function () {
         ->and($eventTypes)->toContain(ProcessEventType::STEP_COMPLETED);
 });
 
-test('process adheres to version from definition', function () {
+test('process adheres to version from definition', function (): void {
     $definition = ProcessDefinition::factory()
         ->for($this->team)
         ->withSimpleSteps()
@@ -139,7 +139,7 @@ test('process adheres to version from definition', function () {
     expect($execution->fresh()->process_version)->toBe(5);
 });
 
-test('process handles approval steps correctly', function () {
+test('process handles approval steps correctly', function (): void {
     $approver = User::factory()->create();
     $this->team->users()->attach($approver);
 
@@ -189,7 +189,7 @@ test('process handles approval steps correctly', function () {
     expect($auditLog)->not->toBeNull();
 });
 
-test('process handles approval rejection', function () {
+test('process handles approval rejection', function (): void {
     $approver = User::factory()->create();
     $this->team->users()->attach($approver);
 
@@ -228,7 +228,7 @@ test('process handles approval rejection', function () {
     expect($auditLog)->not->toBeNull();
 });
 
-test('process handles escalations', function () {
+test('process handles escalations', function (): void {
     $escalatedTo = User::factory()->create();
     $this->team->users()->attach($escalatedTo);
 
@@ -267,7 +267,7 @@ test('process handles escalations', function () {
         ->and($auditLog->event_description)->toBe('Process escalated');
 });
 
-test('process handles rollback', function () {
+test('process handles rollback', function (): void {
     $definition = ProcessDefinition::factory()
         ->for($this->team)
         ->withSimpleSteps()
@@ -295,7 +295,7 @@ test('process handles rollback', function () {
     expect($auditLog)->not->toBeNull();
 });
 
-test('process handles step failure', function () {
+test('process handles step failure', function (): void {
     $definition = ProcessDefinition::factory()
         ->for($this->team)
         ->withSimpleSteps()
@@ -322,7 +322,7 @@ test('process handles step failure', function () {
     expect($auditLog)->not->toBeNull();
 });
 
-test('process calculates SLA due dates', function () {
+test('process calculates SLA due dates', function (): void {
     $definition = ProcessDefinition::factory()
         ->for($this->team)
         ->withSimpleSteps()
@@ -342,7 +342,7 @@ test('process calculates SLA due dates', function () {
     expect($actualDueAt->diffInSeconds($expectedDueAt, false))->toBeLessThanOrEqual(1);
 });
 
-test('process maintains execution state', function () {
+test('process maintains execution state', function (): void {
     $definition = ProcessDefinition::factory()
         ->for($this->team)
         ->withSimpleSteps()
@@ -365,7 +365,7 @@ test('process maintains execution state', function () {
     expect($execution->fresh()->execution_state)->toBe(['current_step' => 2]);
 });
 
-test('process completes when all steps are done', function () {
+test('process completes when all steps are done', function (): void {
     $definition = ProcessDefinition::factory()
         ->for($this->team)
         ->withSimpleSteps()

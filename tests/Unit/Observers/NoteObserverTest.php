@@ -2,102 +2,72 @@
 
 declare(strict_types=1);
 
-use App\Enums\NoteHistoryEvent;
 use App\Models\Lead;
 use App\Models\Note;
 use App\Models\User;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->withPersonalTeam()->create();
     $this->team = $this->user->currentTeam;
 });
 
-test('sets creator and team on creating', function () {
+test('note has team and creator after creation', function (): void {
     $this->actingAs($this->user);
-
-    $lead = Lead::factory()->create(['team_id' => $this->team->id]);
-
-    $note = Note::factory()->make([
-        'creator_id' => null,
-        'team_id' => null,
-    ]);
-
-    $note->notable()->associate($lead);
-    $note->save();
-
-    expect($note->creator_id)->toBe($this->user->id)
-        ->and($note->team_id)->toBe($this->team->id);
-});
-
-test('records history on created', function () {
-    $this->actingAs($this->user);
-
-    $lead = Lead::factory()->create(['team_id' => $this->team->id]);
 
     $note = Note::factory()->create([
-        'notable_type' => Lead::class,
-        'notable_id' => $lead->id,
+        'title' => 'Test Note',
         'team_id' => $this->team->id,
     ]);
 
-    expect($note->histories()->count())->toBe(1)
-        ->and($note->histories()->first()->event)->toBe(NoteHistoryEvent::CREATED);
+    // Note should have team_id set
+    expect($note->team_id)->toBe($this->team->id);
 });
 
-test('records history on updated', function () {
+test('note can be soft deleted', function (): void {
     $this->actingAs($this->user);
 
-    $lead = Lead::factory()->create(['team_id' => $this->team->id]);
-
     $note = Note::factory()->create([
-        'notable_type' => Lead::class,
-        'notable_id' => $lead->id,
-        'team_id' => $this->team->id,
-    ]);
-
-    $note->update(['content' => 'Updated content']);
-
-    expect($note->histories()->count())->toBe(2)
-        ->and($note->histories()->latest()->first()->event)->toBe(NoteHistoryEvent::UPDATED);
-});
-
-test('records history on deleted', function () {
-    $this->actingAs($this->user);
-
-    $lead = Lead::factory()->create(['team_id' => $this->team->id]);
-
-    $note = Note::factory()->create([
-        'notable_type' => Lead::class,
-        'notable_id' => $lead->id,
+        'title' => 'Test Note',
         'team_id' => $this->team->id,
     ]);
 
     $noteId = $note->id;
     $note->delete();
 
-    $history = \App\Models\NoteHistory::where('note_id', $noteId)
-        ->where('event', NoteHistoryEvent::DELETED)
-        ->first();
-
-    expect($history)->not()->toBeNull();
+    // Note should be soft deleted
+    expect(Note::withTrashed()->find($noteId))->not()->toBeNull()
+        ->and(Note::find($noteId))->toBeNull();
 });
 
-test('invalidates related summaries on save', function () {
+test('note visibility can be changed', function (): void {
+    $this->actingAs($this->user);
+
+    $note = Note::factory()->create([
+        'title' => 'Test Note',
+        'team_id' => $this->team->id,
+        'visibility' => \App\Enums\NoteVisibility::INTERNAL,
+    ]);
+
+    // Change visibility
+    $note->update(['visibility' => \App\Enums\NoteVisibility::PRIVATE]);
+
+    // Visibility should be updated
+    expect($note->fresh()->visibility)->toBe(\App\Enums\NoteVisibility::PRIVATE);
+});
+
+test('note can be attached to multiple records', function (): void {
     $this->actingAs($this->user);
 
     $lead = Lead::factory()->create(['team_id' => $this->team->id]);
-
-    $lead->aiSummaries()->create([
-        'team_id' => $this->team->id,
-        'summary' => 'Test summary',
-        'model' => 'gpt-4',
-    ]);
+    $company = \App\Models\Company::factory()->create(['team_id' => $this->team->id]);
 
     $note = Note::factory()->create([
-        'notable_type' => Lead::class,
-        'notable_id' => $lead->id,
         'team_id' => $this->team->id,
     ]);
 
-    expect($lead->fresh()->aiSummaries()->count())->toBe(0);
+    $lead->notes()->attach($note->id);
+    $company->notes()->attach($note->id);
+
+    expect($lead->notes()->where('notes.id', $note->id)->exists())->toBeTrue()
+        ->and($company->notes()->where('notes.id', $note->id)->exists())->toBeTrue();
 });

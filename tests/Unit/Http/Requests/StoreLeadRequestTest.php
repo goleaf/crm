@@ -10,12 +10,12 @@ use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->withPersonalTeam()->create();
     $this->team = $this->user->currentTeam;
 });
 
-test('authorize returns true when user can create lead', function () {
+test('authorize returns true when user can create lead', function (): void {
     Gate::shouldReceive('forUser')
         ->with($this->user)
         ->andReturnSelf();
@@ -30,7 +30,7 @@ test('authorize returns true when user can create lead', function () {
     expect($request->authorize())->toBeTrue();
 });
 
-test('validates required fields', function () {
+test('validates required fields', function (): void {
     $request = new StoreLeadRequest;
     $validator = Validator::make([], $request->rules());
 
@@ -41,7 +41,7 @@ test('validates required fields', function () {
         ->and($validator->errors()->has('assignment_strategy'))->toBeTrue();
 });
 
-test('validates name field', function () {
+test('validates name field', function (): void {
     $request = new StoreLeadRequest;
 
     $validator = Validator::make([
@@ -55,7 +55,7 @@ test('validates name field', function () {
         ->and($validator->errors()->has('name'))->toBeTrue();
 });
 
-test('validates email format', function () {
+test('validates email format', function (): void {
     $request = new StoreLeadRequest;
 
     $validator = Validator::make([
@@ -70,7 +70,7 @@ test('validates email format', function () {
         ->and($validator->errors()->has('email'))->toBeTrue();
 });
 
-test('validates website url format', function () {
+test('validates website url format', function (): void {
     $request = new StoreLeadRequest;
 
     $validator = Validator::make([
@@ -85,7 +85,7 @@ test('validates website url format', function () {
         ->and($validator->errors()->has('website'))->toBeTrue();
 });
 
-test('validates score range', function () {
+test('validates score range', function (): void {
     $request = new StoreLeadRequest;
 
     $validator = Validator::make([
@@ -100,7 +100,7 @@ test('validates score range', function () {
         ->and($validator->errors()->has('score'))->toBeTrue();
 });
 
-test('validates duplicate score range', function () {
+test('validates duplicate score range', function (): void {
     $request = new StoreLeadRequest;
 
     $validator = Validator::make([
@@ -115,7 +115,7 @@ test('validates duplicate score range', function () {
         ->and($validator->errors()->has('duplicate_score'))->toBeTrue();
 });
 
-test('passes validation with valid data', function () {
+test('passes validation with valid data', function (): void {
     $request = new StoreLeadRequest;
 
     $validator = Validator::make([
@@ -131,7 +131,7 @@ test('passes validation with valid data', function () {
     expect($validator->passes())->toBeTrue();
 });
 
-test('has custom error messages', function () {
+test('has custom error messages', function (): void {
     $request = new StoreLeadRequest;
     $messages = $request->messages();
 

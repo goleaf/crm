@@ -6,6 +6,7 @@ namespace App\Listeners;
 
 use App\Models\Team;
 use App\Models\User;
+use App\Support\PersonNameFormatter;
 use Filament\Auth\Events\Registered;
 
 final readonly class CreatePersonalTeamListener
@@ -15,9 +16,11 @@ final readonly class CreatePersonalTeamListener
         /** @var User $user */
         $user = $event->getUser();
 
+        $firstName = PersonNameFormatter::first($user->name, (string) $user->name);
+
         $user->ownedTeams()->save(Team::forceCreate([
             'user_id' => $user->getAuthIdentifier(),
-            'name' => explode(' ', (string) $user->name, 2)[0]."'s Team",
+            'name' => "{$firstName}'s Team",
             'personal_team' => true,
         ]));
     }

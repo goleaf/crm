@@ -122,7 +122,7 @@ None
 - No new external dependencies
 - Uses Laravel's built-in encryption
 - Uses Laravel's cache system
-- Compatible with Filament v4
+- Compatible with Filament v4.3+
 
 ### Future Enhancements
 - Setting validation rules

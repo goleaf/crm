@@ -12,7 +12,7 @@ use App\Models\TerritoryRecord;
 use App\Models\User;
 use App\Services\TerritoryService;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->service = new TerritoryService;
     $this->team = Team::factory()->create();
 });
@@ -25,7 +25,7 @@ beforeEach(function () {
  * the record should be assigned to that territory without conflicts;
  * overlaps should be handled deterministically.
  */
-test('territory assignment follows rules deterministically', function () {
+test('territory assignment follows rules deterministically', function (): void {
     // Run 100 iterations as per PBT requirements
     for ($i = 0; $i < 100; $i++) {
         // Generate random territory with assignment rules
@@ -77,7 +77,7 @@ test('territory assignment follows rules deterministically', function () {
  * For any record matching multiple territories with defined overlap resolution,
  * the assignment should follow the resolution strategy deterministically.
  */
-test('territory overlaps are resolved deterministically', function () {
+test('territory overlaps are resolved deterministically', function (): void {
     for ($i = 0; $i < 100; $i++) {
         $state = fake()->state();
 
@@ -140,7 +140,7 @@ test('territory overlaps are resolved deterministically', function () {
  * For any user and record, territory-based permissions should restrict
  * access to only users assigned to the record's territory.
  */
-test('territory access control restricts access correctly', function () {
+test('territory access control restricts access correctly', function (): void {
     for ($i = 0; $i < 100; $i++) {
         // Create territory
         $territory = Territory::factory()
@@ -190,7 +190,7 @@ test('territory access control restricts access correctly', function () {
  * For any user with a territory role, access should respect the role hierarchy
  * (owner > member > viewer).
  */
-test('territory access control respects role hierarchy', function () {
+test('territory access control respects role hierarchy', function (): void {
     for ($i = 0; $i < 100; $i++) {
         $territory = Territory::factory()
             ->for($this->team)
@@ -253,7 +253,7 @@ test('territory access control respects role hierarchy', function () {
 
 // Unit tests for specific functionality
 
-test('can find matching territory based on assignment rules', function () {
+test('can find matching territory based on assignment rules', function (): void {
     $territory = Territory::factory()
         ->for($this->team)
         ->create([
@@ -274,7 +274,7 @@ test('can find matching territory based on assignment rules', function () {
     expect($found->id)->toBe($territory->id);
 });
 
-test('returns null when no matching territory found', function () {
+test('returns null when no matching territory found', function (): void {
     Territory::factory()
         ->for($this->team)
         ->create([
@@ -294,7 +294,7 @@ test('returns null when no matching territory found', function () {
     expect($found)->toBeNull();
 });
 
-test('can transfer record between territories', function () {
+test('can transfer record between territories', function (): void {
     $fromTerritory = Territory::factory()->for($this->team)->create();
     $toTerritory = Territory::factory()->for($this->team)->create();
     $user = User::factory()->create();
@@ -328,7 +328,7 @@ test('can transfer record between territories', function () {
     expect($record->territory_id)->toBe($toTerritory->id);
 });
 
-test('can get accessible records for user', function () {
+test('can get accessible records for user', function (): void {
     $territory = Territory::factory()->for($this->team)->create();
     $user = User::factory()->create();
 
@@ -358,7 +358,7 @@ test('can get accessible records for user', function () {
     expect($accessible->pluck('id'))->toContain($lead1->id, $lead2->id);
 });
 
-test('territory hierarchy works correctly', function () {
+test('territory hierarchy works correctly', function (): void {
     $parent = Territory::factory()->for($this->team)->create([
         'level' => 0,
         'path' => '1',
@@ -375,7 +375,7 @@ test('territory hierarchy works correctly', function () {
     expect($parent->children->first()->id)->toBe($child->id);
 });
 
-test('can balance territories', function () {
+test('can balance territories', function (): void {
     $territory1 = Territory::factory()->for($this->team)->create();
     $territory2 = Territory::factory()->for($this->team)->create();
 

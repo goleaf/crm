@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Crypt;
 
@@ -49,6 +48,8 @@ final class Setting extends Model
 
     /**
      * Get the team that owns the setting.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Team, $this>
      */
     public function team(): BelongsTo
     {

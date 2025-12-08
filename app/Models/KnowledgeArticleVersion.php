@@ -7,7 +7,6 @@ namespace App\Models;
 use App\Enums\Knowledge\ArticleStatus;
 use App\Enums\Knowledge\ArticleVisibility;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 

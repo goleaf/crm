@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -44,16 +43,25 @@ final class EmailProgramStep extends Model
         'conditional_send_rules' => 'array',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\EmailProgram, $this>
+     */
     public function emailProgram(): BelongsTo
     {
         return $this->belongsTo(EmailProgram::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\EmailProgramRecipient, $this>
+     */
     public function recipients(): HasMany
     {
         return $this->hasMany(EmailProgramRecipient::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\EmailProgramAnalytic, $this>
+     */
     public function analytics(): HasMany
     {
         return $this->hasMany(EmailProgramAnalytic::class);

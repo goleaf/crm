@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class TerritoryQuota extends Model
@@ -28,6 +27,9 @@ final class TerritoryQuota extends Model
         'unit_actual' => 'integer',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Territory, $this>
+     */
     public function territory(): BelongsTo
     {
         return $this->belongsTo(Territory::class);

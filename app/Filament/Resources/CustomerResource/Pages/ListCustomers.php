@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Filament\Resources\CustomerResource\Pages;
 
 use App\Filament\Resources\CustomerResource;
-use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\Pages\BaseListRecords;
 
-final class ListCustomers extends ListRecords
+final class ListCustomers extends BaseListRecords
 {
     protected static string $resource = CustomerResource::class;
 

@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Filament\Pages;
 
 use App\Filament\Widgets\CrmStatsOverview;
+use App\Filament\Widgets\LeadTrendChart;
 use App\Filament\Widgets\PipelinePerformanceChart;
 use App\Filament\Widgets\QuickActions;
 use App\Filament\Widgets\RecentActivity;
+use App\Filament\Widgets\WireLivePlaylist;
 use Filament\Pages\Dashboard as BaseDashboard;
 
 final class Dashboard extends BaseDashboard
@@ -26,8 +28,10 @@ final class Dashboard extends BaseDashboard
         return [
             CrmStatsOverview::class,
             PipelinePerformanceChart::class,
+            LeadTrendChart::class,
             QuickActions::class,
             RecentActivity::class,
+            WireLivePlaylist::class,
         ];
     }
 

@@ -12,7 +12,6 @@ use App\Models\TaskRecurrence;
 use App\Models\TaskReminder;
 use App\Models\TaskTimeEntry;
 use App\Models\User;
-use Illuminate\Support\Carbon;
 
 /**
  * Generator for creating task-related entities for property-based testing.
@@ -26,7 +25,7 @@ final class TaskRelatedGenerator
      */
     public static function generateReminder(Task $task, ?User $user = null, array $overrides = []): TaskReminder
     {
-        $user = $user ?? User::factory()->create();
+        $user ??= User::factory()->create();
 
         $data = array_merge([
             'task_id' => $task->id,
@@ -51,7 +50,7 @@ final class TaskRelatedGenerator
             'frequency' => fake()->randomElement(['daily', 'weekly', 'monthly', 'yearly']),
             'interval' => fake()->numberBetween(1, 4),
             'days_of_week' => fake()->optional()->randomElements([0, 1, 2, 3, 4, 5, 6], fake()->numberBetween(1, 3)),
-            'starts_on' => Carbon::now(),
+            'starts_on' => \Illuminate\Support\Facades\Date::now(),
             'ends_on' => fake()->optional()->dateTimeBetween('+1 month', '+1 year'),
             'max_occurrences' => fake()->optional()->numberBetween(5, 50),
             'timezone' => fake()->timezone(),
@@ -77,7 +76,7 @@ final class TaskRelatedGenerator
             'from_user_id' => $fromUser->id,
             'to_user_id' => $toUser->id,
             'status' => fake()->randomElement(['pending', 'accepted', 'declined']),
-            'delegated_at' => Carbon::now(),
+            'delegated_at' => \Illuminate\Support\Facades\Date::now(),
             'note' => fake()->optional()->sentence(),
         ], $overrides);
 
@@ -125,7 +124,7 @@ final class TaskRelatedGenerator
      */
     public static function generateComment(Task $task, ?User $user = null, array $overrides = []): TaskComment
     {
-        $user = $user ?? User::factory()->create();
+        $user ??= User::factory()->create();
 
         $data = array_merge([
             'task_id' => $task->id,
@@ -143,9 +142,9 @@ final class TaskRelatedGenerator
      */
     public static function generateTimeEntry(Task $task, ?User $user = null, array $overrides = []): TaskTimeEntry
     {
-        $user = $user ?? User::factory()->create();
+        $user ??= User::factory()->create();
 
-        $startedAt = Carbon::parse(fake()->dateTimeBetween('-1 week', 'now'));
+        $startedAt = \Illuminate\Support\Facades\Date::parse(fake()->dateTimeBetween('-1 week', 'now'));
         $durationMinutes = fake()->numberBetween(15, 480);
         $endedAt = $startedAt->copy()->addMinutes($durationMinutes);
 

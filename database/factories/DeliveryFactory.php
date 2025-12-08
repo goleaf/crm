@@ -11,7 +11,6 @@ use App\Models\Order;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Carbon;
 
 /**
  * @extends Factory<Delivery>
@@ -29,7 +28,7 @@ final class DeliveryFactory extends Factory
 
     public function definition(): array
     {
-        $pickupAt = Carbon::now()->addDays($this->faker->numberBetween(0, 3));
+        $pickupAt = \Illuminate\Support\Facades\Date::now()->addDays($this->faker->numberBetween(0, 3));
 
         return [
             'team_id' => Team::factory(),
@@ -49,7 +48,7 @@ final class DeliveryFactory extends Factory
     {
         return $this->state(fn (): array => [
             'status' => DeliveryStatus::DELIVERED,
-            'delivered_at' => Carbon::now(),
+            'delivered_at' => \Illuminate\Support\Facades\Date::now(),
         ]);
     }
 

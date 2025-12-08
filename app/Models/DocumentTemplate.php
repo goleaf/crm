@@ -8,7 +8,6 @@ use App\Models\Concerns\HasCreator;
 use App\Models\Concerns\HasTeam;
 use Database\Factories\DocumentTemplateFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class DocumentTemplate extends Model
@@ -17,6 +16,7 @@ final class DocumentTemplate extends Model
 
     /** @use HasFactory<DocumentTemplateFactory> */
     use HasFactory;
+
     use HasTeam;
 
     /**
@@ -42,7 +42,7 @@ final class DocumentTemplate extends Model
     }
 
     /**
-     * @return HasMany<Document>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Document, $this>
      */
     public function documents(): HasMany
     {

@@ -9,21 +9,20 @@ use App\Enums\InvoicePaymentStatus;
 use App\Enums\OrderFulfillmentStatus;
 use App\Enums\OrderStatus;
 use App\Models\Concerns\HasCreator;
-use App\Models\Concerns\HasNotes;
+use App\Models\Concerns\HasNotesAndNotables;
+use App\Models\Concerns\HasReferenceNumbering;
 use App\Models\Concerns\HasTeam;
 use App\Models\Concerns\LogsActivity;
 use App\Observers\OrderObserver;
-use App\Services\OrderNumberGenerator;
 use Database\Factories\OrderFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Date;
+use MohamedSaid\Referenceable\Traits\HasReference;
 
 /**
  * @property OrderStatus $status
@@ -36,10 +35,33 @@ final class Order extends Model
 
     /** @use HasFactory<OrderFactory> */
     use HasFactory;
-    use HasNotes;
+
+    use HasNotesAndNotables;
+    use HasReference;
+    use HasReferenceNumbering;
     use HasTeam;
     use LogsActivity;
     use SoftDeletes;
+
+    protected string $referenceColumn = 'number';
+
+    protected string $referenceStrategy = 'template';
+
+    /**
+     * @var array{format: string, sequence_length: int}
+     */
+    protected array $referenceTemplate = [
+        'format' => 'ORD-{YEAR}-{SEQ}',
+        'sequence_length' => 5,
+    ];
+
+    /**
+     * @var array{min_digits: int, reset_frequency: string}
+     */
+    protected array $referenceSequential = [
+        'min_digits' => 5,
+        'reset_frequency' => 'yearly',
+    ];
 
     /**
      * @var list<string>
@@ -88,6 +110,14 @@ final class Order extends Model
         'fx_rate' => 1,
         'discount_total' => 0,
     ];
+
+    /**
+     * Referenceable handles generation via registerNumberIfMissing to keep counters seeded.
+     */
+    protected static function bootHasReference(): void
+    {
+        // Intentionally override the trait's boot to avoid early auto-generation.
+    }
 
     /**
      * @return array<string, string|class-string>
@@ -155,7 +185,7 @@ final class Order extends Model
     }
 
     /**
-     * @return HasMany<Invoice>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Invoice, $this>
      */
     public function invoices(): HasMany
     {
@@ -171,7 +201,7 @@ final class Order extends Model
     }
 
     /**
-     * @return HasMany<OrderLineItem>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\OrderLineItem, $this>
      */
     public function lineItems(): HasMany
     {
@@ -184,20 +214,19 @@ final class Order extends Model
             return;
         }
 
-        if ($this->number !== null && $this->sequence !== null) {
-            return;
+        $this->primeReferenceCounter('ordered_at');
+
+        if ($this->number === null) {
+            $this->number = $this->generateReference();
         }
 
-        /** @var OrderNumberGenerator $generator */
-        $generator = App::make(OrderNumberGenerator::class);
+        if ($this->sequence === null) {
+            $sequence = $this->extractSequenceNumber($this->number);
 
-        $payload = $generator->generate(
-            teamId: $this->team_id,
-            orderedAt: $this->ordered_at ?? Date::now()
-        );
-
-        $this->number = $payload['number'];
-        $this->sequence = $payload['sequence'];
+            if ($sequence !== null) {
+                $this->sequence = $sequence;
+            }
+        }
     }
 
     /**
@@ -235,7 +264,7 @@ final class Order extends Model
         $invoicedTotal = (float) $this->invoices()->sum('total');
         $paidTotal = (float) InvoicePayment::query()
             ->where('status', InvoicePaymentStatus::COMPLETED)
-            ->whereHas('invoice', fn ($query) => $query->where('order_id', $this->getKey()))
+            ->whereHas('invoice', fn (\Illuminate\Contracts\Database\Query\Builder $query) => $query->where('order_id', $this->getKey()))
             ->sum('amount');
 
         $balance = max(round(($invoicedTotal ?: $total) - $paidTotal, 2), 0);

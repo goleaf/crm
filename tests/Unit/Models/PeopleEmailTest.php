@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-it('syncs primary flag and legacy columns when adding emails', function () {
+it('syncs primary flag and legacy columns when adding emails', function (): void {
     /** @var People $person */
     $person = People::factory()->create([
         'primary_email' => 'primary@example.com',
@@ -30,7 +30,7 @@ it('syncs primary flag and legacy columns when adding emails', function () {
     expect($person->emails()->where('is_primary', true)->count())->toBe(1);
 });
 
-it('defaults the first email to primary if none are flagged', function () {
+it('defaults the first email to primary if none are flagged', function (): void {
     /** @var People $person */
     $person = People::factory()->create([
         'primary_email' => null,

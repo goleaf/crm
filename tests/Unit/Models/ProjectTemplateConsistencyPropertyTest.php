@@ -16,7 +16,7 @@ use App\Models\User;
  *
  * Validates: Requirements 1.3
  */
-test('property: creating projects from templates preserves all template attributes', function () {
+test('property: creating projects from templates preserves all template attributes', function (): void {
     // Run 100 iterations to test with various random data
     for ($i = 0; $i < 100; $i++) {
         $team = Team::factory()->create();
@@ -127,7 +127,7 @@ test('property: creating projects from templates preserves all template attribut
  *
  * Validates: Requirements 1.3
  */
-test('property: creating project from empty template works correctly', function () {
+test('property: creating project from empty template works correctly', function (): void {
     $team = Team::factory()->create();
 
     // Create a minimal template with no team members or tasks
@@ -165,7 +165,7 @@ test('property: creating project from empty template works correctly', function 
  *
  * Validates: Requirements 1.3
  */
-test('property: template overrides work correctly', function () {
+test('property: template overrides work correctly', function (): void {
     for ($i = 0; $i < 50; $i++) {
         $team = Team::factory()->create();
 

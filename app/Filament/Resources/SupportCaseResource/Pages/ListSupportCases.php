@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\SupportCaseResource\Pages;
 
+use App\Filament\Resources\Pages\BaseListRecords;
 use App\Filament\Resources\SupportCaseResource;
 use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\Size;
 use Override;
 use Relaticle\CustomFields\Concerns\InteractsWithCustomFields;
 
-final class ListSupportCases extends ListRecords
+final class ListSupportCases extends BaseListRecords
 {
     use InteractsWithCustomFields;
 

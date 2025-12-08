@@ -7,14 +7,14 @@ namespace App\Models;
 use App\Enums\CreationSource;
 use App\Enums\CustomFields\TaskField;
 use App\Models\Concerns\HasCreator;
-use App\Models\Concerns\HasNotes;
+use App\Models\Concerns\HasNotesAndNotables;
+use App\Models\Concerns\HasTaxonomies;
 use App\Models\Concerns\HasTeam;
 use App\Observers\TaskObserver;
 use Database\Factories\TaskFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -44,7 +44,8 @@ final class Task extends Model implements HasCustomFields
     /** @use HasFactory<TaskFactory> */
     use HasFactory;
 
-    use HasNotes;
+    use HasNotesAndNotables;
+    use HasTaxonomies;
     use HasTeam;
     use SoftDeletes;
     use SortableTrait;
@@ -119,7 +120,7 @@ final class Task extends Model implements HasCustomFields
     }
 
     /**
-     * @return HasMany<self>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Task, $this>
      */
     public function subtasks(): HasMany
     {
@@ -135,7 +136,7 @@ final class Task extends Model implements HasCustomFields
     }
 
     /**
-     * @return BelongsToMany<self>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\Task, $this, \Illuminate\Database\Eloquent\Relations\Pivot>
      */
     public function dependencies(): BelongsToMany
     {
@@ -148,7 +149,7 @@ final class Task extends Model implements HasCustomFields
     }
 
     /**
-     * @return BelongsToMany<self>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\Task, $this, \Illuminate\Database\Eloquent\Relations\Pivot>
      */
     public function dependents(): BelongsToMany
     {
@@ -161,6 +162,8 @@ final class Task extends Model implements HasCustomFields
     }
 
     /**
+     * Legacy task categories (to be migrated off TaskCategory).
+     *
      * @return BelongsToMany<TaskCategory, $this>
      */
     public function categories(): BelongsToMany
@@ -170,7 +173,19 @@ final class Task extends Model implements HasCustomFields
     }
 
     /**
-     * @return HasMany<TaskChecklistItem>
+     * Taxonomy-powered task categories.
+     *
+     * @return MorphToMany<Taxonomy, $this>
+     */
+    public function taskTaxonomies(): MorphToMany
+    {
+        return $this->taxonomies()
+            ->where('type', 'task_category')
+            ->withPivot('created_at', 'updated_at');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\TaskChecklistItem, $this>
      */
     public function checklistItems(): HasMany
     {
@@ -178,7 +193,7 @@ final class Task extends Model implements HasCustomFields
     }
 
     /**
-     * @return HasMany<TaskComment>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\TaskComment, $this>
      */
     public function comments(): HasMany
     {
@@ -186,7 +201,7 @@ final class Task extends Model implements HasCustomFields
     }
 
     /**
-     * @return HasMany<TaskTimeEntry>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\TaskTimeEntry, $this>
      */
     public function timeEntries(): HasMany
     {
@@ -194,7 +209,7 @@ final class Task extends Model implements HasCustomFields
     }
 
     /**
-     * @return HasMany<TaskReminder>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\TaskReminder, $this>
      */
     public function reminders(): HasMany
     {
@@ -202,7 +217,7 @@ final class Task extends Model implements HasCustomFields
     }
 
     /**
-     * @return HasOne<TaskRecurrence>
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<\App\Models\TaskRecurrence, $this>
      */
     public function recurrence(): HasOne
     {
@@ -210,7 +225,7 @@ final class Task extends Model implements HasCustomFields
     }
 
     /**
-     * @return HasMany<TaskDelegation>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\TaskDelegation, $this>
      */
     public function delegations(): HasMany
     {
@@ -426,12 +441,12 @@ final class Task extends Model implements HasCustomFields
         }
 
         if ($value instanceof \DateTimeInterface) {
-            return Carbon::instance($value);
+            return \Illuminate\Support\Facades\Date::instance($value);
         }
 
         if (is_string($value)) {
             try {
-                return Carbon::parse($value);
+                return \Illuminate\Support\Facades\Date::parse($value);
             } catch (\Throwable) {
                 return null;
             }
@@ -485,9 +500,29 @@ final class Task extends Model implements HasCustomFields
             if ($label === 'Completed' && $this->isBlocked()) {
                 throw new \DomainException('Complete dependent tasks first to clear this dependency.');
             }
+
+            // When a task is completed, update percent_complete to 100
+            if ($label === 'Completed') {
+                $this->percent_complete = 100;
+                $this->save();
+            }
         }
 
         $this->baseSaveCustomFieldValue($customField, $value, $tenant);
+
+        // After saving status, update parent task progress if exists
+        if ($customField->code === TaskField::STATUS->value && $this->parent_id !== null) {
+            $this->parent?->updatePercentComplete();
+        }
+    }
+
+    /**
+     * Validate that status transition is allowed based on dependencies.
+     */
+    public function canTransitionToStatus(string $statusLabel): bool
+    {
+        // If trying to complete, check dependencies
+        return ! ($statusLabel === 'Completed' && $this->isBlocked());
     }
 
     private function optionLabelForField(string $code): ?string

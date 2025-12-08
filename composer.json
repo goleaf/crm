@@ -14,24 +14,50 @@
     "license": "AGPL-3.0",
     "require": {
         "php": "^8.4",
+        "aliziodev/laravel-taxonomy": "^2.8",
         "ashallendesign/favicon-fetcher": "^3.8",
+        "austinw/laravel-union-paginator": "^2.2",
         "awcodes/overlook": "^v3.0",
         "barryvdh/laravel-dompdf": "^3.1",
         "bensampo/laravel-enum": "^6.12",
+        "bezhansalleh/filament-shield": "*",
+        "binafy/laravel-reactions": "^1.0",
         "blade-ui-kit/blade-heroicons": "^2.6",
         "blade-ui-kit/blade-icons": "^1.8",
+        "blaspsoft/blasp": "*",
+        "blaspsoft/onym": "*",
+        "dedoc/scramble": "^0.13.7",
+        "devrabiul/laravel-geo-genius": "^1.4",
+        "devrabiul/laravel-toaster-magic": "^1.5",
+        "dgtlss/warden": "^1.3",
+        "eg-mohamed/notable": "^1.4",
+        "eg-mohamed/referenceable": "^2.0",
         "filament/filament": "^4.0",
         "filament/spatie-laravel-media-library-plugin": "^4.3",
+        "hdaklue/larapath": "^2.2.4",
+        "hosmelq/name-of-person": "*",
+        "intervention/validation": "^4.6",
+        "jonpurvis/squeaky": "^2.2",
+        "kodeine/laravel-meta": "*",
+        "laracraft-tech/laravel-date-scopes": "^2.4",
         "laravel/framework": "^12.0",
         "laravel/horizon": "^5.29",
         "laravel/jetstream": "^5.2",
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.9",
+        "laraveljutsu/zap": "^1.9",
+        "leandrocfe/filament-apex-charts": "^4.0",
         "livewire/livewire": "^3.0",
+        "mansoor/filament-unsplash-picker": "^4.0",
+        "marksitko/laravel-unsplash": "^2.3",
+        "mateffy/laravel-introspect": "^1.1",
+        "nnjeim/world": "*",
+        "nunomaduro/laravel-optimize-database": "^1.0",
         "prism-php/prism": "^0.98.5",
         "relaticle/custom-fields": "^2.0",
         "relaticle/flowforge": "@dev",
+        "sakanjo/laravel-easy-metrics": "^1.1",
         "sentry/sentry-laravel": "^4.13",
         "spatie/eloquent-sortable": "^4.4",
         "spatie/laravel-data": "^4.15",
@@ -44,12 +70,21 @@
         "spatie/laravel-prefixed-ids": "^1.4",
         "spatie/laravel-settings": "^3.3",
         "spatie/laravel-sitemap": "^7.3",
+        "stephenjude/filament-feature-flags": "^4.0",
         "symfony/http-client": "^7.2",
         "symfony/postmark-mailer": "^7.2",
-        "symfony/yaml": "^7.2"
+        "symfony/yaml": "^7.2",
+        "treblle/security-headers": "^0.0.3",
+        "vectorial1024/laravel-cache-evict": "^2.0",
+        "wildside/userstamps": "^3.1",
+        "willvincent/laravel-unique": "^1.2",
+        "ziming/laravel-zxcvbn": "*"
     },
     "require-dev": {
+        "chrisdicarlo/laravel-config-checker": "*",
         "cweagans/composer-patches": "*",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "defstudio/pest-plugin-laravel-expectations": "^2.6",
         "driftingly/rector-laravel": "^2.0",
         "fakerphp/faker": "^1.23",
         "itsgoingd/clockwork": "^5.3",
@@ -59,14 +94,22 @@
         "laravel/pint": "^1.21",
         "laravel/sail": "^1.26",
         "laravel/telescope": "^5.15",
+        "larswiegers/laravel-translations-checker": "^0.9.3",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.0",
+        "nunomaduro/phpinsights": "^2.13",
+        "outhebox/laravel-translations": "^1.4",
         "pestphp/pest": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0",
         "pestphp/pest-plugin-livewire": "^4.0",
+        "pestphp/pest-plugin-stressless": "^4.0",
         "pestphp/pest-plugin-type-coverage": "^4.0",
         "rector/rector": "^2.0",
-        "spatie/laravel-horizon-watcher": "^1.1"
+        "relaticle/phpcs-standard": "^1.0",
+        "spatie/laravel-horizon-watcher": "^1.1",
+        "spatie/pest-plugin-route-testing": "^1.1",
+        "squizlabs/php_codesniffer": "^3.10",
+        "tyghaykal/laravel-seed-generator": "^2.2"
     },
     "autoload": {
         "psr-4": {
@@ -107,16 +150,27 @@
             "@composer install",
             "@php artisan relaticle:install"
         ],
+        "insights": "php -d memory_limit=1G ./vendor/bin/phpinsights --ansi",
+        "insights:json": "php -d memory_limit=1G ./vendor/bin/phpinsights --ansi --format=json",
         "dev": [
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
         ],
+        "lint:phpcs": "phpcs",
         "lint": "rector && pint --parallel",
+        "phpcs:fix": "phpcbf",
+        "phpcs:init": [
+            "phpcs --config-set installed_paths ../../relaticle/phpcs-standard/Relaticle,../../slevomat/coding-standard",
+            "phpcs --config-set default_standard Relaticle"
+        ],
         "test:lint": "pint --test",
         "test:refactor": "rector --dry-run",
         "test:types": "php -d memory_limit=1G ./vendor/bin/phpstan analyse",
         "test:arch": "pest --filter=arch",
+        "test:routes": "pest tests/Feature/Routes --parallel",
         "test:type-coverage": "php -d memory_limit=1G ./vendor/bin/pest --type-coverage --min=99.9",
+        "test:translations": "php artisan translations:check",
+        "test:config": "php artisan config:check",
         "test:coverage": "pest --coverage --min=80",
         "test:pest": "php -d memory_limit=1G ./vendor/bin/pest --parallel",
         "test:pest:shard": "pest --parallel --shard=${SHARD}",
@@ -127,6 +181,8 @@
             "@test:refactor",
             "@test:type-coverage",
             "@test:types",
+            "@test:translations",
+            "@test:config",
             "@test:pest"
         ],
         "test:ci": [
@@ -149,9 +205,19 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true,
-            "cweagans/composer-patches": true
+            "cweagans/composer-patches": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "tools/phpcs-standard",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
     "minimum-stability": "stable",
     "prefer-stable": true
 }

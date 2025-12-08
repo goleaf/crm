@@ -19,6 +19,7 @@ file_patterns:
 - Prefer `viteTheme()` with CSS variables; avoid deep overrides of core classes.
 - Scope custom styles to `.fi-` classes to prevent bleed.
 - Maintain consistent radius/spacing/shadow tokens across cards/sections/buttons.
+- Use the Tailwind 3.4+ utility set in themes: `min-h-dvh` for full-height layouts, `text-balance`/`text-pretty` for headings, `size-*` for icon sizing, `has-*` for grouped navigation states, and `forced-color-adjust-*` when respecting forced-color modes.
 
 ## Dark mode
 - If enabled, test contrast on primary/danger/success; avoid pure black; use neutral surfaces.

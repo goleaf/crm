@@ -7,22 +7,22 @@ use App\Models\Company;
 use App\Models\User;
 use Illuminate\Support\Facades\Queue;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->withPersonalTeam()->create();
     $this->team = $this->user->currentTeam;
 });
 
-test('job can be dispatched', function () {
+test('job can be dispatched', function (): void {
     Queue::fake();
 
     $company = Company::factory()->create(['team_id' => $this->team->id]);
 
-    FetchFaviconForCompany::dispatch($company);
+    dispatch(new \App\Jobs\FetchFaviconForCompany($company));
 
     Queue::assertPushed(FetchFaviconForCompany::class);
 });
 
-test('job has unique id based on company', function () {
+test('job has unique id based on company', function (): void {
     $company = Company::factory()->create(['team_id' => $this->team->id]);
 
     $job = new FetchFaviconForCompany($company);
@@ -30,7 +30,7 @@ test('job has unique id based on company', function () {
     expect($job->uniqueId())->toBe((string) $company->id);
 });
 
-test('job deletes when company is missing', function () {
+test('job deletes when company is missing', function (): void {
     $company = Company::factory()->create(['team_id' => $this->team->id]);
 
     $job = new FetchFaviconForCompany($company);
@@ -38,7 +38,7 @@ test('job deletes when company is missing', function () {
     expect($job->deleteWhenMissingModels)->toBeTrue();
 });
 
-test('job implements should be unique', function () {
+test('job implements should be unique', function (): void {
     $company = Company::factory()->create(['team_id' => $this->team->id]);
 
     $job = new FetchFaviconForCompany($company);
@@ -46,7 +46,7 @@ test('job implements should be unique', function () {
     expect($job)->toBeInstanceOf(\Illuminate\Contracts\Broadcasting\ShouldBeUnique::class);
 });
 
-test('job implements should queue', function () {
+test('job implements should queue', function (): void {
     $company = Company::factory()->create(['team_id' => $this->team->id]);
 
     $job = new FetchFaviconForCompany($company);
@@ -54,7 +54,7 @@ test('job implements should queue', function () {
     expect($job)->toBeInstanceOf(\Illuminate\Contracts\Queue\ShouldQueue::class);
 });
 
-test('job returns early when no domain name', function () {
+test('job returns early when no domain name', function (): void {
     $company = Company::factory()->create(['team_id' => $this->team->id]);
 
     $job = new FetchFaviconForCompany($company);

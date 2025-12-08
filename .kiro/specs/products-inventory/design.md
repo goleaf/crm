@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Products & Inventory Management system provides comprehensive product catalog management with support for hierarchical categories, configurable attributes, product variations, and real-time inventory tracking. The system is built on Laravel with Filament v4 for the admin interface, leveraging existing patterns from the CRM codebase including team-based tenancy, activity logging, and media management.
+The Products & Inventory Management system provides comprehensive product catalog management with support for hierarchical categories, configurable attributes, product variations, and real-time inventory tracking. The system is built on Laravel with Filament v4.3+ for the admin interface, leveraging existing patterns from the CRM codebase including team-based tenancy, activity logging, and media management.
 
 The architecture follows a domain-driven approach with clear separation between product catalog management, attribute configuration, variation handling, and inventory tracking. All components integrate with the existing team-based multi-tenancy system and respect authorization policies.
 

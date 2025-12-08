@@ -18,6 +18,7 @@ file_patterns:
 ## Actions
 - Use notification actions for approve/reject/view flows; ensure idempotent callbacks.
 - For destructive follow-ups, require confirmation in the action.
+- When background work finishes (imports, schedulers), wrap the Filament notification with `RealTimeFilamentNotification` so users get the toast via broadcast as well as in-panel; keep channels tenant/user scoped.
 
 ## Colors/icons
 - Success = primary/success icon; Warning for recoverable issues; Danger for destructive/failure.

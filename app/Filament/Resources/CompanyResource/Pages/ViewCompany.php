@@ -7,7 +7,6 @@ namespace App\Filament\Resources\CompanyResource\Pages;
 use App\Data\AddressData;
 use App\Enums\AccountType;
 use App\Enums\AddressType;
-use App\Enums\CustomFields\CompanyField;
 use App\Enums\Industry;
 use App\Filament\Components\Infolists\AvatarName;
 use App\Filament\RelationManagers\ActivitiesRelationManager;
@@ -15,22 +14,23 @@ use App\Filament\Resources\CompanyResource;
 use App\Filament\Resources\CompanyResource\RelationManagers\AnnualRevenuesRelationManager;
 use App\Filament\Resources\CompanyResource\RelationManagers\CasesRelationManager;
 use App\Filament\Resources\CompanyResource\RelationManagers\NotesRelationManager;
+use App\Filament\Resources\CompanyResource\RelationManagers\OpportunitiesRelationManager;
 use App\Filament\Resources\CompanyResource\RelationManagers\PeopleRelationManager;
 use App\Filament\Resources\CompanyResource\RelationManagers\TasksRelationManager;
-use App\Jobs\FetchFaviconForCompany;
 use App\Models\AccountTeamMember;
 use App\Models\Company;
 use App\Support\Addresses\AddressFormatter;
-use Filament\Actions\ActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\EditAction;
+use App\Support\Helpers\StringHelper;
 use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\RepeatableEntry\TableColumn;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Alignment;
+use Illuminate\Support\HtmlString;
 use Relaticle\CustomFields\Facades\CustomFields;
 
 /**
@@ -69,43 +69,7 @@ final class ViewCompany extends ViewRecord
 
     protected function getHeaderActions(): array
     {
-        return [
-            ActionGroup::make([
-                EditAction::make()
-                    ->after(function (Company $record, array $data): void {
-                        $this->dispatchFaviconFetchIfNeeded($record, $data);
-                    }),
-                DeleteAction::make(),
-            ]),
-        ];
-    }
-
-    /**
-     * Dispatch favicon fetch job if domain_name custom field has changed.
-     *
-     * Compares the new domain value from form data with the existing value in the database.
-     * Only dispatches the job if the domain has actually changed and the new value is not empty.
-     *
-     * @param  Company  $company  The company record being updated
-     * @param  array<string, mixed>  $data  The form data containing custom_fields
-     */
-    private function dispatchFaviconFetchIfNeeded(Company $company, array $data): void
-    {
-        $customFieldsData = $data['custom_fields'] ?? [];
-        $newDomain = $customFieldsData['domain_name'] ?? null;
-
-        // Get the old domain value from the database
-        $domainField = $company->customFields()
-            ->whereBelongsTo($company->team)
-            ->where('code', CompanyField::DOMAIN_NAME->value)
-            ->first();
-
-        $oldDomain = $domainField !== null ? $company->getCustomFieldValue($domainField) : null;
-
-        // Only dispatch if domain changed and new value is not empty
-        if (! in_array($newDomain, [$oldDomain, null, '', '0'], true)) {
-            FetchFaviconForCompany::dispatch($company)->afterCommit();
-        }
+        return [];
     }
 
     public function infolist(Schema $schema): Schema
@@ -244,33 +208,41 @@ final class ViewCompany extends ViewRecord
                                     ->label(__('app.labels.additional_addresses'))
                                     ->columnSpan(12)
                                     ->state(fn (Company $record): array => $record->addressCollection()
-                                        ->filter(fn (AddressData $address): bool => ! in_array($address->type, [AddressType::BILLING, AddressType::SHIPPING], true))
+                                        ->reject(fn (AddressData $address): bool => in_array($address->type, [AddressType::BILLING, AddressType::SHIPPING], true))
                                         ->map(fn (AddressData $address): array => [
                                             'label' => $address->label ?? $address->type->label(),
                                             'formatted' => new AddressFormatter()->format($address, multiline: true),
                                         ])
                                         ->all())
                                     ->visible(fn (?array $state): bool => count($state ?? []) > 0)
+                                    ->table([
+                                        TableColumn::make(__('app.labels.label')),
+                                        TableColumn::make(__('app.labels.address')),
+                                    ])
                                     ->schema([
                                         TextEntry::make('label')
-                                            ->label(__('app.labels.label'))
-                                            ->columnSpan(4),
+                                            ->label(__('app.labels.label')),
                                         TextEntry::make('formatted')
-                                            ->label(__('app.labels.address'))
-                                            ->columnSpan(8),
+                                            ->label(__('app.labels.address')),
                                     ]),
                                 TextEntry::make('description')
                                     ->label(__('app.labels.description'))
                                     ->columnSpan(12)
-                                    ->formatStateUsing(fn (?string $state): string => $state !== null && trim($state) !== '' ? $state : '—'),
+                                    ->formatStateUsing(
+                                        fn (?string $state): string|HtmlString|null => StringHelper::wordWrap(
+                                            value: $state,
+                                            characters: 120,
+                                            break: '<br>',
+                                            cutLongWords: true,
+                                        ),
+                                    ),
                             ]),
                         CustomFields::infolist()->forSchema($schema)->build(),
                         RepeatableEntry::make('account_team_members')
                             ->label(__('app.labels.account_team'))
                             ->columnSpan('full')
                             ->state(fn (Company $record): array => $record->accountTeamMembers()
-                                ->with('user')
-                                ->orderBy('created_at')
+                                ->with('user')->oldest()
                                 ->get()
                                 ->map(fn (AccountTeamMember $member): array => [
                                     'name' => $member->user?->name ?? '—',
@@ -286,27 +258,29 @@ final class ViewCompany extends ViewRecord
                                 ])
                                 ->all())
                             ->visible(fn (?array $state): bool => count($state ?? []) > 0)
+                            ->table([
+                                TableColumn::make(__('app.labels.member')),
+                                TableColumn::make(__('app.labels.email')),
+                                TableColumn::make(__('app.labels.role')),
+                                TableColumn::make(__('app.labels.access')),
+                            ])
                             ->schema([
                                 TextEntry::make('name')
-                                    ->label(__('app.labels.member'))
-                                    ->columnSpan(4),
+                                    ->label(__('app.labels.member')),
                                 TextEntry::make('email')
                                     ->label(__('app.labels.email'))
                                     ->url(fn (?string $state): ?string => $state !== null ? 'mailto:'.$state : null)
-                                    ->columnSpan(4)
                                     ->formatStateUsing(fn (?string $state): string => $state ?? '—'),
                                 TextEntry::make('role')
                                     ->label(__('app.labels.role'))
                                     ->badge()
                                     ->formatStateUsing(fn (?array $state): string => $state['label'] ?? '—')
-                                    ->color(fn (?array $state): string => $state['color'] ?? 'gray')
-                                    ->columnSpan(2),
+                                    ->color(fn (?array $state): string => $state['color'] ?? 'gray'),
                                 TextEntry::make('access')
                                     ->label(__('app.labels.access'))
                                     ->badge()
                                     ->formatStateUsing(fn (?array $state): string => $state['label'] ?? '—')
-                                    ->color(fn (?array $state): string => $state['color'] ?? 'gray')
-                                    ->columnSpan(2),
+                                    ->color(fn (?array $state): string => $state['color'] ?? 'gray'),
                             ]),
                         RepeatableEntry::make('child_companies')
                             ->label(__('app.labels.child_companies'))
@@ -325,30 +299,33 @@ final class ViewCompany extends ViewRecord
                                 ])
                                 ->all())
                             ->visible(fn (?array $state): bool => count($state ?? []) > 0)
+                            ->table([
+                                TableColumn::make(__('app.labels.company')),
+                                TableColumn::make(__('app.labels.type')),
+                                TableColumn::make(__('app.labels.industry')),
+                                TableColumn::make(__('app.labels.city')),
+                                TableColumn::make(__('app.labels.added'))
+                                    ->alignment(Alignment::End),
+                            ])
                             ->schema([
                                 TextEntry::make('name')
                                     ->label(__('app.labels.company'))
                                     ->url(fn (array $state): ?string => $state['url'] ?? null)
-                                    ->openUrlInNewTab()
-                                    ->columnSpan(4),
+                                    ->openUrlInNewTab(),
                                 TextEntry::make('account_type')
                                     ->label(__('app.labels.type'))
                                     ->badge()
                                     ->formatStateUsing(fn (?AccountType $state): string => $state?->label() ?? '—')
-                                    ->color(fn (?AccountType $state): string => $state?->color() ?? 'gray')
-                                    ->columnSpan(2),
+                                    ->color(fn (?AccountType $state): string => $state?->color() ?? 'gray'),
                                 TextEntry::make('industry')
                                     ->label(__('app.labels.industry'))
-                                    ->columnSpan(2)
                                     ->formatStateUsing(fn (?Industry $state): string => $state?->label() ?? '—'),
                                 TextEntry::make('billing_city')
                                     ->label(__('app.labels.city'))
-                                    ->columnSpan(2)
                                     ->formatStateUsing(fn (?string $state): string => $state ?? '—'),
                                 TextEntry::make('created_at')
                                     ->label(__('app.labels.added'))
-                                    ->since()
-                                    ->columnSpan(2),
+                                    ->since(),
                             ]),
                         RepeatableEntry::make('attachments')
                             ->label(__('app.labels.attachments'))
@@ -378,28 +355,32 @@ final class ViewCompany extends ViewRecord
                                     ->all();
                             })
                             ->visible(fn (?array $state): bool => count($state ?? []) > 0)
+                            ->table([
+                                TableColumn::make(__('app.labels.file')),
+                                TableColumn::make(__('app.labels.type')),
+                                TableColumn::make(__('app.labels.size'))
+                                    ->alignment(Alignment::End),
+                                TableColumn::make(__('app.labels.uploaded_by')),
+                                TableColumn::make(__('app.labels.uploaded'))
+                                    ->alignment(Alignment::End),
+                            ])
                             ->schema([
                                 TextEntry::make('file_name')
                                     ->label(__('app.labels.file'))
                                     ->url(fn (array $state): ?string => $state['url'] ?? null)
-                                    ->openUrlInNewTab()
-                                    ->columnSpan(4),
+                                    ->openUrlInNewTab(),
                                 TextEntry::make('mime_type')
                                     ->label(__('app.labels.type'))
-                                    ->columnSpan(3)
                                     ->formatStateUsing(fn (?string $state): string => $state ?? '—'),
                                 TextEntry::make('size')
                                     ->label(__('app.labels.size'))
-                                    ->columnSpan(2)
                                     ->formatStateUsing(fn (?string $state): string => $state ?? '—'),
                                 TextEntry::make('uploaded_by_name')
-                                    ->label(__('app.labels.uploaded_by'))
-                                    ->columnSpan(3),
+                                    ->label(__('app.labels.uploaded_by')),
                                 TextEntry::make('uploaded_at')
                                     ->label(__('app.labels.uploaded'))
                                     ->dateTime()
-                                    ->since()
-                                    ->columnSpan(3),
+                                    ->since(),
                             ]),
                         RepeatableEntry::make('activity_timeline')
                             ->label(__('app.labels.activity'))
@@ -413,21 +394,24 @@ final class ViewCompany extends ViewRecord
                                 ])
                                 ->all())
                             ->visible(fn (?array $state): bool => count($state ?? []) > 0)
+                            ->table([
+                                TableColumn::make(__('app.labels.entry')),
+                                TableColumn::make(__('app.labels.type')),
+                                TableColumn::make(__('app.labels.summary')),
+                                TableColumn::make(__('app.labels.when'))
+                                    ->alignment(Alignment::End),
+                            ])
                             ->schema([
                                 TextEntry::make('title')
-                                    ->label(__('app.labels.entry'))
-                                    ->columnSpan(4),
+                                    ->label(__('app.labels.entry')),
                                 TextEntry::make('type')
                                     ->label(__('app.labels.type'))
-                                    ->badge()
-                                    ->columnSpan(2),
+                                    ->badge(),
                                 TextEntry::make('summary')
-                                    ->label(__('app.labels.summary'))
-                                    ->columnSpan(4),
+                                    ->label(__('app.labels.summary')),
                                 TextEntry::make('created_at')
                                     ->label(__('app.labels.when'))
-                                    ->since()
-                                    ->columnSpan(2),
+                                    ->since(),
                             ]),
                     ]),
                     Section::make([
@@ -449,6 +433,7 @@ final class ViewCompany extends ViewRecord
         return [
             AnnualRevenuesRelationManager::class,
             CasesRelationManager::class,
+            OpportunitiesRelationManager::class,
             PeopleRelationManager::class,
             TasksRelationManager::class,
             NotesRelationManager::class,

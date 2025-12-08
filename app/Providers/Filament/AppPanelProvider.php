@@ -12,6 +12,7 @@ use App\Filament\Pages\Dashboard;
 use App\Filament\Pages\EditProfile;
 use App\Filament\Pages\EditTeam;
 use App\Filament\Widgets\CrmStatsOverview;
+use App\Filament\Widgets\LeadTrendChart;
 use App\Filament\Widgets\PipelinePerformanceChart;
 use App\Filament\Widgets\QuickActions;
 use App\Filament\Widgets\RecentActivity;
@@ -19,10 +20,18 @@ use App\Http\Middleware\ApplyTenantScopes;
 use App\Http\Middleware\SetLocale;
 use App\Listeners\SwitchTeam;
 use App\Models\Team;
+use App\Rules\CleanContent;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Exception;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Events\TenantSet;
+use Filament\Exceptions\NoDefaultPanelSetException;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -31,6 +40,7 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Schemas\Components\Section;
 use Filament\Support\Enums\Size;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Contracts\View\Factory;
@@ -47,7 +57,9 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Laravel\Jetstream\Features;
+use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
 use Relaticle\CustomFields\CustomFieldsPlugin;
+use Stephenjude\FilamentFeatureFlag\FeatureFlagPlugin;
 
 final class AppPanelProvider extends PanelProvider
 {
@@ -65,8 +77,51 @@ final class AppPanelProvider extends PanelProvider
         );
 
         Action::configureUsing(fn (Action $action): Action => $action->size(Size::Small)->iconPosition('before'));
+        TextInput::configureUsing(fn (TextInput $input): TextInput => $input->rule(new CleanContent));
+        Textarea::configureUsing(fn (Textarea $textarea): Textarea => $textarea->rule(new CleanContent));
+        MarkdownEditor::configureUsing(fn (MarkdownEditor $editor): MarkdownEditor => $editor->rule(new CleanContent));
+        RichEditor::configureUsing(fn (RichEditor $editor): RichEditor => $editor->rule(new CleanContent));
         Section::configureUsing(fn (Section $section): Section => $section->compact());
-        Table::configureUsing(fn (Table $table): Table => $table);
+        Table::configureUsing(function (Table $table): Table {
+            $pluralLabel = $table->getPluralModelLabel() ?? __('app.labels.records');
+            $singularLabel = $table->getModelLabel() ?? __('app.labels.record');
+
+            $createAction = null;
+
+            foreach ($table->getHeaderActions() as $action) {
+                if ($action instanceof ActionGroup) {
+                    foreach ($action->getFlatActions() as $groupedAction) {
+                        if ($groupedAction instanceof Action && ($groupedAction->getName() === 'create' || $groupedAction::class === \Filament\Actions\CreateAction::class)) {
+                            $createAction = $groupedAction;
+                            break 2;
+                        }
+                    }
+
+                    continue;
+                }
+
+                if ($action instanceof Action && ($action->getName() === 'create' || $action::class === \Filament\Actions\CreateAction::class)) {
+                    $createAction = $action;
+                    break;
+                }
+            }
+
+            if ($createAction instanceof Action) {
+                $emptyStateAction = clone $createAction;
+                $emptyStateAction
+                    ->label(__('app.empty_states.action', ['label' => $singularLabel]))
+                    ->icon(Heroicon::Plus)
+                    ->color('primary');
+
+                $table
+                    ->emptyStateHeading(__('app.empty_states.heading', ['label' => $pluralLabel]))
+                    ->emptyStateDescription(__('app.empty_states.description', ['label' => $singularLabel]))
+                    ->emptyStateIcon(Heroicon::OutlinedDocumentPlus)
+                    ->emptyStateActions([$emptyStateAction]);
+            }
+
+            return $table;
+        });
     }
 
     /**
@@ -83,7 +138,7 @@ final class AppPanelProvider extends PanelProvider
             ->id('app')
             ->domain("app.{$host}")
             ->homeUrl(fn (): string => Dashboard::getUrl())
-            ->brandName('Relaticle')
+            ->brandName(brand_name())
             ->login(Login::class)
             ->registration(Register::class)
             ->authGuard('web')
@@ -127,6 +182,7 @@ final class AppPanelProvider extends PanelProvider
             ->widgets([
                 CrmStatsOverview::class,
                 PipelinePerformanceChart::class,
+                LeadTrendChart::class,
                 QuickActions::class,
                 RecentActivity::class,
             ])
@@ -168,8 +224,24 @@ final class AppPanelProvider extends PanelProvider
                 isPersistent: true
             )
             ->plugins([
+                FilamentShieldPlugin::make(),
+                FilamentApexChartsPlugin::make(),
                 CustomFieldsPlugin::make()
                     ->authorize(fn () => Gate::check('update', Filament::getTenant())),
+                FeatureFlagPlugin::make()->authorize(function (): bool {
+                    try {
+                        $tenant = Filament::getTenant();
+                        $user = Filament::auth()->user();
+                    } catch (NoDefaultPanelSetException) {
+                        return false;
+                    }
+
+                    if ($tenant === null || $user === null) {
+                        return false;
+                    }
+
+                    return $this->shouldRegisterMenuItem() && $user->hasTeamRole($tenant, 'admin');
+                }),
             ])
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
@@ -190,6 +262,14 @@ final class AppPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::USER_MENU_BEFORE,
                 fn (): string => Blade::render('<livewire:language-switcher />')
+            )
+            ->renderHook(
+                PanelsRenderHook::STYLES_AFTER,
+                fn (): View|Factory => view('toastmagic.styles')
+            )
+            ->renderHook(
+                PanelsRenderHook::SCRIPTS_AFTER,
+                fn (): View|Factory => view('toastmagic.scripts')
             );
 
         if (Features::hasApiFeatures()) {
@@ -217,8 +297,12 @@ final class AppPanelProvider extends PanelProvider
     {
         $hasVerifiedEmail = Auth::user()?->hasVerifiedEmail();
 
-        return Filament::hasTenancy()
-            ? $hasVerifiedEmail && Filament::getTenant()
-            : $hasVerifiedEmail;
+        try {
+            return Filament::hasTenancy()
+                ? $hasVerifiedEmail && Filament::getTenant()
+                : $hasVerifiedEmail;
+        } catch (NoDefaultPanelSetException) {
+            return false;
+        }
     }
 }

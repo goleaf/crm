@@ -12,6 +12,8 @@ use App\Filament\Exports\NoteExporter;
 use App\Filament\Resources\NoteResource\Forms\NoteForm;
 use App\Filament\Resources\NoteResource\Pages\ManageNotes;
 use App\Models\Note;
+use App\Support\Reactions\ReactionOptions;
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -22,8 +24,10 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Forms\Components\Select;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
@@ -57,6 +61,17 @@ final class NoteResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(
+                fn (Builder $query): Builder => $query->when(
+                    auth()->check(),
+                    fn (Builder $builder): Builder => $builder->withExists([
+                        'reactions as reacted_by_me' => fn (Builder $reactionQuery): Builder => $reactionQuery->where(
+                            config('laravel-reactions.user.foreign_key', 'user_id'),
+                            auth()->id()
+                        ),
+                    ])
+                )
+            )
             ->columns([
                 TextColumn::make('title')
                     ->searchable(),
@@ -92,6 +107,15 @@ final class NoteResource extends Resource
                     ->sortable()
                     ->toggleable()
                     ->toggledHiddenByDefault(),
+                TextColumn::make('reactions_count')
+                    ->label(__('app.labels.reactions'))
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                IconColumn::make('reacted_by_me')
+                    ->label(__('app.labels.my_reaction'))
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('body_preview')
                     ->label('Body')
                     ->getStateUsing(fn (Note $record): string => $record->plainBody())
@@ -168,6 +192,38 @@ final class NoteResource extends Resource
                         ->icon('heroicon-o-printer')
                         ->url(fn (Note $record): string => route('notes.print', $record))
                         ->openUrlInNewTab(),
+                    Action::make('react')
+                        ->label(__('app.actions.react'))
+                        ->icon('heroicon-o-hand-thumb-up')
+                        ->form([
+                            Select::make('type')
+                                ->label(__('app.labels.reaction_type'))
+                                ->options(ReactionOptions::options())
+                                ->default(ReactionOptions::default())
+                                ->required(),
+                        ])
+                        ->action(function (Note $record, array $data): void {
+                            $user = auth()->user();
+
+                            if ($user === null) {
+                                return;
+                            }
+
+                            $user->reaction($data['type'], $record);
+                        }),
+                    Action::make('removeReaction')
+                        ->label(__('app.actions.remove_reaction'))
+                        ->color('gray')
+                        ->visible(fn (): bool => auth()->check())
+                        ->action(function (Note $record): void {
+                            $user = auth()->user();
+
+                            if ($user === null) {
+                                return;
+                            }
+
+                            $user->removeReactions($record);
+                        }),
                     DeleteAction::make(),
                     ForceDeleteAction::make(),
                     RestoreAction::make(),
@@ -198,7 +254,7 @@ final class NoteResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->withCount('attachments')
+            ->withCount(['attachments', 'reactions'])
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);

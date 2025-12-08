@@ -8,7 +8,6 @@ use App\Models\Concerns\HasTeam;
 use App\Services\Tenancy\CurrentTeamResolver;
 use Database\Factories\ProductRelationshipFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**

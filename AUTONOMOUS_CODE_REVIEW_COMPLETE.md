@@ -128,7 +128,7 @@ Removed conflicting property declaration that prevented widget loading.
 ### ✅ Repository Guidelines
 - PSR-12 coding standards followed
 - Laravel conventions adhered to
-- Filament v4 best practices applied
+- Filament v4.3+ best practices applied
 - Translation standards enforced
 
 ### ✅ Steering Rules

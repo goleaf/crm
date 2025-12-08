@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\Concerns\HasProfilePhoto;
+use App\Models\Concerns\InteractsWithReactions;
+use App\Support\PersonNameFormatter;
 use Database\Factories\UserFactory;
 use Exception;
 use Filament\Models\Contracts\FilamentUser;
@@ -12,9 +14,10 @@ use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasDefaultTenant;
 use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
+use HosmelQ\NameOfPerson\PersonName;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -26,6 +29,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasTeams;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Zap\Models\Concerns\HasSchedules;
 
 /**
  * @property string $name
@@ -35,6 +39,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read string $profile_photo_url
  * @property Carbon|null $email_verified_at
  * @property string|null $remember_token
+ * @property string|null $timezone
  * @property string|null $two_factor_recovery_codes
  * @property string|null $two_factor_secret
  */
@@ -47,7 +52,9 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Has
 
     use HasProfilePhoto;
     use HasRoles;
+    use HasSchedules;
     use HasTeams;
+    use InteractsWithReactions;
     use Notifiable;
     use TwoFactorAuthenticatable;
 
@@ -60,6 +67,7 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Has
         'name',
         'email',
         'password',
+        'timezone',
     ];
 
     /**
@@ -94,6 +102,11 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Has
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    protected function getPersonNameAttribute(): ?PersonName
+    {
+        return PersonNameFormatter::make($this->name);
     }
 
     /**
@@ -172,7 +185,7 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Has
             ->withTimestamps();
     }
 
-    public function getDefaultTenant(Panel $panel): ?Model
+    public function getDefaultTenant(Panel $panel): ?EloquentModel
     {
         return $this->currentTeam;
     }
@@ -193,7 +206,7 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Has
         return $this->allTeams();
     }
 
-    public function canAccessTenant(Model $tenant): bool
+    public function canAccessTenant(EloquentModel $tenant): bool
     {
         return $this->belongsToTeam($tenant);
     }

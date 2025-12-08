@@ -6,31 +6,31 @@ use App\Enums\AccountType;
 use App\Enums\InvoiceStatus;
 use App\Enums\LeadStatus;
 
-test('enums have cases', function () {
+test('enums have cases', function (): void {
     expect(AccountType::cases())->not()->toBeEmpty()
         ->and(LeadStatus::cases())->not()->toBeEmpty()
         ->and(InvoiceStatus::cases())->not()->toBeEmpty();
 });
 
-test('enum cases have valid values', function () {
+test('enum cases have valid values', function (): void {
     expect(AccountType::CUSTOMER->value)->toBe('customer')
         ->and(LeadStatus::NEW->value)->toBe('new')
         ->and(InvoiceStatus::DRAFT->value)->toBe('draft');
 });
 
-test('enums have label methods', function () {
+test('enums have label methods', function (): void {
     expect(AccountType::CUSTOMER->label())->toBe('Customer')
         ->and(LeadStatus::NEW->getLabel())->toBe('New')
         ->and(InvoiceStatus::DRAFT->label())->toBe('Draft');
 });
 
-test('enums have color methods', function () {
+test('enums have color methods', function (): void {
     expect(AccountType::CUSTOMER->color())->toBe('success')
         ->and(LeadStatus::NEW->color())->toBe('gray')
         ->and(InvoiceStatus::DRAFT->color())->toBe('gray');
 });
 
-test('enum colors are valid filament colors', function () {
+test('enum colors are valid filament colors', function (): void {
     $validColors = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'gray', 'grey'];
 
     expect(AccountType::CUSTOMER->color())->toBeIn($validColors)
@@ -38,7 +38,7 @@ test('enum colors are valid filament colors', function () {
         ->and(InvoiceStatus::PAID->color())->toBeIn($validColors);
 });
 
-test('enums have options method', function () {
+test('enums have options method', function (): void {
     $options = AccountType::options();
 
     expect($options)->toBeArray()
@@ -46,9 +46,9 @@ test('enums have options method', function () {
         ->and($options)->toHaveKey('prospect', 'Prospect');
 });
 
-test('enum options keys match case values', function () {
+test('enum options keys match case values', function (): void {
     $options = LeadStatus::options();
-    $caseValues = array_map(fn ($case) => $case->value, LeadStatus::cases());
+    $caseValues = array_map(fn (\App\Enums\LeadStatus $case) => $case->value, LeadStatus::cases());
 
     expect(array_keys($options))->toBe($caseValues);
 });

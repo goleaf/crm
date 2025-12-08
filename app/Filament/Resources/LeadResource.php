@@ -18,8 +18,10 @@ use App\Filament\Resources\LeadResource\Pages\ListLeads;
 use App\Filament\Resources\LeadResource\Pages\ViewLead;
 use App\Filament\Resources\LeadResource\RelationManagers\NotesRelationManager;
 use App\Filament\Resources\LeadResource\RelationManagers\TasksRelationManager;
+use App\Filament\Support\Filters\DateScopeFilter;
 use App\Models\Lead;
 use App\Models\Tag;
+use App\Models\Team;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -42,6 +44,7 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 final class LeadResource extends Resource
@@ -141,6 +144,7 @@ final class LeadResource extends Resource
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
+                DateScopeFilter::make(),
                 SelectFilter::make('status')
                     ->label(__('app.labels.status'))
                     ->options(LeadStatus::options())
@@ -172,7 +176,7 @@ final class LeadResource extends Resource
                         'name',
                         modifyQueryUsing: fn (Builder $query): Builder => $query->when(
                             Auth::user()?->currentTeam,
-                            fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey())
+                            fn (Builder $builder, ?Team $team): Builder => $builder->where('team_id', $team?->getKey())
                         )
                     )
                     ->multiple()
@@ -200,7 +204,7 @@ final class LeadResource extends Resource
                                 ->options(LeadStatus::options())
                                 ->required(),
                         ])
-                        ->action(fn (array $data, $records) => $records->each->update(['status' => $data['status']])),
+                        ->action(fn (array $data, Collection $records) => $records->each->update(['status' => $data['status']])),
                     BulkAction::make('bulk_assignment')
                         ->label(__('app.actions.assign_to'))
                         ->form([
@@ -211,7 +215,7 @@ final class LeadResource extends Resource
                                 ->preload()
                                 ->required(),
                         ])
-                        ->action(fn (array $data, $records) => $records->each->update([
+                        ->action(fn (array $data, Collection $records) => $records->each->update([
                             'assigned_to_id' => $data['assigned_to_id'],
                             'assignment_strategy' => LeadAssignmentStrategy::MANUAL,
                         ])),
@@ -223,7 +227,7 @@ final class LeadResource extends Resource
                                 ->options(LeadNurtureStatus::options())
                                 ->required(),
                         ])
-                        ->action(fn (array $data, $records) => $records->each->update(['nurture_status' => $data['nurture_status']])),
+                        ->action(fn (array $data, Collection $records) => $records->each->update(['nurture_status' => $data['nurture_status']])),
                     RestoreBulkAction::make(),
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),

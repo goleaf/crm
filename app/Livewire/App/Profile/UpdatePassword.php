@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\App\Profile;
 
+use App\Actions\Fortify\PasswordValidationRules;
 use App\Livewire\BaseLivewireComponent;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use Filament\Actions\Action;
@@ -14,10 +15,11 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 
 final class UpdatePassword extends BaseLivewireComponent
 {
+    use PasswordValidationRules;
+
     /** @var array<string, mixed>|null */
     public ?array $data = [];
 
@@ -46,7 +48,10 @@ final class UpdatePassword extends BaseLivewireComponent
                             ->password()
                             ->required()
                             ->revealable(filament()->arePasswordsRevealable())
-                            ->rules([Password::default(), 'confirmed'])
+                            ->rules(fn (): array => $this->passwordRules(
+                                $this->authUser(),
+                                ['email' => $this->authUser()->email, 'name' => $this->authUser()->name],
+                            ))
                             ->autocomplete('new-password')
                             ->dehydrated()
                             ->live(debounce: 500),

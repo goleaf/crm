@@ -8,7 +8,6 @@ use App\Models\Concerns\HasCreator;
 use App\Models\Concerns\HasTeam;
 use Database\Factories\PdfTemplateFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -111,7 +110,7 @@ final class PdfTemplate extends Model
     }
 
     /**
-     * @return HasMany<PdfTemplate>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\PdfTemplate, $this>
      */
     public function versions(): HasMany
     {
@@ -119,7 +118,7 @@ final class PdfTemplate extends Model
     }
 
     /**
-     * @return HasMany<PdfGeneration>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\PdfGeneration, $this>
      */
     public function generations(): HasMany
     {

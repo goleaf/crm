@@ -12,6 +12,7 @@
 
 - [ ] 3. Logging & debugging
   - Configure logs (system/error/slow query/email/import/export/workflow/API/auth) with levels, rotation/archiving, debug mode, analysis tools, access controls.
+  - Laravel Pail provides the real-time log analysis toolchain (CLI + Filament Log streaming page; PCNTL required locally).
   - _Requirements: 3.1-3.2_
   - **Property 3: Log completeness**
 

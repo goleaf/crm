@@ -16,19 +16,19 @@ Each client has the right to object to the processing of their personal data. Th
 
 You also have the right to obtain the deletion and/or prohibition of the use of all your personal data that has been collected and which is incomplete or irrelevant in terms of the purpose of processing. This also applies to any personal data the registration, disclosure, and storage of which is prohibited, or to personal data stored beyond the permitted period. This right can be exercised at any time free of charge and without any additional justification.
 
-Customers must exercise their right by sending a signed written request to Relaticle by registered mail. We will take appropriate action upon request within fifteen (15) business days.
+Customers must exercise their right by sending a signed written request to [Brand] by registered mail. We will take appropriate action upon request within fifteen (15) business days.
 
 ## Right to access
-Each client who has confirmed his or her identity has the right to access all information related to the processing of his or her personal data by Relaticle, as defined in the Privacy Act. This Privacy Policy is the first indication of the purposes of processing and the categories of information being processed, as well as the categories of recipients to whom the data is provided.
+Each client who has confirmed his or her identity has the right to access all information related to the processing of his or her personal data by [Brand], as defined in the Privacy Act. This Privacy Policy is the first indication of the purposes of processing and the categories of information being processed, as well as the categories of recipients to whom the data is provided.
 
-The Client must exercise his or her right by means of a signed written request to Relaticle by registered mail. Relaticle will take appropriate action upon request within fifteen (15) business days.
+The Client must exercise his or her right by means of a signed written request to [Brand] by registered mail. [Brand] will take appropriate action upon request within fifteen (15) business days.
 
 ## Right to correct
 We attach great importance to collecting accurate data. Thus, inaccurate or incomplete personal data can always be corrected or even deleted.
 
 Since we cannot constantly be aware of any errors, incompleteness or falsity of your personal data, you, as a customer, must report inaccuracies or omissions and make the necessary adjustments with respect to your registration data.
 
-If your personal actions seem insufficient, contact us by sending a signed, written and registered request to Relaticle. We perform the necessary actions within 15 working days, making additions, correcting or deleting personal data. Deletion is mainly related to visibility, so it is possible that deleted data will remain temporarily stored.
+If your personal actions seem insufficient, contact us by sending a signed, written and registered request to [Brand]. We perform the necessary actions within 15 working days, making additions, correcting or deleting personal data. Deletion is mainly related to visibility, so it is possible that deleted data will remain temporarily stored.
 
 ## Right to forget
 Like your right to be corrected, you also have the right to be forgotten. You can ask us to delete all information related to your account and actions from our system.

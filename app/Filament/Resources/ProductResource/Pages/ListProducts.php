@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\ProductResource\Pages;
 
+use App\Filament\Resources\Pages\BaseListRecords;
 use App\Filament\Resources\ProductResource;
-use Filament\Resources\Pages\ListRecords;
 
-final class ListProducts extends ListRecords
+final class ListProducts extends BaseListRecords
 {
     protected static string $resource = ProductResource::class;
 }

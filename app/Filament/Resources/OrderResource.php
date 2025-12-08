@@ -18,11 +18,13 @@ use App\Models\Order;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -79,13 +81,41 @@ final class OrderResource extends Resource
                 ->native(false),
             Repeater::make('line_items')
                 ->label('Line Items')
-                ->schema([
-                    TextInput::make('name')->required()->maxLength(255),
-                    TextInput::make('quantity')->numeric()->default(1)->minValue(0),
-                    TextInput::make('unit_price')->numeric()->default(0)->minValue(0),
-                    TextInput::make('tax_rate')->numeric()->default(0)->minValue(0)->suffix('%'),
+                ->table([
+                    TableColumn::make('Item')
+                        ->markAsRequired(),
+                    TableColumn::make('Qty')
+                        ->markAsRequired()
+                        ->alignment(Alignment::End),
+                    TableColumn::make('Unit price')
+                        ->markAsRequired()
+                        ->alignment(Alignment::End),
+                    TableColumn::make('Tax %')
+                        ->alignment(Alignment::End),
                 ])
-                ->columns(4)
+                ->compact()
+                ->schema([
+                    TextInput::make('name')
+                        ->label('Item')
+                        ->required()
+                        ->maxLength(255),
+                    TextInput::make('quantity')
+                        ->label('Qty')
+                        ->numeric()
+                        ->default(1)
+                        ->minValue(0),
+                    TextInput::make('unit_price')
+                        ->label('Unit price')
+                        ->numeric()
+                        ->default(0)
+                        ->minValue(0),
+                    TextInput::make('tax_rate')
+                        ->label('Tax %')
+                        ->numeric()
+                        ->default(0)
+                        ->minValue(0)
+                        ->suffix('%'),
+                ])
                 ->default([])
                 ->columnSpanFull(),
             Textarea::make('notes')

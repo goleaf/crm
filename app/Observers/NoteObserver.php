@@ -7,10 +7,10 @@ namespace App\Observers;
 use App\Enums\NoteHistoryEvent;
 use App\Models\Note;
 use App\Models\User;
+use App\Services\ActivityService;
 use App\Services\Notes\NoteHistoryService;
-use Illuminate\Support\Facades\DB;
 
-final readonly class NoteObserver
+final class NoteObserver
 {
     public function creating(Note $note): void
     {
@@ -24,24 +24,38 @@ final readonly class NoteObserver
 
     public function saved(Note $note): void
     {
-        DB::afterCommit(function () use ($note): void {
-            $freshNote = $note->fresh(['customFieldValues.customField', 'team']);
+        $freshNote = $note->fresh(['customFieldValues.customField', 'team']);
 
-            if ($freshNote === null) {
-                return;
-            }
+        if ($freshNote === null) {
+            return;
+        }
 
-            app(NoteHistoryService::class)->record(
-                $freshNote,
-                $note->wasRecentlyCreated ? NoteHistoryEvent::CREATED : NoteHistoryEvent::UPDATED
-            );
-        });
+        resolve(NoteHistoryService::class)->record(
+            $freshNote,
+            $note->wasRecentlyCreated ? NoteHistoryEvent::CREATED : NoteHistoryEvent::UPDATED
+        );
+
+        // Log activity
+        resolve(ActivityService::class)->log(
+            $freshNote,
+            $note->wasRecentlyCreated ? 'created' : 'updated',
+            [
+                'title' => $freshNote->title,
+                'category' => $freshNote->category,
+                'visibility' => $freshNote->visibility->value,
+            ]
+        );
     }
 
     public function deleted(Note $note): void
     {
-        DB::afterCommit(function () use ($note): void {
-            app(NoteHistoryService::class)->record($note, NoteHistoryEvent::DELETED);
-        });
+        resolve(NoteHistoryService::class)->record($note, NoteHistoryEvent::DELETED);
+
+        // Log activity
+        resolve(ActivityService::class)->log(
+            $note,
+            'deleted',
+            ['title' => $note->title]
+        );
     }
 }

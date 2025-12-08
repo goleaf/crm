@@ -9,12 +9,12 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->service = new LeadDuplicateDetectionService;
     $this->team = Team::factory()->create();
 });
 
-it('scores identical leads very highly', function () {
+it('scores identical leads very highly', function (): void {
     $primary = Lead::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'John Doe',
@@ -34,7 +34,7 @@ it('scores identical leads very highly', function () {
     expect($score)->toBeGreaterThan(90);
 });
 
-it('finds duplicates above a threshold', function () {
+it('finds duplicates above a threshold', function (): void {
     $lead = Lead::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'Jane Smith',
@@ -60,7 +60,7 @@ it('finds duplicates above a threshold', function () {
         ->and($duplicates->first()['score'])->toBeGreaterThan(40);
 });
 
-it('detects duplicates by email', function () {
+it('detects duplicates by email', function (): void {
     $lead = Lead::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'John Doe',
@@ -78,7 +78,7 @@ it('detects duplicates by email', function () {
     expect($score)->toBeGreaterThan(60);
 });
 
-it('detects duplicates by phone number', function () {
+it('detects duplicates by phone number', function (): void {
     $lead = Lead::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'John Doe',
@@ -96,7 +96,7 @@ it('detects duplicates by phone number', function () {
     expect($score)->toBeGreaterThan(5);
 });
 
-it('detects duplicates by mobile number', function () {
+it('detects duplicates by mobile number', function (): void {
     $lead = Lead::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'John Doe',
@@ -114,7 +114,7 @@ it('detects duplicates by mobile number', function () {
     expect($score)->toBeGreaterThan(5);
 });
 
-it('handles empty lead names gracefully', function () {
+it('handles empty lead names gracefully', function (): void {
     $primary = Lead::factory()->create([
         'team_id' => $this->team->id,
         'name' => '',
@@ -130,7 +130,7 @@ it('handles empty lead names gracefully', function () {
         ->and($score)->toBeLessThanOrEqual(100);
 });
 
-it('handles null email values', function () {
+it('handles null email values', function (): void {
     $primary = Lead::factory()->create([
         'team_id' => $this->team->id,
         'email' => null,
@@ -146,7 +146,7 @@ it('handles null email values', function () {
         ->and($score)->toBeLessThanOrEqual(100);
 });
 
-it('respects threshold parameter in find', function () {
+it('respects threshold parameter in find', function (): void {
     $lead = Lead::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'Test Lead',
@@ -171,7 +171,7 @@ it('respects threshold parameter in find', function () {
     expect($highThreshold->count())->toBeLessThanOrEqual($lowThreshold->count());
 });
 
-it('respects limit parameter in find', function () {
+it('respects limit parameter in find', function (): void {
     $lead = Lead::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'Base Lead',
@@ -192,7 +192,7 @@ it('respects limit parameter in find', function () {
     expect($limited->count())->toBeLessThanOrEqual(3);
 });
 
-it('handles identical lead IDs correctly', function () {
+it('handles identical lead IDs correctly', function (): void {
     $lead = Lead::factory()->create([
         'team_id' => $this->team->id,
     ]);
@@ -202,7 +202,7 @@ it('handles identical lead IDs correctly', function () {
     expect($score)->toBe(100.0);
 });
 
-it('only finds duplicates within the same team', function () {
+it('only finds duplicates within the same team', function (): void {
     $team1 = Team::factory()->create();
     $team2 = Team::factory()->create();
 
@@ -224,7 +224,7 @@ it('only finds duplicates within the same team', function () {
     expect($duplicates)->toBeEmpty();
 });
 
-it('normalizes email addresses correctly', function () {
+it('normalizes email addresses correctly', function (): void {
     $lead = Lead::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'John Doe',
@@ -242,7 +242,7 @@ it('normalizes email addresses correctly', function () {
     expect($score)->toBeGreaterThan(60);
 });
 
-it('handles invalid email formats', function () {
+it('handles invalid email formats', function (): void {
     $lead = Lead::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'John Doe',
@@ -261,7 +261,7 @@ it('handles invalid email formats', function () {
         ->and($score)->toBeLessThanOrEqual(100);
 });
 
-it('handles boundary similarity scores', function () {
+it('handles boundary similarity scores', function (): void {
     $primary = Lead::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'A',
@@ -277,7 +277,7 @@ it('handles boundary similarity scores', function () {
         ->and($score)->toBeLessThanOrEqual(100.0);
 });
 
-it('matches phone and mobile numbers interchangeably', function () {
+it('matches phone and mobile numbers interchangeably', function (): void {
     $lead = Lead::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'John Doe',

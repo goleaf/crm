@@ -326,7 +326,7 @@ To verify the improvements:
 # 1. Run linting
 composer lint
 
-# 2. Run tests (when Filament v4 compatibility is resolved)
+# 2. Run tests (when Filament v4.3+ compatibility is resolved)
 vendor/bin/pest tests/Unit/Seeders/LeadSeederTest.php
 
 # 3. Run the seeder

@@ -8,17 +8,17 @@
 @source '../../../../vendor/relaticle/custom-fields/resources';
 
 /* ===================================
-   Relaticle Brand Theme Customization
+   Brand Theme Customization
    Pure Tailwind CSS Classes Only
    =================================== */
 
 /* App Panel Custom Layout */
 .fi-app-layout {
-    @apply flex h-screen;
+    @apply flex min-h-dvh min-h-screen forced-color-adjust-auto;
 }
 
 .fi-app-main-wrapper {
-    @apply flex-1 flex flex-col min-w-0;
+    @apply flex-1 flex flex-col min-w-0 text-pretty;
 
     /* Only the content area scrolls, not the topbar */
     > .fi-layout {
@@ -27,7 +27,7 @@
 }
 
 .fi-header-heading {
-    @apply text-2xl font-bold;
+    @apply text-2xl font-bold text-balance;
 }
 
 /* Sidebar Enhancements */
@@ -52,13 +52,11 @@
     }
 
     .fi-sidebar-item-icon {
-        width: calc(var(--spacing) * 5);
-        height: calc(var(--spacing) * 5);
+        @apply size-[calc(var(--spacing)*5)];
     }
 
     .fi-sidebar-item-grouped-border {
-        width: calc(var(--spacing) * 5);
-        height: calc(var(--spacing) * 5);
+        @apply size-[calc(var(--spacing)*5)];
     }
 }
 
@@ -69,7 +67,7 @@
 }
 
 .fi-sidebar-group {
-    @apply rounded-xl;
+    @apply rounded-xl has-[.fi-sidebar-item.fi-active]:bg-gray-100 has-[.fi-sidebar-item.fi-active]:dark:bg-gray-900/70;
 }
 
 .fi-sidebar-group-items {

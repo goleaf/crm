@@ -14,11 +14,13 @@ beforeEach(function (): void {
 afterEach(function (): void {
     // Restore .env file if backup exists
     if (File::exists(base_path('.env.backup'))) {
-        File::move(base_path('.env.backup'), base_path('.env'), true);
+        File::move(base_path('.env.backup'), base_path('.env'));
     }
 });
 
 it('completes installation without demo data and system admin', function (): void {
+    $brand = brand_name();
+
     $this->artisan('relaticle:install', ['--force' => true])
         ->expectsChoice('Which database would you like to use?', 'sqlite', [
             'sqlite' => 'SQLite (Recommended for local development)',
@@ -31,12 +33,14 @@ it('completes installation without demo data and system admin', function (): voi
         ->expectsOutputToContain('System Requirements completed')
         ->expectsOutputToContain('Environment Setup completed')
         ->expectsOutputToContain('Database completed')
-        ->expectsOutputToContain('Relaticle installed successfully!')
+        ->expectsOutputToContain("{$brand} installed successfully!")
         ->assertSuccessful();
 });
 
 it('completes installation with demo data but no system admin', function (): void {
     $this->markTestSkipped('Demo data seeding test needs investigation');
+
+    $brand = brand_name();
 
     $this->artisan('relaticle:install', ['--force' => true])
         ->expectsChoice('Which database would you like to use?', 'sqlite', [
@@ -48,13 +52,15 @@ it('completes installation with demo data but no system admin', function (): voi
         ->expectsConfirmation('Create system administrator account?', 'no')
         ->expectsOutputToContain('Starting installation process')
         ->expectsOutputToContain('Demo Data completed')
-        ->expectsOutputToContain('Relaticle installed successfully!')
+        ->expectsOutputToContain("{$brand} installed successfully!")
         ->assertExitCode(0);
 });
 
 it('creates system administrator when requested', function (): void {
     // Clear any existing system administrators
     \Relaticle\SystemAdmin\Models\SystemAdministrator::query()->delete();
+
+    $brand = brand_name();
 
     $this->artisan('relaticle:install', ['--force' => true])
         ->expectsChoice('Which database would you like to use?', 'sqlite', [
@@ -69,7 +75,7 @@ it('creates system administrator when requested', function (): void {
         ->expectsQuestion('System Administrator password (min. 8 characters)', 'password123')
         ->expectsOutputToContain('Creating System Administrator account')
         ->expectsOutputToContain('System Administrator created')
-        ->expectsOutputToContain('Relaticle installed successfully!')
+        ->expectsOutputToContain("{$brand} installed successfully!")
         ->assertSuccessful();
 
     // Verify the system administrator was created
@@ -88,6 +94,8 @@ it('skips system admin creation if one already exists', function (): void {
         ]
     );
 
+    $brand = brand_name();
+
     $this->artisan('relaticle:install', ['--force' => true])
         ->expectsChoice('Which database would you like to use?', 'sqlite', [
             'sqlite' => 'SQLite (Recommended for local development)',
@@ -99,6 +107,6 @@ it('skips system admin creation if one already exists', function (): void {
         ->expectsConfirmation('Do you want to create another one?', 'no')
         ->expectsOutputToContain('A System Administrator already exists')
         ->expectsOutputToContain('System Administrator created')
-        ->expectsOutputToContain('Relaticle installed successfully!')
+        ->expectsOutputToContain("{$brand} installed successfully!")
         ->assertSuccessful();
 });

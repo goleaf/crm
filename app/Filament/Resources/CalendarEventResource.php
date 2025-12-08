@@ -10,13 +10,18 @@ use App\Enums\CalendarSyncStatus;
 use App\Filament\Resources\CalendarEventResource\Pages\CreateCalendarEvent;
 use App\Filament\Resources\CalendarEventResource\Pages\EditCalendarEvent;
 use App\Filament\Resources\CalendarEventResource\Pages\ListCalendarEvents;
+use App\Filament\Support\Filters\DateScopeFilter;
 use App\Models\CalendarEvent;
+use App\Support\Helpers\ArrayHelper;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\BadgeColumn;
@@ -47,50 +52,135 @@ final class CalendarEventResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            TextInput::make('title')
-                ->label(__('app.labels.title'))
-                ->required()
-                ->maxLength(255),
-            Select::make('type')
-                ->label('Type')
-                ->options(CalendarEventType::class)
-                ->default(CalendarEventType::MEETING)
-                ->native(false),
-            Select::make('status')
-                ->label(__('app.labels.status'))
-                ->options(CalendarEventStatus::class)
-                ->default(CalendarEventStatus::SCHEDULED)
-                ->native(false),
-            Toggle::make('is_all_day')
-                ->label('All day'),
-            DateTimePicker::make('start_at')
-                ->label('Starts')
-                ->seconds(false)
-                ->required(),
-            DateTimePicker::make('end_at')
-                ->label('Ends')
-                ->seconds(false),
-            TextInput::make('location')
-                ->maxLength(255),
-            TextInput::make('meeting_url')
-                ->label('Meeting URL')
-                ->url()
-                ->maxLength(255),
-            TextInput::make('reminder_minutes_before')
-                ->label('Reminder (minutes before)')
-                ->numeric()
-                ->minValue(0)
-                ->step(5),
-            Repeater::make('attendees')
+            Section::make(__('app.labels.basic_information'))
                 ->schema([
-                    TextInput::make('name')->required(),
-                    TextInput::make('email')->email(),
+                    TextInput::make('title')
+                        ->label(__('app.labels.title'))
+                        ->required()
+                        ->maxLength(255)
+                        ->columnSpanFull(),
+                    Select::make('type')
+                        ->label(__('app.labels.type'))
+                        ->options(CalendarEventType::class)
+                        ->default(CalendarEventType::MEETING)
+                        ->native(false)
+                        ->live(),
+                    Select::make('status')
+                        ->label(__('app.labels.status'))
+                        ->options(CalendarEventStatus::class)
+                        ->default(CalendarEventStatus::SCHEDULED)
+                        ->native(false),
+                    Toggle::make('is_all_day')
+                        ->label(__('app.labels.all_day'))
+                        ->live(),
                 ])
-                ->label('Attendees')
-                ->defaultItems(0)
-                ->columns(2),
-            Textarea::make('notes')
-                ->rows(3),
+                ->columns(3),
+
+            Section::make(__('app.labels.schedule'))
+                ->schema([
+                    DateTimePicker::make('start_at')
+                        ->label(__('app.labels.starts'))
+                        ->seconds(false)
+                        ->required(),
+                    DateTimePicker::make('end_at')
+                        ->label(__('app.labels.ends'))
+                        ->seconds(false),
+                    TextInput::make('reminder_minutes_before')
+                        ->label(__('app.labels.reminder_minutes_before'))
+                        ->numeric()
+                        ->minValue(0)
+                        ->step(5)
+                        ->suffix(__('app.labels.minutes')),
+                ])
+                ->columns(3),
+
+            Section::make(__('app.labels.recurrence'))
+                ->schema([
+                    Select::make('recurrence_rule')
+                        ->label(__('app.labels.recurrence_pattern'))
+                        ->options([
+                            'DAILY' => __('app.labels.daily'),
+                            'WEEKLY' => __('app.labels.weekly'),
+                            'MONTHLY' => __('app.labels.monthly'),
+                            'YEARLY' => __('app.labels.yearly'),
+                        ])
+                        ->native(false)
+                        ->live()
+                        ->helperText(__('app.helpers.recurrence_pattern')),
+                    DateTimePicker::make('recurrence_end_date')
+                        ->label(__('app.labels.recurrence_end_date'))
+                        ->seconds(false)
+                        ->visible(fn (Get $get): bool => filled($get('recurrence_rule')))
+                        ->helperText(__('app.helpers.recurrence_end_date')),
+                ])
+                ->columns(2)
+                ->collapsible(),
+
+            Section::make(__('app.labels.location_details'))
+                ->schema([
+                    TextInput::make('location')
+                        ->label(__('app.labels.location'))
+                        ->maxLength(255),
+                    TextInput::make('room_booking')
+                        ->label(__('app.labels.room_booking'))
+                        ->maxLength(255)
+                        ->helperText(__('app.helpers.room_booking')),
+                    TextInput::make('meeting_url')
+                        ->label(__('app.labels.meeting_url'))
+                        ->url()
+                        ->maxLength(255)
+                        ->helperText(__('app.helpers.video_conference_link')),
+                ])
+                ->columns(3),
+
+            Section::make(__('app.labels.attendees'))
+                ->schema([
+                    Repeater::make('attendees')
+                        ->schema([
+                            TextInput::make('name')
+                                ->label(__('app.labels.name'))
+                                ->required(),
+                            TextInput::make('email')
+                                ->label(__('app.labels.email'))
+                                ->email(),
+                        ])
+                        ->label(__('app.labels.attendees'))
+                        ->defaultItems(0)
+                        ->columns(2)
+                        ->collapsible()
+                        ->itemLabel(fn (array $state): ?string => $state['name'] ?? null),
+                ])
+                ->collapsible(),
+
+            Section::make(__('app.labels.meeting_details'))
+                ->schema([
+                    RichEditor::make('agenda')
+                        ->label(__('app.labels.agenda'))
+                        ->toolbarButtons([
+                            'bold',
+                            'italic',
+                            'bulletList',
+                            'orderedList',
+                            'link',
+                        ])
+                        ->columnSpanFull(),
+                    RichEditor::make('minutes')
+                        ->label(__('app.labels.minutes'))
+                        ->toolbarButtons([
+                            'bold',
+                            'italic',
+                            'bulletList',
+                            'orderedList',
+                            'link',
+                        ])
+                        ->columnSpanFull(),
+                    Textarea::make('notes')
+                        ->label(__('app.labels.notes'))
+                        ->rows(3)
+                        ->columnSpanFull(),
+                ])
+                ->collapsible()
+                ->visible(fn (Get $get): bool => $get('type') === CalendarEventType::MEETING->value),
         ]);
     }
 
@@ -125,9 +215,37 @@ final class CalendarEventResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('location')
+                    ->label(__('app.labels.location'))
                     ->toggleable(),
+                TextColumn::make('room_booking')
+                    ->label(__('app.labels.room_booking'))
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('recurrence_rule')
+                    ->label(__('app.labels.recurrence'))
+                    ->badge()
+                    ->color('info')
+                    ->formatStateUsing(fn (?string $state): string => $state ? __("app.labels.{$state}") : '—')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('attendees')
+                    ->label(__('app.labels.attendees'))
+                    ->formatStateUsing(function (mixed $state): string {
+                        if (is_string($state)) {
+                            $decoded = json_decode($state, true);
+                            $state = json_last_error() === JSON_ERROR_NONE ? $decoded : [$state];
+                        }
+
+                        if (! is_array($state)) {
+                            return in_array($state, [null, ''], true) ? '—' : (string) $state;
+                        }
+
+                        $names = ArrayHelper::pluck($state, 'name');
+
+                        return ArrayHelper::joinList($names) ?? '—';
+                    })
+                    ->limit(50)
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('sync_status')
-                    ->label('Sync')
+                    ->label(__('app.labels.sync'))
                     ->badge()
                     ->formatStateUsing(fn (CalendarSyncStatus|string|null $state): string => $state instanceof CalendarSyncStatus ? $state->getLabel() : (CalendarSyncStatus::tryFrom((string) $state)?->getLabel() ?? Str::headline((string) $state)))
                     ->color(fn (CalendarSyncStatus|string|null $state): string => $state instanceof CalendarSyncStatus ? $state->getColor() : (CalendarSyncStatus::tryFrom((string) $state)?->getColor() ?? 'gray'))
@@ -135,6 +253,7 @@ final class CalendarEventResource extends Resource
             ])
             ->defaultSort('start_at', 'desc')
             ->filters([
+                DateScopeFilter::make(name: 'start_at_range', column: 'start_at'),
                 SelectFilter::make('status')
                     ->label(__('app.labels.status'))
                     ->options(CalendarEventStatus::class)
@@ -145,7 +264,7 @@ final class CalendarEventResource extends Resource
                     ->multiple(),
                 Filter::make('upcoming')
                     ->label('Upcoming only')
-                    ->query(fn (Builder $query): Builder => $query->where('start_at', '>=', now()->startOfDay())),
+                    ->query(fn (Builder $query): Builder => $query->where('start_at', '>=', today())),
                 Filter::make('synced')
                     ->label('Synced')
                     ->query(fn (Builder $query): Builder => $query->where('sync_status', CalendarSyncStatus::SYNCED)),
@@ -171,6 +290,11 @@ final class CalendarEventResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
+            ->with([
+                'creator:id,name',
+                'team:id,name',
+                'recurrenceParent:id,title,recurrence_rule',
+            ])
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);

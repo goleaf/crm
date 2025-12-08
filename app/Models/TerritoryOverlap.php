@@ -6,7 +6,6 @@ namespace App\Models;
 
 use App\Enums\TerritoryOverlapResolution;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class TerritoryOverlap extends Model
@@ -26,16 +25,25 @@ final class TerritoryOverlap extends Model
         'priority_territory_id' => 'integer',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Territory, $this>
+     */
     public function territoryA(): BelongsTo
     {
         return $this->belongsTo(Territory::class, 'territory_a_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Territory, $this>
+     */
     public function territoryB(): BelongsTo
     {
         return $this->belongsTo(Territory::class, 'territory_b_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Territory, $this>
+     */
     public function priorityTerritory(): BelongsTo
     {
         return $this->belongsTo(Territory::class, 'priority_territory_id');

@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
+beforeEach(function (): void {
     Storage::fake('local');
     Mail::fake();
 });
@@ -28,7 +28,7 @@ beforeEach(function () {
  * Tests the complete workflow of generating a PDF from a template
  * and attaching it to an email.
  */
-test('complete PDF generation and email attachment workflow', function () {
+test('complete PDF generation and email attachment workflow', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $team->users()->attach($user);
@@ -134,7 +134,7 @@ test('complete PDF generation and email attachment workflow', function () {
 /**
  * Integration test: PDF template versioning
  */
-test('PDF template versioning maintains history', function () {
+test('PDF template versioning maintains history', function (): void {
     $team = Team::factory()->create();
     $service = new PdfService;
 
@@ -176,7 +176,7 @@ test('PDF template versioning maintains history', function () {
 /**
  * Integration test: PDF generation with complex multi-page layout
  */
-test('PDF generation handles multi-page documents', function () {
+test('PDF generation handles multi-page documents', function (): void {
     $team = Team::factory()->create();
     $service = new PdfService;
 
@@ -227,7 +227,7 @@ test('PDF generation handles multi-page documents', function () {
 /**
  * Integration test: PDF generation failure handling
  */
-test('PDF generation handles template errors gracefully', function () {
+test('PDF generation handles template errors gracefully', function (): void {
     $team = Team::factory()->create();
     $service = new PdfService;
 
@@ -241,7 +241,7 @@ test('PDF generation handles template errors gracefully', function () {
     try {
         $service->generate($template, $invoice);
         expect(false)->toBeTrue('Should have thrown exception');
-    } catch (\Throwable $e) {
+    } catch (\Throwable) {
         // Verify generation record was created with failure status
         $generation = PdfGeneration::where('pdf_template_id', $template->id)
             ->where('entity_id', $invoice->id)
@@ -256,7 +256,7 @@ test('PDF generation handles template errors gracefully', function () {
 /**
  * Integration test: PDF archiving and retrieval
  */
-test('PDF generations are archived and retrievable', function () {
+test('PDF generations are archived and retrievable', function (): void {
     $team = Team::factory()->create();
     $service = new PdfService;
 

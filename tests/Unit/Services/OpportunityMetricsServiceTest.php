@@ -35,7 +35,7 @@ test('probability prefers explicit field then stage defaults', function (): void
     $negotiationStage = $stageField->options->firstWhere('name', 'Negotiation/Review') ?? $stageField->options->first();
     $opportunity->saveCustomFieldValue($stageField, $negotiationStage->getKey());
 
-    $service = app(OpportunityMetricsService::class);
+    $service = resolve(OpportunityMetricsService::class);
 
     expect($service->probability($opportunity))->toBe(80.0);
 
@@ -93,7 +93,7 @@ test('weighted amount and sales cycle are derived from amount, probability, and 
     $opportunity->saveCustomFieldValue($probabilityField, 50);
     $opportunity->saveCustomFieldValue($closeDateField, now()->addDays(10));
 
-    $service = app(OpportunityMetricsService::class);
+    $service = resolve(OpportunityMetricsService::class);
 
     expect($service->weightedAmount($opportunity))->toBe(10000.0)
         ->and($service->salesCycleDays($opportunity))->toBe(15)

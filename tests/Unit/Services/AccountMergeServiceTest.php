@@ -14,11 +14,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->service = new AccountMergeService;
 });
 
-it('merges accounts with no relationships successfully', function () {
+it('merges accounts with no relationships successfully', function (): void {
     $primary = Company::factory()->create(['name' => 'Primary Corp']);
     $duplicate = Company::factory()->create(['name' => 'Duplicate Corp']);
 
@@ -32,7 +32,7 @@ it('merges accounts with no relationships successfully', function () {
     expect($duplicate->trashed())->toBeTrue();
 });
 
-it('provides complete merge preview with all fields', function () {
+it('provides complete merge preview with all fields', function (): void {
     $primary = Company::factory()->create([
         'name' => 'Primary Corp',
         'website' => 'https://primary.example.com',
@@ -54,7 +54,7 @@ it('provides complete merge preview with all fields', function () {
         ->and($preview['website']['duplicate'])->toBe('https://duplicate.example.com');
 });
 
-it('includes relationship counts in merge preview', function () {
+it('includes relationship counts in merge preview', function (): void {
     $primary = Company::factory()->create();
     $duplicate = Company::factory()->create();
 
@@ -73,7 +73,7 @@ it('includes relationship counts in merge preview', function () {
         ->and($preview['opportunities_count']['duplicate'])->toBe(4);
 });
 
-it('handles merge with empty field values gracefully', function () {
+it('handles merge with empty field values gracefully', function (): void {
     $primary = Company::factory()->create([
         'name' => 'Primary Corp',
         'website' => null,
@@ -100,7 +100,7 @@ it('handles merge with empty field values gracefully', function () {
         ->and($primary->description)->toBe('A great company');
 });
 
-it('prevents merging a company with itself', function () {
+it('prevents merging a company with itself', function (): void {
     $company = Company::factory()->create();
 
     $result = $this->service->merge($company, $company);
@@ -109,7 +109,7 @@ it('prevents merging a company with itself', function () {
         ->and($result['error'])->toContain('Cannot merge a company with itself');
 });
 
-it('prevents merging deleted companies', function () {
+it('prevents merging deleted companies', function (): void {
     $primary = Company::factory()->create();
     $duplicate = Company::factory()->create();
 
@@ -121,7 +121,7 @@ it('prevents merging deleted companies', function () {
         ->and($result['error'])->toContain('Cannot merge deleted companies');
 });
 
-it('handles merge errors gracefully and returns error message', function () {
+it('handles merge errors gracefully and returns error message', function (): void {
     $primary = Company::factory()->create();
     $duplicate = Company::factory()->create();
 
@@ -135,7 +135,7 @@ it('handles merge errors gracefully and returns error message', function () {
         ->and($result['merge_id'])->toBeNull();
 });
 
-it('does not duplicate tasks when merging', function () {
+it('does not duplicate tasks when merging', function (): void {
     $primary = Company::factory()->create();
     $duplicate = Company::factory()->create();
 
@@ -154,7 +154,7 @@ it('does not duplicate tasks when merging', function () {
     expect($primary->tasks()->count())->toBe(1);
 });
 
-it('does not duplicate notes when merging', function () {
+it('does not duplicate notes when merging', function (): void {
     $primary = Company::factory()->create();
     $duplicate = Company::factory()->create();
 
@@ -173,7 +173,7 @@ it('does not duplicate notes when merging', function () {
     expect($primary->notes()->count())->toBe(1);
 });
 
-it('records merge operation with authenticated user', function () {
+it('records merge operation with authenticated user', function (): void {
     $user = User::factory()->create();
     $this->actingAs($user);
 
@@ -188,7 +188,7 @@ it('records merge operation with authenticated user', function () {
     expect($accountMerge->merged_by_user_id)->toBe($user->getKey());
 });
 
-it('records merge operation without authenticated user', function () {
+it('records merge operation without authenticated user', function (): void {
     $primary = Company::factory()->create();
     $duplicate = Company::factory()->create();
 
@@ -200,14 +200,14 @@ it('records merge operation without authenticated user', function () {
     expect($accountMerge->merged_by_user_id)->toBeNull();
 });
 
-it('rollback returns not implemented error', function () {
+it('rollback returns not implemented error', function (): void {
     $result = $this->service->rollback(999);
 
     expect($result['success'])->toBeFalse()
         ->and($result['error'])->toContain('not yet implemented');
 });
 
-it('formats enum values in merge preview', function () {
+it('formats enum values in merge preview', function (): void {
     $primary = Company::factory()->create([
         'industry' => \App\Enums\Industry::TECHNOLOGY,
     ]);
@@ -222,7 +222,7 @@ it('formats enum values in merge preview', function () {
         ->and($preview['industry']['duplicate'])->toBe(\App\Enums\Industry::MANUFACTURING->label());
 });
 
-it('only applies field selections for fillable fields', function () {
+it('only applies field selections for fillable fields', function (): void {
     $primary = Company::factory()->create(['name' => 'Primary']);
     $duplicate = Company::factory()->create(['name' => 'Duplicate']);
 
@@ -243,7 +243,7 @@ it('only applies field selections for fillable fields', function () {
     expect($primary->getKey())->not->toBe($duplicate->getKey());
 });
 
-it('preserves empty string values when not selected', function () {
+it('preserves empty string values when not selected', function (): void {
     $primary = Company::factory()->create([
         'name' => 'Primary',
         'description' => 'Original description',

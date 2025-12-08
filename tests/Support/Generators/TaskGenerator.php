@@ -23,7 +23,7 @@ final class TaskGenerator
      */
     public static function generate(Team $team, ?User $creator = null, array $overrides = []): Task
     {
-        $creator = $creator ?? User::factory()->create();
+        $creator ??= User::factory()->create();
 
         $data = array_merge([
             'team_id' => $team->id,
@@ -118,8 +118,8 @@ final class TaskGenerator
      */
     public static function generateDateRange(): array
     {
-        $start = Carbon::parse(fake()->dateTimeBetween('-1 month', '+1 month'));
-        $end = Carbon::parse(fake()->dateTimeBetween($start, '+3 months'));
+        $start = \Illuminate\Support\Facades\Date::parse(fake()->dateTimeBetween('-1 month', '+1 month'));
+        $end = \Illuminate\Support\Facades\Date::parse(fake()->dateTimeBetween($start, '+3 months'));
 
         return [
             'start_date' => $start,
@@ -134,7 +134,7 @@ final class TaskGenerator
      */
     public static function generateData(Team $team, ?User $creator = null): array
     {
-        $creator = $creator ?? User::factory()->create();
+        $creator ??= User::factory()->create();
 
         return [
             'team_id' => $team->id,

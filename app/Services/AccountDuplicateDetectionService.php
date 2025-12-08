@@ -19,7 +19,7 @@ final class AccountDuplicateDetectionService
     public function find(Account $account, float $threshold = 60.0, int $limit = 5): Collection
     {
         $candidates = Account::query()
-            ->where('team_id', $account->team_id)
+            ->where('team_id')
             ->whereKeyNot($account->getKey())
             ->get();
 

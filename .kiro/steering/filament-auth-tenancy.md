@@ -22,6 +22,8 @@ file_patterns:
 - Use `->tenant()` for team/org models; rely on v4 auto-scoping.
 - Ensure created records inherit tenant ID; avoid manual `where('team_id')` unless overriding default.
 - Prevent cross-tenant leakage in global search/widgets/reports.
+- Shield roles and permissions are automatically scoped to current tenant.
+- Assign roles within team context: `$user->assignRole('admin', $team)`.
 
 ## Impersonation / login-as
 - If supported, track and display impersonation state; restrict to admins; log exit.

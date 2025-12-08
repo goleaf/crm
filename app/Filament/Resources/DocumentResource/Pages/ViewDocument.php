@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\DocumentResource\Pages;
 
 use App\Filament\Resources\DocumentResource;
+use App\Support\Helpers\StringHelper;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -13,6 +14,7 @@ use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
 use Override;
 
 final class ViewDocument extends ViewRecord
@@ -48,6 +50,15 @@ final class ViewDocument extends ViewRecord
                                     ->placeholder('—'),
                                 TextEntry::make('description')
                                     ->columnSpan(3)
+                                    ->formatStateUsing(
+                                        fn (?string $state): HtmlString|string|null => StringHelper::wordWrap(
+                                            value: $state,
+                                            characters: 120,
+                                            break: '<br>',
+                                            cutLongWords: true,
+                                            emptyPlaceholder: null,
+                                        ),
+                                    )
                                     ->placeholder('—'),
                                 TextEntry::make('currentVersion.version')
                                     ->label('Current version'),

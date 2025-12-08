@@ -42,5 +42,9 @@
         @stack('modals')
 
         @livewireScripts
+
+        @if (function_exists('laravelGeoGenius'))
+            {!! laravelGeoGenius()->initIntlPhoneInput() !!}
+        @endif
     </body>
 </html>

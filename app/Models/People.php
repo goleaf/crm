@@ -7,17 +7,19 @@ namespace App\Models;
 use App\Enums\ContactEmailType;
 use App\Enums\CreationSource;
 use App\Models\Concerns\HasCreator;
-use App\Models\Concerns\HasNotes;
+use App\Models\Concerns\HasNotesAndNotables;
 use App\Models\Concerns\HasTags;
+use App\Models\Concerns\HasTaxonomies;
 use App\Models\Concerns\HasTeam;
 use App\Models\Concerns\LogsActivity;
 use App\Observers\PeopleObserver;
 use App\Services\AvatarService;
 use App\Services\Opportunities\OpportunityMetricsService;
+use App\Support\PersonNameFormatter;
 use Database\Factories\PeopleFactory;
+use HosmelQ\NameOfPerson\PersonName;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -41,8 +43,9 @@ final class People extends Model implements HasCustomFields
     /** @use HasFactory<PeopleFactory> */
     use HasFactory;
 
-    use HasNotes;
+    use HasNotesAndNotables;
     use HasTags;
+    use HasTaxonomies;
     use HasTeam;
     use LogsActivity;
     use SoftDeletes;
@@ -117,6 +120,16 @@ final class People extends Model implements HasCustomFields
         ];
     }
 
+    protected function getPersonNameAttribute(): ?PersonName
+    {
+        return PersonNameFormatter::make($this->name);
+    }
+
+    protected function getNameInitialsAttribute(): string
+    {
+        return PersonNameFormatter::initials($this->name, 2, '');
+    }
+
     /**
      * @return HasMany<PeopleEmail, $this>
      */
@@ -125,7 +138,7 @@ final class People extends Model implements HasCustomFields
         return $this->hasMany(PeopleEmail::class, 'people_id');
     }
 
-    public function getPrimaryEmailAttribute(?string $value): ?string
+    protected function getPrimaryEmailAttribute(?string $value): ?string
     {
         if ($this->relationLoaded('emails')) {
             $primary = $this->emails->firstWhere('is_primary', true) ?? $this->emails->first();
@@ -192,9 +205,9 @@ final class People extends Model implements HasCustomFields
         }
     }
 
-    public function getAvatarAttribute(): string
+    protected function getAvatarAttribute(): string
     {
-        return app(AvatarService::class)->generateAuto(name: $this->name, initialCount: 1);
+        return resolve(AvatarService::class)->generateAuto(name: $this->name, initialCount: 1);
     }
 
     /**
@@ -360,7 +373,7 @@ final class People extends Model implements HasCustomFields
                 ])
         );
 
-        $metrics = app(OpportunityMetricsService::class);
+        $metrics = resolve(OpportunityMetricsService::class);
 
         $timeline = $timeline->merge(
             $this->opportunities()
@@ -453,7 +466,7 @@ final class People extends Model implements HasCustomFields
 
     public function grantPortalAccess(): PortalUser
     {
-        return app(\App\Services\Contacts\PortalAccessService::class)->grantAccess($this);
+        return resolve(\App\Services\Contacts\PortalAccessService::class)->grantAccess($this);
     }
 
     public function revokePortalAccess(): void
@@ -463,6 +476,6 @@ final class People extends Model implements HasCustomFields
 
     public function getSimilarityScore(People $other): float
     {
-        return app(\App\Services\Contacts\ContactDuplicateDetectionService::class)->calculateSimilarity($this, $other);
+        return resolve(\App\Services\Contacts\ContactDuplicateDetectionService::class)->calculateSimilarity($this, $other);
     }
 }

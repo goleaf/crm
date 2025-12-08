@@ -30,7 +30,7 @@ use function Pest\Laravel\actingAs;
  * the activity timeline should include all related records and be sorted
  * in descending chronological order (most recent first).
  */
-test('activity timeline includes all related record types', function () {
+test('activity timeline includes all related record types', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $team->users()->attach($user);
@@ -151,7 +151,7 @@ test('activity timeline includes all related record types', function () {
  * For any account with activity items, each item's created_at timestamp
  * should be less than or equal to the previous item's timestamp.
  */
-test('activity timeline returns items in descending chronological order', function () {
+test('activity timeline returns items in descending chronological order', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $team->users()->attach($user);
@@ -261,7 +261,7 @@ test('activity timeline returns items in descending chronological order', functi
  * For any activity item in the timeline, it should have all required fields
  * populated with appropriate values.
  */
-test('activity timeline items contain required metadata fields', function () {
+test('activity timeline items contain required metadata fields', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $team->users()->attach($user);
@@ -349,7 +349,7 @@ test('activity timeline items contain required metadata fields', function () {
  * For any account with more activity items than the specified limit,
  * the timeline should return exactly the limit number of items.
  */
-test('activity timeline respects limit parameter', function () {
+test('activity timeline respects limit parameter', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $team->users()->attach($user);
@@ -401,7 +401,7 @@ test('activity timeline respects limit parameter', function () {
  * For any account with no related records, the timeline should still
  * return the account creation event without errors.
  */
-test('activity timeline handles account with no related records', function () {
+test('activity timeline handles account with no related records', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $team->users()->attach($user);

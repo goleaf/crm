@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Unit\Properties\ProjectsResources;
 
 use App\Models\TaskTimeEntry;
-use Illuminate\Support\Carbon;
 use Tests\Support\Generators\TaskGenerator;
 use Tests\Support\PropertyTestCase;
 
@@ -27,8 +26,8 @@ final class TimeLoggingIntegrityPropertyTest extends PropertyTestCase
             $task = TaskGenerator::generate($this->team, $this->user);
 
             // Create first time entry
-            $start1 = Carbon::now()->subHours(3);
-            $end1 = Carbon::now()->subHours(1);
+            $start1 = \Illuminate\Support\Facades\Date::now()->subHours(3);
+            $end1 = \Illuminate\Support\Facades\Date::now()->subHours(1);
 
             TaskTimeEntry::factory()->create([
                 'task_id' => $task->id,
@@ -39,8 +38,8 @@ final class TimeLoggingIntegrityPropertyTest extends PropertyTestCase
             ]);
 
             // Property: Overlapping time entry should throw exception
-            $start2 = Carbon::now()->subHours(2); // Overlaps with first entry
-            $end2 = Carbon::now()->subMinutes(30);
+            $start2 = \Illuminate\Support\Facades\Date::now()->subHours(2); // Overlaps with first entry
+            $end2 = \Illuminate\Support\Facades\Date::now()->subMinutes(30);
 
             $this->expectException(\DomainException::class);
             $this->expectExceptionMessage('overlaps with an existing entry');
@@ -63,7 +62,7 @@ final class TimeLoggingIntegrityPropertyTest extends PropertyTestCase
         $this->runPropertyTest(function (): void {
             $task = TaskGenerator::generate($this->team, $this->user);
 
-            $startTime = Carbon::now()->subHours(2);
+            $startTime = \Illuminate\Support\Facades\Date::now()->subHours(2);
             $duration = fake()->numberBetween(30, 120);
 
             // Create first time entry
@@ -98,8 +97,8 @@ final class TimeLoggingIntegrityPropertyTest extends PropertyTestCase
             $task = TaskGenerator::generate($this->team, $this->user);
             $otherUser = $this->createTeamUsers(1)[0];
 
-            $startTime = Carbon::now()->subHours(2);
-            $endTime = Carbon::now()->subHours(1);
+            $startTime = \Illuminate\Support\Facades\Date::now()->subHours(2);
+            $endTime = \Illuminate\Support\Facades\Date::now()->subHours(1);
             $duration = $startTime->diffInMinutes($endTime);
 
             // User 1 logs time
@@ -135,7 +134,7 @@ final class TimeLoggingIntegrityPropertyTest extends PropertyTestCase
             $duration = fake()->numberBetween(60, 480); // 1-8 hours
             $rate = fake()->randomFloat(2, 50, 200);
 
-            $startTime = Carbon::now()->subHours(3);
+            $startTime = \Illuminate\Support\Facades\Date::now()->subHours(3);
             $endTime = $startTime->copy()->addMinutes($duration);
 
             $entry = TaskTimeEntry::factory()->create([
@@ -169,7 +168,7 @@ final class TimeLoggingIntegrityPropertyTest extends PropertyTestCase
             $task = TaskGenerator::generate($this->team, $this->user);
 
             $duration = fake()->numberBetween(60, 480);
-            $startTime = Carbon::now()->subHours(3);
+            $startTime = \Illuminate\Support\Facades\Date::now()->subHours(3);
             $endTime = $startTime->copy()->addMinutes($duration);
 
             $entry = TaskTimeEntry::factory()->create([
@@ -211,7 +210,7 @@ final class TimeLoggingIntegrityPropertyTest extends PropertyTestCase
             $otherUser = $this->createTeamUsers(1)[0];
 
             $duration = fake()->numberBetween(60, 240);
-            $startTime = Carbon::now()->subHours(2);
+            $startTime = \Illuminate\Support\Facades\Date::now()->subHours(2);
             $endTime = $startTime->copy()->addMinutes($duration);
 
             $entry = TaskTimeEntry::factory()->create([

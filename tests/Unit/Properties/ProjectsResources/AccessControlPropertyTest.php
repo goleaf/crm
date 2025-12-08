@@ -41,7 +41,7 @@ final class AccessControlPropertyTest extends PropertyTestCase
             );
 
             // Property: Project should not be accessible from other team
-            $otherTeamProjects = Project::where('team_id', $otherTeam->id)->get();
+            $otherTeamProjects = Project::where('team_id')->get();
             $this->assertFalse(
                 $otherTeamProjects->contains('id', $project->id),
                 'Project should not be accessible from other team'

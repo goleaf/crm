@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\Concerns\HasTeam;
+use App\Models\Concerns\HasUniqueSlug;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Str;
 
 #[UsePolicy(\App\Policies\ProductAttributePolicy::class)]
 final class ProductAttribute extends Model
@@ -20,6 +19,7 @@ final class ProductAttribute extends Model
     use HasFactory;
 
     use HasTeam;
+    use HasUniqueSlug;
     use SoftDeletes;
 
     /**
@@ -49,7 +49,7 @@ final class ProductAttribute extends Model
     }
 
     /**
-     * @return HasMany<ProductAttributeValue>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\ProductAttributeValue, $this>
      */
     public function values(): HasMany
     {
@@ -57,7 +57,7 @@ final class ProductAttribute extends Model
     }
 
     /**
-     * @return BelongsToMany<Product>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\Product, $this, \Illuminate\Database\Eloquent\Relations\Pivot>
      */
     public function configurableForProducts(): BelongsToMany
     {
@@ -70,27 +70,6 @@ final class ProductAttribute extends Model
             if ($attribute->team_id === null && auth('web')->check()) {
                 $attribute->team_id = auth('web')->user()?->currentTeam?->getKey();
             }
-
-            $attribute->slug ??= self::generateUniqueSlug($attribute->name ?? '', $attribute->team_id);
         });
-
-        self::saving(function (self $attribute): void {
-            $attribute->slug ??= self::generateUniqueSlug($attribute->name ?? '', $attribute->team_id);
-        });
-    }
-
-    private static function generateUniqueSlug(string $name, ?int $teamId): string
-    {
-        $baseSlug = Str::slug($name) ?: Str::random(6);
-        $slug = $baseSlug;
-        $suffix = 1;
-        $team = $teamId ?? 0;
-
-        while (self::where('team_id', $team)->where('slug', $slug)->exists()) {
-            $slug = $baseSlug.'-'.$suffix;
-            $suffix++;
-        }
-
-        return $slug;
     }
 }

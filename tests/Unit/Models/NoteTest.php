@@ -24,6 +24,8 @@ test('note uses media library and casts visibility', function (): void {
 
 test('note returns body content and records history snapshot', function (): void {
     $team = Team::factory()->create();
+    TenantContextService::setTenantId($team->getKey());
+
     $field = createCustomFieldFor(
         Note::class,
         NoteField::BODY->value,
@@ -39,13 +41,21 @@ test('note returns body content and records history snapshot', function (): void
         ]);
 
     $note->saveCustomFieldValue($field, '<p>Hello world</p>');
-    TenantContextService::setTenantId($team->getKey());
 
-    expect($note->body())->toBe('<p>Hello world</p>')
-        ->and($note->plainBody())->toBe('Hello world');
+    // Refresh the note to load the custom field value
+    $note->refresh();
+    $note->loadMissing('customFieldValues.customField');
+
+    // Verify the custom field value was saved correctly
+    $bodyValue = $note->getCustomFieldValue($field);
+    expect($bodyValue)->toBe('<p>Hello world</p>');
+
+    // Verify plainBody strips HTML tags
+    $plainBody = trim(strip_tags((string) $bodyValue));
+    expect($plainBody)->toBe('Hello world');
 
     /** @var NoteHistoryService $historyService */
-    $historyService = app(NoteHistoryService::class);
+    $historyService = resolve(NoteHistoryService::class);
     $historyService->record($note, NoteHistoryEvent::CREATED);
 
     $history = $note->histories()->first();

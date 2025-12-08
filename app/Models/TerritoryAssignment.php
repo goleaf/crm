@@ -6,7 +6,6 @@ namespace App\Models;
 
 use App\Enums\TerritoryRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class TerritoryAssignment extends Model
@@ -29,11 +28,17 @@ final class TerritoryAssignment extends Model
         'end_date' => 'date',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Territory, $this>
+     */
     public function territory(): BelongsTo
     {
         return $this->belongsTo(Territory::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Support\PersonNameFormatter;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Support\Str;
 
@@ -150,71 +151,18 @@ final readonly class AvatarService
      */
     private function getInitials(string $name, int $initialCount = 2): string
     {
-        // Normalize count to either 1 or 2
-        $count = ($initialCount === 1) ? 1 : 2;
+        $count = $initialCount === 1 ? 1 : 2;
+        $initials = PersonNameFormatter::initials($name, $count);
 
-        // Normalize and trim the name to handle special characters better
-        $name = trim($name);
-        $normalizedName = Str::ascii($name);
-        $splitName = preg_split('/[\s\-_\.]+/', $normalizedName);
-        $nameParts = array_values(array_filter($splitName === false ? [] : $splitName));
-
-        if ($nameParts === []) {
-            return '?';
+        if ($initials !== '?') {
+            return mb_strtoupper($initials);
         }
 
-        // For single initial mode, just return the first letter of the first name part
-        if ($count === 1) {
-            return Str::upper(substr($nameParts[0], 0, 1));
-        }
+        $normalizedName = Str::ascii(trim($name));
 
-        // Single word name handling
-        if (count($nameParts) === 1) {
-            $singleName = $nameParts[0];
-            $nameLength = Str::length($singleName);
-
-            // Handle very short names
-            if ($nameLength <= 1) {
-                return Str::upper($singleName);
-            }
-
-            // Handle common prefixes in surnames (Mc, Mac, O', etc.)
-            if ($nameLength >= 3) {
-                if (Str::startsWith(Str::lower($singleName), ['mc', 'mac'])) {
-                    return Str::upper(substr($singleName, 0, 1).substr($singleName, 2, 1));
-                }
-
-                if (Str::startsWith(Str::lower($singleName), "o'")) {
-                    return Str::upper(substr($singleName, 0, 1).substr($singleName, 2, 1));
-                }
-            }
-
-            // Default: For single names with at least 2 characters, return first two
-            return Str::upper(substr($singleName, 0, 2));
-        }
-
-        // Handle multi-part names
-
-        // Check for compound last names (with hyphens, even if normalized)
-        $lastPart = end($nameParts);
-        if (str_contains($name, '-') && ! in_array('-', $nameParts)) {
-            // Original name had hyphens, try to split the last part
-            $possibleCompound = array_filter(explode('-', $name));
-            if (count($possibleCompound) >= 2) {
-                return Str::upper(substr($nameParts[0], 0, 1).
-                    substr(end($possibleCompound), 0, 1));
-            }
-        }
-
-        // Handle names with particles or prefixes (von, van, de, etc.)
-        $prefixes = ['van', 'von', 'de', 'la', 'den', 'der', 'di', 'le', 'da'];
-        if (count($nameParts) >= 3 && in_array(Str::lower($nameParts[count($nameParts) - 2]), $prefixes)) {
-            // Use first name and the actual surname after the prefix
-            return Str::upper(substr($nameParts[0], 0, 1).substr($lastPart, 0, 1));
-        }
-
-        // Standard case: first and last parts
-        return Str::upper(substr($nameParts[0], 0, 1).substr($lastPart, 0, 1));
+        return $normalizedName === ''
+            ? '?'
+            : mb_strtoupper(mb_substr($normalizedName, 0, $count));
     }
 
     /**

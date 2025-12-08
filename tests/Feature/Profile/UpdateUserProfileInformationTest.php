@@ -5,12 +5,24 @@ declare(strict_types=1);
 use App\Actions\Fortify\UpdateUserProfileInformation;
 use App\Livewire\App\Profile\UpdateProfileInformation as UpdateProfileInformationComponent;
 use App\Models\User;
+use App\Support\Paths\StoragePaths;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
-beforeEach(function () {
+/**
+ * @return string the stored path
+ */
+function storeProfilePhoto(User $user, UploadedFile $photo): string
+{
+    $directory = StoragePaths::profilePhotoDirectory($user->id, $user->currentTeam?->getKey());
+    $fileName = StoragePaths::profilePhotoFileName($photo->getClientOriginalName());
+
+    return $photo->storePubliclyAs($directory, $fileName, ['disk' => 'public']);
+}
+
+beforeEach(function (): void {
     $this->action = new UpdateUserProfileInformation;
     $this->user = User::factory()->create([
         'name' => 'John Doe',
@@ -19,8 +31,8 @@ beforeEach(function () {
     ]);
 });
 
-describe('profile component functionality', function () {
-    test('profile information component renders correctly', function () {
+describe('profile component functionality', function (): void {
+    test('profile information component renders correctly', function (): void {
         $user = User::factory()->withPersonalTeam()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
@@ -36,7 +48,7 @@ describe('profile component functionality', function () {
             ]);
     });
 
-    test('can update profile through livewire component', function () {
+    test('can update profile through livewire component', function (): void {
         $user = User::factory()->withPersonalTeam()->create();
         $this->actingAs($user);
 
@@ -55,14 +67,14 @@ describe('profile component functionality', function () {
     });
 });
 
-describe('photo upload', function () {
+describe('photo upload', function (): void {
     beforeEach(fn () => Storage::fake('public'));
 
-    test('can upload valid photo', function ($format) {
+    test('can upload valid photo', function ($format): void {
         $photo = UploadedFile::fake()->image("avatar.{$format}", 300, 300);
 
         // Store the file first (simulating what Filament does)
-        $photoPath = $photo->storePublicly('profile-photos', ['disk' => 'public']);
+        $photoPath = storeProfilePhoto($this->user, $photo);
 
         $this->action->update($this->user, [
             'name' => $this->user->name,
@@ -75,12 +87,12 @@ describe('photo upload', function () {
             ->and(Storage::disk('public')->exists($user->profile_photo_path))->toBeTrue();
     })->with(['jpg', 'jpeg', 'png']);
 
-    test('handles photo with email change', function () {
+    test('handles photo with email change', function (): void {
         Notification::fake();
         $photo = UploadedFile::fake()->image('avatar.png', 400, 400);
 
         // Store the file first (simulating what Filament does)
-        $photoPath = $photo->storePublicly('profile-photos', ['disk' => 'public']);
+        $photoPath = storeProfilePhoto($this->user, $photo);
 
         $this->action->update($this->user, [
             'name' => 'Photo User',
@@ -97,12 +109,12 @@ describe('photo upload', function () {
         Notification::assertSentTo($this->user, \Illuminate\Auth\Notifications\VerifyEmail::class);
     });
 
-    test('can delete profile photo', function () {
+    test('can delete profile photo', function (): void {
         Storage::fake('public');
 
         // First set a photo
         $photo = UploadedFile::fake()->image('avatar.png', 300, 300);
-        $photoPath = $photo->storePublicly('profile-photos', ['disk' => 'public']);
+        $photoPath = storeProfilePhoto($this->user, $photo);
 
         $this->action->update($this->user, [
             'name' => $this->user->name,
@@ -122,7 +134,7 @@ describe('photo upload', function () {
         expect($this->user->fresh()->profile_photo_path)->toBeNull();
     });
 
-    test('can update profile through livewire component with photo', function () {
+    test('can update profile through livewire component with photo', function (): void {
         Storage::fake('public');
         $user = User::factory()->withPersonalTeam()->create();
         $this->actingAs($user);
@@ -146,8 +158,8 @@ describe('photo upload', function () {
     });
 });
 
-describe('validation', function () {
-    test('validates required fields through livewire component', function () {
+describe('validation', function (): void {
+    test('validates required fields through livewire component', function (): void {
         $user = User::factory()->withPersonalTeam()->create();
         $this->actingAs($user);
 
@@ -160,7 +172,7 @@ describe('validation', function () {
             ->assertHasFormErrors(['name', 'email']);
     });
 
-    test('rejects duplicate email through livewire component', function () {
+    test('rejects duplicate email through livewire component', function (): void {
         User::factory()->create(['email' => 'existing@example.com']);
         $user = User::factory()->withPersonalTeam()->create();
         $this->actingAs($user);

@@ -3,6 +3,8 @@
 **Version:** Laravel 12.0 | PHP 8.4  
 **Last Updated:** December 7, 2025
 
+> Filament UI for generating new seeders from live data: see [`docs/seeders/seeder-generator.md`](../seeders/seeder-generator.md).
+
 ---
 
 ## LeadSeeder

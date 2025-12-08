@@ -14,9 +14,6 @@ final class OnboardSeeder extends Seeder
      */
     public function __construct(private readonly OnboardSeedManager $manager) {}
 
-    /**
-     * Run the database seeds.
-     */
     public function run(Authenticatable $user): void
     {
         $this->manager->generateFor($user);

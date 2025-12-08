@@ -4,24 +4,33 @@ declare(strict_types=1);
 
 namespace App\Support\Helpers;
 
+use App\Support\PersonNameFormatter;
+use HosmelQ\NameOfPerson\PersonName as NameOfPerson;
+
 final class PersonName
 {
     public static function format(?string $first, ?string $last = null, ?string $prefix = null, ?string $suffix = null, string $fallback = 'Unknown'): string
     {
-        $parts = collect([
-            trim((string) $prefix),
-            trim((string) $first),
-            trim((string) $last),
-        ])->filter();
+        $personName = PersonNameFormatter::make(
+            collect([$prefix, $first, $last])
+                ->map(fn (?string $value): string => trim((string) $value))
+                ->filter()
+                ->implode(' ')
+        );
 
-        $name = $parts->implode(' ');
         $suffix = trim((string) $suffix);
 
-        if ($suffix !== '' && $suffix !== '0') {
-            $name = $name === '' ? $suffix : "{$name}, {$suffix}";
+        if (! $personName instanceof NameOfPerson) {
+            return $suffix !== '' && $suffix !== '0'
+                ? "{$fallback}, {$suffix}"
+                : $fallback;
         }
 
-        return $name === '' ? $fallback : $name;
+        $fullName = $personName->full();
+
+        return $suffix !== '' && $suffix !== '0'
+            ? "{$fullName}, {$suffix}"
+            : $fullName;
     }
 
     /**
@@ -29,11 +38,10 @@ final class PersonName
      */
     public static function initials(?string $first, ?string $last = null): string
     {
-        $letters = collect([$first, $last])
-            ->filter(fn (?string $part): bool => filled($part))
-            ->map(fn (?string $part): string => mb_substr(trim((string) $part), 0, 1))
-            ->implode('');
-
-        return mb_strtoupper($letters);
+        return PersonNameFormatter::initials(
+            collect([$first, $last])->filter()->implode(' '),
+            2,
+            ''
+        );
     }
 }

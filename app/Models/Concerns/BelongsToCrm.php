@@ -21,7 +21,7 @@ trait BelongsToCrm
     /**
      * Scope records for a specific tenant/team.
      */
-    public function scopeForCrmTenant(Builder $query, Team $team): Builder
+    protected function scopeForCrmTenant(Builder $query, Team $team): Builder
     {
         return $query->where('team_id', $team->getKey());
     }

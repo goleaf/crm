@@ -12,13 +12,23 @@ if (! function_exists('setting')) {
      */
     function setting(?string $key = null, mixed $default = null): mixed
     {
-        $service = app(SettingsService::class);
+        $service = resolve(SettingsService::class);
 
         if ($key === null) {
             return $service;
         }
 
         return $service->get($key, $default);
+    }
+}
+
+if (! function_exists('brand_name')) {
+    /**
+     * Get the current brand name, preferring CRM config over app name.
+     */
+    function brand_name(): string
+    {
+        return (string) config('laravel-crm.ui.brand_name', config('app.name', 'CRM'));
     }
 }
 
@@ -30,6 +40,13 @@ if (! function_exists('team_setting')) {
     {
         $teamId ??= auth()->user()?->currentTeam?->id;
 
-        return app(SettingsService::class)->get($key, $default, $teamId);
+        return resolve(SettingsService::class)->get($key, $default, $teamId);
+    }
+}
+
+if (! function_exists('brand_social_url')) {
+    function brand_social_url(string $key, ?string $default = null): ?string
+    {
+        return config("laravel-crm.ui.social.{$key}", $default);
     }
 }

@@ -1,0 +1,88 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'navigation' => [
+        'group' => 'OCR Management',
+        'templates' => 'OCR Templates',
+        'documents' => 'OCR Documents',
+    ],
+
+    'labels' => [
+        'template' => 'Template',
+        'document_type' => 'Document Type',
+        'field_definitions' => 'Field Definitions',
+        'is_active' => 'Active',
+        'usage_count' => 'Usage Count',
+        'file' => 'File',
+        'original_filename' => 'Original Filename',
+        'status' => 'Status',
+        'confidence_score' => 'Confidence Score',
+        'processing_time' => 'Processing Time',
+        'extracted_data' => 'Extracted Data',
+        'raw_text' => 'Raw Text',
+        'validation_errors' => 'Validation Errors',
+        'error_message' => 'Error Message',
+        'processed_at' => 'Processed At',
+        'field_name' => 'Field Name',
+        'field_type' => 'Field Type',
+        'extraction_pattern' => 'Extraction Pattern',
+        'required' => 'Required',
+        'validation_rules' => 'Validation Rules',
+        'sort_order' => 'Sort Order',
+    ],
+
+    'actions' => [
+        'process' => 'Process Document',
+        'reprocess' => 'Reprocess',
+        'view_raw_text' => 'View Raw Text',
+        'view_extracted_data' => 'View Extracted Data',
+        'add_field' => 'Add Field',
+        'test_template' => 'Test Template',
+    ],
+
+    'headings' => [
+        'template_details' => 'Template Details',
+        'field_definitions' => 'Field Definitions',
+        'document_information' => 'Document Information',
+        'processing_results' => 'Processing Results',
+        'extracted_data' => 'Extracted Data',
+    ],
+
+    'descriptions' => [
+        'template' => 'Define document templates for structured data extraction',
+        'field_definitions' => 'Configure fields to extract from documents',
+        'upload_document' => 'Upload a document to process with OCR',
+    ],
+
+    'notifications' => [
+        'processing_started' => 'Document processing started',
+        'processing_completed' => 'Document processed successfully',
+        'processing_failed' => 'Document processing failed',
+        'template_created' => 'Template created successfully',
+        'template_updated' => 'Template updated successfully',
+        'template_deleted' => 'Template deleted successfully',
+        'field_added' => 'Field added successfully',
+        'field_updated' => 'Field updated successfully',
+        'field_deleted' => 'Field deleted successfully',
+    ],
+
+    'empty_states' => [
+        'no_templates' => 'No templates yet',
+        'no_documents' => 'No documents yet',
+        'create_first_template' => 'Create your first OCR template to get started',
+        'upload_first_document' => 'Upload your first document to process',
+    ],
+
+    'helpers' => [
+        'extraction_pattern' => 'Regular expression pattern to extract this field from text',
+        'validation_rules' => 'Laravel validation rules for this field (e.g., required, email, numeric)',
+        'confidence_threshold' => 'Minimum confidence score required (0.0 to 1.0)',
+    ],
+
+    'modals' => [
+        'confirm_reprocess' => 'Are you sure you want to reprocess this document?',
+        'confirm_delete_template' => 'Are you sure you want to delete this template?',
+    ],
+];

@@ -7,7 +7,6 @@ namespace App\Models;
 use App\Enums\ContactEmailType;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class PeopleEmail extends Model
@@ -73,7 +72,7 @@ final class PeopleEmail extends Model
         return $this->belongsTo(People::class, 'people_id');
     }
 
-    public function typeLabel(): Attribute
+    protected function typeLabel(): Attribute
     {
         return Attribute::get(fn (): string => $this->type instanceof ContactEmailType ? $this->type->label() : (string) $this->type);
     }

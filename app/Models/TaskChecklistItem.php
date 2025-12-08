@@ -6,7 +6,6 @@ namespace App\Models;
 
 use Database\Factories\TaskChecklistItemFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**

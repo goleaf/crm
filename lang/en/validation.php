@@ -15,4 +15,5 @@ return [
     */
 
     'enum' => 'The :attribute must be a valid :enum value.',
+    'no_profanity' => 'The :attribute contains inappropriate language.',
 ];

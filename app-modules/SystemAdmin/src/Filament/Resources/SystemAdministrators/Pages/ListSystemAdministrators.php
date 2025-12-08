@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Relaticle\SystemAdmin\Filament\Resources\SystemAdministrators\Pages;
 
+use App\Filament\Resources\Pages\BaseListRecords;
 use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
 use Relaticle\SystemAdmin\Filament\Resources\SystemAdministrators\SystemAdministratorResource;
 
-final class ListSystemAdministrators extends ListRecords
+final class ListSystemAdministrators extends BaseListRecords
 {
     protected static string $resource = SystemAdministratorResource::class;
 

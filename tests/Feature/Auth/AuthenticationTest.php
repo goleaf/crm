@@ -7,13 +7,13 @@ use App\Models\User;
 
 use function Pest\Livewire\livewire;
 
-test('login screen can be rendered', function () {
+test('login screen can be rendered', function (): void {
     $response = $this->get(url()->getAppUrl('login'));
 
     $response->assertStatus(200);
 });
 
-test('users can authenticate using the login screen', function () {
+test('users can authenticate using the login screen', function (): void {
     $user = User::factory()->withPersonalTeam()->create();
 
     livewire(Login::class)
@@ -27,7 +27,7 @@ test('users can authenticate using the login screen', function () {
     $this->assertAuthenticated();
 });
 
-test('users cannot authenticate with invalid password', function () {
+test('users cannot authenticate with invalid password', function (): void {
     $user = User::factory()->create();
 
     livewire(Login::class)

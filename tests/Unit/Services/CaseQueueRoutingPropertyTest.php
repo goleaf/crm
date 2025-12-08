@@ -23,7 +23,7 @@ uses(RefreshDatabase::class);
  */
 
 // Property: Critical priority cases are routed to critical queue
-test('property: critical priority cases are routed to critical queue', function () {
+test('property: critical priority cases are routed to critical queue', function (): void {
     $team = Team::factory()->create();
 
     $case = SupportCase::factory()->create([
@@ -41,7 +41,7 @@ test('property: critical priority cases are routed to critical queue', function 
 })->repeat(100);
 
 // Property: Technical issue types are routed to technical queue
-test('property: technical issue types are routed to technical queue', function () {
+test('property: technical issue types are routed to technical queue', function (): void {
     $team = Team::factory()->create();
     $technicalType = fake()->randomElement([CaseType::INCIDENT, CaseType::PROBLEM]);
 
@@ -60,7 +60,7 @@ test('property: technical issue types are routed to technical queue', function (
 })->repeat(100);
 
 // Property: Service requests are routed to service queue
-test('property: service requests are routed to service queue', function () {
+test('property: service requests are routed to service queue', function (): void {
     $team = Team::factory()->create();
 
     $case = SupportCase::factory()->create([
@@ -78,7 +78,7 @@ test('property: service requests are routed to service queue', function () {
 })->repeat(100);
 
 // Property: Questions are routed to general queue
-test('property: questions are routed to general queue', function () {
+test('property: questions are routed to general queue', function (): void {
     $team = Team::factory()->create();
 
     $case = SupportCase::factory()->create([
@@ -96,7 +96,7 @@ test('property: questions are routed to general queue', function () {
 })->repeat(100);
 
 // Property: Priority takes precedence over type in routing
-test('property: critical priority overrides type-based routing', function () {
+test('property: critical priority overrides type-based routing', function (): void {
     $team = Team::factory()->create();
 
     // Even if it's a question, P1 priority should route to critical
@@ -116,7 +116,7 @@ test('property: critical priority overrides type-based routing', function () {
 })->repeat(100);
 
 // Property: Queue assignment updates case queue field
-test('property: queue assignment updates case queue field', function () {
+test('property: queue assignment updates case queue field', function (): void {
     $team = Team::factory()->create();
 
     $case = SupportCase::factory()->create([
@@ -136,7 +136,7 @@ test('property: queue assignment updates case queue field', function () {
 })->repeat(100);
 
 // Property: All cases get assigned to a queue
-test('property: all cases get assigned to a queue even without matching rules', function () {
+test('property: all cases get assigned to a queue even without matching rules', function (): void {
     $team = Team::factory()->create();
 
     // Create a case that might not match specific rules
@@ -158,7 +158,7 @@ test('property: all cases get assigned to a queue even without matching rules', 
 })->repeat(100);
 
 // Property: Queue routing is deterministic for same attributes
-test('property: queue routing is deterministic for same case attributes', function () {
+test('property: queue routing is deterministic for same case attributes', function (): void {
     $team = Team::factory()->create();
     $priority = fake()->randomElement(CasePriority::cases());
     $type = fake()->randomElement(CaseType::cases());
@@ -188,7 +188,7 @@ test('property: queue routing is deterministic for same case attributes', functi
 })->repeat(100);
 
 // Property: Available queues list includes all configured queues
-test('property: available queues includes all configured queues', function () {
+test('property: available queues includes all configured queues', function (): void {
     $service = new CaseQueueRoutingService;
     $queues = $service->getAvailableQueues();
 
@@ -201,7 +201,7 @@ test('property: available queues includes all configured queues', function () {
 })->repeat(10);
 
 // Property: Email channel cases are routed correctly
-test('property: email channel cases are routed based on priority and type', function () {
+test('property: email channel cases are routed based on priority and type', function (): void {
     $team = Team::factory()->create();
     $priority = fake()->randomElement(CasePriority::cases());
     $type = fake()->randomElement(CaseType::cases());
@@ -233,7 +233,7 @@ test('property: email channel cases are routed based on priority and type', func
 })->repeat(100);
 
 // Property: Portal channel cases are routed correctly
-test('property: portal channel cases are routed based on priority and type', function () {
+test('property: portal channel cases are routed based on priority and type', function (): void {
     $team = Team::factory()->create();
     $priority = fake()->randomElement(CasePriority::cases());
     $type = fake()->randomElement(CaseType::cases());
@@ -265,7 +265,7 @@ test('property: portal channel cases are routed based on priority and type', fun
 })->repeat(100);
 
 // Property: Queue assignment is idempotent
-test('property: assigning queue multiple times results in same queue', function () {
+test('property: assigning queue multiple times results in same queue', function (): void {
     $team = Team::factory()->create();
 
     $case = SupportCase::factory()->create([
@@ -292,7 +292,7 @@ test('property: assigning queue multiple times results in same queue', function 
 })->repeat(50);
 
 // Property: Changing priority updates queue assignment
-test('property: changing priority can change queue assignment', function () {
+test('property: changing priority can change queue assignment', function (): void {
     $team = Team::factory()->create();
 
     $case = SupportCase::factory()->create([
@@ -322,7 +322,7 @@ test('property: changing priority can change queue assignment', function () {
 })->repeat(50);
 
 // Property: Changing type updates queue assignment
-test('property: changing type can change queue assignment', function () {
+test('property: changing type can change queue assignment', function (): void {
     $team = Team::factory()->create();
 
     $case = SupportCase::factory()->create([
@@ -353,7 +353,7 @@ test('property: changing type can change queue assignment', function () {
 })->repeat(50);
 
 // Property: Bulk routing maintains consistency
-test('property: bulk routing assigns queues consistently', function () {
+test('property: bulk routing assigns queues consistently', function (): void {
     $team = Team::factory()->create();
 
     // Create multiple cases with same attributes

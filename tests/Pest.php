@@ -18,11 +18,14 @@ use Illuminate\Support\Facades\Event;
 
 pest()->extend(Tests\TestCase::class)
     ->use(RefreshDatabase::class)
-    ->beforeEach(function () {
+    ->beforeEach(function (): void {
         // Globally disable events to prevent demo record creation during tests
         Event::fake();
     })
     ->in('Feature', 'Unit');
+
+pest()->extend(Tests\TestCase::class)
+    ->in('Stressless');
 
 /*
 |--------------------------------------------------------------------------
@@ -35,9 +38,7 @@ pest()->extend(Tests\TestCase::class)
 |
 */
 
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
-});
+expect()->extend('toBeOne', fn () => $this->toBe(1));
 
 /*
 |--------------------------------------------------------------------------
@@ -50,7 +51,7 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function something(): void
 {
     // ..
 }

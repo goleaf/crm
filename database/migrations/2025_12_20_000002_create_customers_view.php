@@ -9,6 +9,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (DB::getDriverName() === 'sqlite') {
+            // SQLite struggles with views during table alters; skip creating the view in tests.
+            return;
+        }
+
         DB::statement('DROP VIEW IF EXISTS customers_view');
 
         DB::statement(<<<'SQL'
@@ -39,6 +44,10 @@ SQL);
 
     public function down(): void
     {
+        if (DB::getDriverName() === 'sqlite') {
+            return;
+        }
+
         DB::statement('DROP VIEW IF EXISTS customers_view');
     }
 };

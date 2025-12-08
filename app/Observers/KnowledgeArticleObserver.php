@@ -6,8 +6,6 @@ namespace App\Observers;
 
 use App\Enums\Knowledge\ArticleStatus;
 use App\Models\KnowledgeArticle;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Str;
 
 final readonly class KnowledgeArticleObserver
 {
@@ -18,16 +16,10 @@ final readonly class KnowledgeArticleObserver
             $article->author_id ??= auth('web')->id();
             $article->team_id ??= auth('web')->user()->currentTeam?->getKey();
         }
-
-        $article->slug = $this->uniqueSlug($article);
     }
 
     public function updating(KnowledgeArticle $article): void
     {
-        if ($article->isDirty('title') || $article->isDirty('slug')) {
-            $article->slug = $this->uniqueSlug($article);
-        }
-
         if ($article->isDirty('status') && $article->status === ArticleStatus::ARCHIVED && $article->archived_at === null) {
             $article->archived_at = now();
         }
@@ -89,25 +81,5 @@ final readonly class KnowledgeArticleObserver
         $article->published_at = $publishedAt;
         $article->current_version_id = $version->getKey();
         $article->saveQuietly();
-    }
-
-    private function uniqueSlug(KnowledgeArticle $article): string
-    {
-        $base = Str::slug($article->slug ?: $article->title) ?: Str::random(8);
-        $slug = $base;
-        $counter = 1;
-
-        while (
-            KnowledgeArticle::query()
-                ->where('team_id', $article->team_id)
-                ->when($article->exists, fn (Builder $query) => $query->whereKeyNot($article->getKey()))
-                ->where('slug', $slug)
-                ->exists()
-        ) {
-            $slug = "{$base}-{$counter}";
-            $counter++;
-        }
-
-        return $slug;
     }
 }

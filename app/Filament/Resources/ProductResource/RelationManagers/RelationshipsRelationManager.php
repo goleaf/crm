@@ -29,7 +29,7 @@ final class RelationshipsRelationManager extends RelationManager
                 ->label('Related Product')
                 ->required()
                 ->options(fn (): array => Product::query()
-                    ->where('team_id', $this->ownerRecord->team_id)
+                    ->where('team_id')
                     ->whereKeyNot($this->ownerRecord->getKey())
                     ->orderBy('name')
                     ->pluck('name', 'id')

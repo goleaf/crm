@@ -10,7 +10,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-test('user has many social accounts', function () {
+test('user has many social accounts', function (): void {
     $user = User::factory()->create();
     $socialAccount = UserSocialAccount::factory()->create([
         'user_id' => $user->id,
@@ -20,7 +20,7 @@ test('user has many social accounts', function () {
         ->and($user->socialAccounts->first()->id)->toBe($socialAccount->id);
 });
 
-test('user belongs to many tasks', function () {
+test('user belongs to many tasks', function (): void {
     $user = User::factory()->create();
     $task = Task::factory()->create();
 
@@ -30,18 +30,18 @@ test('user belongs to many tasks', function () {
         ->and($user->tasks->first()->id)->toBe($task->id);
 });
 
-test('user can access tenants', function () {
+test('user can access tenants', function (): void {
     $user = User::factory()->create();
     $team = Team::factory()->create(['user_id' => $user->id]);
     $user->ownedTeams()->save($team);
 
-    $tenants = $user->getTenants(app(\Filament\Panel::class)->id('app'));
+    $tenants = $user->getTenants(resolve(\Filament\Panel::class)->id('app'));
 
     expect($tenants->count())->toBe(1)
         ->and($tenants->first()->id)->toBe($team->id);
 });
 
-test('user can access tenant', function () {
+test('user can access tenant', function (): void {
     $user = User::factory()->create();
     $team = Team::factory()->create(['user_id' => $user->id]);
     $user->ownedTeams()->save($team);
@@ -51,7 +51,7 @@ test('user can access tenant', function () {
     expect($user->canAccessTenant($team))->toBeTrue();
 });
 
-test('user has avatar', function () {
+test('user has avatar', function (): void {
     $user = User::factory()->create([
         'name' => 'John Doe',
     ]);

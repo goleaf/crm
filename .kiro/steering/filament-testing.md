@@ -7,6 +7,8 @@ file_patterns:
 
 # Filament Testing (Pest/Livewire)
 
+- Use `defstudio/pest-plugin-laravel-expectations` for HTTP entry assertions around Filament routes (e.g., login redirects, downloads) to keep tests concise: `expect($response)->toBeRedirect()`, `->toBeOk()`, `->toHaveJson()`.
+
 ## Resource pages
 - Use `livewire(ListX::class)->assertCanSeeTableRecords(...)` for list coverage.
 - `fillForm()->call('create'|'save')->assertHasNoFormErrors()` for create/edit.
@@ -20,6 +22,9 @@ file_patterns:
 ## Authorization
 - Test can/cannot for view/create/edit/delete and navigation visibility.
 - Ensure unauthorized users get 403 and do not see actions.
+
+## Performance / stress
+- Use Pest Stressless for ad-hoc latency/regression checks on Filament entrypoints (dashboard, calendar, heavy tables); gate runs with `RUN_STRESS_TESTS=1` + `STRESSLESS_TARGET` and keep concurrency/duration modest.
 
 ## Widgets
 - Assert counts/labels and tenant scoping; avoid hardcoding IDs.

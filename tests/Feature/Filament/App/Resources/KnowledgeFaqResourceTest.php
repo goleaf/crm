@@ -7,7 +7,7 @@ use Filament\Facades\Filament;
 
 use function Pest\Livewire\livewire;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->withPersonalTeam()->create();
     $this->actingAs($this->user);
     Filament::setTenant($this->user->personalTeam());
@@ -62,8 +62,8 @@ it('can search `:dataset` column', function (string $column): void {
 
     livewire(App\Filament\Resources\KnowledgeFaqResource\Pages\ListKnowledgeFaqs::class)
         ->searchTable($search instanceof BackedEnum ? $search->value : $search)
-        ->assertCanSeeTableRecords($records->filter(fn (Illuminate\Database\Eloquent\Model $record) => data_get($record, $column) === $search))
-        ->assertCanNotSeeTableRecords($records->filter(fn (Illuminate\Database\Eloquent\Model $record) => data_get($record, $column) !== $search));
+        ->assertCanSeeTableRecords($records->filter(fn (Illuminate\Database\Eloquent\Model $record): bool => data_get($record, $column) === $search))
+        ->assertCanNotSeeTableRecords($records->filter(fn (Illuminate\Database\Eloquent\Model $record): bool => data_get($record, $column) !== $search));
 })->with(['question']);
 
 it('cannot display trashed records by default', function (): void {

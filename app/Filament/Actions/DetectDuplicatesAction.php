@@ -8,6 +8,7 @@ use App\Models\Account;
 use App\Models\Lead;
 use App\Services\AccountDuplicateDetectionService;
 use App\Services\LeadDuplicateDetectionService;
+use App\Support\Helpers\ArrayHelper;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
@@ -50,12 +51,12 @@ final class DetectDuplicatesAction
     private static function findDuplicates(Lead|Account $record): Collection
     {
         if ($record instanceof Lead) {
-            $service = app(LeadDuplicateDetectionService::class);
+            $service = resolve(LeadDuplicateDetectionService::class);
 
             return $service->find($record, threshold: 60.0, limit: 5);
         }
 
-        $service = app(AccountDuplicateDetectionService::class);
+        $service = resolve(AccountDuplicateDetectionService::class);
 
         return $service->find($record, threshold: 60.0, limit: 5);
     }
@@ -88,6 +89,6 @@ final class DetectDuplicatesAction
             }
         }
 
-        return implode("\n", $lines);
+        return ArrayHelper::joinList($lines, PHP_EOL, emptyPlaceholder: '');
     }
 }

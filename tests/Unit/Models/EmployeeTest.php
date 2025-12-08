@@ -20,6 +20,7 @@ test('employee can be created with basic information', function (): void {
         ]);
 
     expect($employee->full_name)->toBe('John Doe')
+        ->and($employee->name?->full())->toBe('John Doe')
         ->and($employee->email)->toBe('john.doe@example.com')
         ->and($employee->status)->toBe(EmployeeStatus::ACTIVE)
         ->and($employee->isActive())->toBeTrue();

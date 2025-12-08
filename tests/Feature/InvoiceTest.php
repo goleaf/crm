@@ -7,13 +7,12 @@ use App\Models\Invoice;
 use App\Models\InvoiceLineItem;
 use App\Models\InvoicePayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Carbon;
 
 uses(RefreshDatabase::class);
 
 it('calculates totals, balance, and status from line items and payments', function (): void {
     $invoice = Invoice::factory()->create([
-        'due_date' => Carbon::now()->addDays(10),
+        'due_date' => \Illuminate\Support\Facades\Date::now()->addDays(10),
     ]);
 
     InvoiceLineItem::factory()->create([

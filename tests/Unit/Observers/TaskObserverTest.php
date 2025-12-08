@@ -6,12 +6,12 @@ use App\Models\Lead;
 use App\Models\Task;
 use App\Models\User;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->withPersonalTeam()->create();
     $this->team = $this->user->currentTeam;
 });
 
-test('sets creator and team on creating', function () {
+test('sets creator and team on creating', function (): void {
     $this->actingAs($this->user);
 
     $lead = Lead::factory()->create(['team_id' => $this->team->id]);
@@ -28,7 +28,7 @@ test('sets creator and team on creating', function () {
         ->and($task->team_id)->toBe($this->team->id);
 });
 
-test('does not set creator when not authenticated', function () {
+test('does not set creator when not authenticated', function (): void {
     $lead = Lead::factory()->create();
 
     $task = Task::factory()->make([
@@ -43,7 +43,7 @@ test('does not set creator when not authenticated', function () {
         ->and($task->team_id)->toBeNull();
 });
 
-test('invalidates related summaries on save', function () {
+test('invalidates related summaries on save', function (): void {
     $this->actingAs($this->user);
 
     $lead = Lead::factory()->create(['team_id' => $this->team->id]);
@@ -63,7 +63,7 @@ test('invalidates related summaries on save', function () {
     expect($lead->fresh()->aiSummaries()->count())->toBe(0);
 });
 
-test('invalidates related summaries on delete', function () {
+test('invalidates related summaries on delete', function (): void {
     $this->actingAs($this->user);
 
     $lead = Lead::factory()->create(['team_id' => $this->team->id]);

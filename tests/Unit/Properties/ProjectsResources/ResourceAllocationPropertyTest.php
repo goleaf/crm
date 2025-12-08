@@ -6,7 +6,6 @@ namespace Tests\Unit\Properties\ProjectsResources;
 
 use App\Models\Employee;
 use App\Models\Project;
-use Illuminate\Support\Carbon;
 use Tests\Support\Generators\EmployeeGenerator;
 use Tests\Support\Generators\ProjectGenerator;
 use Tests\Support\PropertyTestCase;
@@ -149,8 +148,8 @@ final class ResourceAllocationPropertyTest extends PropertyTestCase
             $project = ProjectGenerator::generate($this->team, $this->user);
 
             // Create allocation for specific date range
-            $startDate = Carbon::today()->addDays(10);
-            $endDate = Carbon::today()->addDays(30);
+            $startDate = \Illuminate\Support\Facades\Date::today()->addDays(10);
+            $endDate = \Illuminate\Support\Facades\Date::today()->addDays(30);
 
             $employee->allocateTo($project, 50, $startDate, $endDate);
 
@@ -159,14 +158,14 @@ final class ResourceAllocationPropertyTest extends PropertyTestCase
             $this->assertEquals(50, $allocationInRange);
 
             // Property: Allocation outside date range should not be counted
-            $beforeStart = Carbon::today();
-            $beforeEnd = Carbon::today()->addDays(5);
+            $beforeStart = \Illuminate\Support\Facades\Date::today();
+            $beforeEnd = \Illuminate\Support\Facades\Date::today()->addDays(5);
             $allocationBefore = $employee->getTotalAllocation($beforeStart, $beforeEnd);
             $this->assertEquals(0, $allocationBefore);
 
             // Property: Allocation after date range should not be counted
-            $afterStart = Carbon::today()->addDays(40);
-            $afterEnd = Carbon::today()->addDays(50);
+            $afterStart = \Illuminate\Support\Facades\Date::today()->addDays(40);
+            $afterEnd = \Illuminate\Support\Facades\Date::today()->addDays(50);
             $allocationAfter = $employee->getTotalAllocation($afterStart, $afterEnd);
             $this->assertEquals(0, $allocationAfter);
         }, 100);

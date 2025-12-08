@@ -7,7 +7,6 @@ namespace App\Models;
 use App\Enums\EmailProgramStatus;
 use App\Enums\EmailProgramType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -69,31 +68,49 @@ final class EmailProgram extends Model
         'respect_quiet_hours' => 'boolean',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Team, $this>
+     */
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\EmailProgramStep, $this>
+     */
     public function steps(): HasMany
     {
         return $this->hasMany(EmailProgramStep::class)->orderBy('step_order');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\EmailProgramRecipient, $this>
+     */
     public function recipients(): HasMany
     {
         return $this->hasMany(EmailProgramRecipient::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\EmailProgramUnsubscribe, $this>
+     */
     public function unsubscribes(): HasMany
     {
         return $this->hasMany(EmailProgramUnsubscribe::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\EmailProgramBounce, $this>
+     */
     public function bounces(): HasMany
     {
         return $this->hasMany(EmailProgramBounce::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\EmailProgramAnalytic, $this>
+     */
     public function analytics(): HasMany
     {
         return $this->hasMany(EmailProgramAnalytic::class);

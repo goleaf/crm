@@ -1,7 +1,7 @@
 # ViewCompany Badge Color Implementation
 
 ## Overview
-This document explains the correct implementation of badge colors in the ViewCompany page's account team members section, addressing a common confusion about Filament v4's RepeatableEntry component behavior.
+This document explains the correct implementation of badge colors in the ViewCompany page's account team members section, addressing a common confusion about Filament v4.3+'s RepeatableEntry component behavior.
 
 ## The Correct Pattern
 
@@ -150,7 +150,7 @@ test('displays correct badge colors for account team member roles', function () 
 ## Related Documentation
 
 - [Enum Conventions](.kiro/steering/enum-conventions.md) - Enum label/color wrapper methods
-- [Filament v4 Conventions](.kiro/steering/filament-conventions.md) - Schema patterns
+- [Filament v4.3+ Conventions](.kiro/steering/filament-conventions.md) - Schema patterns
 - [Translation Guide](.kiro/steering/TRANSLATION_GUIDE.md) - Localization best practices
 - [Performance Optimization](docs/performance-viewcompany.md) - Query optimization
 

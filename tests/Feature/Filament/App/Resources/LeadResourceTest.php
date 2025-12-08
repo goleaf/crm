@@ -17,13 +17,13 @@ use Filament\Facades\Filament;
 
 use function Pest\Livewire\livewire;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->withPersonalTeam()->create();
     $this->actingAs($this->user);
     Filament::setTenant($this->user->personalTeam());
 });
 
-describe('List Page', function () {
+describe('List Page', function (): void {
     it('can render the index page', function (): void {
         livewire(ListLeads::class)
             ->assertOk();
@@ -64,8 +64,8 @@ describe('List Page', function () {
 
         livewire(ListLeads::class)
             ->searchTable($search instanceof BackedEnum ? $search->value : $search)
-            ->assertCanSeeTableRecords($records->filter(fn (Illuminate\Database\Eloquent\Model $record) => data_get($record, $column) === $search))
-            ->assertCanNotSeeTableRecords($records->filter(fn (Illuminate\Database\Eloquent\Model $record) => data_get($record, $column) !== $search));
+            ->assertCanSeeTableRecords($records->filter(fn (Illuminate\Database\Eloquent\Model $record): bool => data_get($record, $column) === $search))
+            ->assertCanNotSeeTableRecords($records->filter(fn (Illuminate\Database\Eloquent\Model $record): bool => data_get($record, $column) !== $search));
     })->with(['name', 'company_name']);
 
     it('cannot display trashed records by default', function (): void {
@@ -109,7 +109,7 @@ describe('List Page', function () {
     });
 });
 
-describe('Create Page', function () {
+describe('Create Page', function (): void {
     it('can render the create page', function (): void {
         livewire(CreateLead::class)
             ->assertOk();

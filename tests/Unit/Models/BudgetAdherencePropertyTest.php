@@ -16,7 +16,7 @@ use App\Models\User;
  * For any project with time entries, the actual cost should equal the sum of all billable
  * time entries across all tasks, and budget variance/utilization should be calculated correctly.
  */
-test('property: budget adherence - actual cost equals sum of billable time entries', function () {
+test('property: budget adherence - actual cost equals sum of billable time entries', function (): void {
     // Run 100 iterations to test various scenarios
     for ($i = 0; $i < 100; $i++) {
         $team = Team::factory()->create();
@@ -99,7 +99,7 @@ test('property: budget adherence - actual cost equals sum of billable time entri
     }
 });
 
-test('property: budget summary provides accurate task breakdown', function () {
+test('property: budget summary provides accurate task breakdown', function (): void {
     // Run 50 iterations
     for ($i = 0; $i < 50; $i++) {
         $team = Team::factory()->create();
@@ -182,7 +182,7 @@ test('property: budget summary provides accurate task breakdown', function () {
     }
 });
 
-test('property: time log export contains all required fields', function () {
+test('property: time log export contains all required fields', function (): void {
     // Run 30 iterations
     for ($i = 0; $i < 30; $i++) {
         $team = Team::factory()->create();

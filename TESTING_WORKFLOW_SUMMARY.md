@@ -28,13 +28,13 @@
 
 ### Phase 3: Test Execution & Analysis ✅
 **Initial Issues Identified:**
-1. Filament v4 compatibility issues in 2 resources
+1. Filament v4.3+ compatibility issues in 2 resources
 2. Database migration view dependency problem
 3. Test environment configuration (PostgreSQL → SQLite)
 4. Test assertion object identity issues
 
 **All Issues Resolved:**
-- Updated resources to Filament v4 Schema syntax
+- Updated resources to Filament v4.3+ Schema syntax
 - Fixed migration to handle SQLite view dependencies
 - Configured `.env.testing` for SQLite in-memory
 - Updated assertions to compare by ID
@@ -153,8 +153,8 @@ vendor/bin/pint tests/Support/
 4. `docs/testing-infrastructure.md` (exists)
 
 ### Bug Fixes (5 files modified)
-1. `app/Filament/Resources/SettingResource.php` - Filament v4 compatibility
-2. `app/Filament/Resources/WorkflowDefinitionResource.php` - Filament v4 compatibility
+1. `app/Filament/Resources/SettingResource.php` - Filament v4.3+ compatibility
+2. `app/Filament/Resources/WorkflowDefinitionResource.php` - Filament v4.3+ compatibility
 3. `app/Filament/Pages/CrmSettings.php` - Property type fix
 4. `database/migrations/2026_03_20_000600_add_persona_and_primary_company_to_people_table.php` - SQLite view fix
 5. `.env.testing` - Database configuration

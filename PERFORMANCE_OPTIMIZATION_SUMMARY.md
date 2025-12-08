@@ -18,7 +18,7 @@
 
 ### 3. ✅ Optimized Badge Color Callbacks
 **Changed:** Updated callback signature to use `$record` parameter
-**Impact:** Correct Filament v4 implementation, pre-computed enum colors
+**Impact:** Correct Filament v4.3+ implementation, pre-computed enum colors
 
 ### 4. ⚠️ Database Indexes (Manual)
 **Status:** SQL provided in docs/performance-viewcompany.md
@@ -50,7 +50,7 @@
 
 - **N+1 queries eliminated** in attachment uploader display
 - **Eager loading optimized** for common relationships
-- **Badge callbacks corrected** for Filament v4
+- **Badge callbacks corrected** for Filament v4.3+
 - **Documentation created** for future reference
 - **Performance tests added** for regression prevention
 

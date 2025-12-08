@@ -13,8 +13,9 @@ use App\Enums\LeadNurtureStatus;
 use App\Enums\LeadSource;
 use App\Enums\LeadStatus;
 use App\Models\Concerns\HasCreator;
-use App\Models\Concerns\HasNotes;
+use App\Models\Concerns\HasNotesAndNotables;
 use App\Models\Concerns\HasTags;
+use App\Models\Concerns\HasTaxonomies;
 use App\Models\Concerns\HasTeam;
 use App\Models\Concerns\LogsActivity;
 use App\Observers\LeadObserver;
@@ -22,7 +23,6 @@ use Database\Factories\LeadFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -49,8 +49,9 @@ final class Lead extends Model implements HasCustomFields
     /** @use HasFactory<LeadFactory> */
     use HasFactory;
 
-    use HasNotes;
+    use HasNotesAndNotables;
     use HasTags;
+    use HasTaxonomies;
     use HasTeam;
     use LogsActivity;
     use SoftDeletes;

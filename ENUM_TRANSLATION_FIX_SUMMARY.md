@@ -1,7 +1,7 @@
 # Enum Translation Fix Summary
 
 ## Overview
-Fixed missing enum translations and wrapper methods across the entire project to ensure all enums work correctly with Filament v4 and support proper internationalization.
+Fixed missing enum translations and wrapper methods across the entire project to ensure all enums work correctly with Filament v4.3+ and support proper internationalization.
 
 ## Changes Made
 
@@ -85,7 +85,7 @@ Updated `.kiro/steering/enum-conventions.md` to:
 ## Why These Changes Were Needed
 
 ### Problem 1: Missing Wrapper Methods
-Filament v4 table columns often use closures that call methods directly on enum instances:
+Filament v4.3+ table columns often use closures that call methods directly on enum instances:
 ```php
 TextColumn::make('status')
     ->color(fn (MyEnum $state): string => $state->color())

@@ -7,7 +7,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\KnowledgeTagResource\Pages\CreateKnowledgeTag;
 use App\Filament\Resources\KnowledgeTagResource\Pages\EditKnowledgeTag;
 use App\Filament\Resources\KnowledgeTagResource\Pages\ListKnowledgeTags;
+use App\Filament\Support\SlugHelper;
 use App\Models\KnowledgeTag;
+use App\Support\Helpers\StringHelper;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -21,6 +23,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 use Override;
 
 final class KnowledgeTagResource extends Resource
@@ -54,9 +57,12 @@ final class KnowledgeTagResource extends Resource
                         TextInput::make('name')
                             ->label(__('app.labels.name'))
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(SlugHelper::updateSlug()),
                         TextInput::make('slug')
                             ->label(__('app.labels.slug'))
+                            ->rules(['nullable', 'slug'])
                             ->maxLength(255)
                             ->helperText('Generated from the tag name if left blank.'),
                         Textarea::make('description')
@@ -78,8 +84,16 @@ final class KnowledgeTagResource extends Resource
                     ->sortable(),
                 TextColumn::make('description')
                     ->label(__('app.labels.description'))
-                    ->wrap()
-                    ->limit(60)
+                    ->formatStateUsing(
+                        fn (?string $state): HtmlString|string|null => StringHelper::wordWrap(
+                            value: $state,
+                            characters: 60,
+                            break: '<br>',
+                            cutLongWords: true,
+                        ),
+                    )
+                    ->html()
+                    ->lineClamp(3)
                     ->toggleable(),
                 TextColumn::make('updated_at')
                     ->label(__('app.labels.updated_at'))

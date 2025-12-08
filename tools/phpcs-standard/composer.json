@@ -1,0 +1,15 @@
+{
+    "name": "relaticle/phpcs-standard",
+    "description": "Shared PHPCS ruleset for the CRM codebase",
+    "version": "1.0.0",
+    "license": "AGPL-3.0-only",
+    "type": "phpcodesniffer-standard",
+    "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}

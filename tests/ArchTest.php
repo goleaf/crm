@@ -15,11 +15,11 @@ arch()->preset()->security()->ignoring('assert');
 arch()->preset()
     ->laravel()
     ->ignoring([
-        'App\Providers\AppServiceProvider',
-        'App\Providers\Filament\AppPanelProvider',
+        \App\Providers\AppServiceProvider::class,
+        \App\Providers\Filament\AppPanelProvider::class,
         'Relaticle\Admin\AdminPanelProvider',
         'App\Enums\EnumValues',
-        'App\Enums\CustomFields\CustomFieldTrait',
+        \App\Enums\CustomFields\CustomFieldTrait::class,
     ]);
 
 arch('strict types')
@@ -98,9 +98,9 @@ arch('main app must not depend on SystemAdmin module')
     ->not
     ->toUse('Relaticle\SystemAdmin')
     ->ignoring([
-        'App\Providers\AppServiceProvider',
-        'App\Console\Commands\InstallCommand',
-        'App\Console\Commands\CreateSystemAdminCommand',
+        \App\Providers\AppServiceProvider::class,
+        \App\Console\Commands\InstallCommand::class,
+        \App\Console\Commands\CreateSystemAdminCommand::class,
     ]);
 
 arch('SystemAdmin module must not depend on main app namespace')

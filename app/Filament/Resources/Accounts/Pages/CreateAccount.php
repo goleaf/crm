@@ -7,6 +7,7 @@ namespace App\Filament\Resources\Accounts\Pages;
 use App\Filament\Resources\Accounts\AccountResource;
 use App\Models\Account;
 use App\Services\AccountDuplicateDetectionService;
+use App\Support\Helpers\ArrayHelper;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 
@@ -24,7 +25,7 @@ final class CreateAccount extends CreateRecord
         /** @var Account $account */
         $account = $this->getRecord();
 
-        $service = app(AccountDuplicateDetectionService::class);
+        $service = resolve(AccountDuplicateDetectionService::class);
         $duplicates = $service->find($account, threshold: 60.0, limit: 5);
 
         if ($duplicates->isEmpty()) {
@@ -61,6 +62,6 @@ final class CreateAccount extends CreateRecord
             );
         }
 
-        return implode("\n", $lines);
+        return ArrayHelper::joinList($lines, PHP_EOL, emptyPlaceholder: '');
     }
 }

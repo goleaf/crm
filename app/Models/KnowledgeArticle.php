@@ -7,15 +7,19 @@ namespace App\Models;
 use App\Enums\Knowledge\ArticleStatus;
 use App\Enums\Knowledge\ArticleVisibility;
 use App\Models\Concerns\HasCreator;
+use App\Models\Concerns\HasTaxonomies;
 use App\Models\Concerns\HasTeam;
+use App\Models\Concerns\HasUniqueSlug;
 use App\Observers\KnowledgeArticleObserver;
+use Binafy\LaravelReaction\Contracts\HasReaction;
+use Binafy\LaravelReaction\Traits\Reactable;
 use Database\Factories\KnowledgeArticleFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
@@ -29,15 +33,18 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * @property ArticleVisibility $visibility
  */
 #[ObservedBy(KnowledgeArticleObserver::class)]
-final class KnowledgeArticle extends Model implements HasMedia
+final class KnowledgeArticle extends Model implements HasMedia, HasReaction
 {
     use HasCreator;
 
     /** @use HasFactory<KnowledgeArticleFactory> */
     use HasFactory;
 
+    use HasTaxonomies;
     use HasTeam;
+    use HasUniqueSlug;
     use InteractsWithMedia;
+    use Reactable;
     use SoftDeletes;
 
     /**
@@ -70,6 +77,12 @@ final class KnowledgeArticle extends Model implements HasMedia
         'approver_id',
         'current_version_id',
     ];
+
+    protected string $uniqueBaseField = 'title';
+
+    protected string $uniqueSuffixFormat = '-{n}';
+
+    protected bool $reslugOnBaseChange = true;
 
     /**
      * @return array<string, string|class-string>
@@ -138,6 +151,26 @@ final class KnowledgeArticle extends Model implements HasMedia
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(KnowledgeTag::class, 'knowledge_article_tag', 'article_id', 'tag_id')->withTimestamps();
+    }
+
+    /**
+     * @return MorphToMany<Taxonomy, $this>
+     */
+    public function taxonomyCategories(): MorphToMany
+    {
+        return $this->taxonomies()
+            ->where('type', 'knowledge_category')
+            ->withPivot('created_at', 'updated_at');
+    }
+
+    /**
+     * @return MorphToMany<Taxonomy, $this>
+     */
+    public function taxonomyTags(): MorphToMany
+    {
+        return $this->taxonomies()
+            ->where('type', 'knowledge_tag')
+            ->withPivot('created_at', 'updated_at');
     }
 
     /**

@@ -5,11 +5,9 @@ declare(strict_types=1);
 use App\Services\AvatarService;
 use Illuminate\Contracts\Cache\Repository as Cache;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->cache = Mockery::mock(Cache::class);
-    $this->cache->shouldReceive('remember')->andReturnUsing(function ($key, $ttl, $callback) {
-        return $callback();
-    });
+    $this->cache->shouldReceive('remember')->andReturnUsing(fn ($key, $ttl, $callback) => $callback());
 
     $this->avatarService = new AvatarService(
         cache: $this->cache,
@@ -20,7 +18,7 @@ beforeEach(function () {
     );
 });
 
-it('handles edge cases in name analysis', function () {
+it('handles edge cases in name analysis', function (): void {
     $reflection = new ReflectionClass($this->avatarService);
     $method = $reflection->getMethod('analyzeNameCharacteristics');
 
@@ -38,7 +36,7 @@ it('handles edge cases in name analysis', function () {
         ->and($result['uniqueness'])->toBeLessThanOrEqual(10);
 });
 
-it('calculates appropriate characteristics for different name types', function () {
+it('calculates appropriate characteristics for different name types', function (): void {
     $reflection = new ReflectionClass($this->avatarService);
     $method = $reflection->getMethod('analyzeNameCharacteristics');
 
@@ -58,7 +56,7 @@ it('calculates appropriate characteristics for different name types', function (
     expect($withRareLetters['uniqueness'])->toBeGreaterThan($ordinary['uniqueness']);
 });
 
-it('generates different background colors for different names', function () {
+it('generates different background colors for different names', function (): void {
     // Test that different names get consistently different colors
     $avatar1 = $this->avatarService->generateAuto('John Smith');
     $avatar2 = $this->avatarService->generateAuto('Jane Doe');
@@ -70,7 +68,7 @@ it('generates different background colors for different names', function () {
     expect($avatar1)->toBe($avatar3);
 });
 
-it('correctly extracts initials from names', function () {
+it('correctly extracts initials from names', function (): void {
     $reflection = new ReflectionClass($this->avatarService);
     $method = $reflection->getMethod('getInitials');
 
@@ -81,7 +79,7 @@ it('correctly extracts initials from names', function () {
     expect($method->invoke($this->avatarService, 'Jean-Claude', 2))->toBe('JC');
 });
 
-it('correctly handles names with special characters and symbols', function () {
+it('correctly handles names with special characters and symbols', function (): void {
     $reflection = new ReflectionClass($this->avatarService);
     $method = $reflection->getMethod('getInitials');
 
@@ -106,7 +104,7 @@ it('correctly handles names with special characters and symbols', function () {
     expect($method->invoke($this->avatarService, '...John...Smith...', 2))->toBe('JS'); // Multiple periods treated as delimiters
 });
 
-it('validates colors properly', function () {
+it('validates colors properly', function (): void {
     expect($this->avatarService->validateColor('#123456'))->toBeTrue();
     expect($this->avatarService->validateColor('#abc'))->toBeTrue();
     expect($this->avatarService->validateColor('rgb(10, 20, 30)'))->toBeTrue();

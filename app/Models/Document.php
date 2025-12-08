@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\Concerns\HasCreator;
+use App\Models\Concerns\HasTaxonomies;
 use App\Models\Concerns\HasTeam;
 use Database\Factories\DocumentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -22,6 +23,8 @@ final class Document extends Model
 
     /** @use HasFactory<DocumentFactory> */
     use HasFactory;
+
+    use HasTaxonomies;
     use HasTeam;
     use SoftDeletes;
 
@@ -55,7 +58,7 @@ final class Document extends Model
     }
 
     /**
-     * @return HasMany<DocumentVersion>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\DocumentVersion, $this>
      */
     public function versions(): HasMany
     {
@@ -63,7 +66,27 @@ final class Document extends Model
     }
 
     /**
-     * @return HasMany<DocumentShare>
+     * @return MorphToMany<Taxonomy, $this>
+     */
+    public function taxonomyCategories(): MorphToMany
+    {
+        return $this->taxonomies()
+            ->where('type', 'document_category')
+            ->withPivot('created_at', 'updated_at');
+    }
+
+    /**
+     * @return MorphToMany<Taxonomy, $this>
+     */
+    public function taxonomyTags(): MorphToMany
+    {
+        return $this->taxonomies()
+            ->where('type', 'document_tag')
+            ->withPivot('created_at', 'updated_at');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\DocumentShare, $this>
      */
     public function shares(): HasMany
     {

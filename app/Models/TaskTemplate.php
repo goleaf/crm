@@ -7,7 +7,6 @@ namespace App\Models;
 use App\Models\Concerns\HasCreator;
 use App\Models\Concerns\HasTeam;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -54,7 +53,7 @@ final class TaskTemplate extends Model
     }
 
     /**
-     * @return HasMany<Task>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Task, $this>
      */
     public function tasks(): HasMany
     {
@@ -62,7 +61,7 @@ final class TaskTemplate extends Model
     }
 
     /**
-     * @return BelongsToMany<self>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\TaskTemplate, $this, \Illuminate\Database\Eloquent\Relations\Pivot>
      */
     public function dependencies(): BelongsToMany
     {
@@ -75,7 +74,7 @@ final class TaskTemplate extends Model
     }
 
     /**
-     * @return BelongsToMany<self>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\TaskTemplate, $this, \Illuminate\Database\Eloquent\Relations\Pivot>
      */
     public function dependents(): BelongsToMany
     {

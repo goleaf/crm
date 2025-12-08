@@ -10,7 +10,6 @@ use App\Models\Invoice;
 use App\Models\People;
 use App\Models\Team;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Carbon;
 
 /**
  * @extends Factory<Invoice>
@@ -33,7 +32,7 @@ final class InvoiceFactory extends Factory
      */
     public function definition(): array
     {
-        $issueDate = Carbon::now();
+        $issueDate = \Illuminate\Support\Facades\Date::now();
 
         return [
             'team_id' => Team::factory(),

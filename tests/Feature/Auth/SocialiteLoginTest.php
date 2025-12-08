@@ -9,13 +9,13 @@ use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\AbstractProvider;
 
-test('redirect to socialite provider', function () {
+test('redirect to socialite provider', function (): void {
     $response = $this->get(route('auth.socialite.redirect', ['provider' => SocialiteProvider::GOOGLE->value]));
 
-    $response->assertRedirect();
+    expect($response)->toBeRedirect();
 });
 
-test('callback from socialite provider creates new user when user does not exist', function () {
+test('callback from socialite provider creates new user when user does not exist', function (): void {
     // Mock the Socialite facade
     $socialiteUser = Mockery::mock(SocialiteUser::class);
     $socialiteUser->shouldReceive('getId')->andReturn('123456789');
@@ -48,10 +48,10 @@ test('callback from socialite provider creates new user when user does not exist
     $this->assertAuthenticated();
 
     // Assert that the user is redirected to the dashboard
-    $response->assertRedirect(url()->getAppUrl());
+    expect($response)->toBeRedirect(url()->getAppUrl());
 });
 
-test('callback from socialite provider logs in existing user when social account exists', function () {
+test('callback from socialite provider logs in existing user when social account exists', function (): void {
     // Create a user and social account
     $user = User::factory()->withPersonalTeam()->create([
         'email' => 'existing@example.com',
@@ -85,10 +85,10 @@ test('callback from socialite provider logs in existing user when social account
     $this->assertAuthenticatedAs($user);
 
     // Assert that the user is redirected to the app URL
-    $response->assertRedirect(url()->getAppUrl());
+    expect($response)->toBeRedirect(url()->getAppUrl());
 });
 
-test('callback from socialite provider links social account to existing user when email matches', function () {
+test('callback from socialite provider links social account to existing user when email matches', function (): void {
     // Create a user without a social account
     $user = User::factory()->withPersonalTeam()->create([
         'email' => 'existing@example.com',
@@ -112,14 +112,14 @@ test('callback from socialite provider links social account to existing user whe
     $response = $this->get(route('auth.socialite.callback', ['provider' => SocialiteProvider::GOOGLE->value, 'code' => 'test-code']));
 
     // Check if the response is a redirect to the dashboard
-    $response->assertRedirect();
+    expect($response)->toBeRedirect();
 
     // Assert that the user is authenticated
     $this->assertAuthenticated();
     $this->assertAuthenticatedAs($user);
 });
 
-test('callback from socialite provider handles error gracefully', function () {
+test('callback from socialite provider handles error gracefully', function (): void {
     // Mock the Socialite facade to throw an exception
     $provider = Mockery::mock(AbstractProvider::class);
     $provider->shouldReceive('user')->andThrow(new \Exception('Socialite error'));
@@ -132,18 +132,19 @@ test('callback from socialite provider handles error gracefully', function () {
     $response = $this->get(route('auth.socialite.callback', ['provider' => SocialiteProvider::GOOGLE->value, 'code' => 'test-code']));
 
     // Assert that the user is redirected to the login page with an error
-    $response->assertRedirect(route('login'));
+    expect($response)->toBeRedirect(route('login'));
     $response->assertSessionHasErrors(['login']);
 });
 
-test('callback from socialite provider handles missing code parameter', function () {
+test('callback from socialite provider handles missing code parameter', function (): void {
     // Make the request to the callback route without a code parameter
     $response = $this->get(route('auth.socialite.callback', ['provider' => SocialiteProvider::GOOGLE->value]));
 
     // Assert that the user is redirected to the login page with an error
-    $response->assertRedirect(route('login'));
+    expect($response)
+        ->toBeRedirect(route('login'))
+        ->toHaveSession('errors');
     $response->assertSessionHasErrors(['login']);
-    $response->assertSessionHas('errors');
 
     $errors = session('errors')->getBag('default');
     expect($errors->first('login'))->toBe('Authorization was cancelled or failed. Please try again.');

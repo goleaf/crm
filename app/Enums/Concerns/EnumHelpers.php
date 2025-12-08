@@ -140,7 +140,7 @@ trait EnumHelpers
                     : $case->name,
             ])
             ->values()
-            ->toArray();
+            ->all();
     }
 
     /**

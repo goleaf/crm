@@ -37,11 +37,11 @@ The Project Resource provides comprehensive project management capabilities incl
 - **Schedule Widget:** Interactive summary of project health
 
 **Recent Changes (2025-12-07):**
-- ✅ Fixed `$view` property to be instance-level (non-static) per Filament v4 conventions
+- ✅ Fixed `$view` property to be instance-level (non-static) per Filament v4.3+ conventions
 - Previously was `protected static string $view` which is deprecated in v4
 - Now correctly uses `protected string $view` for dynamic view resolution
 
-**Filament v4 Compatibility:**
+**Filament v4.3+ Compatibility:**
 ```php
 // ✅ Correct (v4)
 protected string $view = 'filament.resources.project-resource.pages.view-project-schedule';
@@ -107,7 +107,7 @@ protected function getHeaderWidgets(): array
 **Authorization:**
 - Requires `view` permission on Project model
 - Respects team boundaries (multi-tenancy)
-- Automatically scoped to current tenant in Filament v4
+- Automatically scoped to current tenant in Filament v4.3+
 
 **Related Documentation:**
 - [Performance Optimization Guide](./performance-project-schedule.md)
@@ -144,7 +144,7 @@ All Project Resource UI elements use translation keys following the project's lo
 
 ## Best Practices
 
-### Filament v4 Conventions
+### Filament v4.3+ Conventions
 
 1. **Instance Properties:**
    - Use instance-level properties for page-specific configuration

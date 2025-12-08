@@ -6,15 +6,15 @@ namespace App\Models;
 
 use App\Enums\ProjectStatus;
 use App\Models\Concerns\HasCreator;
-use App\Models\Concerns\HasNotes;
+use App\Models\Concerns\HasNotesAndNotables;
+use App\Models\Concerns\HasTaxonomies;
 use App\Models\Concerns\HasTeam;
+use App\Models\Concerns\HasUniqueSlug;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -51,8 +51,10 @@ final class Project extends Model implements HasMedia
 {
     use HasCreator;
     use HasFactory;
-    use HasNotes;
+    use HasNotesAndNotables;
+    use HasTaxonomies;
     use HasTeam;
+    use HasUniqueSlug;
     use InteractsWithMedia;
     use SoftDeletes;
 
@@ -94,6 +96,13 @@ final class Project extends Model implements HasMedia
     ];
 
     /**
+     * @var list<string>
+     */
+    protected array $constraintFields = [];
+
+    protected string $uniqueSuffixFormat = '-{n}';
+
+    /**
      * @return array<string, string|class-string>
      */
     protected function casts(): array
@@ -122,29 +131,11 @@ final class Project extends Model implements HasMedia
     {
         parent::boot();
 
-        $ensureSlug = static function (self $project): void {
-            if (blank($project->slug)) {
-                $project->slug = self::generateUniqueSlug($project->name ?? '');
-            }
-        };
-
-        self::creating($ensureSlug);
-        self::saving($ensureSlug);
-
         self::creating(static function (self $project): void {
             if ($project->team_id === null && auth()->check() && auth()->user()?->currentTeam !== null) {
                 $project->team_id = auth()->user()->currentTeam->getKey();
             }
         });
-    }
-
-    public function setNameAttribute(string $value): void
-    {
-        $this->attributes['name'] = $value;
-
-        if (! array_key_exists('slug', $this->attributes) || blank($this->attributes['slug'])) {
-            $this->attributes['slug'] = self::generateUniqueSlug($value);
-        }
     }
 
     /**
@@ -156,7 +147,7 @@ final class Project extends Model implements HasMedia
     }
 
     /**
-     * @return HasMany<self>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Project, $this>
      */
     public function projectsFromTemplate(): HasMany
     {
@@ -337,7 +328,7 @@ final class Project extends Model implements HasMedia
                 'billable_hours' => round($billableTime / 60, 2),
                 'billing_amount' => $billingAmount,
             ];
-        })->toArray();
+        })->all();
 
         return [
             'project_id' => $this->id,
@@ -378,7 +369,7 @@ final class Project extends Model implements HasMedia
                     : 0,
                 'note' => $entry->note,
             ])
-            ->toArray();
+            ->all();
     }
 
     /**
@@ -388,7 +379,7 @@ final class Project extends Model implements HasMedia
      */
     public function exportForGantt(): array
     {
-        $schedulingService = app(\App\Services\ProjectSchedulingService::class);
+        $schedulingService = resolve(\App\Services\ProjectSchedulingService::class);
         $timeline = $schedulingService->generateTimeline($this);
         $criticalPath = $schedulingService->calculateCriticalPath($this);
         $criticalTaskIds = $criticalPath->pluck('id')->toArray();
@@ -409,7 +400,7 @@ final class Project extends Model implements HasMedia
                 'is_milestone' => $task['is_milestone'],
                 'dependencies' => $task['dependencies'],
                 'assignees' => $task['assignees'],
-            ])->toArray(),
+            ])->all(),
             'milestones' => $timeline['milestones'],
             'critical_path' => $criticalTaskIds,
         ];
@@ -422,7 +413,7 @@ final class Project extends Model implements HasMedia
      */
     public function getCriticalPath(): \Illuminate\Support\Collection
     {
-        $schedulingService = app(\App\Services\ProjectSchedulingService::class);
+        $schedulingService = resolve(\App\Services\ProjectSchedulingService::class);
 
         return $schedulingService->calculateCriticalPath($this);
     }
@@ -434,7 +425,7 @@ final class Project extends Model implements HasMedia
      */
     public function getTimeline(): array
     {
-        $schedulingService = app(\App\Services\ProjectSchedulingService::class);
+        $schedulingService = resolve(\App\Services\ProjectSchedulingService::class);
 
         return $schedulingService->generateTimeline($this);
     }
@@ -446,7 +437,7 @@ final class Project extends Model implements HasMedia
      */
     public function getScheduleSummary(): array
     {
-        $schedulingService = app(\App\Services\ProjectSchedulingService::class);
+        $schedulingService = resolve(\App\Services\ProjectSchedulingService::class);
 
         return $schedulingService->getScheduleSummary($this);
     }
@@ -458,19 +449,5 @@ final class Project extends Model implements HasMedia
 
         $this->addMediaCollection('attachments')
             ->useDisk(config('filesystems.default', 'public'));
-    }
-
-    private static function generateUniqueSlug(string $name): string
-    {
-        $baseSlug = Str::slug($name) ?: Str::random(6);
-        $slug = $baseSlug;
-        $suffix = 1;
-
-        while (self::where('slug', $slug)->exists()) {
-            $slug = $baseSlug.'-'.$suffix;
-            $suffix++;
-        }
-
-        return $slug;
     }
 }

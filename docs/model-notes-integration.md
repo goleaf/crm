@@ -24,6 +24,13 @@ The `HasNotes` trait provides a polymorphic many-to-many relationship for attach
   - `noteable_type`: Class name of the related model
   - `timestamps`: When the note was attached
 
+### Notable package (lightweight text notes)
+- Added `eg-mohamed/notable` for quick, plain-text notes.
+- Wrapper model: `App\Models\NotableEntry` (extends the vendor model + `HasTeam`).
+- Wrapper trait: `App\Models\Concerns\HasNotableEntries` (avoids clashing with `HasNotes` and injects `team_id` automatically). Use `App\Models\Concerns\HasNotesAndNotables` on models that already include `HasNotes`.
+- Table: `notables` (includes `team_id`, `creator_type`, `creator_id`, timestamps).
+- Use when you need small audit-style notes; keep rich notes (attachments, categories, visibility) on the existing `Note` model.
+
 ## Implementation
 
 ### Adding Notes to a Model
@@ -86,6 +93,33 @@ $model->syncNotes([$note1, $note2, $note3]);
 // Using IDs
 $model->syncNotes([1, 2, 3]);
 ```
+
+### Notable quick notes
+
+Use `HasNotableEntries` for plain-text audit notes without touching the rich `Note` model:
+
+```php
+use App\Models\Concerns\HasNotableEntries;
+
+class SupportCase extends Model
+{
+    use HasNotableEntries;
+}
+
+$case = SupportCase::first();
+
+// Creates a NotableEntry tied to the case + team
+$note = $case->addNotableNote('Chased customer for logs', auth()->user());
+
+$case->notableNotes(); // collection of NotableEntry models
+$case->latestNotableNote(); // newest NotableEntry
+$case->searchNotableNotes('customer'); // scoped full-text search
+```
+
+Notes:
+- `addNotableNote()` copies the owning model’s `team_id` and stores the optional creator morph.
+- Swap `HasNotes` for `HasNotesAndNotables` when a model needs both rich notes and lightweight text notes.
+- Keep using `HasNotes` for templated/visible notes; use `HasNotableEntries` for quick text trails.
 
 ## Models with Notes Support
 
@@ -426,4 +460,3 @@ Use `syncNotes()` instead of repeatedly calling `addNote()`.
 - Steering File: `.kiro/steering/model-notes.md`
 - Trait Implementation: `app/Models/Concerns/HasNotes.php`
 - Test Suite: `tests/Unit/Models/Concerns/HasNotesTest.php`
-

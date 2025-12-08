@@ -43,7 +43,7 @@ final readonly class OpportunityObserver
     /**
      * Handle the Opportunity "saved" event.
      */
-    public function saved(Opportunity $opportunity): void
+    public function saved(): void
     {
         //
     }

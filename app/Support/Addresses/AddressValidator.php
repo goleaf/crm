@@ -6,8 +6,9 @@ namespace App\Support\Addresses;
 
 use App\Data\AddressData;
 use App\Enums\AddressType;
-use App\Rules\PostalCode;
+use App\Rules\CleanContent;
 use Illuminate\Validation\Rule;
+use Intervention\Validation\Rules\Postalcode;
 
 final class AddressValidator
 {
@@ -51,19 +52,19 @@ final class AddressValidator
      */
     public function rules(?string $countryCode = null): array
     {
-        $country = strtoupper($countryCode ?? config('address.default_country', 'US'));
+        $country = strtolower($countryCode ?? config('address.default_country', 'US'));
 
         return [
             'type' => ['required', Rule::enum(AddressType::class)],
-            'line1' => ['required', 'string', 'max:255'],
-            'line2' => ['nullable', 'string', 'max:255'],
-            'city' => ['nullable', 'string', 'max:255'],
-            'state' => ['nullable', 'string', 'max:255'],
-            'postal_code' => ['nullable', 'string', 'max:20', new PostalCode($country)],
+            'line1' => ['required', 'string', 'max:255', new CleanContent],
+            'line2' => ['nullable', 'string', 'max:255', new CleanContent],
+            'city' => ['nullable', 'string', 'max:255', new CleanContent],
+            'state' => ['nullable', 'string', 'max:255', new CleanContent],
+            'postal_code' => ['nullable', 'string', 'max:20', new Postalcode([$country])],
             'country_code' => ['required', 'string', 'size:2'],
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
-            'label' => ['nullable', 'string', 'max:120'],
+            'label' => ['nullable', 'string', 'max:120', new CleanContent],
         ];
     }
 

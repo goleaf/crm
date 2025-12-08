@@ -49,6 +49,8 @@ use App\Models\User;
 use App\Repositories\EloquentCompanyRepository;
 use App\Repositories\EloquentPeopleRepository;
 use App\Services\GitHubService;
+use App\Services\Media\UnsplashService;
+use App\Services\World\WorldDataService;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
@@ -58,7 +60,9 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Laravel\Pennant\Feature;
 use Livewire\Livewire;
+use Mateffy\Introspect\LaravelIntrospect;
 use Relaticle\SystemAdmin\Models\SystemAdministrator;
 
 final class AppServiceProvider extends ServiceProvider
@@ -71,6 +75,108 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(\Filament\Auth\Http\Responses\Contracts\LoginResponse::class, LoginResponse::class);
         $this->app->bind(PeopleRepositoryInterface::class, EloquentPeopleRepository::class);
         $this->app->bind(CompanyRepositoryInterface::class, EloquentCompanyRepository::class);
+        $this->app->singleton(
+            LaravelIntrospect::class,
+            static fn (): LaravelIntrospect => new LaravelIntrospect(
+                base_path(),
+                config('introspect.directories', LaravelIntrospect::DEFAULT_DIRECTORIES),
+            ),
+        );
+
+        // Register World Data Service
+        $this->app->singleton(fn ($app): \App\Services\World\WorldDataService => new WorldDataService(
+            cacheTtl: (int) config('world.cache_ttl', 3600)
+        ));
+
+        // Register Unsplash Service
+        $this->app->singleton(UnsplashService::class, fn (): UnsplashService => UnsplashService::fromConfig());
+
+        // Register Metadata Service
+        $this->app->singleton(\App\Services\Metadata\MetadataService::class);
+
+        // Register Profanity Filter Service
+        $this->app->singleton(\App\Services\Content\ProfanityFilterService::class);
+
+        // Register Translation Checker Service
+        $this->app->singleton(\App\Services\Translation\TranslationCheckerService::class, fn ($app): \App\Services\Translation\TranslationCheckerService => new \App\Services\Translation\TranslationCheckerService(
+            cacheTtl: (int) config('translations.cache.ttl', 3600)
+        ));
+
+        // Register Config Checker Service
+        $this->app->singleton(\App\Services\Config\ConfigCheckerService::class);
+
+        // Register OCR Services
+        $this->registerOCRServices();
+
+        // Register Union Paginator Services
+        $this->registerUnionPaginatorServices();
+    }
+
+    /**
+     * Register Union Paginator services.
+     */
+    private function registerUnionPaginatorServices(): void
+    {
+        // Register Activity Feed Service
+        $this->app->singleton(fn ($app): \App\Services\Activity\ActivityFeedService => new \App\Services\Activity\ActivityFeedService(
+            defaultPerPage: config('app.pagination.default', 25),
+            cacheTtl: config('cache.ttl.activity_feed', 300)
+        ));
+
+        // Register Unified Search Service
+        $this->app->singleton(fn ($app): \App\Services\Search\UnifiedSearchService => new \App\Services\Search\UnifiedSearchService(
+            defaultPerPage: config('app.pagination.search', 20)
+        ));
+    }
+
+    /**
+     * Register OCR services.
+     */
+    private function registerOCRServices(): void
+    {
+        // Register OCR Driver
+        $this->app->singleton(function ($app): \App\Services\OCR\Contracts\DriverInterface {
+            $driver = config('ocr.driver', 'tesseract');
+
+            return match ($driver) {
+                'tesseract' => new \App\Services\OCR\Drivers\TesseractDriver(
+                    tesseractPath: config('ocr.drivers.tesseract.path'),
+                    language: config('ocr.drivers.tesseract.lang'),
+                    psm: config('ocr.drivers.tesseract.psm'),
+                    oem: config('ocr.drivers.tesseract.oem'),
+                    timeout: config('ocr.drivers.tesseract.timeout'),
+                ),
+                default => throw new \InvalidArgumentException("Unsupported OCR driver: {$driver}"),
+            };
+        });
+
+        // Register Image Preprocessor
+        $this->app->singleton(fn ($app): \App\Services\OCR\Processors\ImagePreprocessor => new \App\Services\OCR\Processors\ImagePreprocessor(
+            maxWidth: config('ocr.preprocessing.resize_max_width'),
+            maxHeight: config('ocr.preprocessing.resize_max_height'),
+            enhanceContrast: config('ocr.preprocessing.enhance_contrast'),
+            denoise: config('ocr.preprocessing.denoise'),
+        ));
+
+        // Register Text Cleaner
+        $this->app->singleton(fn ($app): \App\Services\OCR\Processors\TextCleaner => new \App\Services\OCR\Processors\TextCleaner(
+            enabled: config('ocr.ai_cleanup.enabled'),
+            provider: config('ocr.ai_cleanup.provider'),
+            model: config('ocr.ai_cleanup.model'),
+            temperature: config('ocr.ai_cleanup.temperature'),
+            maxTokens: config('ocr.ai_cleanup.max_tokens'),
+        ));
+
+        // Register Template Manager
+        $this->app->singleton(\App\Services\OCR\Templates\TemplateManager::class);
+
+        // Register OCR Service
+        $this->app->singleton(fn ($app): \App\Services\OCR\OCRService => new \App\Services\OCR\OCRService(
+            driver: $app->make(\App\Services\OCR\Contracts\DriverInterface::class),
+            preprocessor: $app->make(\App\Services\OCR\Processors\ImagePreprocessor::class),
+            textCleaner: $app->make(\App\Services\OCR\Processors\TextCleaner::class),
+            templateManager: $app->make(\App\Services\OCR\Templates\TemplateManager::class),
+        ));
     }
 
     /**
@@ -82,6 +188,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->configureAuthorization();
         $this->configureModels();
         $this->configureFilament();
+        $this->configureFeatureFlags();
         $this->configureGitHubStars();
         $this->configureLivewire();
         $this->configureMailViews();
@@ -296,10 +403,27 @@ final class AppServiceProvider extends ServiceProvider
             'process_definition' => ProcessDefinition::class,
             'process_execution' => ProcessExecution::class,
             'extension' => Extension::class,
+            'calendar_event' => CalendarEvent::class,
+            'ocr_template' => \App\Models\OCRTemplate::class,
+            'ocr_document' => \App\Models\OCRDocument::class,
+            'ocr_template_field' => \App\Models\OCRTemplateField::class,
         ]);
 
         // Bind our custom Import model to the Filament Import model
         $this->app->bind(\Filament\Actions\Imports\Models\Import::class, Import::class);
+    }
+
+    private function configureFeatureFlags(): void
+    {
+        Feature::resolveScopeUsing(function () {
+            $tenant = Filament::getTenant();
+
+            if ($tenant !== null) {
+                return $tenant;
+            }
+
+            return Filament::auth()->user()?->currentTeam;
+        });
     }
 
     /**
@@ -325,7 +449,7 @@ final class AppServiceProvider extends ServiceProvider
     {
         // Share GitHub stars count with the header component
         Facades\View::composer('components.layout.header', function (View $view): void {
-            $gitHubService = app(GitHubService::class);
+            $gitHubService = resolve(GitHubService::class);
             $starsCount = $gitHubService->getStarsCount();
             $formattedStarsCount = $gitHubService->getFormattedStarsCount();
 

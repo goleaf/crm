@@ -1,4 +1,4 @@
-<!-- Relaticle Mobile Menu - Refined Minimal Design -->
+<!-- Mobile Menu - Refined Minimal Design -->
 <!-- Enhanced Backdrop -->
 <div id="mobile-menu-backdrop"
      class="hidden fixed inset-0 bg-black/70 backdrop-blur-md h-screen z-40 transition-all duration-300 opacity-0 md:hidden"></div>
@@ -14,9 +14,9 @@
             <div class="flex items-center space-x-3">
                 <div class="relative overflow-hidden rounded-lg">
                     <img class="h-8 w-auto transition-transform duration-300 hover:scale-105"
-                         src="{{ asset('relaticle-logomark.svg') }}" alt="Relaticle">
+                         src="{{ asset('relaticle-logomark.svg') }}" alt="{{ brand_name() }}">
                 </div>
-                <span class="font-bold text-xl text-black dark:text-white tracking-tight">Relaticle</span>
+                <span class="font-bold text-xl text-black dark:text-white tracking-tight">{{ brand_name() }}</span>
             </div>
             <button id="mobile-menu-close"
                     class="group p-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-all duration-200 rounded-xl hover:bg-gray-100/60 dark:hover:bg-gray-800/60 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -47,20 +47,23 @@
                     </svg>
                 </a>
 
-                <a href="https://github.com/Relaticle/relaticle"
-                   target="_blank"
-                   rel="noopener"
-                   class="mobile-menu-link group flex items-center px-5 py-4 text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white rounded-2xl hover:bg-gray-50/80 dark:hover:bg-gray-900/50 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
-                    <div class="flex items-center">
-                        <span class="font-medium text-base">GitHub</span>
-                        @if(isset($githubStars) && $githubStars > 0)
-                            <span class="ml-2.5 text-xs bg-gray-200/80 dark:bg-gray-700/80 text-gray-600 dark:text-gray-400 px-2.5 py-1 rounded-full font-medium">{{ $formattedGithubStars }}</span>
-                        @endif
-                    </div>
-                    <svg class="ml-auto h-4 w-4 opacity-50 group-hover:opacity-70 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                </a>
+                @php $githubUrl = brand_social_url('github'); @endphp
+                @if($githubUrl)
+                    <a href="{{ $githubUrl }}"
+                       target="_blank"
+                       rel="noopener"
+                       class="mobile-menu-link group flex items-center px-5 py-4 text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white rounded-2xl hover:bg-gray-50/80 dark:hover:bg-gray-900/50 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
+                        <div class="flex items-center">
+                            <span class="font-medium text-base">GitHub</span>
+                            @if(isset($githubStars) && $githubStars > 0)
+                                <span class="ml-2.5 text-xs bg-gray-200/80 dark:bg-gray-700/80 text-gray-600 dark:text-gray-400 px-2.5 py-1 rounded-full font-medium">{{ $formattedGithubStars }}</span>
+                            @endif
+                        </div>
+                        <svg class="ml-auto h-4 w-4 opacity-50 group-hover:opacity-70 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                    </a>
+                @endif
 
                 <a href="{{ route('discord') }}"
                    target="_blank"

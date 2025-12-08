@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Models\Concerns;
 
 use App\Models\Activity;
+use App\Models\Model;
 use App\Services\Tenancy\CurrentTeamResolver;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;

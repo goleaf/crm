@@ -14,10 +14,11 @@ use App\Observers\CalendarEventObserver;
 use Database\Factories\CalendarEventFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
+use Zap\Models\Schedule;
 
 /**
  * @property CalendarEventStatus $status
@@ -48,8 +49,12 @@ final class CalendarEvent extends Model
         'start_at',
         'end_at',
         'location',
+        'room_booking',
         'meeting_url',
         'reminder_minutes_before',
+        'recurrence_rule',
+        'recurrence_end_date',
+        'recurrence_parent_id',
         'attendees',
         'related_id',
         'related_type',
@@ -57,7 +62,11 @@ final class CalendarEvent extends Model
         'sync_status',
         'sync_external_id',
         'notes',
+        'agenda',
+        'minutes',
         'creation_source',
+        'zap_schedule_id',
+        'zap_metadata',
     ];
 
     /**
@@ -84,8 +93,10 @@ final class CalendarEvent extends Model
             'is_all_day' => 'boolean',
             'start_at' => 'datetime',
             'end_at' => 'datetime',
+            'recurrence_end_date' => 'datetime',
             'attendees' => 'array',
             'creation_source' => CreationSource::class,
+            'zap_metadata' => 'array',
         ];
     }
 
@@ -95,6 +106,34 @@ final class CalendarEvent extends Model
     public function related(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    /**
+     * @return BelongsTo<Schedule, $this>
+     */
+    public function zapSchedule(): BelongsTo
+    {
+        return $this->belongsTo(Schedule::class, 'zap_schedule_id');
+    }
+
+    /**
+     * Get the parent event for recurring instances.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<CalendarEvent, $this>
+     */
+    public function recurrenceParent(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(CalendarEvent::class, 'recurrence_parent_id');
+    }
+
+    /**
+     * Get all recurring instances of this event.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<CalendarEvent, $this>
+     */
+    public function recurrenceInstances(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CalendarEvent::class, 'recurrence_parent_id');
     }
 
     /**
@@ -116,6 +155,108 @@ final class CalendarEvent extends Model
             return null;
         }
 
-        return $this->end_at->diffInMinutes($this->start_at);
+        return (int) $this->end_at->diffInMinutes($this->start_at);
+    }
+
+    /**
+     * Check if this event is recurring.
+     */
+    public function isRecurring(): bool
+    {
+        return $this->recurrence_rule !== null;
+    }
+
+    /**
+     * Check if this event is a recurring instance.
+     */
+    public function isRecurringInstance(): bool
+    {
+        return $this->recurrence_parent_id !== null;
+    }
+
+    // Query Scopes for Performance
+
+    /**
+     * Scope to filter events within a date range.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<CalendarEvent>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function inDateRange(
+        \Illuminate\Database\Eloquent\Builder $query,
+        \DateTimeInterface $start,
+        \DateTimeInterface $end
+    ): \Illuminate\Database\Eloquent\Builder {
+        return $query->whereBetween('start_at', [$start, $end]);
+    }
+
+    /**
+     * Scope to filter events by team.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<CalendarEvent>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forTeam(
+        \Illuminate\Database\Eloquent\Builder $query,
+        int $teamId
+    ): \Illuminate\Database\Eloquent\Builder {
+        return $query->where('team_id', $teamId);
+    }
+
+    /**
+     * Scope to filter events by types.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<CalendarEvent>  $query
+     * @param  array<string>  $types
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function ofTypes(
+        \Illuminate\Database\Eloquent\Builder $query,
+        array $types
+    ): \Illuminate\Database\Eloquent\Builder {
+        return $query->whereIn('type', $types);
+    }
+
+    /**
+     * Scope to filter events by statuses.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<CalendarEvent>  $query
+     * @param  array<string>  $statuses
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function withStatuses(
+        \Illuminate\Database\Eloquent\Builder $query,
+        array $statuses
+    ): \Illuminate\Database\Eloquent\Builder {
+        return $query->whereIn('status', $statuses);
+    }
+
+    /**
+     * Scope to search events by text.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<CalendarEvent>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function search(
+        \Illuminate\Database\Eloquent\Builder $query,
+        string $search
+    ): \Illuminate\Database\Eloquent\Builder {
+        return $query->where(function (\Illuminate\Contracts\Database\Query\Builder $q) use ($search): void {
+            $q->where('title', 'like', "%{$search}%")
+                ->orWhere('location', 'like', "%{$search}%")
+                ->orWhere('notes', 'like', "%{$search}%");
+        });
+    }
+
+    /**
+     * Scope to eager load common relationships.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<CalendarEvent>  $query
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function withCommonRelations(
+        \Illuminate\Database\Eloquent\Builder $query
+    ): \Illuminate\Database\Eloquent\Builder {
+        return $query->with(['creator:id,name', 'team:id,name']);
     }
 }

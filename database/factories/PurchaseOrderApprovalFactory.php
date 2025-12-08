@@ -9,7 +9,6 @@ use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderApproval;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Carbon;
 
 /**
  * @extends Factory<PurchaseOrderApproval>
@@ -31,7 +30,7 @@ final class PurchaseOrderApprovalFactory extends Factory
             'requested_by_id' => User::factory(),
             'approver_id' => User::factory(),
             'status' => ProcessApprovalStatus::PENDING,
-            'due_at' => Carbon::now()->addDays(2),
+            'due_at' => \Illuminate\Support\Facades\Date::now()->addDays(2),
         ];
     }
 }

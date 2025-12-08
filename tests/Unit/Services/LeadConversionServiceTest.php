@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Auth;
 
 uses(RefreshDatabase::class);
 
-test('converts lead and creates company', function () {
+test('converts lead and creates company', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);
@@ -36,7 +36,7 @@ test('converts lead and creates company', function () {
         ->and($lead->fresh()->converted_company_id)->toBe($result->company->id);
 });
 
-test('converts lead and creates contact', function () {
+test('converts lead and creates contact', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);
@@ -62,7 +62,7 @@ test('converts lead and creates contact', function () {
         ->and($lead->fresh()->converted_contact_id)->toBe($result->contact->id);
 });
 
-test('converts lead and creates opportunity', function () {
+test('converts lead and creates opportunity', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);
@@ -85,7 +85,7 @@ test('converts lead and creates opportunity', function () {
         ->and($lead->fresh()->converted_opportunity_id)->toBe($result->opportunity->id);
 });
 
-test('marks lead as converted', function () {
+test('marks lead as converted', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);
@@ -109,7 +109,7 @@ test('marks lead as converted', function () {
         ->and($lead->isConverted())->toBeTrue();
 });
 
-test('links contact to company', function () {
+test('links contact to company', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);
@@ -129,7 +129,7 @@ test('links contact to company', function () {
     expect($result->contact->company_id)->toBe($result->company->id);
 });
 
-test('links opportunity to company and contact', function () {
+test('links opportunity to company and contact', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);
@@ -152,7 +152,7 @@ test('links opportunity to company and contact', function () {
         ->and($result->opportunity->contact_id)->toBe($result->contact->id);
 });
 
-test('uses existing company when company_id provided', function () {
+test('uses existing company when company_id provided', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);
@@ -175,7 +175,7 @@ test('uses existing company when company_id provided', function () {
         ->and(Company::count())->toBe(1); // No new company created
 });
 
-test('prevents double conversion', function () {
+test('prevents double conversion', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);
@@ -190,12 +190,12 @@ test('prevents double conversion', function () {
         'new_company_name' => 'Test Company',
     ]);
 
-    expect(fn () => $service->convert($lead->fresh(), [
+    expect(fn (): \App\Services\LeadConversionResult => $service->convert($lead->fresh(), [
         'new_company_name' => 'Another Company',
     ]))->toThrow(\RuntimeException::class, 'already been converted');
 });
 
-test('conversion respects team boundaries', function () {
+test('conversion respects team boundaries', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);

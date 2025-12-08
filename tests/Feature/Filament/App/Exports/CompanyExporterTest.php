@@ -24,7 +24,7 @@ use Relaticle\CustomFields\Enums\CustomFieldWidth;
 
 uses(RefreshDatabase::class);
 
-test('exports company records with basic functionality', function () {
+test('exports company records with basic functionality', function (): void {
     // Create a team and set up a user that belongs to it
     $team = Team::factory()->create();
     $user = User::factory()->create(['current_team_id' => $team->id]);
@@ -51,7 +51,7 @@ test('exports company records with basic functionality', function () {
         ->and($exportModel->team_id)->toBe($team->id);
 })->skip();
 
-test('exports respect team scoping', function () {
+test('exports respect team scoping', function (): void {
     // Create two teams
     $team1 = Team::factory()->create();
     $team2 = Team::factory()->create();
@@ -77,7 +77,7 @@ test('exports respect team scoping', function () {
     expect($exportModel->team_id)->toBe($team1->id);
 })->skip();
 
-test('exports include company custom fields', function () {
+test('exports include company custom fields', function (): void {
     // Create a team and set up a user
     $team = Team::factory()->create();
     $user = User::factory()->create(['current_team_id' => $team->id]);
@@ -87,7 +87,7 @@ test('exports include company custom fields', function () {
     Filament::setTenant($team);
 
     // Create a custom test field
-    $migrator = app(CustomsFieldsMigrators::class);
+    $migrator = resolve(CustomsFieldsMigrators::class);
     $migrator->setTenantId($team->id);
 
     $fieldData = new CustomFieldData(
@@ -117,7 +117,7 @@ test('exports include company custom fields', function () {
     $columns = CompanyExporter::getColumns();
 
     // Convert to array of column names/labels for easier testing
-    $columnLabels = collect($columns)->map(fn ($column) => $column->getLabel())->all();
+    $columnLabels = collect($columns)->map(fn ($column): ?string => $column->getLabel())->all();
 
     // Verify our custom fields are in the export columns
     expect($columnLabels)->toContain('Test Custom Field')

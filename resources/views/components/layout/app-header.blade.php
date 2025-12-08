@@ -11,7 +11,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-4">
         <div>
             <p class="text-xs uppercase tracking-wide text-gray-400">Workspace</p>
-            <h1 class="text-lg font-semibold text-gray-900">{{ $title ?? config('app.name', 'Relaticle') }}</h1>
+            <h1 class="text-lg font-semibold text-gray-900">{{ $title ?? brand_name() }}</h1>
         </div>
 
         <div class="flex items-center gap-4">
@@ -30,7 +30,7 @@
                     </div>
                     <div class="hidden sm:block text-left">
                         <p class="text-sm font-semibold text-gray-900">{{ $user?->name ?? 'Guest' }}</p>
-                        <p class="text-xs text-gray-500">{{ $user?->email ?? 'guest@relaticle.com' }}</p>
+                        <p class="text-xs text-gray-500">{{ $user?->email ?? 'guest@'.(parse_url(config('app.url'), PHP_URL_HOST) ?? 'example.com') }}</p>
                     </div>
                     <x-heroicon-o-chevron-down class="w-4 h-4 text-gray-500"/>
                 </button>

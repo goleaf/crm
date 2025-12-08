@@ -1,5 +1,5 @@
 @props([
-    'title' => config('app.name', 'Relaticle'),
+    'title' => brand_name(),
     'description' => '',
     'breadcrumbs' => [],
     'nav' => [],

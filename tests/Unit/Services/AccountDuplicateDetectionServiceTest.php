@@ -9,12 +9,12 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->service = new AccountDuplicateDetectionService;
     $this->team = Team::factory()->create();
 });
 
-it('scores identical accounts very highly', function () {
+it('scores identical accounts very highly', function (): void {
     $primary = Account::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'Acme Corporation',
@@ -32,7 +32,7 @@ it('scores identical accounts very highly', function () {
     expect($score)->toBeGreaterThan(75);
 });
 
-it('finds duplicates above a threshold', function () {
+it('finds duplicates above a threshold', function (): void {
     $account = Account::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'Northern Lights',
@@ -58,7 +58,7 @@ it('finds duplicates above a threshold', function () {
         ->and($duplicates->first()['score'])->toBeGreaterThan(40);
 });
 
-it('detects duplicates by phone number', function () {
+it('detects duplicates by phone number', function (): void {
     $account = Account::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'Company A',
@@ -76,7 +76,7 @@ it('detects duplicates by phone number', function () {
     expect($score)->toBeGreaterThan(15);
 });
 
-it('handles empty account names gracefully', function () {
+it('handles empty account names gracefully', function (): void {
     $primary = Account::factory()->create([
         'team_id' => $this->team->id,
         'name' => '',
@@ -92,7 +92,7 @@ it('handles empty account names gracefully', function () {
         ->and($score)->toBeLessThanOrEqual(100);
 });
 
-it('handles null website values', function () {
+it('handles null website values', function (): void {
     $primary = Account::factory()->create([
         'team_id' => $this->team->id,
         'website' => null,
@@ -108,7 +108,7 @@ it('handles null website values', function () {
         ->and($score)->toBeLessThanOrEqual(100);
 });
 
-it('handles special characters in account names', function () {
+it('handles special characters in account names', function (): void {
     $primary = Account::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'Acme & Co., Inc.',
@@ -123,7 +123,7 @@ it('handles special characters in account names', function () {
     expect($score)->toBeGreaterThan(15);
 });
 
-it('respects threshold parameter in find', function () {
+it('respects threshold parameter in find', function (): void {
     $account = Account::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'Test Company',
@@ -148,7 +148,7 @@ it('respects threshold parameter in find', function () {
     expect($highThreshold->count())->toBeLessThanOrEqual($lowThreshold->count());
 });
 
-it('respects limit parameter in find', function () {
+it('respects limit parameter in find', function (): void {
     $account = Account::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'Base Company',
@@ -168,7 +168,7 @@ it('respects limit parameter in find', function () {
     expect($limited->count())->toBeLessThanOrEqual(3);
 });
 
-it('handles identical account IDs correctly', function () {
+it('handles identical account IDs correctly', function (): void {
     $account = Account::factory()->create([
         'team_id' => $this->team->id,
     ]);
@@ -178,7 +178,7 @@ it('handles identical account IDs correctly', function () {
     expect($score)->toBe(100.0);
 });
 
-it('normalizes website domains correctly', function () {
+it('normalizes website domains correctly', function (): void {
     $primary = Account::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'Test Corp',
@@ -196,7 +196,7 @@ it('normalizes website domains correctly', function () {
     expect($score)->toBeGreaterThanOrEqual(75);
 });
 
-it('handles subdomain variations', function () {
+it('handles subdomain variations', function (): void {
     $primary = Account::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'Test Corp',
@@ -214,7 +214,7 @@ it('handles subdomain variations', function () {
     expect($score)->toBeGreaterThan(65);
 });
 
-it('only finds duplicates within the same team', function () {
+it('only finds duplicates within the same team', function (): void {
     $team1 = Team::factory()->create();
     $team2 = Team::factory()->create();
 
@@ -236,7 +236,7 @@ it('only finds duplicates within the same team', function () {
     expect($duplicates)->toBeEmpty();
 });
 
-it('handles phone numbers in shipping address', function () {
+it('handles phone numbers in shipping address', function (): void {
     $account = Account::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'Company A',
@@ -254,7 +254,7 @@ it('handles phone numbers in shipping address', function () {
     expect($score)->toBeGreaterThan(15);
 });
 
-it('handles multiple phone numbers across addresses', function () {
+it('handles multiple phone numbers across addresses', function (): void {
     $account = Account::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'Company A',
@@ -273,7 +273,7 @@ it('handles multiple phone numbers across addresses', function () {
     expect($score)->toBeGreaterThan(15);
 });
 
-it('handles boundary similarity scores', function () {
+it('handles boundary similarity scores', function (): void {
     $primary = Account::factory()->create([
         'team_id' => $this->team->id,
         'name' => 'A',

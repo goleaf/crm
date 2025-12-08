@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Concerns;
 
 use App\Services\AvatarService;
+use App\Support\PersonNameFormatter;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Storage;
 
@@ -45,7 +46,7 @@ trait HasProfilePhoto
      *
      * @return Attribute<string, never>
      */
-    public function profilePhotoUrl(): Attribute
+    protected function profilePhotoUrl(): Attribute
     {
         return Attribute::get(fn (): string => $this->profile_photo_path
             ? Storage::disk($this->profilePhotoDisk())->url($this->profile_photo_path)
@@ -57,11 +58,9 @@ trait HasProfilePhoto
      */
     protected function defaultProfilePhotoUrl(): string
     {
-        $name = trim(
-            collect(explode(' ', $this->name))->map(fn ($segment): string => mb_substr($segment, 0, 1))->join(' ')
-        );
+        $initials = PersonNameFormatter::initials($this->name, 2, '?');
 
-        return 'https://ui-avatars.com/api/?name='.urlencode($name).'&color=7F9CF5&background=EBF4FF';
+        return 'https://ui-avatars.com/api/?name='.urlencode($initials).'&color=7F9CF5&background=EBF4FF';
     }
 
     /**
@@ -72,7 +71,7 @@ trait HasProfilePhoto
         return config('jetstream.profile_photo_disk', 'public');
     }
 
-    public function getAvatarAttribute(): string
+    protected function getAvatarAttribute(): string
     {
         return $this->getFilamentAvatarUrl();
     }
@@ -81,6 +80,6 @@ trait HasProfilePhoto
     {
         return $this->profile_photo_path
             ? Storage::disk($this->profilePhotoDisk())->url($this->profile_photo_path)
-            : app(AvatarService::class)->generate($this->name);
+            : resolve(AvatarService::class)->generate($this->name);
     }
 }

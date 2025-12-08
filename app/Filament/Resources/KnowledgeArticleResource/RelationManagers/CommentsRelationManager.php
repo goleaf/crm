@@ -6,6 +6,7 @@ namespace App\Filament\Resources\KnowledgeArticleResource\RelationManagers;
 
 use App\Enums\Knowledge\CommentStatus;
 use App\Models\KnowledgeArticleComment;
+use App\Support\Reactions\ReactionOptions;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\CreateAction;
@@ -20,6 +21,7 @@ use Filament\Support\Enums\Size;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
 final class CommentsRelationManager extends RelationManager
@@ -59,6 +61,19 @@ final class CommentsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('body')
+            ->modifyQueryUsing(
+                fn (Builder $query): Builder => $query
+                    ->withCount('reactions')
+                    ->when(
+                        auth()->check(),
+                        fn (Builder $builder): Builder => $builder->withExists([
+                            'reactions as reacted_by_me' => fn (Builder $reactionQuery): Builder => $reactionQuery->where(
+                                config('laravel-reactions.user.foreign_key', 'user_id'),
+                                auth()->id()
+                            ),
+                        ])
+                    )
+            )
             ->columns([
                 TextColumn::make('body')
                     ->label(__('app.labels.comment'))
@@ -76,6 +91,15 @@ final class CommentsRelationManager extends RelationManager
                     ->label(__('app.labels.internal'))
                     ->boolean()
                     ->toggleable(),
+                TextColumn::make('reactions_count')
+                    ->label(__('app.labels.reactions'))
+                    ->badge()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                IconColumn::make('reacted_by_me')
+                    ->label(__('app.labels.my_reaction'))
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label(__('app.labels.created_at'))
                     ->dateTime()
@@ -101,6 +125,38 @@ final class CommentsRelationManager extends RelationManager
                         ->visible(fn (KnowledgeArticleComment $record): bool => CommentStatus::tryFrom((string) $record->status) !== CommentStatus::HIDDEN)
                         ->action(function (KnowledgeArticleComment $record): void {
                             $record->update(['status' => CommentStatus::HIDDEN]);
+                        }),
+                    Action::make('react')
+                        ->label(__('app.actions.react'))
+                        ->icon('heroicon-o-hand-thumb-up')
+                        ->form([
+                            Select::make('type')
+                                ->label(__('app.labels.reaction_type'))
+                                ->options(ReactionOptions::options())
+                                ->default(ReactionOptions::default())
+                                ->required(),
+                        ])
+                        ->action(function (KnowledgeArticleComment $record, array $data): void {
+                            $user = auth()->user();
+
+                            if ($user === null) {
+                                return;
+                            }
+
+                            $user->reaction($data['type'], $record);
+                        }),
+                    Action::make('removeReaction')
+                        ->label(__('app.actions.remove_reaction'))
+                        ->color('gray')
+                        ->visible(fn (): bool => auth()->check())
+                        ->action(function (KnowledgeArticleComment $record): void {
+                            $user = auth()->user();
+
+                            if ($user === null) {
+                                return;
+                            }
+
+                            $user->removeReactions($record);
                         }),
                     DeleteAction::make(),
                 ]),

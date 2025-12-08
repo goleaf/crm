@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Database\Factories\TaskTimeEntryFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class TaskTimeEntry extends Model
@@ -76,10 +76,10 @@ final class TaskTimeEntry extends Model
         $query = self::where('user_id', $this->user_id)
             ->whereNotNull('started_at')
             ->whereNotNull('ended_at')
-            ->where(function ($q): void {
+            ->where(function (Builder $q): void {
                 $q->whereBetween('started_at', [$this->started_at, $this->ended_at])
                     ->orWhereBetween('ended_at', [$this->started_at, $this->ended_at])
-                    ->orWhere(function ($q): void {
+                    ->orWhere(function (Builder $q): void {
                         $q->where('started_at', '<=', $this->started_at)
                             ->where('ended_at', '>=', $this->ended_at);
                     });

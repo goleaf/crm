@@ -6,8 +6,8 @@ namespace App\Models;
 
 use App\Enums\ProcessStatus;
 use App\Models\Concerns\HasTeam;
+use App\Models\Concerns\HasUniqueSlug;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -21,10 +21,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property array<string, mixed>|null $escalation_rules
  * @property array<string, mixed>|null $metadata
  */
-class ProcessDefinition extends Model
+final class ProcessDefinition extends Model
 {
     use HasFactory;
     use HasTeam;
+    use HasUniqueSlug;
     use SoftDeletes;
 
     /**
@@ -47,6 +48,13 @@ class ProcessDefinition extends Model
         'documentation',
         'template_id',
     ];
+
+    /**
+     * @var list<string>
+     */
+    protected array $constraintFields = [];
+
+    protected string $uniqueSuffixFormat = '-{n}';
 
     /**
      * @return array<string, string|class-string>

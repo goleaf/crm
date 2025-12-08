@@ -7,11 +7,11 @@ namespace App\Models;
 use App\Enums\Knowledge\ArticleVisibility;
 use App\Models\Concerns\HasCreator;
 use App\Models\Concerns\HasTeam;
+use App\Models\Concerns\HasUniqueSlug;
 use App\Observers\KnowledgeCategoryObserver;
 use Database\Factories\KnowledgeCategoryFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -25,6 +25,7 @@ final class KnowledgeCategory extends Model
     use HasFactory;
 
     use HasTeam;
+    use HasUniqueSlug;
     use SoftDeletes;
 
     /**
@@ -39,6 +40,8 @@ final class KnowledgeCategory extends Model
         'parent_id',
         'is_active',
     ];
+
+    protected bool $reslugOnBaseChange = true;
 
     /**
      * @return array<string, string|class-string>

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models\Concerns;
 
+use App\Models\Model;
 use Filament\Facades\Filament;
-use Illuminate\Database\Eloquent\Model;
 
 trait HasCrmAccess
 {

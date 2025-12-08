@@ -8,6 +8,7 @@ use App\Enums\Knowledge\ArticleVisibility;
 use App\Filament\Resources\KnowledgeCategoryResource\Pages\CreateKnowledgeCategory;
 use App\Filament\Resources\KnowledgeCategoryResource\Pages\EditKnowledgeCategory;
 use App\Filament\Resources\KnowledgeCategoryResource\Pages\ListKnowledgeCategories;
+use App\Filament\Support\SlugHelper;
 use App\Models\KnowledgeCategory;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
@@ -60,9 +61,12 @@ final class KnowledgeCategoryResource extends Resource
                         TextInput::make('name')
                             ->label(__('app.labels.name'))
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(SlugHelper::updateSlug()),
                         TextInput::make('slug')
                             ->label(__('app.labels.slug'))
+                            ->rules(['nullable', 'slug'])
                             ->maxLength(255)
                             ->helperText('Generated from the name if left blank.'),
                         Select::make('parent_id')

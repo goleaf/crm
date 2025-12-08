@@ -8,11 +8,13 @@ use App\Filament\RelationManagers\ActivitiesRelationManager;
 use App\Filament\Resources\ProductResource\Pages\CreateProduct;
 use App\Filament\Resources\ProductResource\Pages\EditProduct;
 use App\Filament\Resources\ProductResource\Pages\ListProducts;
+use App\Filament\Support\SlugHelper;
 use App\Models\Product;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -44,11 +46,12 @@ final class ProductResource extends Resource
                         ->schema([
                             TextInput::make('name')
                                 ->required()
-                                ->maxLength(255),
+                                ->maxLength(255)
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(SlugHelper::updateSlug()),
                             TextInput::make('slug')
                                 ->maxLength(255)
-                                ->disabled()
-                                ->dehydrated(false)
+                                ->rules(['nullable', 'slug'])
                                 ->helperText('Auto-generated from name'),
                         ]),
                     Grid::make()
@@ -136,7 +139,7 @@ final class ProductResource extends Resource
                                 ->label('Inventory Quantity')
                                 ->numeric()
                                 ->default(0)
-                                ->visible(fn ($get) => $get('track_inventory')),
+                                ->visible(fn (Get $get): bool => $get('track_inventory')),
                             \Filament\Forms\Components\Toggle::make('is_bundle')
                                 ->label('Bundle Product'),
                         ]),
@@ -151,9 +154,13 @@ final class ProductResource extends Resource
                 ]),
             Section::make('Categories')
                 ->schema([
-                    Select::make('categories')
-                        ->label('Categories')
-                        ->relationship('categories', 'name')
+                    Select::make('taxonomyCategories')
+                        ->label(__('app.labels.categories'))
+                        ->relationship('taxonomyCategories', 'name')
+                        ->options(fn () => \App\Models\Taxonomy::query()
+                            ->where('type', 'product_category')
+                            ->orderBy('name')
+                            ->pluck('name', 'id'))
                         ->multiple()
                         ->searchable()
                         ->preload()
@@ -179,8 +186,8 @@ final class ProductResource extends Resource
                     ->toggleable(),
                 TextColumn::make('manufacturer')
                     ->toggleable(),
-                TextColumn::make('categories.name')
-                    ->label('Categories')
+                TextColumn::make('taxonomyCategories.name')
+                    ->label(__('app.labels.categories'))
                     ->badge()
                     ->separator(',')
                     ->toggleable(),
@@ -212,7 +219,15 @@ final class ProductResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->defaultSort('name');
+            ->defaultSort('name')
+            ->filters([
+                \Filament\Tables\Filters\SelectFilter::make('taxonomyCategories')
+                    ->label(__('app.labels.category'))
+                    ->multiple()
+                    ->relationship('taxonomyCategories', 'name')
+                    ->searchable()
+                    ->preload(),
+            ]);
     }
 
     public static function getRelations(): array

@@ -9,16 +9,15 @@ use App\Enums\ProcessApprovalStatus;
 use App\Enums\PurchaseOrderReceiptType;
 use App\Enums\PurchaseOrderStatus;
 use App\Models\Concerns\HasCreator;
+use App\Models\Concerns\HasReferenceNumbering;
 use App\Models\Concerns\HasTeam;
 use App\Models\Concerns\LogsActivity;
-use App\Services\PurchaseOrderNumberGenerator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Date;
+use MohamedSaid\Referenceable\Traits\HasReference;
 
 /**
  * @property PurchaseOrderStatus $status
@@ -27,9 +26,31 @@ final class PurchaseOrder extends Model
 {
     use HasCreator;
     use HasFactory;
+    use HasReference;
+    use HasReferenceNumbering;
     use HasTeam;
     use LogsActivity;
     use SoftDeletes;
+
+    protected string $referenceColumn = 'number';
+
+    protected string $referenceStrategy = 'template';
+
+    /**
+     * @var array{format: string, sequence_length: int}
+     */
+    protected array $referenceTemplate = [
+        'format' => 'PO-{YEAR}-{SEQ}',
+        'sequence_length' => 5,
+    ];
+
+    /**
+     * @var array{min_digits: int, reset_frequency: string}
+     */
+    protected array $referenceSequential = [
+        'min_digits' => 5,
+        'reset_frequency' => 'yearly',
+    ];
 
     /**
      * @var list<string>
@@ -87,6 +108,14 @@ final class PurchaseOrder extends Model
     ];
 
     /**
+     * Keep reference generation coordinated with registerNumberIfMissing so counters stay in sync.
+     */
+    protected static function bootHasReference(): void
+    {
+        // Override trait boot hook to control generation timing.
+    }
+
+    /**
      * @return array<string, string|class-string>
      */
     protected function casts(): array
@@ -137,7 +166,7 @@ final class PurchaseOrder extends Model
     }
 
     /**
-     * @return HasMany<PurchaseOrderLineItem>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\PurchaseOrderLineItem, $this>
      */
     public function lineItems(): HasMany
     {
@@ -145,7 +174,7 @@ final class PurchaseOrder extends Model
     }
 
     /**
-     * @return HasMany<PurchaseOrderReceipt>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\PurchaseOrderReceipt, $this>
      */
     public function receipts(): HasMany
     {
@@ -153,7 +182,7 @@ final class PurchaseOrder extends Model
     }
 
     /**
-     * @return HasMany<PurchaseOrderApproval>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\PurchaseOrderApproval, $this>
      */
     public function approvals(): HasMany
     {
@@ -166,19 +195,19 @@ final class PurchaseOrder extends Model
             return;
         }
 
-        if ($this->number !== null && $this->sequence !== null) {
-            return;
+        $this->primeReferenceCounter('ordered_at');
+
+        if ($this->number === null) {
+            $this->number = $this->generateReference();
         }
 
-        /** @var PurchaseOrderNumberGenerator $generator */
-        $generator = App::make(PurchaseOrderNumberGenerator::class);
-        $payload = $generator->generate(
-            teamId: $this->team_id,
-            orderedAt: $this->ordered_at ?? Date::now()
-        );
+        if ($this->sequence === null) {
+            $sequence = $this->extractSequenceNumber($this->number);
 
-        $this->number = $payload['number'];
-        $this->sequence = $payload['sequence'];
+            if ($sequence !== null) {
+                $this->sequence = $sequence;
+            }
+        }
     }
 
     /**

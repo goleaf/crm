@@ -9,7 +9,6 @@ use App\Models\PurchaseOrder;
 use App\Models\Team;
 use App\Models\Vendor;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Carbon;
 
 /**
  * @extends Factory<PurchaseOrder>
@@ -32,7 +31,7 @@ final class PurchaseOrderFactory extends Factory
      */
     public function definition(): array
     {
-        $orderedAt = Carbon::now();
+        $orderedAt = \Illuminate\Support\Facades\Date::now();
 
         return [
             'team_id' => Team::factory(),

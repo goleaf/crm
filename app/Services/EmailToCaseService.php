@@ -12,6 +12,7 @@ use App\Enums\CreationSource;
 use App\Models\People;
 use App\Models\SupportCase;
 use App\Models\Team;
+use App\Support\PersonNameFormatter;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 
@@ -131,7 +132,7 @@ final readonly class EmailToCaseService
     private function findOrCreateContact(string $email, ?string $name, Team $team): People
     {
         // Try to find existing contact by email
-        $contact = People::whereHas('emails', function ($query) use ($email): void {
+        $contact = People::whereHas('emails', function (\Illuminate\Contracts\Database\Query\Builder $query) use ($email): void {
             $query->where('email', $email);
         })->first();
 
@@ -142,8 +143,9 @@ final readonly class EmailToCaseService
         // Create new contact
         $contact = People::create([
             'team_id' => $team->id,
-            'first_name' => $name ?? 'Unknown',
-            'last_name' => '',
+            'name' => PersonNameFormatter::full($name, $email),
+            'primary_email' => $email,
+            'creation_source' => CreationSource::EMAIL,
         ]);
 
         // Add email

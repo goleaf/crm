@@ -18,6 +18,7 @@ The Contacts Module provides comprehensive management of individual people assoc
 - **vCard**: A standard file format for electronic business cards containing contact information
 - **Custom Field**: A user-defined data field that extends the standard contact attributes
 - **Persona**: A categorization or profile type assigned to contacts for segmentation and targeting
+- **Document Attachment**: A file uploaded and associated with a Contact record
 
 ## Requirements
 
@@ -176,3 +177,15 @@ The Contacts Module provides comprehensive management of individual people assoc
 3. WHEN a user removes an account association THEN the System SHALL delete the relationship while preserving both the contact and account records
 4. THE System SHALL allow a single contact to be associated with multiple accounts
 5. WHEN a contact is associated with multiple accounts THEN the System SHALL allow designation of a primary account
+
+### Requirement 14
+
+**User Story:** As a sales representative, I want to attach documents to contacts, so that I can keep resumes, contracts, NDAs, and important files organized with each individual.
+
+#### Acceptance Criteria
+
+1. WHEN a user uploads a document THEN the System SHALL attach it to the contact and store it securely with metadata (filename, size, upload date, uploader)
+2. WHEN a user views a contact THEN the System SHALL display all attached documents in a dedicated section with file details
+3. THE System SHALL support common file formats including PDF, DOCX, XLSX, PPTX, and image files
+4. WHEN a user downloads a document THEN the System SHALL serve the file and log the download activity
+5. WHEN a user deletes a document THEN the System SHALL require appropriate permissions and move the file to a soft-deleted state

@@ -11,13 +11,13 @@ use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->withPersonalTeam()->create();
     $this->team = $this->user->currentTeam;
     $this->lead = Lead::factory()->create(['team_id' => $this->team->id]);
 });
 
-test('authorize returns true when user can update lead', function () {
+test('authorize returns true when user can update lead', function (): void {
     Gate::shouldReceive('forUser')
         ->with($this->user)
         ->andReturnSelf();
@@ -28,7 +28,7 @@ test('authorize returns true when user can update lead', function () {
 
     $request = new UpdateLeadRequest;
     $request->setUserResolver(fn () => $this->user);
-    $request->setRouteResolver(fn () => new class
+    $request->setRouteResolver(fn (): object => new class
     {
         public function parameter($key)
         {
@@ -39,7 +39,7 @@ test('authorize returns true when user can update lead', function () {
     expect($request->authorize())->toBeTrue();
 });
 
-test('validates required fields', function () {
+test('validates required fields', function (): void {
     $request = new UpdateLeadRequest;
     $validator = Validator::make([], $request->rules());
 
@@ -50,7 +50,7 @@ test('validates required fields', function () {
         ->and($validator->errors()->has('assignment_strategy'))->toBeTrue();
 });
 
-test('validates name field', function () {
+test('validates name field', function (): void {
     $request = new UpdateLeadRequest;
 
     $validator = Validator::make([
@@ -64,7 +64,7 @@ test('validates name field', function () {
         ->and($validator->errors()->has('name'))->toBeTrue();
 });
 
-test('validates email format', function () {
+test('validates email format', function (): void {
     $request = new UpdateLeadRequest;
 
     $validator = Validator::make([
@@ -79,7 +79,7 @@ test('validates email format', function () {
         ->and($validator->errors()->has('email'))->toBeTrue();
 });
 
-test('passes validation with valid data', function () {
+test('passes validation with valid data', function (): void {
     $request = new UpdateLeadRequest;
 
     $validator = Validator::make([
@@ -95,7 +95,7 @@ test('passes validation with valid data', function () {
     expect($validator->passes())->toBeTrue();
 });
 
-test('has custom error messages', function () {
+test('has custom error messages', function (): void {
     $request = new UpdateLeadRequest;
     $messages = $request->messages();
 

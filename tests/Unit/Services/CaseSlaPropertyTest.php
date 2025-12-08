@@ -23,7 +23,7 @@ uses(RefreshDatabase::class);
  */
 
 // Property: Cases past SLA due date are marked as breached
-test('property: cases past sla due date are marked as breached', function () {
+test('property: cases past sla due date are marked as breached', function (): void {
     $team = Team::factory()->create();
     $priority = fake()->randomElement(CasePriority::cases());
 
@@ -50,7 +50,7 @@ test('property: cases past sla due date are marked as breached', function () {
 })->repeat(100);
 
 // Property: Resolved cases are never marked as breached
-test('property: resolved cases are never marked as breached', function () {
+test('property: resolved cases are never marked as breached', function (): void {
     $team = Team::factory()->create();
     $priority = fake()->randomElement(CasePriority::cases());
 
@@ -70,7 +70,7 @@ test('property: resolved cases are never marked as breached', function () {
 })->repeat(100);
 
 // Property: SLA due date is calculated based on priority
-test('property: sla due date is calculated correctly based on priority', function () {
+test('property: sla due date is calculated correctly based on priority', function (): void {
     $team = Team::factory()->create();
     $priority = fake()->randomElement(CasePriority::cases());
 
@@ -97,7 +97,7 @@ test('property: sla due date is calculated correctly based on priority', functio
 })->repeat(100);
 
 // Property: First response time is recorded only once
-test('property: first response time is recorded only once', function () {
+test('property: first response time is recorded only once', function (): void {
     $team = Team::factory()->create();
 
     $case = SupportCase::factory()->create([
@@ -121,7 +121,7 @@ test('property: first response time is recorded only once', function () {
         ->and($firstResponseTime)->toBeGreaterThanOrEqual(0);
 
     // Try to record again - should not change
-    sleep(1);
+    \Illuminate\Support\Sleep::sleep(1);
     $service->recordFirstResponse($case);
     $case->refresh();
 
@@ -130,7 +130,7 @@ test('property: first response time is recorded only once', function () {
 })->repeat(50);
 
 // Property: Resolution time is recorded only once
-test('property: resolution time is recorded only once and closes case', function () {
+test('property: resolution time is recorded only once and closes case', function (): void {
     $team = Team::factory()->create();
 
     $case = SupportCase::factory()->create([
@@ -155,7 +155,7 @@ test('property: resolution time is recorded only once and closes case', function
         ->and($case->status)->toBe(CaseStatus::CLOSED);
 
     // Try to record again - should not change
-    sleep(1);
+    \Illuminate\Support\Sleep::sleep(1);
     $service->recordResolution($case);
     $case->refresh();
 
@@ -164,7 +164,7 @@ test('property: resolution time is recorded only once and closes case', function
 })->repeat(50);
 
 // Property: SLA breach processing identifies all breached cases
-test('property: sla breach processing identifies all breached cases', function () {
+test('property: sla breach processing identifies all breached cases', function (): void {
     $team = Team::factory()->create();
 
     // Create cases with various SLA states
@@ -202,7 +202,7 @@ test('property: sla breach processing identifies all breached cases', function (
 })->repeat(50);
 
 // Property: Escalation occurs after breach threshold is exceeded
-test('property: escalation occurs after breach threshold is exceeded', function () {
+test('property: escalation occurs after breach threshold is exceeded', function (): void {
     $team = Team::factory()->create();
 
     $case = SupportCase::factory()->create([
@@ -227,7 +227,7 @@ test('property: escalation occurs after breach threshold is exceeded', function 
 })->repeat(100);
 
 // Property: Escalation does not occur before threshold
-test('property: escalation does not occur before threshold is reached', function () {
+test('property: escalation does not occur before threshold is reached', function (): void {
     $team = Team::factory()->create();
 
     $case = SupportCase::factory()->create([
@@ -246,7 +246,7 @@ test('property: escalation does not occur before threshold is reached', function
 })->repeat(100);
 
 // Property: Escalation levels increase sequentially
-test('property: escalation levels increase sequentially', function () {
+test('property: escalation levels increase sequentially', function (): void {
     $team = Team::factory()->create();
 
     $case = SupportCase::factory()->create([
@@ -276,7 +276,7 @@ test('property: escalation levels increase sequentially', function () {
 })->repeat(50);
 
 // Property: Resolved cases do not escalate
-test('property: resolved cases do not escalate regardless of breach duration', function () {
+test('property: resolved cases do not escalate regardless of breach duration', function (): void {
     $team = Team::factory()->create();
 
     $case = SupportCase::factory()->create([
@@ -294,7 +294,7 @@ test('property: resolved cases do not escalate regardless of breach duration', f
 })->repeat(100);
 
 // Property: SLA due date updates when priority changes
-test('property: sla due date updates when priority changes', function () {
+test('property: sla due date updates when priority changes', function (): void {
     $team = Team::factory()->create();
 
     $case = SupportCase::factory()->create([
@@ -323,7 +323,7 @@ test('property: sla due date updates when priority changes', function () {
 })->repeat(50);
 
 // Property: Cases without SLA due date are never breached
-test('property: cases without sla due date are never marked as breached', function () {
+test('property: cases without sla due date are never marked as breached', function (): void {
     $team = Team::factory()->create();
 
     $case = SupportCase::factory()->create([
@@ -340,7 +340,7 @@ test('property: cases without sla due date are never marked as breached', functi
 })->repeat(100);
 
 // Property: Bulk SLA processing is idempotent
-test('property: processing sla breaches multiple times does not duplicate marks', function () {
+test('property: processing sla breaches multiple times does not duplicate marks', function (): void {
     $team = Team::factory()->create();
 
     // Create breached cases

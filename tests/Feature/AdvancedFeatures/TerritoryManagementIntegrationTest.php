@@ -27,7 +27,7 @@ uses(RefreshDatabase::class);
  * Tests the complete workflow of territory assignment, access control,
  * and permission enforcement across multiple users and records.
  */
-test('complete territory-based access control workflow', function () {
+test('complete territory-based access control workflow', function (): void {
     $team = Team::factory()->create();
     $service = new TerritoryService;
 
@@ -130,7 +130,7 @@ test('complete territory-based access control workflow', function () {
 /**
  * Integration test: Territory overlap resolution
  */
-test('territory overlaps are resolved according to strategy', function () {
+test('territory overlaps are resolved according to strategy', function (): void {
     $team = Team::factory()->create();
     $service = new TerritoryService;
 
@@ -180,7 +180,7 @@ test('territory overlaps are resolved according to strategy', function () {
 /**
  * Integration test: Territory transfer workflow
  */
-test('territory transfer maintains audit trail', function () {
+test('territory transfer maintains audit trail', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $service = new TerritoryService;
@@ -223,7 +223,7 @@ test('territory transfer maintains audit trail', function () {
 /**
  * Integration test: Territory hierarchy and inheritance
  */
-test('territory hierarchy maintains parent-child relationships', function () {
+test('territory hierarchy maintains parent-child relationships', function (): void {
     $team = Team::factory()->create();
 
     // Create parent territory
@@ -268,7 +268,7 @@ test('territory hierarchy maintains parent-child relationships', function () {
 /**
  * Integration test: Territory quota tracking
  */
-test('territory quotas track performance against targets', function () {
+test('territory quotas track performance against targets', function (): void {
     $team = Team::factory()->create();
 
     $territory = Territory::factory()->for($team)->create();
@@ -316,7 +316,7 @@ test('territory quotas track performance against targets', function () {
 /**
  * Integration test: Territory balancing
  */
-test('territory balancing calculates distribution', function () {
+test('territory balancing calculates distribution', function (): void {
     $team = Team::factory()->create();
     $service = new TerritoryService;
 

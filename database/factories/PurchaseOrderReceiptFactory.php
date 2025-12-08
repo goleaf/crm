@@ -9,7 +9,6 @@ use App\Models\PurchaseOrderLineItem;
 use App\Models\PurchaseOrderReceipt;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Carbon;
 
 /**
  * @extends Factory<PurchaseOrderReceipt>
@@ -25,6 +24,8 @@ final class PurchaseOrderReceiptFactory extends Factory
                 $receipt->team_id = $receipt->purchaseOrder->team_id;
                 $receipt->purchase_order_line_item_id ??= $receipt->purchaseOrder->lineItems()->first()?->id;
             }
+
+            $receipt->registerReferenceIfMissing();
         });
     }
 
@@ -47,8 +48,8 @@ final class PurchaseOrderReceiptFactory extends Factory
             'quantity' => $quantity,
             'unit_cost' => $unitCost,
             'line_total' => round($quantity * $unitCost, 2),
-            'received_at' => Carbon::now(),
-            'reference' => $this->faker->bothify('PACK-#####'),
+            'received_at' => \Illuminate\Support\Facades\Date::now(),
+            'reference' => null,
             'notes' => $this->faker->sentence(),
         ];
     }

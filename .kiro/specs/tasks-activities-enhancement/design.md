@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Tasks & Activities Enhancement builds upon the existing foundational models (Task, Note, Activity) to provide a comprehensive task management, note-taking, and activity tracking system. The design leverages Laravel's Eloquent ORM, Filament v4 for the UI layer, and the existing custom fields system for flexible data storage. The architecture emphasizes data integrity, performance, and user experience through proper relationship management, validation, and real-time updates.
+The Tasks & Activities Enhancement builds upon the existing foundational models (Task, Note, Activity) to provide a comprehensive task management, note-taking, and activity tracking system. The design leverages Laravel's Eloquent ORM, Filament v4.3+ for the UI layer, and the existing custom fields system for flexible data storage. The architecture emphasizes data integrity, performance, and user experience through proper relationship management, validation, and real-time updates.
 
 ## Architecture
 

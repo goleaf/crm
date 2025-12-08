@@ -7,12 +7,12 @@ use Filament\Facades\Filament;
 use Relaticle\SystemAdmin\Enums\SystemAdministratorRole;
 use Relaticle\SystemAdmin\Models\SystemAdministrator;
 
-describe('SystemAdmin Security', function () {
-    beforeEach(function () {
+describe('SystemAdmin Security', function (): void {
+    beforeEach(function (): void {
         Filament::setCurrentPanel('sysadmin');
     });
 
-    it('enforces complete authentication isolation', function () {
+    it('enforces complete authentication isolation', function (): void {
         $admin = SystemAdministrator::factory()->create();
         $user = User::factory()->create();
 
@@ -28,7 +28,7 @@ describe('SystemAdmin Security', function () {
         $this->assertGuest('web');
     });
 
-    it('enforces role-based authorization', function () {
+    it('enforces role-based authorization', function (): void {
         $superAdmin = SystemAdministrator::factory()->create([
             'role' => SystemAdministratorRole::SuperAdministrator,
         ]);
@@ -46,13 +46,13 @@ describe('SystemAdmin Security', function () {
             ->and(auth('sysadmin')->user()->can('delete', $superAdmin))->toBeFalse();
     });
 
-    it('requires email verification for panel access', function () {
+    it('requires email verification for panel access', function (): void {
         $unverifiedAdmin = SystemAdministrator::factory()->unverified()->create();
 
         expect($unverifiedAdmin->canAccessPanel(Filament::getPanel('sysadmin')))->toBeFalse();
     });
 
-    it('protects routes with authentication', function () {
+    it('protects routes with authentication', function (): void {
         $this->get('/sysadmin/system-administrators')
             ->assertRedirect('/sysadmin/login');
 
@@ -63,7 +63,7 @@ describe('SystemAdmin Security', function () {
             ->assertOk();
     });
 
-    it('validates data integrity', function () {
+    it('validates data integrity', function (): void {
         $admin = SystemAdministrator::factory()->create([
             'role' => SystemAdministratorRole::SuperAdministrator,
         ]);

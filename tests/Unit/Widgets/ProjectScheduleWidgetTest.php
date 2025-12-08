@@ -7,17 +7,16 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Support\Carbon;
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->user = User::factory()->create();
     $this->team = Team::factory()->create();
     $this->user->teams()->attach($this->team);
     $this->actingAs($this->user);
 });
 
-describe('ProjectScheduleWidget', function () {
-    it('returns empty data when no project is set', function () {
+describe('ProjectScheduleWidget', function (): void {
+    it('returns empty data when no project is set', function (): void {
         $widget = new ProjectScheduleWidget;
         $viewData = $widget->getViewData();
 
@@ -28,10 +27,10 @@ describe('ProjectScheduleWidget', function () {
             ->and($viewData['criticalPath'])->toBeEmpty();
     });
 
-    it('returns schedule summary when project is set', function () {
+    it('returns schedule summary when project is set', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
-            'start_date' => Carbon::parse('2025-01-01'),
+            'start_date' => \Illuminate\Support\Facades\Date::parse('2025-01-01'),
         ]);
 
         $task = Task::factory()->create([
@@ -55,10 +54,10 @@ describe('ProjectScheduleWidget', function () {
             ->and($viewData['project']->id)->toBe($project->id);
     });
 
-    it('returns critical path tasks', function () {
+    it('returns critical path tasks', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
-            'start_date' => Carbon::parse('2025-01-01'),
+            'start_date' => \Illuminate\Support\Facades\Date::parse('2025-01-01'),
         ]);
 
         $taskA = Task::factory()->create([
@@ -83,10 +82,10 @@ describe('ProjectScheduleWidget', function () {
             ->toContain($taskA->id, $taskB->id);
     });
 
-    it('returns timeline with milestones', function () {
+    it('returns timeline with milestones', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
-            'start_date' => Carbon::parse('2025-01-01'),
+            'start_date' => \Illuminate\Support\Facades\Date::parse('2025-01-01'),
         ]);
 
         $milestone = Task::factory()->create([
@@ -106,35 +105,33 @@ describe('ProjectScheduleWidget', function () {
             ->and($viewData['timeline']['milestones'])->toHaveCount(1);
     });
 
-    it('can be viewed by authenticated users', function () {
+    it('can be viewed by authenticated users', function (): void {
         expect(ProjectScheduleWidget::canView())->toBeTrue();
     });
 
-    it('cannot be viewed by unauthenticated users', function () {
+    it('cannot be viewed by unauthenticated users', function (): void {
         auth()->logout();
 
         expect(ProjectScheduleWidget::canView())->toBeFalse();
     });
 
-    it('has full column span', function () {
+    it('has full column span', function (): void {
         $widget = new ProjectScheduleWidget;
         $reflection = new ReflectionClass($widget);
         $property = $reflection->getProperty('columnSpan');
-        $property->setAccessible(true);
 
         expect($property->getValue($widget))->toBe('full');
     });
 
-    it('uses correct view', function () {
+    it('uses correct view', function (): void {
         $widget = new ProjectScheduleWidget;
         $reflection = new ReflectionClass($widget);
         $property = $reflection->getProperty('view');
-        $property->setAccessible(true);
 
         expect($property->getValue($widget))->toBe('filament.widgets.project-schedule-widget');
     });
 
-    it('handles project with no tasks gracefully', function () {
+    it('handles project with no tasks gracefully', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
         ]);
@@ -149,10 +146,10 @@ describe('ProjectScheduleWidget', function () {
             ->and($viewData['criticalPath'])->toBeEmpty();
     });
 
-    it('handles project with complex dependencies', function () {
+    it('handles project with complex dependencies', function (): void {
         $project = Project::factory()->create([
             'team_id' => $this->team->id,
-            'start_date' => Carbon::parse('2025-01-01'),
+            'start_date' => \Illuminate\Support\Facades\Date::parse('2025-01-01'),
         ]);
 
         // Create diamond dependency: A -> B,C -> D

@@ -13,12 +13,11 @@ use App\Models\EmailProgramStep;
 use App\Models\EmailProgramUnsubscribe;
 use App\Models\Team;
 use App\Services\EmailProgramService;
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->service = new EmailProgramService;
 });
 
@@ -200,7 +199,7 @@ test('calculates daily analytics', function (): void {
     $program = EmailProgram::factory()->for($team)->active()->create();
     $step = EmailProgramStep::factory()->for($program)->create();
 
-    $date = Carbon::today();
+    $date = \Illuminate\Support\Facades\Date::today();
 
     // Create recipients with various statuses
     EmailProgramRecipient::factory()
@@ -259,7 +258,7 @@ test('processes pending sends respects throttling', function (): void {
             'scheduled_send_at' => now()->subMinutes(5),
         ]);
 
-    $now = Carbon::now();
+    $now = \Illuminate\Support\Facades\Date::now();
     $processed = $this->service->processPendingSends($now);
 
     // Should only process 2 due to throttling

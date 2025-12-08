@@ -9,11 +9,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
+beforeEach(function (): void {
     $this->service = new DuplicateDetectionService;
 });
 
-it('scores identical companies very highly', function () {
+it('scores identical companies very highly', function (): void {
     $primary = Company::factory()->create([
         'name' => 'Acme Corporation',
         'website' => 'https://acme.example.com',
@@ -31,7 +31,7 @@ it('scores identical companies very highly', function () {
     expect($score)->toBeGreaterThan(90);
 });
 
-it('finds duplicates above a threshold', function () {
+it('finds duplicates above a threshold', function (): void {
     $company = Company::factory()->create([
         'name' => 'Northern Lights',
         'website' => 'https://northern.example.com',
@@ -56,7 +56,7 @@ it('finds duplicates above a threshold', function () {
         ->and($duplicates->first()['score'])->toBeGreaterThan(40);
 });
 
-it('provides a merge suggestion that favors primary values', function () {
+it('provides a merge suggestion that favors primary values', function (): void {
     $primary = Company::factory()->create([
         'name' => 'Horizon Partners',
         'website' => 'https://horizon.example.com',
@@ -76,7 +76,7 @@ it('provides a merge suggestion that favors primary values', function () {
 });
 
 // Edge case tests
-it('handles empty company names gracefully', function () {
+it('handles empty company names gracefully', function (): void {
     $primary = Company::factory()->create(['name' => '']);
     $duplicate = Company::factory()->create(['name' => '']);
 
@@ -86,7 +86,7 @@ it('handles empty company names gracefully', function () {
         ->and($score)->toBeLessThanOrEqual(100);
 });
 
-it('handles null website values', function () {
+it('handles null website values', function (): void {
     $primary = Company::factory()->create(['website' => null]);
     $duplicate = Company::factory()->create(['website' => null]);
 
@@ -96,7 +96,7 @@ it('handles null website values', function () {
         ->and($score)->toBeLessThanOrEqual(100);
 });
 
-it('handles special characters in company names', function () {
+it('handles special characters in company names', function (): void {
     $primary = Company::factory()->create(['name' => 'Acme & Co., Inc.']);
     $duplicate = Company::factory()->create(['name' => 'ACME and Company Incorporated']);
 
@@ -105,7 +105,7 @@ it('handles special characters in company names', function () {
     expect($score)->toBeGreaterThan(20);
 });
 
-it('handles very long company names', function () {
+it('handles very long company names', function (): void {
     $longName = str_repeat('A', 255);
     $primary = Company::factory()->create(['name' => $longName]);
     $duplicate = Company::factory()->create(['name' => $longName.' Inc']);
@@ -117,7 +117,7 @@ it('handles very long company names', function () {
         ->and($score)->toBeGreaterThan(50);
 });
 
-it('respects threshold parameter in findDuplicates', function () {
+it('respects threshold parameter in findDuplicates', function (): void {
     $company = Company::factory()->create([
         'name' => 'Test Company',
         'website' => 'https://test.example.com',
@@ -139,7 +139,7 @@ it('respects threshold parameter in findDuplicates', function () {
     expect($highThreshold->count())->toBeLessThanOrEqual($lowThreshold->count());
 });
 
-it('respects limit parameter in findDuplicates', function () {
+it('respects limit parameter in findDuplicates', function (): void {
     $company = Company::factory()->create(['name' => 'Base Company']);
 
     // Create 10 similar companies
@@ -155,7 +155,7 @@ it('respects limit parameter in findDuplicates', function () {
     expect($limited->count())->toBeLessThanOrEqual(3);
 });
 
-it('handles identical company IDs correctly', function () {
+it('handles identical company IDs correctly', function (): void {
     $company = Company::factory()->create();
 
     $score = $this->service->calculateSimilarity($company, $company);
@@ -163,7 +163,7 @@ it('handles identical company IDs correctly', function () {
     expect($score)->toBe(100.0);
 });
 
-it('normalizes website domains correctly', function () {
+it('normalizes website domains correctly', function (): void {
     $primary = Company::factory()->create([
         'name' => 'Test Corp',
         'website' => 'https://www.example.com/path',
@@ -179,7 +179,7 @@ it('normalizes website domains correctly', function () {
     expect($score)->toBeGreaterThanOrEqual(90);
 });
 
-it('handles subdomain variations', function () {
+it('handles subdomain variations', function (): void {
     $primary = Company::factory()->create([
         'name' => 'Test Corp',
         'website' => 'https://app.example.com',
@@ -195,7 +195,7 @@ it('handles subdomain variations', function () {
     expect($score)->toBeGreaterThan(70);
 });
 
-it('prefers non-empty values in merge suggestions', function () {
+it('prefers non-empty values in merge suggestions', function (): void {
     $primary = Company::factory()->create([
         'name' => 'Primary Corp',
         'website' => '',
@@ -214,7 +214,7 @@ it('prefers non-empty values in merge suggestions', function () {
         ->and($suggestions->firstWhere('attribute', 'description')['selected'])->toBe('A great company');
 });
 
-it('handles boundary similarity scores', function () {
+it('handles boundary similarity scores', function (): void {
     $primary = Company::factory()->create(['name' => 'A']);
     $duplicate = Company::factory()->create(['name' => 'Z']);
 

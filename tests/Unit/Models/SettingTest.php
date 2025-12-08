@@ -335,7 +335,7 @@ it('updates updated_at timestamp on save', function (): void {
 
     $originalUpdatedAt = $setting->updated_at;
 
-    sleep(1);
+    \Illuminate\Support\Sleep::sleep(1);
 
     $setting->value = 'updated';
     $setting->save();

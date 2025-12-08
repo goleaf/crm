@@ -12,6 +12,7 @@ use App\Filament\Resources\DocumentResource\RelationManagers\SharesRelationManag
 use App\Filament\Resources\DocumentResource\RelationManagers\VersionsRelationManager;
 use App\Models\Document;
 use App\Models\User;
+use App\Support\Paths\StoragePaths;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -37,6 +38,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 final class DocumentResource extends Resource
 {
@@ -67,6 +69,28 @@ final class DocumentResource extends Resource
                                     ->maxLength(255),
                                 Textarea::make('description')
                                     ->rows(3),
+                                Select::make('taxonomyCategories')
+                                    ->label(__('app.labels.category'))
+                                    ->options(fn() => \App\Models\Taxonomy::query()
+                                        ->where('type', 'document_category')
+                                        ->orderBy('name')
+                                        ->pluck('name', 'id'))
+                                    ->relationship('taxonomyCategories')
+                                    ->multiple()
+                                    ->searchable()
+                                    ->preload()
+                                    ->columnSpanFull(),
+                                Select::make('taxonomyTags')
+                                    ->label(__('app.labels.tags'))
+                                    ->options(fn() => \App\Models\Taxonomy::query()
+                                        ->where('type', 'document_tag')
+                                        ->orderBy('name')
+                                        ->pluck('name', 'id'))
+                                    ->relationship('taxonomyTags')
+                                    ->multiple()
+                                    ->searchable()
+                                    ->preload()
+                                    ->columnSpanFull(),
                                 Select::make('template_id')
                                     ->relationship('template', 'name')
                                     ->label('Template')
@@ -84,7 +108,15 @@ final class DocumentResource extends Resource
                                 FileUpload::make('upload')
                                     ->label('Initial file')
                                     ->disk('public')
-                                    ->directory('documents')
+                                    ->directory(fn(): string => StoragePaths::documentsDirectory(self::resolveTeamId()))
+                                    ->getUploadedFileNameForStorageUsing(
+                                        fn(TemporaryUploadedFile $file): string => \Blaspsoft\Onym\Facades\Onym::make(
+                                            defaultFilename: '',
+                                            extension: $file->getClientOriginalExtension(),
+                                            strategy: 'uuid',
+                                            options: ['suffix' => '_' . now()->format('Ymd')]
+                                        )
+                                    )
                                     ->helperText('Optional: upload the first version now.')
                                     ->dehydrated(false),
                             ])
@@ -99,9 +131,9 @@ final class DocumentResource extends Resource
                                         $teamId = Filament::getTenant()?->getKey() ?? Auth::user()?->currentTeam?->getKey();
 
                                         return User::query()
-                                            ->when($teamId, fn (Builder $query, int $team): Builder => $query->whereHas(
+                                            ->when($teamId, fn(Builder $query, int $team): Builder => $query->whereHas(
                                                 'teams',
-                                                fn (Builder $builder): Builder => $builder->where('teams.id', $team)
+                                                fn(Builder $builder): Builder => $builder->where('teams.id', $team)
                                             ))
                                             ->orderBy('name')
                                             ->pluck('name', 'id');
@@ -109,7 +141,7 @@ final class DocumentResource extends Resource
                                     ->columns(2)
                                     ->searchable()
                                     ->bulkToggleable()
-                                    ->default(fn (?Document $record): array => $record?->shares()->pluck('user_id')->all() ?? [])
+                                    ->default(fn(?Document $record): array => $record?->shares()->pluck('user_id')->all() ?? [])
                                     ->helperText('Selected users receive view access. Use the list below to grant edit permissions.')
                                     ->dehydrated(false),
                                 Repeater::make('shares')
@@ -121,9 +153,9 @@ final class DocumentResource extends Resource
                                             ->relationship('user', 'name', modifyQueryUsing: function (Builder $query): Builder {
                                                 $teamId = Filament::getTenant()?->getKey() ?? Auth::user()?->currentTeam?->getKey();
 
-                                                return $query->when($teamId, fn (Builder $builder, int $team): Builder => $builder->whereHas(
+                                                return $query->when($teamId, fn(Builder $builder, int $team): Builder => $builder->whereHas(
                                                     'teams',
-                                                    fn (Builder $teamQuery): Builder => $teamQuery->where('teams.id', $team)
+                                                    fn(Builder $teamQuery): Builder => $teamQuery->where('teams.id', $team)
                                                 ));
                                             })
                                             ->searchable()
@@ -141,7 +173,7 @@ final class DocumentResource extends Resource
                                     ->addActionLabel('Add person')
                                     ->columns(2)
                                     ->collapsed()
-                                    ->itemLabel(fn (array $state): ?string => isset($state['user_id']) ? User::find($state['user_id'])?->name : null),
+                                    ->itemLabel(fn(array $state): ?string => isset($state['user_id']) ? User::find($state['user_id'])?->name : null),
                             ])
                             ->columns(1)
                             ->columnSpan(12),
@@ -162,6 +194,16 @@ final class DocumentResource extends Resource
                         'info' => 'team',
                         'success' => 'public',
                     ]),
+                TextColumn::make('taxonomyCategories.name')
+                    ->label(__('app.labels.category'))
+                    ->badge()
+                    ->separator(',')
+                    ->toggleable(),
+                TextColumn::make('taxonomyTags.name')
+                    ->label(__('app.labels.tags'))
+                    ->badge()
+                    ->separator(',')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('template.name')
                     ->label('Template')
                     ->sortable()
@@ -176,6 +218,18 @@ final class DocumentResource extends Resource
             ])
             ->defaultSort('updated_at', 'desc')
             ->filters([
+                \Filament\Tables\Filters\SelectFilter::make('taxonomyCategories')
+                    ->label(__('app.labels.category'))
+                    ->multiple()
+                    ->relationship('taxonomyCategories', 'name')
+                    ->searchable()
+                    ->preload(),
+                \Filament\Tables\Filters\SelectFilter::make('taxonomyTags')
+                    ->label(__('app.labels.tags'))
+                    ->multiple()
+                    ->relationship('taxonomyTags', 'name')
+                    ->searchable()
+                    ->preload(),
             ])
             ->actions([
                 ViewAction::make(),
@@ -218,5 +272,10 @@ final class DocumentResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+    }
+
+    private static function resolveTeamId(): ?int
+    {
+        return Filament::getTenant()?->getKey() ?? Auth::user()?->currentTeam?->getKey();
     }
 }

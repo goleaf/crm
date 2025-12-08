@@ -18,13 +18,13 @@ it('dispatches CRM events for account lifecycle', function (): void {
 
     $account = Account::factory()->create();
 
-    Event::assertDispatched(CrmModelCreated::class, fn (CrmModelCreated $event): bool => $event->model->is($account));
+    Event::assertDispatched(fn (\App\Events\CrmModelCreated $event): bool => $event->model->is($account));
 
     $account->update(['name' => 'Updated '.$account->name]);
-    Event::assertDispatched(CrmModelUpdated::class, fn (CrmModelUpdated $event): bool => $event->model->is($account));
+    Event::assertDispatched(fn (\App\Events\CrmModelUpdated $event): bool => $event->model->is($account));
 
     $account->delete();
-    Event::assertDispatched(CrmModelDeleted::class, fn (CrmModelDeleted $event): bool => $event->model->is($account));
+    Event::assertDispatched(fn (\App\Events\CrmModelDeleted $event): bool => $event->model->is($account));
 });
 
 it('registers log listener for CRM model events', function (): void {

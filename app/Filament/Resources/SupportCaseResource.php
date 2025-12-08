@@ -17,6 +17,7 @@ use App\Filament\Resources\SupportCaseResource\Pages\ListSupportCases;
 use App\Filament\Resources\SupportCaseResource\Pages\ViewSupportCase;
 use App\Filament\Resources\SupportCaseResource\RelationManagers\NotesRelationManager;
 use App\Filament\Resources\SupportCaseResource\RelationManagers\TasksRelationManager;
+use App\Filament\Support\Filters\DateScopeFilter;
 use App\Models\SupportCase;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -150,6 +151,7 @@ final class SupportCaseResource extends Resource
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
+                DateScopeFilter::make(),
                 SelectFilter::make('status')
                     ->label(__('app.labels.status'))
                     ->options(CaseStatus::class)

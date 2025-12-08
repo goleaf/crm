@@ -47,7 +47,7 @@ final class TaskTemplateFactory extends Factory
                 ->map(fn (int $i): array => [
                     'title' => fake()->sentence(4),
                 ])
-                ->toArray(),
+                ->all(),
         ]);
     }
 }

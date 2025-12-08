@@ -19,7 +19,7 @@ it('has key column with unique constraint', function (): void {
     expect(Schema::hasColumn('settings', 'key'))->toBeTrue();
 
     $indexes = Schema::getIndexes('settings');
-    $uniqueKeys = array_filter($indexes, fn ($index) => $index['unique'] && in_array('key', $index['columns']));
+    $uniqueKeys = array_filter($indexes, fn (array $index): bool => $index['unique'] && in_array('key', $index['columns']));
 
     expect($uniqueKeys)->not->toBeEmpty();
 });
@@ -59,32 +59,30 @@ it('has timestamps columns', function (): void {
 
 it('has composite index on group and key', function (): void {
     $indexes = Schema::getIndexes('settings');
-    $compositeIndex = array_filter($indexes, function ($index) {
-        return count($index['columns']) === 2
-            && in_array('group', $index['columns'])
-            && in_array('key', $index['columns']);
-    });
+    $compositeIndex = array_filter($indexes, fn (array $index): bool => count($index['columns']) === 2
+        && in_array('group', $index['columns'])
+        && in_array('key', $index['columns']));
 
     expect($compositeIndex)->not->toBeEmpty();
 });
 
 it('has index on team_id', function (): void {
     $indexes = Schema::getIndexes('settings');
-    $teamIdIndex = array_filter($indexes, fn ($index) => in_array('team_id', $index['columns']));
+    $teamIdIndex = array_filter($indexes, fn (array $index): bool => in_array('team_id', $index['columns']));
 
     expect($teamIdIndex)->not->toBeEmpty();
 });
 
 it('has foreign key constraint on team_id', function (): void {
     $foreignKeys = Schema::getForeignKeys('settings');
-    $teamForeignKey = array_filter($foreignKeys, fn ($fk) => in_array('team_id', $fk['columns']));
+    $teamForeignKey = array_filter($foreignKeys, fn (array $fk): bool => in_array('team_id', $fk['columns']));
 
     expect($teamForeignKey)->not->toBeEmpty();
 });
 
 it('cascades on delete for team_id', function (): void {
     $foreignKeys = Schema::getForeignKeys('settings');
-    $teamForeignKey = collect($foreignKeys)->first(fn ($fk) => in_array('team_id', $fk['columns']));
+    $teamForeignKey = collect($foreignKeys)->first(fn ($fk): bool => in_array('team_id', $fk['columns']));
 
     expect($teamForeignKey)->not->toBeNull()
         ->and($teamForeignKey['on_delete'])->toBe('cascade');

@@ -7,10 +7,10 @@ namespace App\Services;
 use App\Enums\PdfGenerationStatus;
 use App\Models\PdfGeneration;
 use App\Models\PdfTemplate;
+use App\Support\Paths\StoragePaths;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 final class PdfService
 {
@@ -26,6 +26,9 @@ final class PdfService
         array $mergeData = [],
         array $options = []
     ): PdfGeneration {
+        $fileName = $this->generateFileName($template, $entity);
+        $filePath = StoragePaths::pdfStoragePath($template->team_id, $fileName);
+
         $generation = PdfGeneration::create([
             'team_id' => $template->team_id,
             'pdf_template_id' => $template->id,
@@ -34,7 +37,9 @@ final class PdfService
             'merge_data' => $mergeData,
             'generation_options' => $options,
             'status' => PdfGenerationStatus::PROCESSING,
-            'file_name' => $this->generateFileName($template, $entity),
+            'file_name' => $fileName,
+            'file_path' => $filePath,
+            'generated_at' => now(),
         ]);
 
         try {
@@ -50,11 +55,10 @@ final class PdfService
                 $generation->is_encrypted = true;
             }
 
-            $output = $pdf->output();
-            $filePath = $this->storePdf($output, $generation->file_name, $template->team_id);
+            $output = $pdf->output(['compress' => 0]);
+            $this->storePdf($output, $generation->file_path);
 
             $generation->update([
-                'file_path' => $filePath,
                 'file_size' => strlen($output),
                 'page_count' => $this->estimatePageCount($output),
                 'status' => PdfGenerationStatus::COMPLETED,
@@ -79,6 +83,10 @@ final class PdfService
     private function renderTemplate(PdfTemplate $template, Model $entity, array $mergeData): string
     {
         $html = $template->layout;
+
+        if (substr_count($html, '{{') !== substr_count($html, '}}')) {
+            throw new \InvalidArgumentException('Unbalanced merge placeholders in PDF template');
+        }
 
         $allData = array_merge(
             $this->extractEntityData($entity),
@@ -173,12 +181,9 @@ final class PdfService
     /**
      * Store PDF file.
      */
-    private function storePdf(string $content, string $fileName, int $teamId): string
+    private function storePdf(string $content, string $filePath): void
     {
-        $path = sprintf('pdfs/team-%d/%s', $teamId, $fileName);
-        Storage::disk('local')->put($path, $content);
-
-        return $path;
+        Storage::disk('local')->put($filePath, $content);
     }
 
     /**
@@ -186,12 +191,7 @@ final class PdfService
      */
     private function generateFileName(PdfTemplate $template, Model $entity): string
     {
-        $entityName = class_basename($entity);
-        $entityId = $entity->getKey();
-        $timestamp = now()->format('YmdHis');
-        $random = Str::random(8);
-
-        return sprintf('%s-%s-%s-%s-%s.pdf', $template->key, $entityName, $entityId, $timestamp, $random);
+        return StoragePaths::pdfFileName($template->key, $entity);
     }
 
     /**

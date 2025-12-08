@@ -12,7 +12,7 @@ file_patterns:
   - "app/Models/**/*.php"
 ---
 
-# Filament v4 Conventions & Best Practices
+# Filament v4.3+ Conventions & Best Practices
 
 ## Core Architecture Changes in v4
 
@@ -82,6 +82,8 @@ TextColumn::make('segments')
         return (string) $state;
     })
 ```
+
+Prefer `App\Support\Helpers\ArrayHelper::joinList()` for these cases so JSON strings/arrays/collections share one normalization path (trimming blanks, optional placeholders, optional final separator) instead of repeating `implode()` logic in each resource.
 
 **Why This Matters:**
 - Model casts may not always be applied (e.g., in exports, raw queries)
@@ -157,6 +159,22 @@ public static function configure(Table $table): Table
 
 // Use simple pagination for better performance
 ->simplePagination()
+```
+
+
+### File Upload Handling
+- **Always** generate filenames using `Onym` to prevent collisions and sanitize inputs.
+```php
+use Blaspsoft\Onym\Facades\Onym;
+
+FileUpload::make('attachment')
+    ->getUploadedFileNameForStorageUsing(
+        fn ($file) => Onym::make(
+            defaultFilename: '',
+            extension: $file->getClientOriginalExtension(),
+            strategy: 'uuid'
+        )
+    );
 ```
 
 ## Form Best Practices
@@ -536,12 +554,12 @@ file_patterns:
   - "app/Filament/**/Tables/**"
 ---
 
-# Filament v4 Schema Patterns & Layout Best Practices
+# Filament v4.3+ Schema Patterns & Layout Best Practices
 
 ## Schema Architecture
 
 ### What is a Schema?
-A Schema is Filament v4's unified approach to building UI components. It replaces separate Form/Infolist/Layout systems with one consistent pattern.
+A Schema is Filament v4.3+'s unified approach to building UI components. It replaces separate Form/Infolist/Layout systems with one consistent pattern.
 
 ```php
 use Filament\Schemas\Schema;
@@ -989,7 +1007,7 @@ file_patterns:
   - "app/Filament/**/Resources/**"
 ---
 
-# Filament v4 Unified Actions System
+# Filament v4.3+ Unified Actions System
 
 ## The v4 Action Revolution
 
@@ -1472,7 +1490,7 @@ file_patterns:
   - "app/Filament/**/Resources/**"
 ---
 
-# Filament v4 Table Optimization & Best Practices
+# Filament v4.3+ Table Optimization & Best Practices
 
 ## Performance Improvements
 
@@ -1683,6 +1701,8 @@ Filter::make('created_at')
             );
     });
 ```
+
+Prefer the shared `App\Filament\Support\Filters\DateScopeFilter` for timestamp ranges (e.g., `DateScopeFilter::make()` for `created_at`, `DateScopeFilter::make(name: 'start_at_range', column: 'start_at')` for event start dates) so filters reuse the global DateScopes trait instead of duplicating Carbon/date comparisons.
 
 ### Query Builder Filter (Complex)
 ```php

@@ -7,6 +7,7 @@ namespace App\Repositories;
 use App\Contracts\Repositories\CompanyRepositoryInterface;
 use App\Models\Company;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
@@ -23,7 +24,7 @@ final class EloquentCompanyRepository implements CompanyRepositoryInterface
     public function search(string $term, int $perPage = 15): LengthAwarePaginator
     {
         return Company::query()
-            ->when($term !== '', function ($query) use ($term): void {
+            ->when($term !== '', function (Builder $query) use ($term): void {
                 $query
                     ->where('name', 'like', "%{$term}%")
                     ->orWhere('primary_email', 'like', "%{$term}%")

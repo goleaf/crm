@@ -9,7 +9,7 @@ use Laravel\Jetstream\Http\Livewire\TeamMemberManager;
 use Laravel\Jetstream\Mail\TeamInvitation;
 use Livewire\Livewire;
 
-test('team members can be invited to team', function () {
+test('team members can be invited to team', function (): void {
     Mail::fake();
 
     $this->actingAs($user = User::factory()->withPersonalTeam()->create());
@@ -23,11 +23,9 @@ test('team members can be invited to team', function () {
     Mail::assertSent(TeamInvitation::class);
 
     expect($user->currentTeam->fresh()->teamInvitations)->toHaveCount(1);
-})->skip(function () {
-    return ! Features::sendsTeamInvitations();
-}, 'Team invitations not enabled.');
+})->skip(fn (): bool => ! Features::sendsTeamInvitations(), 'Team invitations not enabled.');
 
-test('team member invitations can be cancelled', function () {
+test('team member invitations can be cancelled', function (): void {
     Mail::fake();
 
     $this->actingAs($user = User::factory()->withPersonalTeam()->create());
@@ -45,6 +43,4 @@ test('team member invitations can be cancelled', function () {
     $component->call('cancelTeamInvitation', $invitationId);
 
     expect($user->currentTeam->fresh()->teamInvitations)->toHaveCount(0);
-})->skip(function () {
-    return ! Features::sendsTeamInvitations();
-}, 'Team invitations not enabled.');
+})->skip(fn (): bool => ! Features::sendsTeamInvitations(), 'Team invitations not enabled.');

@@ -9,7 +9,6 @@ use App\Enums\AccountTeamRole;
 use App\Models\Concerns\HasTeam;
 use Database\Factories\AccountTeamMemberFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**

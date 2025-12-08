@@ -83,7 +83,7 @@ final class BusinessOverviewWidget extends BaseWidget
      */
     private function getBusinessData(): array
     {
-        $metrics = app(OpportunityMetricsService::class);
+        $metrics = resolve(OpportunityMetricsService::class);
         $opportunities = $this->getOpportunitiesWithMetrics();
 
         $pipelineValue = $opportunities
@@ -105,14 +105,14 @@ final class BusinessOverviewWidget extends BaseWidget
 
         $totalOpportunities = $opportunities->count();
 
-        $totalTasks = Task::where('creation_source', '!=', CreationSource::SYSTEM)->count();
+        $totalTasks = Task::where('creation_source', '!=', CreationSource::SYSTEM->value)->count();
         $completedTasks = $this->countCompletedEntities('tasks', 'task', 'status');
         $completionRate = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
 
-        $totalCompanies = Company::where('creation_source', '!=', CreationSource::SYSTEM)->count();
+        $totalCompanies = Company::where('creation_source', '!=', CreationSource::SYSTEM->value)->count();
 
         [$opportunitiesGrowth, $companiesGrowth] = $this->calculateMonthlyGrowth();
-        $pipelineTrend = $this->generatePipelineTrend($opportunities, $metrics);
+        $pipelineTrend = $this->generatePipelineTrend($metrics);
 
         return [
             'pipeline_value' => $pipelineValue,
@@ -144,21 +144,22 @@ final class BusinessOverviewWidget extends BaseWidget
      */
     private function calculateMonthlyGrowth(): array
     {
-        $currentMonth = now()->startOfMonth();
-        $lastMonth = now()->subMonth()->startOfMonth();
+        $opportunitiesThisMonth = Opportunity::query()
+            ->monthToDate()
+            ->where('creation_source', '!=', CreationSource::SYSTEM->value)
+            ->count();
+        $opportunitiesLastMonth = Opportunity::query()
+            ->ofLastMonth(startFrom: now())
+            ->where('creation_source', '!=', CreationSource::SYSTEM->value)
+            ->count();
 
-        $opportunitiesThisMonth = Opportunity::where('created_at', '>=', $currentMonth)
-            ->where('creation_source', '!=', CreationSource::SYSTEM)
+        $companiesThisMonth = Company::query()
+            ->monthToDate()
+            ->where('creation_source', '!=', CreationSource::SYSTEM->value)
             ->count();
-        $opportunitiesLastMonth = Opportunity::whereBetween('created_at', [$lastMonth, $currentMonth])
-            ->where('creation_source', '!=', CreationSource::SYSTEM)
-            ->count();
-
-        $companiesThisMonth = Company::where('created_at', '>=', $currentMonth)
-            ->where('creation_source', '!=', CreationSource::SYSTEM)
-            ->count();
-        $companiesLastMonth = Company::whereBetween('created_at', [$lastMonth, $currentMonth])
-            ->where('creation_source', '!=', CreationSource::SYSTEM)
+        $companiesLastMonth = Company::query()
+            ->ofLastMonth(startFrom: now())
+            ->where('creation_source', '!=', CreationSource::SYSTEM->value)
             ->count();
 
         $opportunitiesGrowth = $this->calculateGrowthRate($opportunitiesThisMonth, $opportunitiesLastMonth);
@@ -177,24 +178,26 @@ final class BusinessOverviewWidget extends BaseWidget
     }
 
     /**
-     * @param  Collection<int, Opportunity>  $opportunities
      * @return array<int, float>
      */
-    private function generatePipelineTrend(Collection $opportunities, OpportunityMetricsService $metrics): array
+    private function generatePipelineTrend(OpportunityMetricsService $metrics): array
     {
+        $baseQuery = Opportunity::query()
+            ->withCustomFieldValues()
+            ->whereNull('deleted_at')
+            ->where('creation_source', '!=', CreationSource::SYSTEM->value);
+
         return collect(range(6, 0))
-            ->map(fn (int $daysAgo): array => [
-                'date' => now()->subDays($daysAgo),
-                'value' => $opportunities
-                    ->whereBetween('created_at', [
-                        now()->subDays($daysAgo)->startOfDay(),
-                        now()->subDays($daysAgo)->endOfDay(),
-                    ])
+            ->map(function (int $daysAgo) use ($baseQuery, $metrics): float {
+                $startFrom = now()->subDays($daysAgo);
+
+                return (clone $baseQuery)
+                    ->ofToday(startFrom: $startFrom)
+                    ->get()
                     ->map(fn (Opportunity $opportunity): float => $metrics->amount($opportunity) ?? 0.0)
-                    ->sum(),
-            ])
-            ->pluck('value')
-            ->toArray();
+                    ->sum();
+            })
+            ->all();
     }
 
     private function formatCurrency(float $amount): string

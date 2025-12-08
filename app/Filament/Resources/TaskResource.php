@@ -7,6 +7,7 @@ namespace App\Filament\Resources;
 use App\Enums\CreationSource;
 use App\Filament\Resources\TaskResource\Forms\TaskForm;
 use App\Filament\Resources\TaskResource\Pages\ManageTasks;
+use App\Filament\Support\Filters\DateScopeFilter;
 use App\Models\Task;
 use App\Models\User;
 use Filament\Actions\Action;
@@ -71,7 +72,7 @@ final class TaskResource extends Resource
             ->get()
             ->keyBy('code');
         /** @var ValueResolvers $valueResolver */
-        $valueResolver = app(ValueResolvers::class);
+        $valueResolver = resolve(ValueResolvers::class);
 
         return $table
             ->columns([
@@ -93,6 +94,11 @@ final class TaskResource extends Resource
                     ->toggleable()
                     ->getStateUsing(fn (Task $record): string => $record->createdBy)
                     ->color(fn (Task $record): string => $record->isSystemCreated() ? 'secondary' : 'primary'),
+                TextColumn::make('taskTaxonomies.name')
+                    ->label(__('app.labels.categories'))
+                    ->badge()
+                    ->separator(',')
+                    ->toggleable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -111,6 +117,7 @@ final class TaskResource extends Resource
             ->searchable()
             ->paginated([10, 25, 50])
             ->filters(array_filter([
+                DateScopeFilter::make(),
                 Filter::make('assigned_to_me')
                     ->label('Assigned to me')
                     ->query(fn (Builder $query): Builder => $query->whereHas('assignees', function (Builder $query): void {
@@ -122,10 +129,10 @@ final class TaskResource extends Resource
                     ->relationship('assignees', 'name')
                     ->searchable()
                     ->preload(),
-                SelectFilter::make('categories')
-                    ->label('Category')
+                SelectFilter::make('taskTaxonomies')
+                    ->label(__('app.labels.category'))
                     ->multiple()
-                    ->relationship('categories', 'name')
+                    ->relationship('taskTaxonomies', 'name')
                     ->searchable()
                     ->preload(),
                 $customFields->has('status') ? self::makeCustomFieldFilter('status', $customFields['status']) : null,

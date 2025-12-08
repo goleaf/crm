@@ -52,12 +52,12 @@ final class Index extends BaseLivewireComponent
         $this->resetPage();
     }
 
-    public function updatedVendorId($value): void
+    public function updatedVendorId(int|string|null $value): void
     {
         $this->vendorId = $value !== null && $value !== '' ? (int) $value : null;
     }
 
-    public function updatedStatus($value): void
+    public function updatedStatus(?string $value): void
     {
         $this->status = $value !== '' ? $value : null;
     }
@@ -127,7 +127,7 @@ final class Index extends BaseLivewireComponent
             'purchaseOrders' => $purchaseOrders,
             'statusOptions' => collect(PurchaseOrderStatus::cases())
                 ->mapWithKeys(fn (PurchaseOrderStatus $status): array => [$status->value => $status->getLabel()])
-                ->toArray(),
+                ->all(),
         ]);
     }
 }

@@ -21,6 +21,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
 use Relaticle\SystemAdmin\Filament\Pages\Dashboard;
 
 final class SystemAdminPanelProvider extends PanelProvider
@@ -49,7 +50,7 @@ final class SystemAdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Indigo,
             ])
-            ->brandName('Relaticle System Admin')
+            ->brandName(brand_name().' Admin')
             ->discoverResources(in: base_path('app-modules/SystemAdmin/src/Filament/Resources'), for: 'Relaticle\\SystemAdmin\\Filament\\Resources')
             ->discoverPages(in: base_path('app-modules/SystemAdmin/src/Filament/Pages'), for: 'Relaticle\\SystemAdmin\\Filament\\Pages')
             ->discoverWidgets(in: base_path('app-modules/SystemAdmin/src/Filament/Widgets'), for: 'Relaticle\\SystemAdmin\\Filament\\Widgets')
@@ -74,6 +75,7 @@ final class SystemAdminPanelProvider extends PanelProvider
                 OverlookWidget::class,
             ])
             ->plugins([
+                FilamentApexChartsPlugin::make(),
                 OverlookPlugin::make()
                     ->sort(0)
                     ->abbreviateCount(false)

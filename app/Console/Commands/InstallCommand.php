@@ -23,7 +23,14 @@ final class InstallCommand extends Command
     protected $signature = 'relaticle:install
                             {--force : Force installation even if already configured}';
 
-    protected $description = 'Install and configure Relaticle';
+    protected $description = 'Install and configure the CRM';
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->description = 'Install and configure '.brand_name();
+    }
 
     public function handle(): int
     {
@@ -51,7 +58,7 @@ final class InstallCommand extends Command
     private function shouldProceed(): bool
     {
         if (! $this->option('force') && $this->isAlreadyInstalled()) {
-            warning('Relaticle appears to be already installed.');
+            warning(brand_name().' appears to be already installed.');
 
             return confirm(
                 label: 'Do you want to continue anyway?',
@@ -73,7 +80,7 @@ final class InstallCommand extends Command
     /** @return array<string, mixed> */
     private function getConfiguration(): array
     {
-        $this->info('Let\'s configure your Relaticle installation...');
+        $this->info('Let\'s configure your '.brand_name().' installation...');
 
         $database = select(
             label: 'Which database would you like to use?',
@@ -415,7 +422,7 @@ final class InstallCommand extends Command
     {
         $this->newLine();
 
-        $this->info('🎉 Relaticle installed successfully!');
+        $this->info('🎉 '.brand_name().' installed successfully!');
 
         $this->newLine();
         $this->line('  <options=bold>Start all development services:</>');

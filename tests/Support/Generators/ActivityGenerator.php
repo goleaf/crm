@@ -25,11 +25,11 @@ final class ActivityGenerator
         ?User $causer = null,
         array $overrides = []
     ): Activity {
-        $causer = $causer ?? User::factory()->create();
+        $causer ??= User::factory()->create();
 
         $data = array_merge([
             'team_id' => $team->id,
-            'subject_type' => get_class($subject),
+            'subject_type' => $subject::class,
             'subject_id' => $subject->id,
             'causer_id' => $causer->id,
             'event' => fake()->randomElement(['created', 'updated', 'deleted', 'restored']),

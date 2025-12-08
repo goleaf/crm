@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Filament v4.3+ Translation Sync",
+  "description": "Automatically scans Filament resources, pages, and components for translatable strings (labels, placeholders, helperText, etc.) when files are edited. Detects all existing language folders in lang/, extracts translation keys from ->label(), ->placeholder(), ->helperText(), and other Filament methods. Auto-translates to all detected languages and updates/merges into lang/{locale}/app.php files while preserving existing translations. Uses PHP translation files only (no JSON) with dot notation format (app.labels.phone_number).",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Filament/**/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A Filament resource/page/component file has been modified. Please:\n\n1. **Scan for translatable strings**: Extract all translation keys from Filament methods including:\n   - ->label(__('...'))\n   - ->placeholder(__('...'))\n   - ->helperText(__('...'))\n   - ->description(__('...'))\n   - ->modalHeading(__('...'))\n   - ->modalDescription(__('...'))\n   - ->heading(__('...'))\n   - ->emptyStateHeading(__('...'))\n   - ->emptyStateDescription(__('...'))\n   - Navigation labels, action labels, column labels, etc.\n\n2. **Detect all language folders**: Scan the lang/ directory to find all existing language codes (e.g., en, es, de, lt, ru, uk).\n\n3. **Extract missing keys**: Identify any translation keys that are:\n   - Used in the modified file\n   - Not yet present in lang/{locale}/app.php for any detected language\n\n4. **Generate translations**: For each missing key:\n   - Translate from English to ALL detected languages\n   - Maintain dot notation structure (app.labels.*, app.actions.*, app.navigation.*, etc.)\n   - Preserve context and meaning\n   - Keep placeholders intact (:name, :count, etc.)\n\n5. **Update PHP translation files**: Merge new translations into lang/{locale}/app.php:\n   - Preserve existing translations (never overwrite)\n   - Maintain proper array structure and nesting\n   - Keep alphabetical ordering within sections\n   - Use proper PHP array syntax\n\n6. **Verify structure**: Ensure all lang/{locale}/app.php files have consistent structure:\n   ```php\n   <?php\n   return [\n       'labels' => [...],\n       'actions' => [...],\n       'navigation' => [...],\n       'helpers' => [...],\n       'modals' => [...],\n       'messages' => [...],\n   ];\n   ```\n\n7. **Report**: Summarize what was added/updated for each language.\n\nIMPORTANT:\n- Use ONLY PHP translation files in lang/ folder (NO JSON files)\n- Format: app.labels.phone_number (dot notation)\n- Generate translations for ALL detected languages\n- Preserve existing translations\n- Maintain consistent structure across all language files"
+  }
+}

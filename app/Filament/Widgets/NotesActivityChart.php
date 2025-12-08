@@ -5,80 +5,127 @@ declare(strict_types=1);
 namespace App\Filament\Widgets;
 
 use App\Models\Note;
-use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
+use App\Support\Metrics\EasyMetrics;
+use Filament\Facades\Filament;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
+use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
-final class NotesActivityChart extends ChartWidget
+final class NotesActivityChart extends ApexChartWidget
 {
-    protected ?string $heading = 'Notes Activity (Last 30 Days)';
+    protected static ?string $chartId = 'notesActivityChart';
 
-    protected ?string $description = 'Daily note creation trend.';
+    protected static ?int $contentHeight = 300;
 
-    protected int|string|array $columnSpan = 'full';
+    private int $days = 30;
 
-    protected ?string $maxHeight = '300px';
-
-    protected function getData(): array
+    protected function getHeading(): ?string
     {
-        $thirtyDaysAgo = Carbon::now()->subDays(30)->startOfDay();
-
-        $notesPerDay = Note::query()
-            ->where('created_at', '>=', $thirtyDaysAgo)
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('count(*) as count'))
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get()
-            ->pluck('count', 'date')
-            ->toArray();
-
-        // Fill in missing dates with 0
-        $dates = [];
-        $counts = [];
-
-        for ($i = 29; $i >= 0; $i--) {
-            $date = Carbon::now()->subDays($i)->format('Y-m-d');
-            $dates[] = Carbon::parse($date)->format('M j');
-            $counts[] = $notesPerDay[$date] ?? 0;
-        }
-
-        return [
-            'datasets' => [
-                [
-                    'label' => __('app.labels.notes').' created',
-                    'data' => $counts,
-                    'fill' => 'start',
-                    'backgroundColor' => 'rgba(59, 130, 246, 0.1)',
-                    'borderColor' => 'rgb(59, 130, 246)',
-                    'tension' => 0.3,
-                ],
-            ],
-            'labels' => $dates,
-        ];
+        return __('app.charts.notes_activity');
     }
 
-    protected function getType(): string
+    protected function getSubheading(): ?string
     {
-        return 'line';
+        return __('app.charts.notes_activity_subheading');
     }
 
     protected function getOptions(): array
     {
+        $series = $this->getSeries();
+
         return [
-            'plugins' => [
-                'legend' => [
-                    'display' => false,
+            'chart' => [
+                'type' => 'area',
+                'height' => self::$contentHeight,
+                'toolbar' => ['show' => false],
+            ],
+            'series' => [
+                [
+                    'name' => __('app.labels.notes'),
+                    'data' => $series['data'],
                 ],
             ],
-            'scales' => [
-                'y' => [
-                    'beginAtZero' => true,
-                    'ticks' => [
-                        'precision' => 0,
+            'xaxis' => [
+                'categories' => $series['labels'],
+                'labels' => [
+                    'style' => [
+                        'fontFamily' => 'inherit',
+                        'fontWeight' => 600,
                     ],
                 ],
             ],
-            'maintainAspectRatio' => false,
+            'yaxis' => [
+                'labels' => [
+                    'style' => [
+                        'fontFamily' => 'inherit',
+                    ],
+                ],
+            ],
+            'dataLabels' => [
+                'enabled' => false,
+            ],
+            'stroke' => [
+                'curve' => 'smooth',
+                'width' => 3,
+            ],
+            'fill' => [
+                'type' => 'gradient',
+                'gradient' => [
+                    'shadeIntensity' => 0.5,
+                    'opacityFrom' => 0.35,
+                    'opacityTo' => 0.1,
+                ],
+            ],
+            'grid' => [
+                'strokeDashArray' => 4,
+            ],
+            'colors' => ['#3b82f6'],
+            'legend' => [
+                'show' => false,
+            ],
         ];
+    }
+
+    /**
+     * @return array{labels: array<int, string>, data: array<int, int>}
+     */
+    private function getSeries(): array
+    {
+        return Cache::remember(
+            $this->cacheKey(),
+            600,
+            fn (): array => EasyMetrics::dailyCounts(
+                $this->baseQuery(),
+                $this->qualifiedDateColumn(),
+                $this->days,
+            ),
+        );
+    }
+
+    private function baseQuery(): Builder
+    {
+        $query = Note::query();
+        $model = new Note;
+        $tenant = Filament::getTenant();
+        $table = $model->getTable();
+
+        if ($tenant && Schema::connection($model->getConnectionName())->hasColumn($table, 'team_id')) {
+            $query->where($model->qualifyColumn('team_id'), $tenant->getKey());
+        }
+
+        return $query;
+    }
+
+    private function qualifiedDateColumn(): string
+    {
+        return new Note()->qualifyColumn('created_at');
+    }
+
+    private function cacheKey(): string
+    {
+        $tenant = Filament::getTenant()?->getKey() ?? 'public';
+
+        return "apex:notes_activity:{$tenant}:{$this->days}";
     }
 }
