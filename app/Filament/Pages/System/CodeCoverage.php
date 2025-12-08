@@ -13,11 +13,14 @@ use Illuminate\Support\Facades\File;
 
 class CodeCoverage extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
-
     protected string $view = 'filament.pages.system.code-coverage';
 
     protected static ?int $navigationSort = 50;
+
+    public static function getNavigationIcon(): ?string
+    {
+        return 'heroicon-o-chart-bar';
+    }
 
     public array $stats = [];
 

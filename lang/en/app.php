@@ -25,6 +25,8 @@ return [
         'profanity_filter' => 'Profanity Filter',
         'activity_feed' => 'Activity Feed',
         'translations' => 'Translations',
+        'code_coverage' => 'Code Coverage',
+        'config_checker' => 'Config Checker',
     ],
 
     'labels' => [
