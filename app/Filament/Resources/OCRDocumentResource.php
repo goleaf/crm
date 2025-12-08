@@ -19,7 +19,10 @@ class OCRDocumentResource extends Resource
 
     protected static ?string $modelLabel = 'OCR Document';
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    public static function getNavigationIcon(): ?string
+    {
+        return 'heroicon-o-document-text';
+    }
 
     public static function getNavigationGroup(): ?string
     {
