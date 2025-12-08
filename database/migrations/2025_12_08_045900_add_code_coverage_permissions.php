@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -13,6 +14,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Only run if permissions table exists (Shield is installed)
+        if (! Schema::hasTable('permissions')) {
+            return;
+        }
+
         // Create code coverage permission
         $permission = Permission::firstOrCreate([
             'name' => 'view_code_coverage',
@@ -37,6 +43,11 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Only run if permissions table exists
+        if (! Schema::hasTable('permissions')) {
+            return;
+        }
+
         Permission::where('name', 'view_code_coverage')->delete();
     }
 };

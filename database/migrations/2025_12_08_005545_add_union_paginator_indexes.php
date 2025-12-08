@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Schema;
  * ### Notes Table
  * - Composite: (team_id, created_at) - Team-scoped note queries
  * - Single: creator_id - User-specific note queries
+ *
+ * ### Notables Table (Notable Package)
  * - Polymorphic: (notable_type, notable_id) - Record-specific note lookups
  *
  * ### Opportunities Table
@@ -37,7 +39,7 @@ use Illuminate\Support\Facades\Schema;
  *
  * ### People Table
  * - Composite: (team_id, name) - Team-scoped people search
- * - Single: email - Email-based people lookups
+ * - Single: email - Email-based people lookups (if column exists)
  *
  * ## Performance Impact
  *
@@ -84,7 +86,14 @@ return new class extends Migration
             Schema::table('notes', function (Blueprint $table): void {
                 $table->index(['team_id', 'created_at'], 'idx_notes_team_created');
                 $table->index('creator_id', 'idx_notes_creator');
-                $table->index(['notable_type', 'notable_id'], 'idx_notes_notable');
+            });
+        }
+
+        // Add indexes for union query performance on notables table (Notable package)
+        $notablesTable = config('notable.table_name', 'notables');
+        if (Schema::hasTable($notablesTable)) {
+            Schema::table($notablesTable, function (Blueprint $table): void {
+                $table->index(['notable_type', 'notable_id'], 'idx_notables_notable');
             });
         }
 
@@ -119,7 +128,10 @@ return new class extends Migration
         if (Schema::hasTable('people')) {
             Schema::table('people', function (Blueprint $table): void {
                 $table->index(['team_id', 'name'], 'idx_people_team_name');
-                $table->index('email', 'idx_people_email');
+                // Only add email index if column exists
+                if (Schema::hasColumn('people', 'email')) {
+                    $table->index('email', 'idx_people_email');
+                }
             });
         }
     }
@@ -143,7 +155,13 @@ return new class extends Migration
             Schema::table('notes', function (Blueprint $table): void {
                 $table->dropIndex('idx_notes_team_created');
                 $table->dropIndex('idx_notes_creator');
-                $table->dropIndex('idx_notes_notable');
+            });
+        }
+
+        $notablesTable = config('notable.table_name', 'notables');
+        if (Schema::hasTable($notablesTable)) {
+            Schema::table($notablesTable, function (Blueprint $table): void {
+                $table->dropIndex('idx_notables_notable');
             });
         }
 
@@ -174,7 +192,10 @@ return new class extends Migration
         if (Schema::hasTable('people')) {
             Schema::table('people', function (Blueprint $table): void {
                 $table->dropIndex('idx_people_team_name');
-                $table->dropIndex('idx_people_email');
+                // Only drop email index if it exists
+                if (Schema::hasColumn('people', 'email')) {
+                    $table->dropIndex('idx_people_email');
+                }
             });
         }
     }
