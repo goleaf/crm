@@ -1,7 +1,7 @@
 # Livewire File Manager Integration
 
 ## Overview
-We have integrated `livewire-filemanager/filemanager` into Filament v4 as a custom page. This provides a robust interface for managing files and folders, supporting drag-and-drop uploads, folder management, and media previews.
+We have integrated `livewire-filemanager/filemanager` into Filament v4.3+ as a custom page. This provides a robust interface for managing files and folders, supporting drag-and-drop uploads, folder management, and media previews.
 
 ## Architecture
 - **Package**: `livewire-filemanager/filemanager`

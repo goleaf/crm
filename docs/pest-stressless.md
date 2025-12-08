@@ -1,6 +1,6 @@
 # Pest Stressless
 
-**Stack:** Laravel 12 | Filament 4 | Pest 4  
+**Stack:** Laravel 12 | Filament 4.3+ | Pest 4  
 **Package:** `pestphp/pest-plugin-stressless` (dev-only)  
 **Docs:** https://pestphp.com/docs/stress-testing
 

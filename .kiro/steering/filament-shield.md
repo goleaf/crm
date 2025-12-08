@@ -252,7 +252,7 @@ php artisan tinker
 ```
 
 ### Cross-Tenant Access
-- Ensure all queries use Filament v4's auto-tenancy scoping
+- Ensure all queries use Filament v4.3's auto-tenancy scoping
 - Check that roles are assigned with team context
 - Verify policies check tenant ownership
 

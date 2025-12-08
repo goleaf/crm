@@ -393,7 +393,7 @@ Before deploying services to production:
 ### External Resources
 - [Laravel Service Container Documentation](https://laravel.com/docs/container)
 - [Laravel Service Providers Documentation](https://laravel.com/docs/providers)
-- [Filament v4 Documentation](https://filamentphp.com/docs/4.x)
+- [Filament v4.3 Documentation](https://filamentphp.com/docs/4.x)
 - [Pest PHP Documentation](https://pestphp.com/docs)
 
 ## Conclusion

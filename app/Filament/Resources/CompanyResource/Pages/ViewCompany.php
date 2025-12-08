@@ -36,7 +36,7 @@ use Relaticle\CustomFields\Facades\CustomFields;
 /**
  * ViewCompany page displays comprehensive company information in a read-only infolist format.
  *
- * This page uses Filament v4's unified Schema system to display company details including:
+ * This page uses Filament v4.3's unified Schema system to display company details including:
  * - Basic company information (name, type, industry, contact details)
  * - Address information (billing, shipping, additional addresses)
  * - Account team members with role and access level badges

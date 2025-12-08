@@ -20,7 +20,7 @@ use Override;
  * - Critical path analysis
  * - Schedule summary widget
  *
- * **Filament v4 Compatibility:**
+ * **Filament v4.3 Compatibility:**
  * - Uses instance-level `$view` property (non-static) per v4 conventions
  * - Integrates ProjectScheduleWidget in header
  * - Leverages ProjectSchedulingService for calculations
@@ -49,7 +49,7 @@ final class ViewProjectSchedule extends Page
     /**
      * The Blade view to render for this page.
      *
-     * Note: In Filament v4, this should be an instance property (non-static)
+     * Note: In Filament v4.3, this should be an instance property (non-static)
      * to allow for dynamic view resolution per page instance.
      */
     protected string $view = 'filament.resources.project-resource.pages.view-project-schedule';

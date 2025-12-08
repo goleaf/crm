@@ -771,7 +771,7 @@ $this->app->bind(
 ## Related Documentation
 
 - [Laravel Container Services](./laravel-container-services.md)
-- [Filament v4 Conventions](../.kiro/steering/filament-conventions.md)
+- [Filament v4.3+ Conventions](../.kiro/steering/filament-conventions.md)
 - [Testing Standards](../.kiro/steering/testing-standards.md)
 - [Laravel HTTP Client](./laravel-http-client.md)
 - [Laravel Precognition](./laravel-precognition.md)

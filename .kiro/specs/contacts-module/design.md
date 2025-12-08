@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Contacts Module extends the existing People model to provide comprehensive contact management capabilities including role assignments, communication preferences, interaction tracking, portal access, duplicate detection, document attachment, and vCard import/export. The design leverages Laravel's Eloquent ORM, Filament for UI components, and follows the existing architectural patterns established in the Relaticle CRM application.
+The Contacts Module extends the existing People model to provide comprehensive contact management capabilities including role assignments, communication preferences, interaction tracking, portal access, duplicate detection, document attachment, and vCard import/export. The design leverages Laravel's Eloquent ORM, Filament v4.3+ for UI components, and follows the existing architectural patterns established in the Relaticle CRM application.
 
 The module integrates seamlessly with existing Account (Company), Opportunity, Task, and Note modules while adding new capabilities for contact segmentation, self-service portal access, document management, and advanced data quality management.
 

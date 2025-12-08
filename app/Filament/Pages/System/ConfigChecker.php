@@ -68,11 +68,11 @@ final class ConfigChecker extends Page implements HasTable
                 // We fake a query because we are displaying static data from the service
                 \App\Models\User::query()->whereRaw('1=0')
             )
-            ->rows($issues); // Filament v4 supports passing rows directly if using array driver or similar, but typically we need a query.
+            ->rows($issues); // Filament v4.3 supports passing rows directly if using array driver or similar, but typically we need a query.
         // Wait, Filament standard table requires a builder.
         // For array data, we might need to use a View component with a table or a repeated entry.
         // Let's stick to a simple view implementation for displaying the custom array data if Table is too complex for static arrays without a customized driver.
-        // Actually, Filament 3/4 allows custom content. Let's just pass the data to the view and render a simple table there,
+        // Actually, Filament v4.3 allows custom content. Let's just pass the data to the view and render a simple table there,
         // OR use a Repeater/View entry if we were in a form.
         // But since this is a Page, we can just use the Blade view to render the table manually or use a simple loop.
         // So we don't strictly need HasTable unless we want the full Filament Table experience (sorting/filtering).

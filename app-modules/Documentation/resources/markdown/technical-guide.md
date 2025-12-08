@@ -2,13 +2,13 @@
 
 ## Architecture Overview
 
-This CRM platform is built on the Laravel 12 framework with Filament 4 for the admin panel interface. The front-end uses
+This CRM platform is built on the Laravel 12 framework with Filament 4.3+ for the admin panel interface. The front-end uses
 Livewire and Tailwind CSS to create a responsive and interactive user experience.
 
 ### Tech Stack
 
 - **Backend**: PHP 8.4, Laravel 12
-- **Admin UI**: Filament 4
+- **Admin UI**: Filament 4.3+
 - **Frontend**: Livewire, Tailwind CSS, Alpine.js
 - **Database**: PostgreSQL (recommended), MySQL (supported)
 - **Testing**: Pest

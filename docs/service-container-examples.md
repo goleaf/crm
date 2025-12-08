@@ -591,5 +591,5 @@ Action::make('syncData')
 
 - [Laravel Service Container Integration](./laravel-service-container-integration.md)
 - [Laravel Container Services](./laravel-container-services.md)
-- [Filament v4 Conventions](../.kiro/steering/filament-conventions.md)
+- [Filament v4.3+ Conventions](../.kiro/steering/filament-conventions.md)
 - [Testing Standards](../.kiro/steering/testing-standards.md)

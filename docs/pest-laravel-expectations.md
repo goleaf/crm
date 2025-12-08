@@ -1,6 +1,6 @@
 # Pest Laravel Expectations
 
-**Stack:** Laravel 12 | Filament 4 | Pest 4  
+**Stack:** Laravel 12 | Filament 4.3+ | Pest 4  
 **Package:** `defstudio/pest-plugin-laravel-expectations` (dev-only)  
 **Docs:** https://docs.defstudio.it/pest-plugin-laravel-expectations/
 

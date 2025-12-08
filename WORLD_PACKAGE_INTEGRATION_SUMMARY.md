@@ -82,7 +82,7 @@ Successfully integrated `nnjeim/world` package (v1.1.36) to provide comprehensiv
    - Referenced documentation and steering files
 
 9. **`app/Filament/Resources/PeopleResource/Pages/CreatePeopleWithPrecognition.php`**
-   - Fixed Filament v4 compatibility (Schema instead of Form)
+   - Fixed Filament v4.3+ compatibility (Schema instead of Form)
 
 ## Service Usage
 

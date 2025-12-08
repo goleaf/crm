@@ -75,7 +75,7 @@ Successfully integrated the `nnjeim/world` package into this CRM platform, provi
 1. `app/Providers/AppServiceProvider.php` - Service registration
 2. `config/world.php` - Enhanced configuration
 3. `AGENTS.md` - Added World package guidelines
-4. `app/Filament/Resources/PeopleResource/Pages/CreatePeopleWithPrecognition.php` - Fixed Filament v4 compatibility
+4. `app/Filament/Resources/PeopleResource/Pages/CreatePeopleWithPrecognition.php` - Fixed Filament v4.3 compatibility
 
 ## Key Features Implemented
 

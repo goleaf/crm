@@ -27,7 +27,7 @@ Filament Shield has been successfully integrated into your Laravel 12 + Filament
 
 ### 1. User Model
 - ✅ `HasRoles` trait from Spatie Permission
-- ✅ Type hints fixed for Filament v4 compatibility
+- ✅ Type hints fixed for Filament v4.3+ compatibility
 - ✅ Multi-tenancy support via `HasTenants` interface
 
 ### 2. Panel Provider
@@ -53,7 +53,7 @@ Filament Shield has been successfully integrated into your Laravel 12 + Filament
 ### 6. Code Quality
 - ✅ Rector v2 refactoring applied
 - ✅ Pint code style fixes applied
-- ✅ All type hints corrected for Filament v4
+- ✅ All type hints corrected for Filament v4.3+
 
 ## 🚀 Quick Start Guide
 
@@ -328,7 +328,7 @@ php artisan shield:generate --all --force
 ### External Resources
 - [Filament Shield GitHub](https://github.com/bezhanSalleh/filament-shield)
 - [Spatie Permission Docs](https://spatie.be/docs/laravel-permission)
-- [Filament v4 Docs](https://filamentphp.com/docs/4.x)
+- [Filament v4.3 Docs](https://filamentphp.com/docs/4.x)
 
 ## 🎯 Next Steps
 

@@ -4,7 +4,7 @@
 
 The Time Management & HR Time Tracking system provides a comprehensive solution for recording work hours, managing employee absences, tracking billable time, and generating reports. The system integrates with existing project management, employee records, and invoicing modules while maintaining its own domain models for time entries and absence records.
 
-The design follows a layered architecture with clear separation between time tracking, absence management, and reporting concerns. It leverages Laravel's Eloquent ORM for data persistence, Filament for the administrative interface, and provides API endpoints for mobile and third-party integrations.
+The design follows a layered architecture with clear separation between time tracking, absence management, and reporting concerns. It leverages Laravel's Eloquent ORM for data persistence, Filament v4.3+ for the administrative interface, and provides API endpoints for mobile and third-party integrations.
 
 ## Architecture
 

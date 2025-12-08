@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Pest Route Testing Plugin (`spatie/pest-plugin-route-testing`) is fully integrated into this Laravel/Filament v4 application to ensure all routes remain accessible, properly configured, and return expected responses.
+The Pest Route Testing Plugin (`spatie/pest-plugin-route-testing`) is fully integrated into this Laravel/Filament v4.3+ application to ensure all routes remain accessible, properly configured, and return expected responses.
 
 ## Installation Status
 
@@ -443,7 +443,7 @@ php artisan route:list --json | jq '.[] | select(.name != null) | .name'
 
 ### Works With:
 ✅ **Laravel Expectations Plugin** - HTTP assertions  
-✅ **Filament v4 Resources** - Admin route testing  
+✅ **Filament v4.3+ Resources** - Admin route testing  
 ✅ **Laravel Precognition** - API validation testing  
 ✅ **Sanctum Authentication** - API token testing  
 ✅ **Multi-Tenancy** - Tenant-scoped route testing  

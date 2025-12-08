@@ -209,7 +209,7 @@ Shield ensures users can only access resources within their current team:
 ```php
 public static function getEloquentQuery(): Builder
 {
-    // Filament v4 auto-scopes to current tenant
+    // Filament v4.3 auto-scopes to current tenant
     return parent::getEloquentQuery();
 }
 ```

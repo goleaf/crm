@@ -359,7 +359,7 @@ app/
 - [Service Container Examples](./service-container-examples.md) - Practical examples
 - [Laravel Container Services](./laravel-container-services.md) - Original reference
 - [OCR Integration](./ocr-integration-strategy.md) - OCR-specific patterns
-- [Filament v4 Conventions](../.kiro/steering/filament-conventions.md) - Filament patterns
+- [Filament v4.3+ Conventions](../.kiro/steering/filament-conventions.md) - Filament patterns
 - [Testing Standards](../.kiro/steering/testing-standards.md) - Testing requirements
 - [Laravel Conventions](../.kiro/steering/laravel-conventions.md) - Laravel patterns
 

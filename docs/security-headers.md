@@ -23,6 +23,6 @@
 - Update values via env and run `php artisan optimize:clear` (or rely on the next deploy) to refresh cached config.
 
 ## Operational notes
-- The middleware is global, so Filament v4 panels, CRM routes, and API endpoints all receive the same headers without per-route wiring.
+- The middleware is global, so Filament v4.3+ panels, CRM routes, and API endpoints all receive the same headers without per-route wiring.
 - Prefer toggling via env/config rather than removing `ApplySecurityHeaders` from `bootstrap/app.php`; use `headers.except` for diagnostics endpoints that need a different policy.
 - If you later introduce CSP, add nonces to inline scripts/partials and update the permissions policy to cover any new APIs you enable.

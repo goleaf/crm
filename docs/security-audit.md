@@ -4,7 +4,7 @@
 - Added `config/security.php` to manage security headers, Content Security Policy (CSP), and `security.txt` defaults with env toggles.
 - New middleware `App\Http\Middleware\SecurityHeaders` (stacked after the existing Treblle headers) applies CSP, cross-origin headers, and honor the config-driven directives. It is appended to the global middleware stack so Filament and public pages receive the same protections.
 - Published `/.well-known/security.txt` via `SecurityTxtController`; contacts default to `mailto:security@<app host>` and can be overridden with `SECURITY_TXT_CONTACTS`.
-- Introduced a Filament v4 page **Security Audit** (`App\Filament\Pages\SecurityAudit`) under the Settings group. It surfaces the Top 10 audit checklist from [Laravel News](https://laravel-news.com/top-10-laravel-audit-security-issues), shows current header/CSP/security.txt status, and can run `composer audit --locked --format=json` from the UI.
+- Introduced a Filament v4.3+ page **Security Audit** (`App\Filament\Pages\SecurityAudit`) under the Settings group. It surfaces the Top 10 audit checklist from [Laravel News](https://laravel-news.com/top-10-laravel-audit-security-issues), shows current header/CSP/security.txt status, and can run `composer audit --locked --format=json` from the UI.
 
 ## Configuration
 - Toggle headers: `SECURITY_HEADERS_ENABLED=true` (uses both Treblle defaults in `config/headers.php` and our additional headers in `config/security.php`).

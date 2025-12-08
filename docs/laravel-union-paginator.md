@@ -781,7 +781,7 @@ $tasks = Task::select([
 ## Related Documentation
 
 - [Laravel Container Services](laravel-container-services.md) - Service pattern integration
-- [Filament v4 Conventions](../.kiro/steering/filament-conventions.md) - Filament best practices
+- [Filament v4.3+ Conventions](../.kiro/steering/filament-conventions.md) - Filament best practices
 - [Testing Standards](../.kiro/steering/testing-standards.md) - Testing patterns
 - [Performance Optimization](../.kiro/steering/filament-performance.md) - Performance tips
 

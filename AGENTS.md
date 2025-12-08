@@ -32,6 +32,9 @@
 - Stress testing is available via `pestphp/pest-plugin-stressless`; keep runs opt-in (`RUN_STRESS_TESTS=1` + `STRESSLESS_TARGET`) and small (`STRESSLESS_CONCURRENCY`, `STRESSLESS_DURATION`, `STRESSLESS_P95_THRESHOLD_MS`).
 - Coverage gates are enforced by `composer test:type-coverage` (`pest --type-coverage --min=99.9`) and `composer test:coverage` (`pest --coverage --min=80`).
 - `composer test:types` (`phpstan analyse`) and `composer test:pest:ci` (`phpunit.ci.xml`) validate static analysis and CI-specific shards when needed.
+- Code coverage uses PCOV extension (10-30x faster than Xdebug) for performance; install via `pecl install pcov` and enable in php.ini—see `docs/pcov-code-coverage-integration.md` and `.kiro/steering/pcov-code-coverage.md`.
+- Coverage reports are generated in HTML (`coverage-html/`), XML (`coverage.xml`), and text formats; view via Filament at System → Code Coverage or open `coverage-html/index.html`.
+- Use `CodeCoverageService` (singleton) for programmatic coverage access; Filament widget displays real-time stats with trend indicators.
 
 ## Commit & Pull Request Guidelines
 - Commit messages follow the conventional `<type>: <summary>` pattern (`feat:`, `fix:`, `chore:`) with a short imperative subject.
