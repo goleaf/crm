@@ -24,20 +24,45 @@ final readonly class ActivityFeedService
     /**
      * Get paginated team activity feed combining multiple models.
      */
+    /**
+     * Get paginated team activity feed combining multiple models.
+     */
     public function getTeamActivity(int $teamId, ?int $perPage = null): LengthAwarePaginator
     {
         $perPage ??= $this->defaultPerPage;
 
-        $queries = [
-            $this->buildTasksQuery($teamId),
-            $this->buildNotesQuery($teamId),
-            $this->buildOpportunitiesQuery($teamId),
-            $this->buildCasesQuery($teamId),
-        ];
-
-        return UnionPaginator::make($queries)
-            ->orderBy('created_at', 'desc')
+        return $this->getTeamActivityQuery($teamId)->latest()
             ->paginate($perPage);
+    }
+
+    /**
+     * Get the query builder for union pagination to be used with Filament.
+     */
+    public function getTeamActivityQuery(int $teamId): Builder
+    {
+        // We use AustinW\UnionPaginator\UnionPaginator::make(...) usually, but that returns Paginator.
+        // To get a Builder, we need to construct a Union query manually or use a helper if available.
+        // The UnionPaginator::make($queries) takes an array of builders.
+        // It doesn't seem to expose a "get Builder" method trivially without `paginate`.
+        //
+        // However, looking at the doc:
+        // return DB::query()->fromSub($tasks->union($notes), 'activities');
+        //
+        // So I should construct the union query here.
+
+        $tasks = $this->buildTasksQuery($teamId);
+        $notes = $this->buildNotesQuery($teamId);
+        $opportunities = $this->buildOpportunitiesQuery($teamId);
+        $cases = $this->buildCasesQuery($teamId);
+
+        return DB::query()
+            ->fromSub(
+                $tasks
+                    ->union($notes)
+                    ->union($opportunities)
+                    ->union($cases),
+                'activities'
+            );
     }
 
     /**
