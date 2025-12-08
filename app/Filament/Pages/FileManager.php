@@ -10,7 +10,7 @@ final class FileManager extends Page
 {
     protected static ?string $slug = 'file-manager';
 
-    protected static string $view = 'filament.pages.file-manager';
+    protected string $view = 'filament.pages.file-manager';
 
     protected static ?int $navigationSort = 100;
 

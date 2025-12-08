@@ -6,9 +6,9 @@ use App\Filament\Resources\OCRDocumentResource\Pages;
 use App\Models\OCRDocument;
 use App\Services\OCR\OCRService;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Storage;
@@ -29,10 +29,10 @@ class OCRDocumentResource extends Resource
         return 'OCR & Docs';
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make('Document Upload')
                     ->schema([
                         FileUpload::make('file_path')
