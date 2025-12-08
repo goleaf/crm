@@ -15,9 +15,12 @@ class CodeCoverage extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
 
-    protected static string $view = 'filament.pages.system.code-coverage';
+    protected string $view = 'filament.pages.system.code-coverage';
 
-    protected static ?string $navigationGroup = null;
+    public static function getNavigationGroup(): ?string
+    {
+        return null;
+    }
 
     protected static ?int $navigationSort = 50;
 
