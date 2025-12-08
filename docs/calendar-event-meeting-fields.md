@@ -8,7 +8,7 @@ This document describes the migration that adds meeting-specific fields and recu
 
 **File:** `database/migrations/2026_01_11_000001_add_meeting_fields_to_calendar_events_table.php`
 
-**Version:** Laravel 12.0, Filament 4.0, PHP 8.4
+**Version:** Laravel 12.0, Filament 4.3, PHP 8.4
 
 **Date Created:** 2026-01-11
 

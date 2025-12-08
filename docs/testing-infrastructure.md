@@ -1,6 +1,6 @@
 # Testing Infrastructure Documentation
 
-**Version:** Laravel 12.x | Filament 4.x | Pest 4.x  
+**Version:** Laravel 12.x | Filament 4.3+ | Pest 4.x  
 **Last Updated:** December 2025  
 **Feature:** Tasks & Activities Enhancement - Property-Based Testing
 

@@ -332,10 +332,10 @@ ImageColumn::make('featured_image.urls.thumb')
     ->size(60)
 ```
 
-### Display in Infolists
+### Display in Schemas (Filament v4.3+)
 
 ```php
-use Filament\Infolists\Components\ImageEntry;
+use Filament\Schemas\Components\ImageEntry;
 
 ImageEntry::make('featured_image.urls.regular')
     ->label(__('app.labels.featured_image'))

@@ -718,7 +718,7 @@ In Filament v4.3+, page-specific properties like `$view` should be instance-leve
 - View rendering works correctly with instance property
 
 **Migration Notes:**
-This change is part of the ongoing Filament v3 to v4 migration. Other resource pages should be reviewed for similar static property usage and updated accordingly.
+This change aligns with the completed Filament v3 → v4.3 migration. Review any remaining resources for legacy static properties and update to the v4.3 schema conventions.
 
 **Best Practices:**
 When creating new Filament v4.3+ resource pages:
@@ -730,7 +730,7 @@ When creating new Filament v4.3+ resource pages:
 
 **Version Information:**
 - Laravel: 12.0
-- Filament: 4.0
+- Filament: 4.3
 - PHP: 8.4
 
 ---

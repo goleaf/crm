@@ -26,7 +26,9 @@
 ## Testing Guidelines
 - Pest drives the test suite; place specs under `tests/Feature` or `tests/Unit`, suffix files with `*Test.php`, and share helpers in `tests/Pest.php`.
 - Use `defstudio/pest-plugin-laravel-expectations` for HTTP/model/storage checks (e.g., `toBeOk()`, `toBeRedirect()`, `toExist()`); keep assertions Pest-style alongside Livewire helpers.
-- Use `spatie/pest-plugin-route-testing` to ensure all routes remain accessible; test routes by type (public, authenticated, API) in `tests/Feature/Routes/` with centralized config in `RouteTestingConfig`—see `.kiro/steering/pest-route-testing.md`.
+- Use `spatie/pest-plugin-route-testing` to ensure all routes remain accessible; test routes by type (public, authenticated, API) in `tests/Feature/Routes/` with centralized config in `RouteTestingConfig`—see `.kiro/steering/pest-route-testing.md` and `docs/pest-route-testing-complete-guide.md`.
+- Route tests run automatically via `.kiro/hooks/route-testing-automation.kiro.hook` when route files change; use `composer test:routes` to run manually.
+- When adding new routes, update `RouteTestingConfig` with appropriate category (public, authenticated, API, parametric) and create corresponding tests.
 - Stress testing is available via `pestphp/pest-plugin-stressless`; keep runs opt-in (`RUN_STRESS_TESTS=1` + `STRESSLESS_TARGET`) and small (`STRESSLESS_CONCURRENCY`, `STRESSLESS_DURATION`, `STRESSLESS_P95_THRESHOLD_MS`).
 - Coverage gates are enforced by `composer test:type-coverage` (`pest --type-coverage --min=99.9`) and `composer test:coverage` (`pest --coverage --min=80`).
 - `composer test:types` (`phpstan analyse`) and `composer test:pest:ci` (`phpunit.ci.xml`) validate static analysis and CI-specific shards when needed.

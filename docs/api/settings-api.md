@@ -1,6 +1,6 @@
 # Settings System API Reference
 
-**Version:** Laravel 12.x | Filament 4.x  
+**Version:** Laravel 12.x | Filament 4.3+  
 **Last Updated:** December 7, 2025  
 **Component:** System Settings Management
 

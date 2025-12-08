@@ -1,7 +1,7 @@
 # Filament Resources Documentation
 
-**Version:** Laravel 12.0 | Filament 4.0  
-**Last Updated:** December 7, 2025
+**Version:** Laravel 12.0 | Filament 4.3  
+**Last Updated:** February 2026
 
 ---
 
@@ -193,7 +193,7 @@ it('provides gantt data with project details', function () {
 
 ## Migration Notes
 
-### From Filament v3 to v4
+### From Filament v3 to v4.3
 
 **Breaking Changes:**
 - Static `$view` property should be instance-level
