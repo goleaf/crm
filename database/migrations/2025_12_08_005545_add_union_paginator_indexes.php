@@ -164,7 +164,10 @@ return new class extends Migration
         if (Schema::hasTable('companies')) {
             Schema::table('companies', function (Blueprint $table): void {
                 $table->dropIndex('idx_companies_team_name');
-                $table->dropIndex('idx_companies_email');
+                // Only drop email index if it exists
+                if (Schema::hasColumn('companies', 'email')) {
+                    $table->dropIndex('idx_companies_email');
+                }
             });
         }
 

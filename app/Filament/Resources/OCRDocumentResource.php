@@ -21,7 +21,10 @@ class OCRDocumentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?string $navigationGroup = 'OCR & Docs';
+    public static function getNavigationGroup(): ?string
+    {
+        return 'OCR & Docs';
+    }
 
     public static function form(Form $form): Form
     {

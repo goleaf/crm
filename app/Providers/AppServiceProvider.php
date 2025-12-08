@@ -113,6 +113,13 @@ final class AppServiceProvider extends ServiceProvider
 
         // Register GitHub Issues Service
         $this->app->singleton(\App\Services\GitHub\GitHubIssuesService::class, fn (): \App\Services\GitHub\GitHubIssuesService => \App\Services\GitHub\GitHubIssuesService::fromConfig());
+
+        // Register Code Coverage Service
+        $this->app->singleton(\App\Services\Testing\CodeCoverageService::class, fn (): \App\Services\Testing\CodeCoverageService => new \App\Services\Testing\CodeCoverageService(
+            coverageDir: config('testing.coverage.html_dir', 'coverage-html'),
+            cloverFile: config('testing.coverage.clover_file', 'coverage.xml'),
+            cacheTtl: config('testing.coverage.cache_ttl', 300)
+        ));
     }
 
     /**
