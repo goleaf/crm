@@ -231,9 +231,9 @@ public static function getRelations(): array
 }
 ```
 
-### Info List
+### Info List (Filament v4.3 Schema)
 ```php
-use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\TextEntry;
 
 TextEntry::make('notes_count')
     ->label(__('app.labels.notes'))

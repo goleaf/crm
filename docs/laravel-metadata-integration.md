@@ -303,11 +303,11 @@ Section::make(__('app.labels.metadata'))
     ])
 ```
 
-### Infolist Display
+### Schema Display (Filament v4.3+)
 
 ```php
-use Filament\Infolists\Components\KeyValueEntry;
-use Filament\Infolists\Components\Section;
+use Filament\Schemas\Components\KeyValueEntry;
+use Filament\Schemas\Components\Section;
 
 Section::make(__('app.labels.metadata'))
     ->schema([

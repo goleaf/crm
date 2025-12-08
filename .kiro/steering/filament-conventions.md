@@ -727,7 +727,7 @@ Section::make('Responsive Section')
 ### Editable + Read-Only in Same Schema
 ```php
 use Filament\Forms\Components\TextInput;
-use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\TextEntry;
 
 Schema::make()
     ->components([
