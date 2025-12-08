@@ -727,6 +727,10 @@ return [
         'clean_profanity_bulk_description' => 'Clean profanity from selected records',
         'select_unsplash_photo' => 'Select Unsplash Photo',
         'unsplash_photo_details' => 'Photo Details',
+        'run_coverage' => 'Run Coverage Analysis',
+        'run_coverage_description' => 'This will run the full test suite with code coverage analysis. This may take several minutes.',
+        'run_full_coverage' => 'Run Full Coverage',
+        'run_full_coverage_description' => 'Generate comprehensive code coverage reports including HTML and XML formats',
     ],
 
     'activity_types' => [
@@ -744,6 +748,8 @@ return [
             'title' => 'Activity Feed',
             'description' => 'View recent activity across your workspace including tasks, notes, opportunities, and support cases.',
         ],
+        'code_coverage' => 'Code Coverage',
+        'config_checker' => 'Config Checker',
     ],
 
     // Translation Management

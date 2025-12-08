@@ -207,11 +207,62 @@ php artisan route:list
 php artisan route:list --json | jq '.[] | select(.name != null) | .name'
 ```
 
+## Automation
+
+### Automatic Testing
+- Route tests run automatically when route files change via `.kiro/hooks/route-testing-automation.kiro.hook`
+- Triggers on changes to: `routes/**/*.php`, `app/Http/Controllers/**/*.php`, `app/Filament/Resources/**/*.php`, `app/Filament/Pages/**/*.php`
+- Provides immediate feedback on route accessibility
+
+### Manual Testing
+```bash
+# Run all route tests
+composer test:routes
+
+# Run specific test file
+pest tests/Feature/Routes/PublicRoutesTest.php
+
+# Run with parallel execution
+pest tests/Feature/Routes --parallel
+
+# Get troubleshooting help
+kiro run route-test-help
+```
+
+## Adding New Routes Checklist
+
+When adding new routes to the application:
+
+1. ✅ **Identify Route Type**
+   - Public, authenticated, API, guest, parametric?
+
+2. ✅ **Update RouteTestingConfig**
+   - Add to appropriate array (publicRoutes, authenticatedRoutes, etc.)
+   - Add parameter bindings if needed
+
+3. ✅ **Create Test**
+   - Add to existing test file or create new one
+   - Use appropriate pattern (auth, API, parametric)
+
+4. ✅ **Run Tests**
+   - `composer test:routes`
+   - Verify all tests pass
+
+5. ✅ **Update Documentation**
+   - Document new route patterns if unique
+   - Update examples if behavior changed
+
 ## Related Documentation
-- `docs/pest-route-testing-integration.md` - Comprehensive guide
+- `docs/pest-route-testing-complete-guide.md` - Complete integration guide
+- `docs/pest-route-testing-integration.md` - Original integration guide
+- `tests/Feature/Routes/README.md` - Test suite documentation
 - `docs/laravel-precognition.md` - API validation testing
 - `.kiro/steering/testing-standards.md` - Testing conventions
 - `.kiro/steering/filament-testing.md` - Filament route testing
+
+## Automation Hooks
+- `.kiro/hooks/route-testing-automation.kiro.hook` - Auto-run tests on route changes
+- `.kiro/hooks/route-test-failure-helper.kiro.hook` - Troubleshooting guide
 
 ## Integration Points
 - Works with `defstudio/pest-plugin-laravel-expectations` for HTTP assertions
@@ -219,3 +270,4 @@ php artisan route:list --json | jq '.[] | select(.name != null) | .name'
 - Validates Precognition-enabled routes
 - Integrates with Sanctum authentication testing
 - Runs alongside feature and unit tests
+- Included in CI/CD pipelines (`composer test`, `composer test:ci`)
