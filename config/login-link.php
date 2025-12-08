@@ -15,13 +15,18 @@ return [
      * Login links will only work in these hosts. In all
      * other hosts, an exception will be thrown.
      */
-    'allowed_hosts' => [
-        'localhost',
-        '127.0.0.1',
-        'relaticle.test',
-        'app.relaticle.test',
-        'app.crm.test',
-    ],
+    'allowed_hosts' => array_values(array_unique(array_filter(array_merge(
+        [
+            'localhost',
+            '127.0.0.1',
+        ],
+        // Add app URL host if configured
+        ($appUrl = config('app.url')) && ($host = parse_url($appUrl, PHP_URL_HOST)) ? [$host] : [],
+        // Add CRM domain if configured
+        ($crmDomain = config('laravel-crm.routes.domain')) ? [$crmDomain, 'app.'.$crmDomain] : [],
+        // Add custom hosts from env
+        env('LOGIN_LINK_ALLOWED_HOSTS') ? array_map('trim', explode(',', env('LOGIN_LINK_ALLOWED_HOSTS'))) : [],
+    )))),
 
     /*
      * The package will automatically create a user model when trying
