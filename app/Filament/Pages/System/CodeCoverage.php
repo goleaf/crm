@@ -17,11 +17,6 @@ class CodeCoverage extends Page
 
     protected string $view = 'filament.pages.system.code-coverage';
 
-    public static function getNavigationGroup(): ?string
-    {
-        return null;
-    }
-
     protected static ?int $navigationSort = 50;
 
     public array $stats = [];

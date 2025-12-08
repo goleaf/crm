@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "name": "Route Testing Automation",
+  "description": "Automatically run route tests when route files are modified to ensure all routes remain accessible",
+  "trigger": {
+    "type": "file_change",
+    "patterns": [
+      "routes/**/*.php",
+      "app/Http/Controllers/**/*.php",
+      "app/Filament/Resources/**/*.php",
+      "app/Filament/Pages/**/*.php"
+    ]
+  },
+  "actions": [
+    {
+      "type": "message",
+      "content": "Route files have been modified. Running route tests to ensure all routes remain accessible...\n\n**Files Changed:**\n{{changed_files}}\n\n**Running:** `composer test:routes`\n\nThis will verify:\n- All public routes are accessible\n- Authenticated routes require proper authentication\n- API routes work with Sanctum tokens\n- Parametric routes handle model binding correctly\n- Redirect routes redirect as expected\n- No routes are broken by recent changes\n\n**Test Coverage:**\n- Public Routes (home, terms, policy, security.txt)\n- Authenticated Routes (dashboard, calendar, notes)\n- API Routes (contacts, resources)\n- Filament Admin Routes\n- Calendar Routes\n- Guest Routes (login, register)\n\n**What to check:**\n1. All tests pass ✅\n2. No new routes are missing tests ⚠️\n3. Route parameters are properly bound 🔗\n4. Middleware is correctly applied 🛡️\n5. Tenant scoping works correctly 🏢\n\n**If tests fail:**\n1. Check if new routes need to be added to `RouteTestingConfig`\n2. Verify route parameters are properly defined\n3. Ensure middleware is correctly configured\n4. Check if factories create proper test data\n5. Review error messages for specific issues\n\n**Next steps:**\n- Review test results\n- Update `RouteTestingConfig` if needed\n- Add new route tests for new routes\n- Update documentation if route behavior changed"
+    },
+    {
+      "type": "command",
+      "command": "composer test:routes"
+    }
+  ],
+  "enabled": true,
+  "runInBackground": false,
+  "showNotification": true,
+  "notificationTitle": "Route Tests Running",
+  "notificationMessage": "Verifying all routes are accessible after changes..."
+}
