@@ -704,6 +704,12 @@ return [
         'runtime_settings_help' => 'Runtime PRAGMAs are loaded on boot; values below reflect the current connection.',
         'runtime_settings_unavailable' => 'Runtime PRAGMA values are unavailable for the current connection.',
         'sqlite_runtime_note' => 'Runtime settings are enforced automatically when the SQLite driver is active. Migration settings require a migrate run.',
+        'pcov_enabled_description' => 'PCOV extension is active and ready for code coverage analysis',
+        'pcov_disabled_description' => 'PCOV extension is not installed or disabled. Install via: pecl install pcov',
+        'no_coverage_data' => 'No coverage data available',
+        'run_coverage_to_generate' => 'Run coverage analysis to generate reports',
+        'run_coverage_description' => 'Generate code coverage reports using PCOV',
+        'view_html_report_description' => 'Open the HTML coverage report in your browser',
     ],
 
     'placeholders' => [

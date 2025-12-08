@@ -12,7 +12,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class CodeCoverageWidget extends BaseWidget
 {
-    protected static ?string $pollingInterval = null;
+    protected ?string $pollingInterval = null;
 
     protected static ?int $sort = 10;
 
