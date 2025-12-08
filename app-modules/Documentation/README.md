@@ -1,6 +1,6 @@
 # Documentation Module
 
-A dedicated documentation module for the Relaticle application with a modern, customized frontend architecture.
+A dedicated documentation module for this CRM application with a modern, customized frontend architecture.
 
 ## Features
 
@@ -16,7 +16,7 @@ A dedicated documentation module for the Relaticle application with a modern, cu
 
 ## Installation
 
-The Documentation module is included in the Relaticle application by default. If you need to install it manually:
+The Documentation module is included in this CRM application by default. If you need to install it manually:
 
 ```bash
 # Publish the module's resources

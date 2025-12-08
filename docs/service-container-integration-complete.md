@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides a comprehensive overview of the service container integration throughout the Relaticle CRM application, demonstrating real-world implementations following all established patterns from the steering files.
+This document provides a comprehensive overview of the service container integration throughout this CRM application, demonstrating real-world implementations following all established patterns from the steering files.
 
 ## Architecture Summary
 

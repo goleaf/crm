@@ -150,8 +150,8 @@ WARDEN_SCHEDULE_TIMEZONE=UTC
 
 # Notifications
 WARDEN_EMAIL_RECIPIENTS=security@example.com
-WARDEN_EMAIL_FROM=security@relaticle.com
-WARDEN_EMAIL_FROM_NAME="Relaticle Security"
+WARDEN_EMAIL_FROM=security@example.com
+WARDEN_EMAIL_FROM_NAME="Security Team"
 
 # Cache
 WARDEN_CACHE_ENABLED=true
@@ -431,4 +431,4 @@ For issues or questions:
 
 **Status**: ✅ **INTEGRATION COMPLETE**
 
-All features implemented, tested, and documented following Relaticle CRM project conventions and Laravel 12 best practices.
+All features implemented, tested, and documented following this CRM project conventions and Laravel 12 best practices.

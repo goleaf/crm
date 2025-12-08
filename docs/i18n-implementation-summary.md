@@ -2,7 +2,7 @@
 
 ## Overview
 
-Successfully implemented a complete internationalization (i18n) system for the Relaticle CRM application with support for three languages:
+Successfully implemented a complete internationalization (i18n) system for this CRM application with support for three languages:
 - **English (en)** - Default
 - **Russian (ru)** - Русский  
 - **Lithuanian (lt)** - Lietuvių

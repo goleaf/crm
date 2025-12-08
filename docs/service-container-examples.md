@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides practical examples of service container integration throughout the Relaticle CRM application, demonstrating patterns for Filament v4.3+, testing, and real-world use cases.
+This document provides practical examples of service container integration throughout this CRM application, demonstrating patterns for Filament v4.3+, testing, and real-world use cases.
 
 ## Table of Contents
 

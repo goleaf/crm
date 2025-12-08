@@ -32,9 +32,14 @@ final class RouteTestingConfig
             '*.update',
             '*.destroy',
 
-            // Filament resource creation/editing (requires complex state)
-            'filament.*.create',
+            'filament.*.create', // Complex Filament forms
             'filament.*.edit',
+            'filament.app.auth.logout',
+            'filament.app.auth.login',
+            'filament.app.auth.password-reset.*',
+            'livewire.update', // Livewire route
+            'livewire.upload-file',
+            'livewire.preview-file',
 
             // Routes that require specific signed URLs
             'verification.verify',
@@ -66,6 +71,7 @@ final class RouteTestingConfig
     {
         return [
             'dashboard',
+            'filament.app.pages.dashboard',
             'calendar',
             'calendar.export.ical',
             'notes.print',

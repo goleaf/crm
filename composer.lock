@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c9c0b4d44fc6fc9866be43a58ef20646",
+    "content-hash": "e5eadb7a7d18490de4e34f00049659c1",
     "packages": [
         {
             "name": "aliziodev/laravel-taxonomy",
@@ -6465,6 +6465,82 @@
             "time": "2025-10-02T14:31:50+00:00"
         },
         {
+            "name": "livewire-filemanager/filemanager",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/livewire-filemanager/filemanager.git",
+                "reference": "a363257639a98692ffe188e7525d80bf4e46a5ed"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/livewire-filemanager/filemanager/zipball/a363257639a98692ffe188e7525d80bf4e46a5ed",
+                "reference": "a363257639a98692ffe188e7525d80bf4e46a5ed",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "^10.0|^11.0|^12.0",
+                "illuminate/support": "^10.0|^11.0|^12.0",
+                "illuminate/view": "^10|^11|^12.0",
+                "livewire/livewire": "^3.5.4",
+                "php": "^8.2|^8.3",
+                "spatie/laravel-medialibrary": "^10.15|^11.5.4"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.16",
+                "orchestra/testbench": "^8.23.2|^10.0",
+                "phpunit/phpunit": "^10.5.20|^11.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "LivewireFilemanager\\Filemanager\\FilemanagerServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/Helpers/Helpers.php"
+                ],
+                "psr-4": {
+                    "LivewireFilemanager\\Filemanager\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Yves Engetschwiler",
+                    "email": "info@bee-interactive.ch",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A simple, friendly and practical Livewire filemanager for your applications",
+            "homepage": "https://github.com/livewire-filemanager/filemanager",
+            "keywords": [
+                "filemanager",
+                "livewire-filemanager"
+            ],
+            "support": {
+                "issues": "https://github.com/livewire-filemanager/filemanager/issues",
+                "source": "https://github.com/livewire-filemanager/filemanager/tree/v1.0.2"
+            },
+            "funding": [
+                {
+                    "url": "https://www.buymeacoffee.com/bee.interactive",
+                    "type": "buy_me_a_coffee"
+                },
+                {
+                    "url": "https://github.com/bee-interactive",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-12-03T08:55:56+00:00"
+        },
+        {
             "name": "livewire/livewire",
             "version": "v3.7.1",
             "source": {
@@ -7133,6 +7209,86 @@
                 }
             ],
             "time": "2025-08-01T08:46:24+00:00"
+        },
+        {
+            "name": "naoray/laravel-github-monolog",
+            "version": "v3.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Naoray/laravel-github-monolog.git",
+                "reference": "37d0a87cb6a6ae7bc10c0ea1713b4bcb73cd6fc8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Naoray/laravel-github-monolog/zipball/37d0a87cb6a6ae7bc10c0ea1713b4bcb73cd6fc8",
+                "reference": "37d0a87cb6a6ae7bc10c0ea1713b4bcb73cd6fc8",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/cache": "^11.0||^12.0",
+                "illuminate/contracts": "^11.0||^12.0",
+                "illuminate/filesystem": "^11.0||^12.0",
+                "illuminate/http": "^11.0||^12.0",
+                "illuminate/support": "^11.37||^12.0",
+                "monolog/monolog": "^3.6",
+                "php": "^8.3"
+            },
+            "require-dev": {
+                "larastan/larastan": "^3.1",
+                "laravel/pint": "^1.14",
+                "nunomaduro/collision": "^8.1.1",
+                "orchestra/testbench": "^10.0||^9.0.0",
+                "pestphp/pest": "^3.0",
+                "pestphp/pest-plugin-arch": "^3.0",
+                "pestphp/pest-plugin-laravel": "^3.0",
+                "phpstan/extension-installer": "^1.3",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Naoray\\LaravelGithubMonolog\\GithubMonologServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Naoray\\LaravelGithubMonolog\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Krishan Koenig",
+                    "email": "krishan.koenig@googlemail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Log driver to store logs as github issues",
+            "homepage": "https://github.com/naoray/laravel-github-monolog",
+            "keywords": [
+                "Krishan Koenig",
+                "github",
+                "laravel",
+                "logging",
+                "monolog"
+            ],
+            "support": {
+                "issues": "https://github.com/Naoray/laravel-github-monolog/issues",
+                "source": "https://github.com/Naoray/laravel-github-monolog/tree/v3.3.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/naoray",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-03-26T13:18:04+00:00"
         },
         {
             "name": "nesbot/carbon",
@@ -17344,6 +17500,65 @@
                 "source": "https://github.com/hamcrest/hamcrest-php/tree/v2.1.1"
             },
             "time": "2025-04-30T06:54:44+00:00"
+        },
+        {
+            "name": "hyvor/laravel-playwright",
+            "version": "2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hyvor/laravel-playwright.git",
+                "reference": "14e486eb4c254605dbc8d64a7239af59e0ad4bef"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hyvor/laravel-playwright/zipball/14e486eb4c254605dbc8d64a7239af59e0ad4bef",
+                "reference": "14e486eb4c254605dbc8d64a7239af59e0ad4bef",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "larastan/larastan": "^3.0",
+                "orchestra/testbench": "^9.0",
+                "phpstan/phpstan": "^2.0",
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Hyvor\\LaravelPlaywright\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Hyvor\\LaravelPlaywright\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Supun",
+                    "email": "supun@hyvor.com"
+                }
+            ],
+            "description": "Laravel and Playwright E2E Testing",
+            "keywords": [
+                "e2e",
+                "laravel",
+                "playwright",
+                "testing"
+            ],
+            "support": {
+                "issues": "https://github.com/hyvor/laravel-playwright/issues",
+                "source": "https://github.com/hyvor/laravel-playwright/tree/2.0.2"
+            },
+            "time": "2025-03-12T04:16:29+00:00"
         },
         {
             "name": "iamcal/sql-parser",

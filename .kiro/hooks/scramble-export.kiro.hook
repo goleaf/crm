@@ -1,0 +1,22 @@
+{
+  "enabled": true,
+  "name": "Scramble API Documentation Auto-Export",
+  "description": "Automatically exports the API documentation (OpenAPI spec) to api.json when API-related files are modified.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Http/Controllers/Api/**/*.php",
+      "app/Http/Resources/**/*.php",
+      "app/Http/Requests/**/*.php",
+      "routes/api.php",
+      "config/scramble.php"
+    ]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "php artisan scramble:export"
+  },
+  "workspaceFolderName": "crm",
+  "shortName": "scramble-export"
+}

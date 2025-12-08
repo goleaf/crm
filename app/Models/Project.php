@@ -96,11 +96,14 @@ final class Project extends Model implements HasMedia
     ];
 
     /**
-     * @var list<string>
+     * Initialize trait properties to keep PHP 8.4+ composition clean.
      */
-    protected array $constraintFields = [];
+    public function __construct(array $attributes = [])
+    {
+        $this->constraintFields = [];
 
-    protected string $uniqueSuffixFormat = '-{n}';
+        parent::__construct($attributes);
+    }
 
     /**
      * @return array<string, string|class-string>

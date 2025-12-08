@@ -48,10 +48,12 @@
         "laravel/tinker": "^2.9",
         "laraveljutsu/zap": "^1.9",
         "leandrocfe/filament-apex-charts": "^4.0",
+        "livewire-filemanager/filemanager": "^1.0",
         "livewire/livewire": "^3.0",
         "mansoor/filament-unsplash-picker": "^4.0",
         "marksitko/laravel-unsplash": "^2.3",
         "mateffy/laravel-introspect": "^1.1",
+        "naoray/laravel-github-monolog": "^3.3",
         "nnjeim/world": "*",
         "nunomaduro/laravel-optimize-database": "^1.0",
         "prism-php/prism": "^0.98.5",
@@ -87,6 +89,7 @@
         "defstudio/pest-plugin-laravel-expectations": "^2.6",
         "driftingly/rector-laravel": "^2.0",
         "fakerphp/faker": "^1.23",
+        "hyvor/laravel-playwright": "^2.0",
         "itsgoingd/clockwork": "^5.3",
         "larastan/larastan": "^3.0",
         "laravel/boost": "^1.0",
@@ -148,7 +151,7 @@
         ],
         "app-install": [
             "@composer install",
-            "@php artisan relaticle:install"
+            "@php artisan crm:install"
         ],
         "insights": "php -d memory_limit=1G ./vendor/bin/phpinsights --ansi",
         "insights:json": "php -d memory_limit=1G ./vendor/bin/phpinsights --ansi --format=json",

@@ -18,7 +18,7 @@
 
 <aside class="w-64 bg-white border-r border-gray-100 min-h-screen sticky top-0 hidden lg:flex flex-col">
     <div class="px-6 py-5 border-b border-gray-100 flex items-center gap-2">
-        <img src="{{ asset('relaticle-logomark.svg') }}" alt="{{ brand_name() }} logo" class="h-8 w-8">
+        <img src="{{ brand_logomark_asset() }}" alt="{{ brand_name() }} logo" class="h-8 w-8">
         <div>
             <p class="text-xs text-gray-500">{{ brand_name() }}</p>
             <p class="text-sm font-semibold text-gray-900">Workspace</p>

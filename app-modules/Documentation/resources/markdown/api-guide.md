@@ -1,14 +1,14 @@
 # API Documentation
 
-This guide provides documentation for the Relaticle API, allowing developers to integrate Relaticle's CRM capabilities with other applications.
+This guide provides documentation for the CRM API, allowing developers to integrate the CRM's capabilities with other applications.
 
 ## API Overview
 
-Relaticle's API is currently under development. This section will be updated with comprehensive documentation once the API is available for use.
+The CRM API is currently under development. This section will be updated with comprehensive documentation once the API is available for use.
 
 ## Planned API Features
 
-The Relaticle API will include:
+The CRM API will include:
 
 - REST API endpoints for all major resources (Companies, Contacts, Opportunities, Tasks, Notes)
 - Authentication via API tokens

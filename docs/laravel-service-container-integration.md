@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide covers comprehensive service container integration patterns for the Relaticle CRM application, focusing on dependency injection, service registration, and Filament v4.3+ integration.
+This guide covers comprehensive service container integration patterns for this CRM application, focusing on dependency injection, service registration, and Filament v4.3+ integration.
 
 ## Table of Contents
 

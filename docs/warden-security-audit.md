@@ -1,7 +1,7 @@
 # Warden Security Audit Integration
 
 ## Overview
-Warden is a Laravel package that proactively monitors your dependencies for security vulnerabilities by running automated composer audits and sending notifications via webhooks and email. This integration provides automated security monitoring for the Relaticle CRM platform.
+Warden is a Laravel package that proactively monitors your dependencies for security vulnerabilities by running automated composer audits and sending notifications via webhooks and email. This integration provides automated security monitoring for this CRM platform.
 
 ## Package Information
 - **Package**: `dgtlss/warden`
@@ -46,8 +46,8 @@ WARDEN_SCHEDULE_TIMEZONE=UTC
 
 # Notification Channels
 WARDEN_EMAIL_RECIPIENTS=security@example.com,devops@example.com
-WARDEN_EMAIL_FROM=security@relaticle.com
-WARDEN_EMAIL_FROM_NAME="Relaticle Security"
+WARDEN_EMAIL_FROM=security@example.com
+WARDEN_EMAIL_FROM_NAME="Security Team"
 
 # Optional: Slack Integration
 # WARDEN_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
@@ -369,8 +369,8 @@ Configured via:
 
 ```env
 WARDEN_EMAIL_RECIPIENTS=security@example.com,devops@example.com
-WARDEN_EMAIL_FROM=security@relaticle.com
-WARDEN_EMAIL_FROM_NAME="Relaticle Security"
+WARDEN_EMAIL_FROM=security@example.com
+WARDEN_EMAIL_FROM_NAME="Security Team"
 ```
 
 ### Slack Notifications

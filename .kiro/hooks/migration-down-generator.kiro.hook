@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "name": "Migration Down Method Generator",
+  "description": "Automatically generates or updates the down() method in Laravel migrations to properly reverse all changes made in the up() method.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "database/migrations/**/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A Laravel migration file has been modified. Review the up() method and generate or update the corresponding down() method that properly reverses all changes:\n\n1. **Table Creation**: If up() creates a table, down() should drop it\n   - Use `Schema::dropIfExists('table_name')`\n\n2. **Column Addition**: If up() adds columns, down() should remove them\n   - Use `$table->dropColumn(['column1', 'column2'])`\n\n3. **Column Modification**: If up() modifies columns, down() should restore original state\n   - Document original column definition in comments\n   - Reverse the modification\n\n4. **Foreign Keys**: Handle foreign key constraints properly\n   - Drop foreign keys before dropping columns\n   - Use `$table->dropForeign(['column_name'])`\n\n5. **Indexes**: Remove indexes added in up()\n   - Use `$table->dropIndex(['column_name'])`\n\n6. **Data Changes**: If up() modifies data, down() should restore it\n   - Use DB::table() operations to reverse data changes\n\nEnsure the down() method is complete and will successfully rollback the migration without errors.\n\nMigration file: {file_path}\nMigration contents: {file_contents}"
+  },
+  "workspaceFolderName": "crm",
+  "shortName": "migration-down-generator"
+}

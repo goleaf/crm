@@ -14,13 +14,15 @@ describe('Home page', function (): void {
     });
 
     it('displays the GitHub stars count', function (): void {
+        $testOwner = 'TestOwner';
+        $testRepo = 'testrepo';
         config([
-            'laravel-crm.ui.github_owner' => 'Relaticle',
-            'laravel-crm.ui.github_repo' => 'relaticle',
+            'laravel-crm.ui.github_owner' => $testOwner,
+            'laravel-crm.ui.github_repo' => $testRepo,
         ]);
 
         Http::fake([
-            'api.github.com/repos/Relaticle/relaticle' => Http::response([
+            "api.github.com/repos/{$testOwner}/{$testRepo}" => Http::response([
                 'stargazers_count' => 125,
             ], 200),
         ]);

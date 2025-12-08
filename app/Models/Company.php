@@ -40,6 +40,9 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Nnjeim\World\Models\City;
+use Nnjeim\World\Models\Country;
+use Nnjeim\World\Models\State;
 use Relaticle\CustomFields\Models\Concerns\UsesCustomFields;
 use Relaticle\CustomFields\Models\Contracts\HasCustomFields;
 use Relaticle\CustomFields\Models\CustomField;
@@ -98,11 +101,17 @@ final class Company extends Model implements HasCustomFields, HasMedia
         'billing_state',
         'billing_postal_code',
         'billing_country',
+        'billing_country_id',
+        'billing_state_id',
+        'billing_city_id',
         'shipping_street',
         'shipping_city',
         'shipping_state',
         'shipping_postal_code',
         'shipping_country',
+        'shipping_country_id',
+        'shipping_state_id',
+        'shipping_city_id',
         'social_links',
         'creation_source',
         'addresses',
@@ -619,6 +628,54 @@ final class Company extends Model implements HasCustomFields, HasMedia
             ->first();
 
         return self::$customFieldCache[$cacheKey];
+    }
+
+    /**
+     * @return BelongsTo<Country, $this>
+     */
+    public function billingCountry(): BelongsTo
+    {
+        return $this->belongsTo(Country::class, 'billing_country_id');
+    }
+
+    /**
+     * @return BelongsTo<State, $this>
+     */
+    public function billingState(): BelongsTo
+    {
+        return $this->belongsTo(State::class, 'billing_state_id');
+    }
+
+    /**
+     * @return BelongsTo<City, $this>
+     */
+    public function billingCity(): BelongsTo
+    {
+        return $this->belongsTo(City::class, 'billing_city_id');
+    }
+
+    /**
+     * @return BelongsTo<Country, $this>
+     */
+    public function shippingCountry(): BelongsTo
+    {
+        return $this->belongsTo(Country::class, 'shipping_country_id');
+    }
+
+    /**
+     * @return BelongsTo<State, $this>
+     */
+    public function shippingState(): BelongsTo
+    {
+        return $this->belongsTo(State::class, 'shipping_state_id');
+    }
+
+    /**
+     * @return BelongsTo<City, $this>
+     */
+    public function shippingCity(): BelongsTo
+    {
+        return $this->belongsTo(City::class, 'shipping_city_id');
     }
 
     /**

@@ -52,7 +52,7 @@ return [
     ],
 
     /**
-     * Relaticle defaults for permissions, roles, and role inheritance.
+     * Default permissions, roles, and role inheritance configuration.
      */
     'defaults' => [
         'guard' => 'web',

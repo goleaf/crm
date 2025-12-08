@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "name": "Laravel Model Test Generator",
+  "description": "Auto-generates comprehensive PHPUnit/Pest tests for Laravel models when they are created or modified, including factory tests, relationship tests, validation tests, accessor/mutator tests, and scope tests.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Models/**/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A Laravel model has been created or modified. Generate comprehensive Pest tests for this model:\n\n1. **Factory Tests**: Verify the model factory creates valid instances with all required attributes\n2. **Relationship Tests**: Test all defined relationships (hasMany, belongsTo, morphMany, etc.)\n3. **Validation Tests**: Test model validation rules if defined, including edge cases\n4. **Accessor/Mutator Tests**: Test all accessors and mutators for correct transformations\n5. **Scope Tests**: Test all query scopes with various inputs\n6. **Event Tests**: Test model events (creating, created, updating, updated, etc.) if observers exist\n7. **Cast Tests**: Verify attribute casts work correctly (dates, JSON, enums, etc.)\n\nFollow these conventions:\n- Use Pest syntax with `it()` and descriptive test names\n- Use `RefreshDatabase` trait for database tests\n- Leverage factories for test data creation\n- Test both happy paths and edge cases\n- Place tests in `tests/Unit/Models/[ModelName]Test.php`\n- Use Laravel Expectations plugin assertions (toExist, toBeModel, etc.)\n\nModel file: {file_path}\nModel contents: {file_contents}"
+  },
+  "workspaceFolderName": "crm",
+  "shortName": "model-test-generator"
+}

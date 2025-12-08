@@ -26,17 +26,16 @@ final class TranslationStatusWidget extends BaseWidget
                 "{$completion}%"
             )
                 ->description(__('app.labels.translations_count', ['count' => $count]))
-                ->color($completion >= 90 ? 'success' : ($completion >= 50 ? 'warning' : 'danger'))
-                ->chart($this->getCompletionTrend($language->code));
+                ->color($completion >= 90 ? 'success' : ($completion >= 50 ? 'warning' : 'danger'));
+            // ->chart($this->getCompletionTrend($language->code)); // Trend chart removed as no historical data is available
         }
 
         return $stats;
     }
 
-    protected function getCompletionTrend(string $locale): array
+    private function getCompletionTrend(): array
     {
-        // Return historical completion data if tracked
-        // For now, return a placeholder trend to make it look nice
-        return [65, 70, 75, 80, 85, 90, 95];
+        // Placeholder for future trend implementation
+        return [];
     }
 }

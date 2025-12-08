@@ -6,6 +6,7 @@ namespace Relaticle\SystemAdmin\Filament\Pages;
 
 use Filament\Actions\Action;
 use Filament\Pages\Dashboard as BaseDashboard;
+use Illuminate\Contracts\Support\Htmlable;
 
 final class Dashboard extends BaseDashboard
 {
@@ -13,9 +14,12 @@ final class Dashboard extends BaseDashboard
 
     protected ?string $heading = 'Dashboard';
 
-    protected ?string $subheading = 'Welcome to Relaticle Admin | See your stats and manage your content.';
-
     protected static ?string $navigationLabel = 'Dashboard';
+
+    public function getSubheading(): string | Htmlable | null
+    {
+        return sprintf('Welcome to %s Admin | See your stats and manage your content.', brand_name());
+    }
 
     public function getHeaderActions(): array
     {

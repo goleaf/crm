@@ -49,14 +49,12 @@ inclusion: always
 ## Filament Integration
 
 ### Livewire Components
-- Use `->live(onBlur: true)` for text inputs to trigger validation when user leaves field.
-- Use `->live(debounce: 500)` for email/unique fields to validate as user types.
-- Implement `validateField()` method to manually trigger validation via `Validator::make()`.
-- Use `$this->validateOnly('data.field')` in `afterStateUpdated()` callbacks.
+- Use `->precognitive()` for text inputs (defaults to `onBlur: true`).
+- Use `->precognitive(debounce: 500)` for email/unique fields to validate as user types.
+- The macro handles `live()` and `afterStateUpdated()` automatically.
 
 ### Actions
-- Add `->live()` to form fields within actions to enable real-time validation.
-- Use `afterStateUpdated()` callbacks to trigger validation on specific fields.
+- Add `->precognitive()` to form fields within actions to enable real-time validation.
 - Leverage Filament's built-in validation; Precognition enhances it with real-time feedback.
 
 ## Testing

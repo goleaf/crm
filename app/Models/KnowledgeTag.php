@@ -35,7 +35,15 @@ final class KnowledgeTag extends Model
         'description',
     ];
 
-    protected bool $reslugOnBaseChange = true;
+    /**
+     * Initialize trait properties to keep PHP 8.4+ composition clean.
+     */
+    public function __construct(array $attributes = [])
+    {
+        $this->reslugOnBaseChange = true;
+
+        parent::__construct($attributes);
+    }
 
     /**
      * @return BelongsToMany<KnowledgeArticle, $this>

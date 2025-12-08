@@ -69,8 +69,6 @@ final class Account extends Model implements HasMedia
         'currency' => 'USD',
     ];
 
-    protected string $uniqueSuffixFormat = '-{n}';
-
     /**
      * @return array<string, string>
      */

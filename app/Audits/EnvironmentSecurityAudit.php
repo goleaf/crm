@@ -5,102 +5,96 @@ declare(strict_types=1);
 namespace App\Audits;
 
 use Dgtlss\Warden\Contracts\CustomAudit;
-use Dgtlss\Warden\ValueObjects\AuditResult;
 
 final class EnvironmentSecurityAudit implements CustomAudit
 {
-    public function run(): AuditResult
+    private array $findings = [];
+
+    public function audit(): bool
     {
-        $issues = [];
+        $this->findings = [];
 
         // Check for debug mode in production
         if (app()->environment('production') && config('app.debug')) {
-            $issues[] = [
-                'severity' => 'critical',
+            $this->findings[] = [
                 'package' => 'environment',
-                'message' => 'APP_DEBUG is enabled in production environment',
-                'recommendation' => 'Set APP_DEBUG=false in production .env file',
-                'cve' => null,
+                'title' => 'APP_DEBUG enabled in production',
+                'severity' => 'critical',
+                'description' => 'APP_DEBUG is set to true in production environment. Set APP_DEBUG=false in .env file to prevent sensitive data exposure.',
             ];
         }
 
         // Check for default app key
         if (str_starts_with((string) config('app.key'), 'base64:') && strlen(base64_decode(substr((string) config('app.key'), 7))) < 32) {
-            $issues[] = [
-                'severity' => 'critical',
+            $this->findings[] = [
                 'package' => 'environment',
-                'message' => 'Weak or default APP_KEY detected',
-                'recommendation' => 'Run: php artisan key:generate',
-                'cve' => null,
+                'title' => 'Weak APP_KEY',
+                'severity' => 'critical',
+                'description' => 'Weak or default APP_KEY detected. Run: php artisan key:generate to secure your application/sessions.',
             ];
         }
 
         // Check for HTTPS in production
         if (app()->environment('production') && ! str_starts_with((string) config('app.url'), 'https://')) {
-            $issues[] = [
-                'severity' => 'high',
+            $this->findings[] = [
                 'package' => 'environment',
-                'message' => 'HTTPS not enforced in production',
-                'recommendation' => 'Update APP_URL to use https:// protocol',
-                'cve' => null,
+                'title' => 'HTTPS not enforced',
+                'severity' => 'high',
+                'description' => 'APP_URL does not use https:// protocol in production. Update APP_URL to use https://.',
             ];
         }
 
         // Check for session security
         if (app()->environment('production') && ! config('session.secure')) {
-            $issues[] = [
-                'severity' => 'high',
+            $this->findings[] = [
                 'package' => 'session',
-                'message' => 'Session cookies not marked as secure',
-                'recommendation' => 'Set SESSION_SECURE_COOKIE=true in .env',
-                'cve' => null,
+                'title' => 'Insecure session cookies',
+                'severity' => 'high',
+                'description' => 'Session cookies are not marked as secure. Set SESSION_SECURE_COOKIE=true in .env to prevent session hijacking.',
             ];
         }
 
         // Check for sensitive data in logs
         if (config('app.debug') && in_array(config('logging.default'), ['single', 'daily', 'stack'])) {
-            $issues[] = [
-                'severity' => 'medium',
+            $this->findings[] = [
                 'package' => 'logging',
-                'message' => 'Debug mode may expose sensitive data in logs',
-                'recommendation' => 'Review log files for sensitive information',
-                'cve' => null,
+                'title' => 'Debug logging enabled',
+                'severity' => 'medium',
+                'description' => 'Debug mode is enabled, which may write sensitive data to log files. Review log configuration and retention policies.',
             ];
         }
 
         // Check for database credentials
         if (config('database.default') === 'mysql' && config('database.connections.mysql.password') === '') {
-            $issues[] = [
-                'severity' => 'critical',
+            $this->findings[] = [
                 'package' => 'database',
-                'message' => 'Database password is empty',
-                'recommendation' => 'Set a strong DB_PASSWORD in .env',
-                'cve' => null,
+                'title' => 'Empty database password',
+                'severity' => 'critical',
+                'description' => 'Database password is empty. Set a strong, unique DB_PASSWORD in .env.',
             ];
         }
 
         // Check for mail configuration in production
         if (app()->environment('production') && config('mail.default') === 'log') {
-            $issues[] = [
-                'severity' => 'medium',
+            $this->findings[] = [
                 'package' => 'mail',
-                'message' => 'Mail driver set to "log" in production',
-                'recommendation' => 'Configure proper mail driver (smtp, mailgun, etc.)',
-                'cve' => null,
+                'title' => 'Mail driver set to log',
+                'severity' => 'medium',
+                'description' => 'Mail driver is set to "log" in production. Emails will be written to disk instead of sent. Configure a proper mail driver.',
             ];
         }
 
-        return new AuditResult(
-            passed: $issues === [],
-            issues: $issues,
-            metadata: [
-                'audit_type' => 'environment_security',
-                'environment' => app()->environment(),
-                'checked_at' => now()->toIso8601String(),
-                'php_version' => PHP_VERSION,
-                'laravel_version' => app()->version(),
-            ]
-        );
+        return $this->findings === [];
+    }
+
+    public function getFindings(): array
+    {
+        return $this->findings;
+    }
+
+    public function shouldRun(): bool
+    {
+        return true;
     }
 
     public function getName(): string

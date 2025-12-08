@@ -2,7 +2,7 @@
 
 ## What Was Integrated
 
-The Laravel container service pattern has been fully integrated into the Relaticle CRM application following best practices from the Laravel community and optimized for Filament v4.3+.
+The Laravel container service pattern has been fully integrated into this CRM application following best practices from the Laravel community and optimized for Filament v4.3+.
 
 ## Documentation Created
 

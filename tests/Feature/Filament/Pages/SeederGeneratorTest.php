@@ -7,11 +7,12 @@ use App\Models\User;
 use App\Services\SeederGeneratorService;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Mockery;
 
 uses(RefreshDatabase::class);
-uses()
-    ->afterEach(fn (): void => Mockery::close());
+
+afterEach(function (): void {
+    Mockery::close();
+});
 
 it('shows the seeder generator form for admins or owners', function (): void {
     $user = User::factory()->withPersonalTeam()->create();

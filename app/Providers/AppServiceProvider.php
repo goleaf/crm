@@ -110,6 +110,9 @@ final class AppServiceProvider extends ServiceProvider
 
         // Register Union Paginator Services
         $this->registerUnionPaginatorServices();
+
+        // Register GitHub Issues Service
+        $this->app->singleton(\App\Services\GitHub\GitHubIssuesService::class, fn (): \App\Services\GitHub\GitHubIssuesService => \App\Services\GitHub\GitHubIssuesService::fromConfig());
     }
 
     /**
@@ -139,6 +142,12 @@ final class AppServiceProvider extends ServiceProvider
             $driver = config('ocr.driver', 'tesseract');
 
             return match ($driver) {
+                'space_ocr' => new \App\Services\OCR\Drivers\SpaceOCRDriver(
+                    new \OcrSpace\OcrSpace(
+                        config('ocr.drivers.space_ocr.key'),
+                        config('ocr.drivers.space_ocr.endpoint')
+                    )
+                ),
                 'tesseract' => new \App\Services\OCR\Drivers\TesseractDriver(
                     tesseractPath: config('ocr.drivers.tesseract.path'),
                     language: config('ocr.drivers.tesseract.lang'),
@@ -173,8 +182,8 @@ final class AppServiceProvider extends ServiceProvider
         // Register OCR Service
         $this->app->singleton(fn ($app): \App\Services\OCR\OCRService => new \App\Services\OCR\OCRService(
             driver: $app->make(\App\Services\OCR\Contracts\DriverInterface::class),
-            preprocessor: $app->make(\App\Services\OCR\Processors\ImagePreprocessor::class),
             textCleaner: $app->make(\App\Services\OCR\Processors\TextCleaner::class),
+            preprocessor: $app->make(\App\Services\OCR\Processors\ImagePreprocessor::class),
             templateManager: $app->make(\App\Services\OCR\Templates\TemplateManager::class),
         ));
     }
@@ -195,6 +204,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->configureTranslations();
         $this->configureCompanyConfig();
         $this->shareUiTranslations();
+        $this->configureScrambleGate();
     }
 
     /**
@@ -203,6 +213,17 @@ final class AppServiceProvider extends ServiceProvider
     private function configureTranslations(): void
     {
         // Use package translations; overrides can be placed in resources/lang/vendor/custom-fields if needed.
+    }
+
+    private function configureScrambleGate(): void
+    {
+        Gate::define('viewApiDocs', function (User $user): bool {
+            if ($user->hasRole('super_admin')) {
+                return true;
+            }
+
+            return $user->can('view_api_docs');
+        });
     }
 
     /**

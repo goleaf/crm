@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "name": "Laravel Controller Documentation",
+  "description": "Automatically adds comprehensive PHPDoc blocks to Laravel controller methods including descriptions, parameter types, return types, exceptions, and route annotations.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Http/Controllers/**/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A Laravel controller has been modified. Add or update comprehensive PHPDoc blocks for all methods:\n\n1. **Method Description**: Clear, concise description of what the method does\n2. **@param Tags**: Document all parameters with types and descriptions\n3. **@return Tags**: Document return type and what is returned\n4. **@throws Tags**: Document all exceptions that may be thrown\n5. **Route Annotations**: Add route information as comments (method, URI, name)\n6. **Authorization**: Document any authorization requirements\n7. **Validation**: Note any validation rules applied\n\nFollow Laravel documentation standards:\n- Use proper PHPDoc syntax\n- Include type hints that match method signatures\n- Document Form Request classes if used\n- Note any middleware applied\n- Reference related resources or models\n\nEnsure all public methods are documented. Private/protected methods should also have basic documentation.\n\nController file: {file_path}\nController contents: {file_contents}"
+  },
+  "workspaceFolderName": "crm",
+  "shortName": "controller-docs"
+}

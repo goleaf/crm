@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "name": "Form Request Extractor",
+  "description": "Detects inline validation in Laravel controllers and extracts it into dedicated Form Request classes following Laravel best practices.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/Http/Controllers/**/*.php"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A Laravel controller has been modified. Analyze the controller for inline validation and extract it into Form Request classes:\n\n1. **Detect Inline Validation**: Look for `$request->validate()` or `Validator::make()` calls\n\n2. **Create Form Request Class**: Generate `app/Http/Requests/[Action][Model]Request.php`\n   - Naming convention: StoreUserRequest, UpdateProductRequest, etc.\n   - Extend `Illuminate\\Foundation\\Http\\FormRequest`\n\n3. **Move Validation Rules**: Transfer rules to `rules()` method\n   - Organize rules logically\n   - Use rule objects for complex validation\n   - Add comments for non-obvious rules\n\n4. **Add Authorization**: Implement `authorize()` method\n   - Return true if no authorization needed\n   - Use policies for model-based authorization\n   - Check user permissions appropriately\n\n5. **Custom Messages**: Add `messages()` method if custom messages exist\n   - Use translation keys: `__('validation.custom.field.rule')`\n\n6. **Attributes**: Add `attributes()` method for friendly field names\n   - Use translation keys: `__('app.labels.field_name')`\n\n7. **Update Controller**: Replace inline validation with Form Request type-hint\n   - Change method signature: `public function store(StoreUserRequest $request)`\n   - Remove inline validation code\n   - Access validated data: `$request->validated()`\n\n8. **Add Tests**: Generate Pest tests for the Form Request\n   - Test validation rules (valid/invalid inputs)\n   - Test authorization logic\n   - Test custom messages\n\nOnly create Form Request if inline validation is found. Provide complete code for both the Form Request class and updated controller.\n\nController file: {file_path}\nController contents: {file_contents}"
+  },
+  "workspaceFolderName": "crm",
+  "shortName": "form-request-extractor"
+}

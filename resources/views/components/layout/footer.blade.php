@@ -7,7 +7,7 @@
             <div class="md:col-span-5 space-y-5">
                 <div class="flex items-center space-x-3">
                     <div class="relative overflow-hidden">
-                        <img class="h-8 w-auto" src="{{ asset('relaticle-logo.svg') }}" alt="{{ brand_name() }} Logo">
+                        <img class="h-8 w-auto" src="{{ brand_logo_asset() }}" alt="{{ brand_name() }} Logo">
                     </div>
                     <span class="font-semibold text-lg text-black dark:text-white">{{ brand_name() }}</span>
                 </div>

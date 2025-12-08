@@ -4,6 +4,7 @@
 - Laravel Translation Checker (`outhebox/laravel-translations`) provides a comprehensive UI for managing translations with database-backed storage.
 - All translation management flows through the Translation UI at `/translations` or via `TranslationCheckerService`.
 - Translations are stored in database tables (`ltu_*`) and exported to PHP files for version control.
+- Supports scanning module translations from `app-modules/*/src/resources/lang` via configured `module_paths`.
 - Use `php artisan translations:import` after adding new keys to PHP files; use `php artisan translations:export` before deploying.
 
 ## Service Usage

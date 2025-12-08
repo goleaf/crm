@@ -5,174 +5,100 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 final class UnsplashAsset extends Model
 {
     use HasFactory;
-    use SoftDeletes;
 
-    protected $fillable = [
-        'unsplash_id',
-        'slug',
-        'description',
-        'alt_description',
-        'urls',
-        'links',
-        'width',
-        'height',
-        'color',
-        'likes',
-        'liked_by_user',
-        'photographer_name',
-        'photographer_username',
-        'photographer_url',
-        'download_location',
-        'local_path',
-        'downloaded_at',
-        'exif',
-        'location',
-        'tags',
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'urls' => 'array',
         'links' => 'array',
-        'exif' => 'array',
-        'location' => 'array',
-        'tags' => 'array',
-        'liked_by_user' => 'boolean',
-        'downloaded_at' => 'datetime',
+        'user' => 'array',
+        'promoted_at' => 'datetime',
+        'width' => 'integer',
+        'height' => 'integer',
+        'likes' => 'integer',
     ];
 
-    public function getTable(): string
+    public function getTable()
     {
-        return config('unsplash.tables.assets', 'unsplash_assets');
+        return config('unsplash.tables.assets', parent::getTable());
     }
 
     /**
-     * Get the URL for the specified size
+     * Create or update an asset from Unsplash API data.
+     */
+    public static function findOrCreateFromApi(array $data): self
+    {
+        return self::updateOrCreate(
+            ['unsplash_id' => $data['id']],
+            [
+                'description' => $data['description'] ?? $data['alt_description'],
+                'alt_description' => $data['alt_description'],
+                'urls' => $data['urls'],
+                'links' => $data['links'],
+                'user' => $data['user'],
+                'width' => $data['width'],
+                'height' => $data['height'],
+                'color' => $data['color'] ?? null,
+                'blur_hash' => $data['blur_hash'] ?? null,
+                'likes' => $data['likes'] ?? 0,
+                'promoted_at' => $data['promoted_at'] ?? null,
+                'download_location' => $data['links']['download_location'] ?? null,
+            ]
+        );
+    }
+
+    /**
+     * Get the image URL, preferring local if available.
      */
     public function getUrl(string $size = 'regular'): ?string
     {
+        if ($this->isDownloaded()) {
+            return $this->getLocalUrl();
+        }
+
         return $this->urls[$size] ?? $this->urls['regular'] ?? null;
     }
 
-    /**
-     * Get the local file URL if downloaded
-     */
     public function getLocalUrl(): ?string
     {
         if (! $this->local_path) {
             return null;
         }
 
-        $disk = config('unsplash.storage.disk');
-
-        return Storage::disk($disk)->url($this->local_path);
+        return Storage::disk($this->local_disk ?? config('unsplash.storage.disk', 'public'))
+            ->url($this->local_path);
     }
 
-    /**
-     * Check if the asset has been downloaded locally
-     */
     public function isDownloaded(): bool
     {
-        return $this->local_path !== null && $this->downloaded_at !== null;
+        return ! empty($this->local_path);
     }
 
-    /**
-     * Get photographer attribution text
-     */
-    public function getAttributionText(): string
-    {
-        return "Photo by {$this->photographer_name} on Unsplash";
-    }
-
-    /**
-     * Get photographer attribution HTML
-     */
     public function getAttributionHtml(): string
     {
+        $utm = config('unsplash.utm_source', 'Laravel');
+        $userCms = "?utm_source={$utm}&utm_medium=referral";
+
+        $name = $this->user['name'];
+        $userLink = $this->user['links']['html'].$userCms;
+        $unsplashLink = "https://unsplash.com/{$userCms}";
+
         return sprintf(
-            'Photo by <a href="%s?utm_source=%s&utm_medium=referral" target="_blank" rel="noopener">%s</a> on <a href="https://unsplash.com?utm_source=%s&utm_medium=referral" target="_blank" rel="noopener">Unsplash</a>',
-            $this->photographer_url,
-            config('unsplash.utm_source'),
-            $this->photographer_name,
-            config('unsplash.utm_source'),
+            'Photo by <a href="%s" target="_blank" rel="noopener noreferrer">%s</a> on <a href="%s" target="_blank" rel="noopener noreferrer">Unsplash</a>',
+            $userLink,
+            $name,
+            $unsplashLink
         );
     }
 
-    /**
-     * Polymorphic relation to models using this asset
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany<\App\Models\Model, $this, \Illuminate\Database\Eloquent\Relations\Pivot>
-     */
-    public function models(): MorphToMany
+    public function getAttributionText(): string
     {
-        return $this->morphedByMany(
-            Model::class,
-            'unsplashable',
-            config('unsplash.tables.pivot', 'unsplashables'),
-        )->withPivot(['collection', 'order', 'metadata'])
-            ->withTimestamps()
-            ->orderByPivot('order');
-    }
-
-    /**
-     * Create from Unsplash API response
-     */
-    public static function createFromApi(array $data): self
-    {
-        return self::create([
-            'unsplash_id' => $data['id'],
-            'slug' => $data['slug'] ?? null,
-            'description' => $data['description'] ?? null,
-            'alt_description' => $data['alt_description'] ?? null,
-            'urls' => $data['urls'] ?? [],
-            'links' => $data['links'] ?? [],
-            'width' => $data['width'] ?? null,
-            'height' => $data['height'] ?? null,
-            'color' => $data['color'] ?? null,
-            'likes' => $data['likes'] ?? 0,
-            'liked_by_user' => $data['liked_by_user'] ?? false,
-            'photographer_name' => $data['user']['name'] ?? null,
-            'photographer_username' => $data['user']['username'] ?? null,
-            'photographer_url' => $data['user']['links']['html'] ?? null,
-            'download_location' => $data['links']['download_location'] ?? null,
-            'exif' => $data['exif'] ?? null,
-            'location' => $data['location'] ?? null,
-            'tags' => $data['tags'] ?? null,
-        ]);
-    }
-
-    /**
-     * Find or create from Unsplash API response
-     */
-    public static function findOrCreateFromApi(array $data): self
-    {
-        return self::firstOrCreate(
-            ['unsplash_id' => $data['id']],
-            [
-                'slug' => $data['slug'] ?? null,
-                'description' => $data['description'] ?? null,
-                'alt_description' => $data['alt_description'] ?? null,
-                'urls' => $data['urls'] ?? [],
-                'links' => $data['links'] ?? [],
-                'width' => $data['width'] ?? null,
-                'height' => $data['height'] ?? null,
-                'color' => $data['color'] ?? null,
-                'likes' => $data['likes'] ?? 0,
-                'liked_by_user' => $data['liked_by_user'] ?? false,
-                'photographer_name' => $data['user']['name'] ?? null,
-                'photographer_username' => $data['user']['username'] ?? null,
-                'photographer_url' => $data['user']['links']['html'] ?? null,
-                'download_location' => $data['links']['download_location'] ?? null,
-                'exif' => $data['exif'] ?? null,
-                'location' => $data['location'] ?? null,
-                'tags' => $data['tags'] ?? null,
-            ],
-        );
+        return sprintf('Photo by %s on Unsplash', $this->user['name']);
     }
 }

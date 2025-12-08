@@ -5,8 +5,9 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Http;
 
 it('configures the GitHub HTTP client macro with shared defaults', function (): void {
+    $testBrand = 'Test CRM';
     config([
-        'laravel-crm.ui.brand_name' => 'Relaticle CRM',
+        'laravel-crm.ui.brand_name' => $testBrand,
         'app.url' => 'https://crm.test',
         'http-clients.defaults.retry.times' => 1,
     ]);
@@ -19,7 +20,7 @@ it('configures the GitHub HTTP client macro with shared defaults', function (): 
 
     Http::assertSent(fn ($request): bool => $request->url() === 'https://api.github.com/rate_limit'
         && $request->hasHeader('Accept', 'application/vnd.github+json')
-        && $request->hasHeader('User-Agent', 'Relaticle CRM HTTP Client (https://crm.test)'));
+        && $request->hasHeader('User-Agent', "{$testBrand} HTTP Client (https://crm.test)"));
 });
 
 it('retries GitHub requests on server errors before returning a response', function (): void {

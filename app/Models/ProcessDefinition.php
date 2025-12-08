@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property array<string, mixed>|null $escalation_rules
  * @property array<string, mixed>|null $metadata
  */
-final class ProcessDefinition extends Model
+class ProcessDefinition extends Model
 {
     use HasFactory;
     use HasTeam;
@@ -50,11 +50,14 @@ final class ProcessDefinition extends Model
     ];
 
     /**
-     * @var list<string>
+     * Initialize trait properties to keep PHP 8.4+ composition clean.
      */
-    protected array $constraintFields = [];
+    public function __construct(array $attributes = [])
+    {
+        $this->constraintFields = [];
 
-    protected string $uniqueSuffixFormat = '-{n}';
+        parent::__construct($attributes);
+    }
 
     /**
      * @return array<string, string|class-string>

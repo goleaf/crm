@@ -126,6 +126,7 @@ describe('Route Coverage', function (): void {
 
         // Should include authenticated routes
         expect($testableRoutes)->toContain('dashboard');
+        expect($testableRoutes)->toContain('filament.app.pages.dashboard');
         expect($testableRoutes)->toContain('calendar');
 
         // Should include API routes

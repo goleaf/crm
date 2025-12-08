@@ -2,7 +2,7 @@
 
 ## Overview
 
-A complete, production-ready OCR (Optical Character Recognition) system has been integrated into Relaticle CRM following all project conventions and best practices.
+A complete, production-ready OCR (Optical Character Recognition) system has been integrated into this CRM platform following all project conventions and best practices.
 
 ## What Was Implemented
 

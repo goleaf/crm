@@ -6,13 +6,15 @@
   "when": {
     "type": "fileEdited",
     "patterns": [
-      "app/Http/Livewire/**",
-      "app/Filament/**",
-      "database/**"
+      "app/Http/Livewire/**/*.php",
+      "app/Filament/**/*.php",
+      "database/**/*.php"
     ]
   },
   "then": {
     "type": "askAgent",
     "prompt": "A file in a critical performance area has been modified. Execute this comprehensive optimization workflow:\n\n## 1. Context Gathering (via MCP)\n- Profile database queries executed by this component/resource\n- Extract Filament resource schemas and table configurations\n- Analyze Livewire component usage and lifecycle hooks\n- Identify relationships and eager loading opportunities\n\n## 2. Filament-Specific Optimizations\nFor Filament Resources:\n- Review `getEloquentQuery()` for eager loading opportunities (use `->with()`)\n- Check table pagination settings (suggest simple pagination for large datasets)\n- Analyze searchable/sortable columns (limit to essentials, ensure indexes exist)\n- Review widget queries for caching opportunities\n- Check for deferred loading in forms (`->deferLoading()`)\n- Validate summarizers vs custom aggregate queries\n\nFor Livewire Components:\n- Identify N+1 query patterns\n- Suggest lazy loading for heavy properties\n- Review `->live()` usage and optimize reactive dependencies\n- Check for unnecessary re-renders\n\n## 3. Query & Code Tuning\nDatabase Layer:\n- Identify slow queries from migrations/models\n- Propose missing indexes on searchable/sortable/foreign key columns\n- Suggest query builder optimizations (select specific columns, chunk large datasets)\n- Recommend Redis/cache strategies for repeated queries\n\nControllers & Middleware:\n- Optimize middleware stack (remove unused, reorder for efficiency)\n- Review response caching opportunities\n- Check for unnecessary database hits in middleware\n\n## 4. Performance Testing & Metrics\n- Benchmark current performance (if tools available: Blackfire, Telescope, Clockwork)\n- Generate before/after metrics for proposed changes\n- Target: sub-100ms response times for Filament panel interactions\n- Identify bottlenecks: query time, view rendering, Livewire overhead\n\n## 5. Monitoring Setup\n- Check if Laravel Telescope or Pulse is installed\n- If missing, suggest installation with Filament-specific configuration\n- Configure monitoring for:\n  - Slow queries (>100ms)\n  - N+1 detection\n  - Cache hit rates\n  - Livewire component performance\n\n## 6. Documentation\nUpdate or create `docs/performance.md` with:\n- Applied optimizations and rationale\n- Before/after metrics\n- Recommended indexes added\n- Caching strategies implemented\n- Performance targets and monitoring setup\n\n## Output Format\nProvide:\n1. **Immediate Issues**: Critical performance problems found\n2. **Optimization Suggestions**: Prioritized list with code examples\n3. **Metrics**: Current vs target performance\n4. **Action Items**: Specific changes to implement\n5. **Monitoring**: Setup recommendations\n\nFocus on scalability for high-traffic applications. Use intelligent analysis to provide context-aware suggestions. Process asynchronously where possible and highlight key insights requiring approval."
-  }
+  },
+  "workspaceFolderName": "crm",
+  "shortName": "filament-performance-optimizer"
 }

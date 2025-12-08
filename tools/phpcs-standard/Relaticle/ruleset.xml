@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- Shared PHPCS ruleset; see https://laravel-news.com/sharing-phpcs-rules -->
 <ruleset name="Relaticle">
-    <description>Common PHPCS rules for CRM apps.</description>
+    <description>Common PHPCS coding standard rules for CRM applications.</description>
 
     <!-- Output configuration -->
     <arg name="colors"/>

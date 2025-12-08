@@ -113,8 +113,8 @@ final class ConsolidatedSeeder extends Seeder
             ->count(100)
             ->create([
                 'team_id' => $this->team->id,
-                'owner_id' => fn() => $this->users->random()->id,
-                'assigned_to_id' => fn() => $this->users->random()->id,
+                'owner_id' => fn () => $this->users->random()->id,
+                'assigned_to_id' => fn () => $this->users->random()->id,
             ]);
 
         $this->command?->info('✓ Created 100 accounts');
@@ -128,7 +128,7 @@ final class ConsolidatedSeeder extends Seeder
             ->count(100)
             ->create([
                 'team_id' => $this->team->id,
-                'account_owner_id' => fn() => $this->users->random()->id,
+                'account_owner_id' => fn () => $this->users->random()->id,
             ])
             ->each(function (Company $company): void {
                 // Create company revenues
@@ -156,7 +156,7 @@ final class ConsolidatedSeeder extends Seeder
             ->count(200)
             ->create([
                 'team_id' => $this->team->id,
-                'company_id' => fn() => $this->companies->random()->id,
+                'company_id' => fn () => $this->companies->random()->id,
             ]);
 
         $this->command?->info('✓ Created 200 people');
@@ -170,9 +170,9 @@ final class ConsolidatedSeeder extends Seeder
             ->count(150)
             ->create([
                 'team_id' => $this->team->id,
-                'company_id' => fn() => $this->companies->random()->id,
-                'assigned_to_id' => fn() => $this->users->random()->id,
-                'creator_id' => fn() => $this->users->random()->id,
+                'company_id' => fn () => $this->companies->random()->id,
+                'assigned_to_id' => fn () => $this->users->random()->id,
+                'creator_id' => fn () => $this->users->random()->id,
             ]);
 
         $this->command?->info('✓ Created 150 leads');
@@ -186,8 +186,8 @@ final class ConsolidatedSeeder extends Seeder
             ->count(100)
             ->create([
                 'team_id' => $this->team->id,
-                'company_id' => fn() => $this->companies->random()->id,
-                'contact_id' => fn() => $this->people->random()->id,
+                'company_id' => fn () => $this->companies->random()->id,
+                'contact_id' => fn () => $this->people->random()->id,
             ])
             ->each(function (Opportunity $opportunity): void {
                 // Attach collaborators
@@ -387,9 +387,9 @@ final class ConsolidatedSeeder extends Seeder
             ->count(50)
             ->create([
                 'team_id' => $this->team->id,
-                'company_id' => fn() => $this->companies->random()->id,
-                'contact_id' => fn() => $this->people->random()->id,
-                'assigned_to_id' => fn() => $this->users->random()->id,
+                'company_id' => fn () => $this->companies->random()->id,
+                'contact_id' => fn () => $this->people->random()->id,
+                'assigned_to_id' => fn () => $this->users->random()->id,
             ]);
 
         $this->command?->info('✓ Created 50 support cases');
@@ -404,7 +404,7 @@ final class ConsolidatedSeeder extends Seeder
             ->count(30)
             ->create([
                 'team_id' => $this->team->id,
-                'creator_id' => fn() => $this->users->random()->id,
+                'creator_id' => fn () => $this->users->random()->id,
             ]);
 
         // Create tags
@@ -412,7 +412,7 @@ final class ConsolidatedSeeder extends Seeder
             ->count(100)
             ->create([
                 'team_id' => $this->team->id,
-                'creator_id' => fn() => $this->users->random()->id,
+                'creator_id' => fn () => $this->users->random()->id,
             ]);
 
         // Create articles
@@ -420,9 +420,9 @@ final class ConsolidatedSeeder extends Seeder
             ->count(500)
             ->create([
                 'team_id' => $this->team->id,
-                'category_id' => fn() => $this->knowledgeCategories->random()->id,
-                'author_id' => fn() => $this->users->random()->id,
-                'creator_id' => fn() => $this->users->random()->id,
+                'category_id' => fn () => $this->knowledgeCategories->random()->id,
+                'author_id' => fn () => $this->users->random()->id,
+                'creator_id' => fn () => $this->users->random()->id,
             ]);
 
         // Attach tags to articles
@@ -449,8 +449,8 @@ final class ConsolidatedSeeder extends Seeder
                     'team_id' => $article->team_id,
                     'editor_id' => $this->users->random()->id,
                     'version' => $i + 1,
-                    'title' => $article->title . ' v' . ($i + 1),
-                    'slug' => $article->slug . '-v' . ($i + 1),
+                    'title' => $article->title.' v'.($i + 1),
+                    'slug' => $article->slug.'-v'.($i + 1),
                     'content' => fake()->paragraphs(5, true),
                     'status' => $article->status->value,
                     'visibility' => $article->visibility->value,
@@ -514,7 +514,7 @@ final class ConsolidatedSeeder extends Seeder
                 $userId = $availableUsers[$i]->id;
                 $combination = "{$article->id}-{$userId}";
 
-                if (!isset($usedCombinations[$combination])) {
+                if (! isset($usedCombinations[$combination])) {
                     $usedCombinations[$combination] = true;
                     $ratings[] = [
                         'article_id' => $article->id,
@@ -557,8 +557,8 @@ final class ConsolidatedSeeder extends Seeder
             ->count(200)
             ->create([
                 'team_id' => $this->team->id,
-                'creator_id' => fn() => $this->users->random()->id,
-                'article_id' => fn() => $articles->random()->id,
+                'creator_id' => fn () => $this->users->random()->id,
+                'article_id' => fn () => $articles->random()->id,
             ]);
 
         // Create template responses with proper fields
@@ -692,7 +692,7 @@ final class ConsolidatedSeeder extends Seeder
             ->count(20)
             ->create([
                 'team_id' => $this->team->id,
-                'creator_id' => fn() => $this->users->random()->id,
+                'creator_id' => fn () => $this->users->random()->id,
             ])
             ->each(function (ProcessDefinition $definition): void {
                 // Create executions for each process

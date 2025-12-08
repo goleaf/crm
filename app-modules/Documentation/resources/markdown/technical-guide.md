@@ -2,7 +2,7 @@
 
 ## Architecture Overview
 
-Relaticle is built on the Laravel 12 framework with Filament 4 for the admin panel interface. The front-end uses
+This CRM platform is built on the Laravel 12 framework with Filament 4 for the admin panel interface. The front-end uses
 Livewire and Tailwind CSS to create a responsive and interactive user experience.
 
 ### Tech Stack
@@ -20,20 +20,20 @@ Livewire and Tailwind CSS to create a responsive and interactive user experience
 
 ### Premium Component
 
-Relaticle includes one premium component:
+This CRM platform includes one premium component:
 
 **Custom Fields** - A FilamentPHP plugin that enables unlimited custom fields on any Laravel model without database migrations.
 
 - **License**: AGPL-3.0 (free for open source) or Commercial license (required for proprietary projects)
-- **Documentation**: [custom-fields.relaticle.com](https://custom-fields.relaticle.com)
+- **Documentation**: See package documentation for details
 
-This is the only paid component in Relaticle, helping sustain the open-source project.
+This is the only paid component in this CRM platform, helping sustain the open-source project.
 
 ## Core Components
 
 ### Models
 
-Relaticle's data structure revolves around these key models:
+The CRM's data structure revolves around these key models:
 
 - **Team**: The organizational unit that groups users together
 - **User**: System users with authentication and permissions
@@ -58,7 +58,7 @@ Relaticle's data structure revolves around these key models:
 
 ### System Requirements
 
-To develop Relaticle locally, you'll need:
+To develop this CRM platform locally, you'll need:
 
 - **PHP 8.4+** with the following extensions:
     - pdo_sqlite (recommended for development) or pdo_pgsql/pdo_mysql
@@ -80,8 +80,8 @@ To develop Relaticle locally, you'll need:
 For a streamlined setup experience, use the single installation command:
 
 ```bash
-git clone https://github.com/Relaticle/relaticle.git
-cd relaticle && composer app-install
+git clone <repository-url>
+cd <project-directory> && composer app-install
 ```
 
 After installation, start all development services:
@@ -99,8 +99,8 @@ If you prefer manual installation or need more control, follow these detailed st
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/Relaticle/relaticle.git
-cd relaticle
+git clone <repository-url>
+cd <project-directory>
 ```
 
 2. **Install dependencies**
@@ -130,7 +130,7 @@ Or for PostgreSQL:
 DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
 DB_PORT=5432
-DB_DATABASE=relaticle
+DB_DATABASE=crm
 DB_USERNAME=postgres
 DB_PASSWORD=your_password
 ```
@@ -168,7 +168,7 @@ This starts all development services (server, queue, logs, assets) in parallel. 
 
 ### Coding Standards
 
-Relaticle follows Laravel's coding standards and conventions. We enforce these through:
+This CRM platform follows Laravel's coding standards and conventions. We enforce these through:
 
 - **Laravel Pint**: Ensures consistent code styling
 - **Rector**: Refactors code to use modern PHP features
@@ -177,7 +177,7 @@ Relaticle follows Laravel's coding standards and conventions. We enforce these t
 
 ### Quality Assurance Tools
 
-Relaticle uses several tools to maintain code quality:
+This CRM platform uses several tools to maintain code quality:
 
 ```bash
 # Lint the code using Pint
@@ -209,7 +209,7 @@ composer test
 
 ### Git Hooks
 
-Relaticle uses Git Hooks to automate quality checks during the development process. The hooks are located in the
+This CRM platform uses Git Hooks to automate quality checks during the development process. The hooks are located in the
 `.githooks` directory, and you can enable them by running:
 
 ```bash
@@ -375,7 +375,7 @@ Use Laravel Telescope or Clockwork to identify slow queries, then add appropriat
 
 ## Contributing
 
-We welcome contributions from developers of all skill levels! Relaticle is an open-source project that thrives on community involvement.
+We welcome contributions from developers of all skill levels! This CRM platform is an open-source project that thrives on community involvement.
 
 ### How to Contribute
 
@@ -399,7 +399,7 @@ We welcome contributions from developers of all skill levels! Relaticle is an op
 
 We strive to maintain a welcoming and inclusive environment for all contributors. Please be respectful in all interactions and focus on constructive feedback.
 
-Remember that all contributions to Relaticle are subject to review and must align with the project's goals and quality standards. Working closely with maintainers will help ensure your contribution is accepted and merged efficiently.
+Remember that all contributions to this CRM platform are subject to review and must align with the project's goals and quality standards. Working closely with maintainers will help ensure your contribution is accepted and merged efficiently.
 
 ## Additional Resources
 

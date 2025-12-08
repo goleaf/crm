@@ -28,5 +28,21 @@ final class MacroServiceProvider extends ServiceProvider
 
             return $scheme.'://'.$host.'/'.ltrim($path, '/');
         });
+
+        \Filament\Forms\Components\Field::macro('precognitive', function (bool $condition = true, ?int $debounce = null): static {
+            if (! $condition) {
+                return $this;
+            }
+
+            if ($debounce !== null) {
+                $this->live(debounce: $debounce);
+            } else {
+                $this->live(onBlur: true);
+            }
+
+            return $this->afterStateUpdated(function ($component, $livewire): void {
+                $livewire->validateOnly($component->getStatePath());
+            });
+        });
     }
 }

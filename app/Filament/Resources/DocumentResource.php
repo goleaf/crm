@@ -71,7 +71,7 @@ final class DocumentResource extends Resource
                                     ->rows(3),
                                 Select::make('taxonomyCategories')
                                     ->label(__('app.labels.category'))
-                                    ->options(fn() => \App\Models\Taxonomy::query()
+                                    ->options(fn () => \App\Models\Taxonomy::query()
                                         ->where('type', 'document_category')
                                         ->orderBy('name')
                                         ->pluck('name', 'id'))
@@ -82,7 +82,7 @@ final class DocumentResource extends Resource
                                     ->columnSpanFull(),
                                 Select::make('taxonomyTags')
                                     ->label(__('app.labels.tags'))
-                                    ->options(fn() => \App\Models\Taxonomy::query()
+                                    ->options(fn () => \App\Models\Taxonomy::query()
                                         ->where('type', 'document_tag')
                                         ->orderBy('name')
                                         ->pluck('name', 'id'))
@@ -108,13 +108,13 @@ final class DocumentResource extends Resource
                                 FileUpload::make('upload')
                                     ->label('Initial file')
                                     ->disk('public')
-                                    ->directory(fn(): string => StoragePaths::documentsDirectory(self::resolveTeamId()))
+                                    ->directory(fn (): string => StoragePaths::documentsDirectory(self::resolveTeamId()))
                                     ->getUploadedFileNameForStorageUsing(
-                                        fn(TemporaryUploadedFile $file): string => \Blaspsoft\Onym\Facades\Onym::make(
+                                        fn (TemporaryUploadedFile $file): string => \Blaspsoft\Onym\Facades\Onym::make(
                                             defaultFilename: '',
-                                            extension: $file->getClientOriginalExtension(),
                                             strategy: 'uuid',
-                                            options: ['suffix' => '_' . now()->format('Ymd')]
+                                            extension: $file->getClientOriginalExtension(),
+                                            options: ['suffix' => '_'.now()->format('Ymd')]
                                         )
                                     )
                                     ->helperText('Optional: upload the first version now.')
@@ -131,9 +131,9 @@ final class DocumentResource extends Resource
                                         $teamId = Filament::getTenant()?->getKey() ?? Auth::user()?->currentTeam?->getKey();
 
                                         return User::query()
-                                            ->when($teamId, fn(Builder $query, int $team): Builder => $query->whereHas(
+                                            ->when($teamId, fn (Builder $query, int $team): Builder => $query->whereHas(
                                                 'teams',
-                                                fn(Builder $builder): Builder => $builder->where('teams.id', $team)
+                                                fn (Builder $builder): Builder => $builder->where('teams.id', $team)
                                             ))
                                             ->orderBy('name')
                                             ->pluck('name', 'id');
@@ -141,7 +141,7 @@ final class DocumentResource extends Resource
                                     ->columns(2)
                                     ->searchable()
                                     ->bulkToggleable()
-                                    ->default(fn(?Document $record): array => $record?->shares()->pluck('user_id')->all() ?? [])
+                                    ->default(fn (?Document $record): array => $record?->shares()->pluck('user_id')->all() ?? [])
                                     ->helperText('Selected users receive view access. Use the list below to grant edit permissions.')
                                     ->dehydrated(false),
                                 Repeater::make('shares')
@@ -153,9 +153,9 @@ final class DocumentResource extends Resource
                                             ->relationship('user', 'name', modifyQueryUsing: function (Builder $query): Builder {
                                                 $teamId = Filament::getTenant()?->getKey() ?? Auth::user()?->currentTeam?->getKey();
 
-                                                return $query->when($teamId, fn(Builder $builder, int $team): Builder => $builder->whereHas(
+                                                return $query->when($teamId, fn (Builder $builder, int $team): Builder => $builder->whereHas(
                                                     'teams',
-                                                    fn(Builder $teamQuery): Builder => $teamQuery->where('teams.id', $team)
+                                                    fn (Builder $teamQuery): Builder => $teamQuery->where('teams.id', $team)
                                                 ));
                                             })
                                             ->searchable()
@@ -173,7 +173,7 @@ final class DocumentResource extends Resource
                                     ->addActionLabel('Add person')
                                     ->columns(2)
                                     ->collapsed()
-                                    ->itemLabel(fn(array $state): ?string => isset($state['user_id']) ? User::find($state['user_id'])?->name : null),
+                                    ->itemLabel(fn (array $state): ?string => isset($state['user_id']) ? User::find($state['user_id'])?->name : null),
                             ])
                             ->columns(1)
                             ->columnSpan(12),

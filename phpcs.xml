@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ruleset name="CRM">
-    <description>Project PHPCS configuration using the shared Relaticle ruleset.</description>
+    <description>Project PHPCS configuration using the shared coding standard ruleset.</description>
 
     <rule ref="Relaticle"/>
 

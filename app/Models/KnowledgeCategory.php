@@ -41,7 +41,12 @@ final class KnowledgeCategory extends Model
         'is_active',
     ];
 
-    protected bool $reslugOnBaseChange = true;
+    public function __construct(array $attributes = [])
+    {
+        $this->reslugOnBaseChange = true;
+
+        parent::__construct($attributes);
+    }
 
     /**
      * @return array<string, string|class-string>

@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Cache;
 use Mateffy\Introspect\DTO\Model;
 use Mateffy\Introspect\DTO\ModelProperty;
 use Mateffy\Introspect\LaravelIntrospect;
-use Mockery;
 
 beforeEach(function (): void {
     Cache::flush();

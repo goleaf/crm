@@ -42,6 +42,8 @@ Route::middleware('guest')->group(function (): void {
 
 Route::get('/.well-known/security.txt', SecurityTxtController::class)->name('security.txt');
 
+Route::get('/site.webmanifest', \App\Http\Controllers\WebManifestController::class)->name('manifest');
+
 Route::get('/', HomeController::class);
 
 Route::get('/terms-of-service', TermsOfServiceController::class)->name('terms.show');

@@ -60,6 +60,9 @@ public function toArray(Request $request): array
 ## Filament Integration
 The API documentation is accessible via the Filament admin panel. A navigation item "API Utils -> API Documentation" links directly to the docs.
 
+## Automatic Updates
+The OpenAPI specification is automatically exported to `api.json` whenever API-related files are modified. This is handled by the `.kiro/hooks/scramble-export.kiro.hook` file, ensuring that the static documentation file is always up-to-date.
+
 ## Configuration
 Configuration is located in `config/scramble.php`.
 - **UI Title**: Custom title for the docs.

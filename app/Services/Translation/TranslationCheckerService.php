@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace App\Services\Translation;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 final readonly class TranslationCheckerService
 {
     public function __construct(
         private int $cacheTtl = 3600
-    ) {
-    }
+    ) {}
 
     /**
      * Get all languages
@@ -24,7 +26,7 @@ final readonly class TranslationCheckerService
         return Cache::remember(
             'translations.languages',
             $this->cacheTtl,
-            fn() => DB::table('ltu_languages')->get()
+            fn () => DB::table('ltu_languages')->get()
         );
     }
 
@@ -33,7 +35,7 @@ final readonly class TranslationCheckerService
      */
     public function getMissingTranslations(string $locale): Collection
     {
-        $baseLocale = config('app.locale', 'en');
+        $baseLocale = config('translations.source_language', 'en');
 
         return DB::table('ltu_translations as base')
             ->leftJoin('ltu_translations as target', function ($join) use ($locale): void {
@@ -51,7 +53,7 @@ final readonly class TranslationCheckerService
      */
     public function getCompletionPercentage(string $locale): float
     {
-        $baseLocale = config('app.locale', 'en');
+        $baseLocale = config('translations.source_language', 'en');
         $baseCount = $this->getTranslationCount($baseLocale);
         $targetCount = $this->getTranslationCount($locale);
 
@@ -89,7 +91,7 @@ final readonly class TranslationCheckerService
             $path = lang_path("{$locale}/{$file}.php");
             $directory = dirname($path);
 
-            if (!is_dir($directory)) {
+            if (! is_dir($directory)) {
                 mkdir($directory, 0755, true);
             }
 
@@ -113,7 +115,7 @@ final readonly class TranslationCheckerService
     public function importFromFiles(): void
     {
         // Trigger the standard artisan command for main app files
-        \Illuminate\Support\Facades\Artisan::call('translations:import');
+        Artisan::call('translations:import');
 
         // Manually import module translations
         $this->importModuleTranslations();
@@ -135,13 +137,13 @@ final readonly class TranslationCheckerService
             // e.g. app-modules/*/src/resources/lang
             $dirs = glob(base_path($pathPattern), GLOB_ONLYDIR);
 
-            if (!$dirs) {
+            if (! $dirs) {
                 continue;
             }
 
             foreach ($dirs as $dir) {
                 $sourceDir = "{$dir}/{$sourceLanguage}";
-                if (!is_dir($sourceDir)) {
+                if (! is_dir($sourceDir)) {
                     continue;
                 }
 
@@ -164,7 +166,7 @@ final readonly class TranslationCheckerService
     {
         $translations = include $filePath;
 
-        if (!is_array($translations)) {
+        if (! is_array($translations)) {
             return;
         }
 
@@ -173,7 +175,7 @@ final readonly class TranslationCheckerService
             ->where('name', $fileName)
             ->value('id');
 
-        if (!$fileId) {
+        if (! $fileId) {
             $fileId = DB::table('ltu_translation_files')->insertGetId([
                 'name' => $fileName,
                 'is_vendor' => false, // Treating app-modules as first-party code
@@ -183,10 +185,10 @@ final readonly class TranslationCheckerService
         }
 
         // Flatten translations (dot notation)
-        $flattened = \Illuminate\Support\Arr::dot($translations);
+        $flattened = Arr::dot($translations);
 
         foreach ($flattened as $key => $value) {
-            if (!is_string($value)) {
+            if (! is_string($value)) {
                 continue;
             }
 
@@ -196,21 +198,18 @@ final readonly class TranslationCheckerService
                 ->where('key', $key)
                 ->value('id');
 
-            if (!$phraseId) {
-                // Determine source value (usually the key serves as source in some systems, 
-                // but here we are importing the values from the source language file)
+            if (! $phraseId) {
                 $phraseId = DB::table('ltu_phrases')->insertGetId([
-                    'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                    'uuid' => Str::uuid()->toString(),
                     'translation_file_id' => $fileId,
                     'key' => $key,
-                    'group' => $fileName, // Often same as file name
+                    'group' => $fileName,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
             }
 
             // 3. Update or Insert Translation for Source Language
-            // We use updateOrInsert to ensure we respect the latest file content
             DB::table('ltu_translations')->updateOrInsert(
                 [
                     'language_id' => $languageId,
@@ -218,7 +217,6 @@ final readonly class TranslationCheckerService
                 ],
                 [
                     'value' => $value,
-                    // 'is_auto_added' => true, // Field might exist, skipping if unsure
                     'updated_at' => now(),
                 ]
             );
@@ -234,7 +232,6 @@ final readonly class TranslationCheckerService
         if (config('translations.cache.driver') === 'redis') {
             Cache::tags(['translations'])->flush();
         } else {
-            // Fallback for file/array drivers that don't support tags
             Cache::forget('translations.stats');
         }
     }
@@ -244,12 +241,22 @@ final readonly class TranslationCheckerService
      */
     private function getLanguageId(string $locale): int
     {
-        return Cache::remember(
+        // Try to find the language ID
+        $id = Cache::remember(
             "translations.language_id.{$locale}",
             $this->cacheTtl,
-            fn() => DB::table('ltu_languages')
+            fn () => DB::table('ltu_languages')
                 ->where('code', $locale)
-                ->value('id') ?? 1 // Fallback to 1 (usually 'en') if not found, to avoid crash
+                ->value('id')
         );
+
+        // If not found, try to find 'en' or the configured source language
+        if ($id === null) {
+            $default = config('translations.source_language', 'en');
+            $id = DB::table('ltu_languages')->where('code', $default)->value('id');
+        }
+
+        // Extremely safe fallback if even default is missing (db not seeded?)
+        return $id ?? 1;
     }
 }

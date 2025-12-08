@@ -655,6 +655,20 @@ Select::make('state_id')->relationship('state', 'name');
 Select::make('city_id')->relationship('city', 'name');
 ```
 
+### Data Migration Tool
+
+To migrate existing string-based addresses to the new `_id` foreign key columns, use the provided Artisan command:
+
+```bash
+php artisan world:migrate-legacy-addresses
+```
+
+This command:
+1. Iterates through all `Company` and `People` records.
+2. Matches the string `country`, `state`, and `city` fields against the World database.
+3. Populates the `country_id`, `state_id`, and `city_id` columns.
+4. Handles fuzzy matching for common variations.
+
 ## Support
 
 For package issues, see: https://github.com/nnjeim/world/issues

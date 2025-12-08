@@ -28,6 +28,9 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Nnjeim\World\Models\City;
+use Nnjeim\World\Models\Country;
+use Nnjeim\World\Models\State;
 use Relaticle\CustomFields\Models\Concerns\UsesCustomFields;
 use Relaticle\CustomFields\Models\Contracts\HasCustomFields;
 
@@ -77,9 +80,12 @@ final class People extends Model implements HasCustomFields
         'assistant_email',
         'address_street',
         'address_city',
+        'address_city_id',
         'address_state',
+        'address_state_id',
         'address_postal_code',
         'address_country',
+        'address_country_id',
         'social_links',
         'lead_source',
         'is_portal_user',
@@ -232,6 +238,30 @@ final class People extends Model implements HasCustomFields
     public function persona(): BelongsTo
     {
         return $this->belongsTo(ContactPersona::class);
+    }
+
+    /**
+     * @return BelongsTo<Country, $this>
+     */
+    public function addressCountry(): BelongsTo
+    {
+        return $this->belongsTo(Country::class, 'address_country_id');
+    }
+
+    /**
+     * @return BelongsTo<State, $this>
+     */
+    public function addressState(): BelongsTo
+    {
+        return $this->belongsTo(State::class, 'address_state_id');
+    }
+
+    /**
+     * @return BelongsTo<City, $this>
+     */
+    public function addressCity(): BelongsTo
+    {
+        return $this->belongsTo(City::class, 'address_city_id');
     }
 
     /**

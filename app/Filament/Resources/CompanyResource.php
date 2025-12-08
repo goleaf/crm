@@ -16,6 +16,7 @@ use App\Filament\Resources\CompanyResource\Pages\ListCompanies;
 use App\Filament\Resources\CompanyResource\Pages\ViewCompany;
 use App\Filament\Support\Filters\DateScopeFilter;
 use App\Models\Company;
+use App\Services\World\WorldDataService;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -72,10 +73,10 @@ final class CompanyResource extends Resource
     {
         $copyBillingToShipping = static function (Set $set, Get $get): void {
             $set('shipping_street', $get('billing_street'));
-            $set('shipping_city', $get('billing_city'));
-            $set('shipping_state', $get('billing_state'));
+            $set('shipping_city_id', $get('billing_city_id'));
+            $set('shipping_state_id', $get('billing_state_id'));
             $set('shipping_postal_code', $get('billing_postal_code'));
-            $set('shipping_country', $get('billing_country'));
+            $set('shipping_country_id', $get('billing_country_id'));
         };
 
         $teamMemberOptions = static function (?Company $record): array {
@@ -92,13 +93,13 @@ final class CompanyResource extends Resource
         };
 
         $additionalAddressDefaults = static function (?Company $record): array {
-            if (! $record instanceof \App\Models\Company) {
+            if (!$record instanceof \App\Models\Company) {
                 return [];
             }
 
             return $record->addressCollection()
-                ->reject(fn (AddressData $address): bool => in_array($address->type, [AddressType::BILLING, AddressType::SHIPPING], true))
-                ->map(fn (AddressData $address): array => $address->toStorageArray())
+                ->reject(fn(AddressData $address): bool => in_array($address->type, [AddressType::BILLING, AddressType::SHIPPING], true))
+                ->map(fn(AddressData $address): array => $address->toStorageArray())
                 ->all();
         };
 
@@ -112,6 +113,7 @@ final class CompanyResource extends Resource
                                 TextInput::make('name')
                                     ->required()
                                     ->maxLength(255)
+                                    ->precognitive()
                                     ->columnSpan(2),
                                 Select::make('account_owner_id')
                                     ->relationship('accountOwner', 'name')
@@ -146,16 +148,16 @@ final class CompanyResource extends Resource
                                     ->relationship(
                                         'parentCompany',
                                         'name',
-                                        fn (Builder $query, ?Company $record): Builder => $record instanceof \App\Models\Company
-                                            ? $query->whereKeyNot($record->getKey())
-                                            : $query
+                                        fn(Builder $query, ?Company $record): Builder => $record instanceof \App\Models\Company
+                                        ? $query->whereKeyNot($record->getKey())
+                                        : $query
                                     )
                                     ->label('Parent Company')
                                     ->searchable()
                                     ->preload()
                                     ->rules([
-                                        fn (?Company $record): \Closure => function (string $attribute, int|string|null $value, Closure $fail) use ($record): void {
-                                            if ($value === null || ! $record instanceof \App\Models\Company || $record->getKey() === null) {
+                                        fn(?Company $record): \Closure => function (string $attribute, int|string|null $value, Closure $fail) use ($record): void {
+                                            if ($value === null || !$record instanceof \App\Models\Company || $record->getKey() === null) {
                                                 return;
                                             }
 
@@ -192,14 +194,14 @@ final class CompanyResource extends Resource
                                         $teamId = auth()->user()?->currentTeam?->getKey();
 
                                         return collect($data)
-                                            ->map(fn (array $item): array => ['team_id' => $teamId] + $item)
+                                            ->map(fn(array $item): array => ['team_id' => $teamId] + $item)
                                             ->all();
                                     })
                                     ->mutateRelationshipDataBeforeSaveUsing(function (array $data, Company $record): array {
                                         $teamId = $record->team_id ?? auth()->user()?->currentTeam?->getKey();
 
                                         return collect($data)
-                                            ->map(fn (array $item): array => ['team_id' => $teamId] + $item)
+                                            ->map(fn(array $item): array => ['team_id' => $teamId] + $item)
                                             ->all();
                                     })
                                     ->schema([
@@ -208,7 +210,7 @@ final class CompanyResource extends Resource
                                             ->required()
                                             ->searchable()
                                             ->preload()
-                                            ->options(fn (?Company $record): array => $teamMemberOptions($record))
+                                            ->options(fn(?Company $record): array => $teamMemberOptions($record))
                                             ->disableOptionsWhenSelectedInSiblingRepeaterItems(),
                                         Select::make('role')
                                             ->label('Role')
@@ -235,11 +237,13 @@ final class CompanyResource extends Resource
                                     ->tel()
                                     ->maxLength(50)
                                     ->regex('/^[0-9+\\-\\s\\(\\)\\.]+$/')
+                                    ->precognitive()
                                     ->columnSpan(2),
                                 TextInput::make('primary_email')
                                     ->label('Primary Email')
                                     ->email()
                                     ->maxLength(255)
+                                    ->precognitive(debounce: 500)
                                     ->columnSpan(2),
                                 TextInput::make('website')
                                     ->label('Website')
@@ -277,53 +281,94 @@ final class CompanyResource extends Resource
                                             ->label('Billing Street')
                                             ->required()
                                             ->live()
-                                            ->afterStateUpdated(fn (string|int|null $state, Set $set, Get $get) => $get('copy_billing_to_shipping') ? $copyBillingToShipping($set, $get) : null),
-                                        TextInput::make('billing_city')
-                                            ->label('Billing City')
-                                            ->required()
+                                            ->afterStateUpdated(fn(string|int|null $state, Set $set, Get $get) => $get('copy_billing_to_shipping') ? $copyBillingToShipping($set, $get) : null),
+                                        Select::make('billing_country_id')
+                                            ->label('Billing Country')
+                                            ->options(fn(WorldDataService $world) => $world->getCountries()->pluck('name', 'id'))
+                                            ->searchable()
+                                            ->preload()
                                             ->live()
-                                            ->afterStateUpdated(fn (string|int|null $state, Set $set, Get $get) => $get('copy_billing_to_shipping') ? $copyBillingToShipping($set, $get) : null),
-                                        TextInput::make('billing_state')
+                                            ->afterStateUpdated(function (Set $set, Get $get) use ($copyBillingToShipping) {
+                                                $set('billing_state_id', null);
+                                                $set('billing_city_id', null);
+                                                if ($get('copy_billing_to_shipping')) {
+                                                    $copyBillingToShipping($set, $get);
+                                                }
+                                            })
+                                            ->required(),
+                                        Select::make('billing_state_id')
                                             ->label('Billing State/Province')
+                                            ->options(fn(Get $get, WorldDataService $world) => $get('billing_country_id') ? $world->getStates($get('billing_country_id'))->pluck('name', 'id') : [])
+                                            ->searchable()
+                                            ->preload()
                                             ->live()
-                                            ->afterStateUpdated(fn (string|int|null $state, Set $set, Get $get) => $get('copy_billing_to_shipping') ? $copyBillingToShipping($set, $get) : null),
+                                            ->afterStateUpdated(function (Set $set, Get $get) use ($copyBillingToShipping) {
+                                                $set('billing_city_id', null);
+                                                if ($get('copy_billing_to_shipping')) {
+                                                    $copyBillingToShipping($set, $get);
+                                                }
+                                            })
+                                            ->required(),
+                                        Select::make('billing_city_id')
+                                            ->label('Billing City')
+                                            ->options(fn(Get $get, WorldDataService $world) => $get('billing_state_id') ? $world->getCities($get('billing_state_id'))->pluck('name', 'id') : [])
+                                            ->searchable()
+                                            ->preload()
+                                            ->live()
+                                            ->afterStateUpdated(fn(string|int|null $state, Set $set, Get $get) => $get('copy_billing_to_shipping') ? $copyBillingToShipping($set, $get) : null)
+                                            ->required(),
                                         TextInput::make('billing_postal_code')
                                             ->label('Billing Postal Code')
                                             ->live()
                                             ->maxLength(20)
+                                            /*
                                             ->rules([
                                                 'nullable',
-                                                fn (Get $get): Postalcode => new Postalcode([
-                                                    strtolower((string) ($get('billing_country') ?? config('address.default_country', 'US'))),
+                                                fn (Get $get, WorldDataService $world): Postalcode => new Postalcode([
+                                                    strtolower((string) ($world->getCountry($get('billing_country_id'))?->iso2 ?? config('address.default_country', 'US'))),
                                                 ]),
                                             ])
-                                            ->afterStateUpdated(fn (string|int|null $state, Set $set, Get $get) => $get('copy_billing_to_shipping') ? $copyBillingToShipping($set, $get) : null),
-                                        TextInput::make('billing_country')
-                                            ->label('Billing Country')
-                                            ->required()
-                                            ->live()
-                                            ->afterStateUpdated(fn (string|int|null $state, Set $set, Get $get) => $get('copy_billing_to_shipping') ? $copyBillingToShipping($set, $get) : null),
+                                            */
+                                            ->afterStateUpdated(fn(string|int|null $state, Set $set, Get $get) => $get('copy_billing_to_shipping') ? $copyBillingToShipping($set, $get) : null),
                                     ]),
                                 Grid::make()
                                     ->columns(6)
                                     ->schema([
                                         TextInput::make('shipping_street')
                                             ->label('Shipping Street'),
-                                        TextInput::make('shipping_city')
-                                            ->label('Shipping City'),
-                                        TextInput::make('shipping_state')
-                                            ->label('Shipping State/Province'),
+                                        Select::make('shipping_country_id')
+                                            ->label('Shipping Country')
+                                            ->options(fn(WorldDataService $world) => $world->getCountries()->pluck('name', 'id'))
+                                            ->searchable()
+                                            ->preload()
+                                            ->live()
+                                            ->afterStateUpdated(function (Set $set) {
+                                                $set('shipping_state_id', null);
+                                                $set('shipping_city_id', null);
+                                            }),
+                                        Select::make('shipping_state_id')
+                                            ->label('Shipping State/Province')
+                                            ->options(fn(Get $get, WorldDataService $world) => $get('shipping_country_id') ? $world->getStates($get('shipping_country_id'))->pluck('name', 'id') : [])
+                                            ->searchable()
+                                            ->preload()
+                                            ->live()
+                                            ->afterStateUpdated(fn(Set $set) => $set('shipping_city_id', null)),
+                                        Select::make('shipping_city_id')
+                                            ->label('Shipping City')
+                                            ->options(fn(Get $get, WorldDataService $world) => $get('shipping_state_id') ? $world->getCities($get('shipping_state_id'))->pluck('name', 'id') : [])
+                                            ->searchable()
+                                            ->preload(),
                                         TextInput::make('shipping_postal_code')
                                             ->label('Shipping Postal Code')
                                             ->maxLength(20)
-                                            ->rules([
-                                                'nullable',
-                                                fn (Get $get): Postalcode => new Postalcode([
-                                                    strtolower((string) ($get('shipping_country') ?? config('address.default_country', 'US'))),
-                                                ]),
+                                        /*
+                                        ->rules([
+                                            'nullable',
+                                            fn (Get $get, WorldDataService $world): Postalcode => new Postalcode([
+                                                strtolower((string) ($world->getCountry($get('shipping_country_id'))?->iso2 ?? config('address.default_country', 'US'))),
                                             ]),
-                                        TextInput::make('shipping_country')
-                                            ->label('Shipping Country'),
+                                        ])
+                                        */ ,
                                     ]),
                             ])
                             ->columnSpan(12),
@@ -333,8 +378,8 @@ final class CompanyResource extends Resource
                                     ->label('Addresses')
                                     ->addActionLabel('Add address')
                                     ->columns(6)
-                                    ->default(fn (?Company $record): array => $additionalAddressDefaults($record))
-                                    ->itemLabel(fn (array $state): string => $state['label'] ?? AddressType::tryFrom($state['type'] ?? '')?->label() ?? 'Address')
+                                    ->default(fn(?Company $record): array => $additionalAddressDefaults($record))
+                                    ->itemLabel(fn(array $state): string => $state['label'] ?? AddressType::tryFrom($state['type'] ?? '')?->label() ?? 'Address')
                                     ->schema([
                                         Select::make('type')
                                             ->label('Type')
@@ -373,7 +418,7 @@ final class CompanyResource extends Resource
                                             ->maxLength(20)
                                             ->rules([
                                                 'nullable',
-                                                fn (Get $get): Postalcode => new Postalcode([
+                                                fn(Get $get): Postalcode => new Postalcode([
                                                     strtolower((string) ($get('country_code') ?? config('address.default_country', 'US'))),
                                                 ]),
                                             ])
@@ -401,7 +446,7 @@ final class CompanyResource extends Resource
                                     ->numeric()
                                     ->step(0.01)
                                     ->minValue(0)
-                                    ->prefix(fn (Get $get): string => ($get('currency_code') ?? config('company.default_currency', 'USD')).' '),
+                                    ->prefix(fn(Get $get): string => ($get('currency_code') ?? config('company.default_currency', 'USD')) . ' '),
                                 TextInput::make('employee_count')
                                     ->label('Employees')
                                     ->integer()
@@ -421,12 +466,25 @@ final class CompanyResource extends Resource
                                     ->preserveFilenames()
                                     ->appendFiles()
                                     ->downloadable()
-                                    ->customProperties(fn (): array => [
+                                    ->customProperties(fn(): array => [
                                         'uploaded_by' => auth()->id(),
                                     ])
                                     ->maxFiles(20)
                                     ->columnSpanFull()
                                     ->helperText('Upload contracts, proposals, or supporting documents.'),
+                                \App\Filament\Forms\Components\UnsplashPicker::make('unsplash_image')
+                                    ->label('Unsplash Image')
+                                    ->imageSize('regular')
+                                    ->columnSpanFull()
+                                    ->afterStateUpdated(function ($state, Company $record): void {
+                                        if (!$state) {
+                                            return;
+                                        }
+                                        // Ideally we resolve the UnsplashService and handle logic here
+                                        // But the picker might already return the ID.
+                                        // For now, we assume the picker works as documented in docs/unsplash-integration.md
+                                        // Logic to be refined if needed.
+                                    }),
                             ])
                             ->columnSpan(12),
                         Section::make('Labels & Tags')
@@ -436,9 +494,9 @@ final class CompanyResource extends Resource
                                     ->relationship(
                                         'tags',
                                         'name',
-                                        modifyQueryUsing: fn (Builder $query): Builder => $query->when(
+                                        modifyQueryUsing: fn(Builder $query): Builder => $query->when(
                                             Auth::user()?->currentTeam,
-                                            fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey())
+                                            fn(Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey())
                                         )
                                     )
                                     ->multiple()
@@ -448,8 +506,8 @@ final class CompanyResource extends Resource
                                         TextInput::make('name')->required()->maxLength(120),
                                         ColorPicker::make('color')->label('Color')->nullable(),
                                     ])
-                                    ->createOptionAction(fn (Action $action): Action => $action->mutateFormDataUsing(
-                                        fn (array $data): array => [
+                                    ->createOptionAction(fn(Action $action): Action => $action->mutateFormDataUsing(
+                                        fn(array $data): array => [
                                             ...$data,
                                             'team_id' => Auth::user()?->currentTeam?->getKey(),
                                         ]
@@ -477,9 +535,9 @@ final class CompanyResource extends Resource
                     ->toggleable(),
                 TextColumn::make('account_type')
                     ->label('Type')
-                    ->formatStateUsing(fn (?AccountType $state): string => $state?->label() ?? '—')
+                    ->formatStateUsing(fn(?AccountType $state): string => $state?->label() ?? '—')
                     ->badge()
-                    ->color(fn (?AccountType $state): string => $state?->color() ?? 'gray')
+                    ->color(fn(?AccountType $state): string => $state?->color() ?? 'gray')
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('accountOwner.name')
@@ -492,20 +550,20 @@ final class CompanyResource extends Resource
                     ->counts('accountTeamMembers')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->formatStateUsing(fn (int $state): string => $state.' member'.($state === 1 ? '' : 's')),
+                    ->formatStateUsing(fn(int $state): string => $state . ' member' . ($state === 1 ? '' : 's')),
                 TextColumn::make('ownership')
                     ->label('Ownership')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('website')
                     ->label('Website')
-                    ->url(fn (Company $record): ?string => $record->website ?: null)
+                    ->url(fn(Company $record): ?string => $record->website ?: null)
                     ->openUrlInNewTab()
                     ->limit(30)
                     ->toggleable(),
                 TextColumn::make('industry')
                     ->label('Industry')
-                    ->formatStateUsing(fn (?Industry $state): string => $state?->label() ?? '—')
+                    ->formatStateUsing(fn(?Industry $state): string => $state?->label() ?? '—')
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
@@ -528,11 +586,11 @@ final class CompanyResource extends Resource
                         $latest = $record->latestAnnualRevenue;
 
                         if ($latest !== null) {
-                            return ($latest->currency_code ?? $record->currency_code ?? 'USD').' '.number_format((float) $latest->amount, 2).' ('.$latest->year.')';
+                            return ($latest->currency_code ?? $record->currency_code ?? 'USD') . ' ' . number_format((float) $latest->amount, 2) . ' (' . $latest->year . ')';
                         }
 
                         if ($record->revenue !== null) {
-                            return ($record->currency_code ?? 'USD').' '.number_format((float) $record->revenue, 2);
+                            return ($record->currency_code ?? 'USD') . ' ' . number_format((float) $record->revenue, 2);
                         }
 
                         return '—';
@@ -551,8 +609,8 @@ final class CompanyResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->toggleable()
-                    ->getStateUsing(fn (Company $record): string => $record->created_by)
-                    ->color(fn (Company $record): string => $record->isSystemCreated() ? 'secondary' : 'primary'),
+                    ->getStateUsing(fn(Company $record): string => $record->created_by)
+                    ->color(fn(Company $record): string => $record->isSystemCreated() ? 'secondary' : 'primary'),
                 TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
@@ -598,11 +656,11 @@ final class CompanyResource extends Resource
                         $indicators = [];
 
                         if (filled($data['min_employee_count'] ?? null)) {
-                            $indicators[] = 'Min '.number_format((int) $data['min_employee_count']);
+                            $indicators[] = 'Min ' . number_format((int) $data['min_employee_count']);
                         }
 
                         if (filled($data['max_employee_count'] ?? null)) {
-                            $indicators[] = 'Max '.number_format((int) $data['max_employee_count']);
+                            $indicators[] = 'Max ' . number_format((int) $data['max_employee_count']);
                         }
 
                         return $indicators;

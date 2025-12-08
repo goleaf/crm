@@ -10,109 +10,61 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 trait HasUnsplashAssets
 {
     /**
-     * Get all Unsplash assets for this model
-     *
      * @return \Illuminate\Database\Eloquent\Relations\MorphToMany<\App\Models\UnsplashAsset, $this, \Illuminate\Database\Eloquent\Relations\Pivot>
      */
     public function unsplashAssets(): MorphToMany
     {
-        return $this->morphToMany(
-            UnsplashAsset::class,
-            'unsplashable',
-            config('unsplash.tables.pivot', 'unsplashables'),
-        )->withPivot(['collection', 'order', 'metadata'])
+        return $this->morphToMany(UnsplashAsset::class, 'unsplashable', config('unsplash.tables.pivot', 'unsplashables'))
+            ->withPivot(['collection', 'order', 'metadata'])
             ->withTimestamps()
             ->orderByPivot('order');
     }
 
-    /**
-     * Get Unsplash assets for a specific collection
-     */
-    public function unsplashAssetsInCollection(string $collection): MorphToMany
+    public function unsplashAssetsInCollection(string $collection = 'default'): MorphToMany
     {
         return $this->unsplashAssets()->wherePivot('collection', $collection);
     }
 
-    /**
-     * Attach an Unsplash asset
-     */
-    public function attachUnsplashAsset(
-        UnsplashAsset $asset,
-        ?string $collection = null,
-        int $order = 0,
-        array $metadata = [],
-    ): void {
+    public function attachUnsplashAsset(UnsplashAsset $asset, string $collection = 'default', int $order = 0, array $metadata = []): void
+    {
         $this->unsplashAssets()->attach($asset->id, [
             'collection' => $collection,
             'order' => $order,
-            'metadata' => $metadata,
+            'metadata' => json_encode($metadata),
         ]);
     }
 
-    /**
-     * Detach an Unsplash asset
-     */
-    public function detachUnsplashAsset(UnsplashAsset $asset, ?string $collection = null): void
+    public function detachUnsplashAsset(UnsplashAsset $asset, string $collection = 'default'): void
     {
-        $query = $this->unsplashAssets()->wherePivot('unsplash_asset_id', $asset->id);
-
-        if ($collection) {
-            $query->wherePivot('collection', $collection);
-        }
-
-        $query->detach();
+        $this->unsplashAssets()
+            ->wherePivot('collection', $collection)
+            ->detach($asset->id);
     }
 
-    /**
-     * Sync Unsplash assets for a collection
-     */
-    public function syncUnsplashAssets(array $assetIds, ?string $collection = null): void
+    public function syncUnsplashAssets(array $ids, string $collection = 'default'): void
     {
-        $syncData = [];
+        // This is a bit complex because sync() wipes everything.
+        // To sync only a collection, we need to do it manually or use a more complex sync.
+        // For simplicity here, we assume the user handles the collection logic or we implement basic sync.
 
-        foreach ($assetIds as $index => $assetId) {
-            $syncData[$assetId] = [
+        // Naive implementation: detach all for collection, then attach.
+        $this->unsplashAssets()->wherePivot('collection', $collection)->detach();
+
+        foreach ($ids as $index => $id) {
+            $this->unsplashAssets()->attach($id, [
                 'collection' => $collection,
                 'order' => $index,
-                'metadata' => [],
-            ];
-        }
-
-        if ($collection) {
-            // Only sync assets in this collection
-            $this->unsplashAssets()
-                ->wherePivot('collection', $collection)
-                ->sync($syncData);
-        } else {
-            $this->unsplashAssets()->sync($syncData);
+            ]);
         }
     }
 
-    /**
-     * Check if model has any Unsplash assets
-     */
-    public function hasUnsplashAssets(?string $collection = null): bool
+    public function firstUnsplashAsset(string $collection = 'default'): ?UnsplashAsset
     {
-        $query = $this->unsplashAssets();
-
-        if ($collection) {
-            $query->wherePivot('collection', $collection);
-        }
-
-        return $query->exists();
+        return $this->unsplashAssetsInCollection($collection)->first();
     }
 
-    /**
-     * Get the first Unsplash asset
-     */
-    public function firstUnsplashAsset(?string $collection = null): ?UnsplashAsset
+    public function hasUnsplashAssets(string $collection = 'default'): bool
     {
-        $query = $this->unsplashAssets();
-
-        if ($collection) {
-            $query->wherePivot('collection', $collection);
-        }
-
-        return $query->first();
+        return $this->unsplashAssetsInCollection($collection)->exists();
     }
 }

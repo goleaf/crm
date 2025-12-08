@@ -10,8 +10,8 @@
             </h1>
 
             <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
-                Welcome to the Relaticle documentation hub. Here you'll find guides and resources to help you get the
-                most out of Relaticle CRM.
+                Welcome to the {{ brand_name() }} documentation hub. Here you'll find guides and resources to help you get the
+                most out of {{ brand_name() }}.
             </p>
         </div>
 

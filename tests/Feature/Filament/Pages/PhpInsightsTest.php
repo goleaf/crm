@@ -7,11 +7,12 @@ use App\Models\User;
 use App\Services\PhpInsightsService;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Mockery;
 
 uses(RefreshDatabase::class);
-uses()
-    ->afterEach(fn (): void => Mockery::close());
+
+afterEach(function (): void {
+    Mockery::close();
+});
 
 function mockInsightsService(?array $report = null, ?int $times = null): PhpInsightsService
 {

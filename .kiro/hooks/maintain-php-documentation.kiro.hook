@@ -12,5 +12,7 @@
   "then": {
     "type": "askAgent",
     "prompt": "A PHP file has been edited. Please:\n\n1. Review the edited file and ensure all classes, methods, and properties have proper PHPDoc comments including:\n   - Class-level @package, @author (if applicable), and description\n   - Method-level @param, @return, @throws tags with types and descriptions\n   - Property-level @var tags with types and descriptions\n   - Any relevant @deprecated, @see, or @link tags\n\n2. Update or add missing PHPDoc comments following PSR-5 and Laravel conventions\n\n3. Generate or update 'docs/changes.md' with:\n   - Date and time of change\n   - File path that was modified\n   - Summary of what changed (new methods, updated signatures, behavior changes)\n   - Any breaking changes or migration notes\n   - Format as a chronological log with newest entries at the top\n\n4. Ensure documentation is clear, concise, and follows the project's coding standards\n\nPlease make these updates and confirm the documentation has been maintained."
-  }
+  },
+  "workspaceFolderName": "crm",
+  "shortName": "maintain-php-documentation"
 }

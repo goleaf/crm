@@ -422,11 +422,7 @@ class CreateContact extends Page implements Forms\Contracts\HasForms
                     ->label(__('app.labels.name'))
                     ->required()
                     ->maxLength(255)
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(function ($state, Forms\Set $set) {
-                        // Trigger precognitive validation
-                        $this->validateField('name', $state);
-                    }),
+                    ->precognitive(),
 
                 Forms\Components\TextInput::make('email')
                     ->label(__('app.labels.email'))
@@ -434,11 +430,7 @@ class CreateContact extends Page implements Forms\Contracts\HasForms
                     ->required()
                     ->maxLength(255)
                     ->unique(People::class, 'email', ignoreRecord: true)
-                    ->live(debounce: 500)
-                    ->afterStateUpdated(function ($state) {
-                        // Trigger precognitive validation
-                        $this->validateField('email', $state);
-                    }),
+                    ->precognitive(debounce: 500),
 
                 Forms\Components\Select::make('company_id')
                     ->label(__('app.labels.company'))
@@ -457,20 +449,6 @@ class CreateContact extends Page implements Forms\Contracts\HasForms
                     ->maxLength(255),
             ])
             ->statePath('data');
-    }
-
-    protected function validateField(string $field, mixed $value): void
-    {
-        $rules = $this->form->getComponent($field)->getValidationRules();
-        
-        $validator = Validator::make(
-            [$field => $value],
-            [$field => $rules]
-        );
-
-        if ($validator->fails()) {
-            $this->addError("data.{$field}", $validator->errors()->first($field));
-        }
     }
 
     public function create(): void

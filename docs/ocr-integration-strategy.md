@@ -1,4 +1,4 @@
-# OCR Integration Strategy for Relaticle CRM
+# OCR Integration Strategy for CRM Platform
 
 ## Current Situation
 

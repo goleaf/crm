@@ -7,15 +7,15 @@ inclusion: always
 ## Service Architecture
 - OCR services follow the container pattern with constructor injection and readonly properties.
 - Register OCR services in `AppServiceProvider::register()` using `singleton()` for stateful services (drivers, managers) and `bind()` for stateless processors.
-- Use driver pattern for multiple OCR engines (Tesseract, Google Vision, AWS Textract) with a common interface.
+- Use driver pattern for multiple OCR engines (SpaceOCR, Tesseract, Google Vision) with a common interface (`DriverInterface`).
 - All OCR processing should be queue-based for files larger than 1MB or when processing multiple documents.
 
 ## File Handling
-- Validate file types (PDF, PNG, JPG, JPEG, TIFF) and sizes (max 10MB) before processing.
+- Validate file types (PDF, PNG, JPG, JPEG, GIF) and sizes (max 10MB) before processing.
 - Store uploaded files in `storage/app/ocr/uploads` with unique identifiers.
 - Store processed results in `storage/app/ocr/results` with JSON format.
 - Clean up temporary files after processing completes or fails.
-- Use Spatie Media Library for file management when integrating with existing models.
+- Use default `cdsmths/laravel-ocr-space` integration via custom Service wrapper.
 
 ## Template System
 - Document templates define extractable fields with regex patterns and validation rules.

@@ -14,7 +14,7 @@
             <div class="flex items-center space-x-3">
                 <div class="relative overflow-hidden rounded-lg">
                     <img class="h-8 w-auto transition-transform duration-300 hover:scale-105"
-                         src="{{ asset('relaticle-logomark.svg') }}" alt="{{ brand_name() }}">
+                         src="{{ brand_logomark_asset() }}" alt="{{ brand_name() }}">
                 </div>
                 <span class="font-bold text-xl text-black dark:text-white tracking-tight">{{ brand_name() }}</span>
             </div>

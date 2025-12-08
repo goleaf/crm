@@ -20,7 +20,7 @@ use function Laravel\Prompts\warning;
 
 final class InstallCommand extends Command
 {
-    protected $signature = 'relaticle:install
+    protected $signature = 'crm:install
                             {--force : Force installation even if already configured}';
 
     protected $description = 'Install and configure the CRM';
@@ -29,7 +29,20 @@ final class InstallCommand extends Command
     {
         parent::__construct();
 
+        // Override signature with brand-specific command prefix
+        $prefix = brand_command_prefix();
+        if ($prefix !== 'crm') {
+            $this->signature = "{$prefix}:install {--force : Force installation even if already configured}";
+        }
         $this->description = 'Install and configure '.brand_name();
+    }
+
+    /**
+     * Get the command name.
+     */
+    public function getName(): string
+    {
+        return brand_command_prefix().':install';
     }
 
     public function handle(): int
@@ -376,7 +389,7 @@ final class InstallCommand extends Command
 
             $email = text(
                 label: 'System Administrator email address',
-                default: 'sysadmin@relaticle.local',
+                default: 'sysadmin@'.strtolower((string) preg_replace('/[^a-z0-9]/', '', brand_name())).'.local',
                 required: true,
                 validate: fn (string $value): ?string => filter_var($value, FILTER_VALIDATE_EMAIL) ? null : 'Please enter a valid email address'
             );
@@ -454,7 +467,8 @@ final class InstallCommand extends Command
         $this->line('  • Real-time logs (Pail)');
 
         $this->newLine();
-        $this->line('  Documentation: https://relaticle.com/documentation');
+        $docUrl = config('laravel-crm.ui.github_url') ? config('laravel-crm.ui.github_url').'/blob/main/docs' : '#';
+        $this->line("  Documentation: {$docUrl}");
         $this->newLine();
 
         $this->info('Happy CRM-ing! 🚀');

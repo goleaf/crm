@@ -78,11 +78,17 @@ final class KnowledgeArticle extends Model implements HasMedia, HasReaction
         'current_version_id',
     ];
 
-    protected string $uniqueBaseField = 'title';
+    /**
+     * Initialize trait properties in constructor to avoid PHP 8.4+ property conflicts.
+     */
+    public function __construct(array $attributes = [])
+    {
+        $this->uniqueBaseField = 'title';
+        $this->uniqueSuffixFormat = '-{n}';
+        $this->reslugOnBaseChange = true;
 
-    protected string $uniqueSuffixFormat = '-{n}';
-
-    protected bool $reslugOnBaseChange = true;
+        parent::__construct($attributes);
+    }
 
     /**
      * @return array<string, string|class-string>
