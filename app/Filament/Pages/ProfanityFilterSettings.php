@@ -41,21 +41,7 @@ final class ProfanityFilterSettings extends Page implements HasForms
         return 'Profanity Filter Settings';
     }
 
-    public function getView(): string
-    {
-        return 'filament.pages.profanity-filter-settings';
-    }
-
-    // If not using a view, we can use schema() if supported by Page in v4??
-    // Actually standard Pages use views usually, unless using `ManageSettings` cluster style with form.
-    // Let's try to use a simple view or if there's a Schema wrapper for Pages.
-    // But verify if `filament.pages.profanity-filter-settings` exists? No.
-    // I should create the view or use a `ManagePreferences` style page if it was a settings page.
-    // But this is an admin tool page.
-    // Let's create the view file or just standard form page pattern.
-
-    // Wait, the prompt implies "integrate it in filament v4".
-    // I will write the view file too.
+    protected static string $view = 'filament.pages.profanity-filter-settings';
 
     public ?array $data = [];
 
@@ -64,11 +50,11 @@ final class ProfanityFilterSettings extends Page implements HasForms
         $this->form->fill();
     }
 
-    public function form(Schema $schema): Schema
+    public function form(Form $form): Form
     {
-        return $schema
-            ->statePath('data') // Optional if we bind validly
-            ->components([
+        return $form
+            ->statePath('data')
+            ->schema([
                 Section::make('Test Profanity Filter')
                     ->schema([
                         Grid::make(2)->schema([
@@ -91,33 +77,6 @@ final class ProfanityFilterSettings extends Page implements HasForms
                     ]),
             ]);
     }
-
-    // Wait, Page doesn't have `form(Schema $schema)` method standardly like Resources.
-    // Standard Pages use `public function form(Form $form): Form`.
-    // But v4 conventions say "All components now use Filament\Schemas\Schema".
-    // So usually we use `schema` now?
-    // Let's check `filament-conventions.md` line 24 "Page layouts now use schemas instead of Blade views".
-    // Ah! So I should override `schema()` or `content()`?
-    // Line 741 in conventions: `public function content(): Schema` inside `EditRecord`.
-    // But for a generic Page?
-    // Usually we override `public function getSchema(): Schema`? No.
-    // Let's stick to standard `HasForms` with `form` method using Schema if compatible, or just standard Form.
-    // But the new convention says "Override infolist() methods with Filament\Schemas\Schema".
-    // It doesn't explicitly say `form()` signature changes for Pages, but presumably yes if "All components now use Schema".
-    // Let's use `public function form(Schema $schema): Schema` and see if `HasForms` supports it?
-    // Actually `HasForms` interface usually demands `form(Form $form): Form`.
-    // If v4 changed this, the interface would change.
-    // Let's assume `Form` is an alias or wrapper, OR we use `Schema` inside.
-    // NOTE: conventions say "Form, Infolist, and Layout components live in the same namespace".
-
-    // Let's try to follow the `EditRecord` pattern from conventions: `content(): Schema`.
-    // But `Page` class?
-    // Let's assume standard `view` usage is safe, but conventions say "Page layouts now use schemas instead of Blade views".
-    // So I should probably define `public function schema(): Schema`?
-    // Or `public function getHeaderActions()` etc is standard.
-
-    // Let's just create a standard Page with a view for now to be safe, as "Page layouts using schemas" might be a specific subtype or I might miss the exact method name.
-    // AND I'll create the view.
 
     public function testFilter(): void
     {

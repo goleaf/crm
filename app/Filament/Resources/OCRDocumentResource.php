@@ -5,43 +5,34 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\OCRDocumentResource\Pages;
 use App\Models\OCRDocument;
 use App\Services\OCR\OCRService;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\FileUpload;
-use Filament\Infolists;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Storage;
 
 class OCRDocumentResource extends Resource
 {
-    protected static ?string $model = \App\Models\Document::class;
+    protected static ?string $model = OCRDocument::class;
 
     protected static ?string $modelLabel = 'OCR Document';
 
-    public static function getNavigationIcon(): string|\BackedEnum|null
-    {
-        return 'heroicon-o-document-text';
-    }
+    protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    public static function getNavigationGroup(): ?string
-    {
-        return 'OCR & Docs';
-    }
+    protected static ?string $navigationGroup = 'OCR & Docs';
 
-    public static function form(Schema $schema): Schema
+    public static function form(Form $form): Form
     {
-        return $schema
-            ->components([
+        return $form
+            ->schema([
                 Section::make('Document Upload')
-                    ->schema([ // Section might still use schema()? If Section extends Component, it might/might not. Keeping schema() for component configuration if it's builder. Wait, Schema has components(). ComponentContainer has components(). Section has schema().
+                    ->schema([
                         FileUpload::make('file_path')
                             ->label('Document')
                             ->required()
-                            ->disk('local') // or your preferred disk
+                            ->disk('local')
                             ->directory('ocr/uploads')
                             ->acceptedFileTypes(config('ocr.upload.accepted_types', ['image/jpeg', 'image/png', 'application/pdf']))
                             ->maxSize(config('ocr.upload.max_size_kb', 10240))

@@ -108,7 +108,10 @@ return new class extends Migration
         if (Schema::hasTable('companies')) {
             Schema::table('companies', function (Blueprint $table): void {
                 $table->index(['team_id', 'name'], 'idx_companies_team_name');
-                $table->index('email', 'idx_companies_email');
+                // Only add email index if column exists
+                if (Schema::hasColumn('companies', 'email')) {
+                    $table->index('email', 'idx_companies_email');
+                }
             });
         }
 
