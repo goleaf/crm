@@ -726,7 +726,7 @@ tests/
 ### Technology Stack
 
 - **Framework**: Laravel 11
-- **Admin Panel**: Filament 3
+- **Admin Panel**: Filament 4.3
 - **Database**: PostgreSQL/MySQL with full-text search support
 - **Testing**: Pest PHP
 - **Property Testing**: Pest with property testing support or eris/eris

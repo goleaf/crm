@@ -518,6 +518,13 @@ return [
         'run_audit' => 'Run Audit',
         'view_history' => 'View History',
         'view_details' => 'View Details',
+        'run_coverage' => 'Run Coverage',
+        'run_full_coverage' => 'Run Full Coverage',
+        'view_report' => 'View Report',
+        'refresh' => 'Refresh',
+        'download_html_report' => 'Download HTML Report',
+        'download_xml_report' => 'Download XML Report',
+        'run' => 'Run',
     ],
 
     'notifications' => [
@@ -544,6 +551,9 @@ return [
         'no_vulnerabilities' => 'No Vulnerabilities',
         'all_dependencies_secure' => 'All dependencies are secure',
         'audit_failed' => 'Audit Failed',
+        'coverage_generated' => 'Coverage Generated',
+        'coverage_generated_body' => 'Code coverage report has been generated successfully',
+        'coverage_failed' => 'Coverage Failed',
     ],
 
     'empty_states' => [
