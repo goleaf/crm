@@ -1,24 +1,20 @@
 {
-  "version": "1.0",
+  "enabled": true,
   "name": "Code Coverage Monitor",
   "description": "Automatically run code coverage analysis when test files are modified and alert on coverage drops",
-  "enabled": true,
-  "trigger": {
-    "type": "file_change",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
     "patterns": [
       "tests/**/*Test.php",
       "app/**/*.php",
       "app-modules/**/*.php"
     ]
   },
-  "actions": [
-    {
-      "type": "message",
-      "content": "Test files or application code modified. Consider running coverage analysis:\n\n```bash\ncomposer test:coverage\n```\n\nOr view current coverage in Filament:\n- Navigate to System → Code Coverage\n- Click 'Run Coverage' to generate fresh reports\n\nCoverage thresholds:\n- Overall: 80% minimum\n- Type Coverage: 99.9% minimum\n\nTo run coverage for specific suite:\n```bash\npest --testsuite=Feature --coverage\npest --testsuite=Unit --coverage\n```\n\nTo generate HTML report:\n```bash\npest --coverage-html=coverage-html\nopen coverage-html/index.html\n```"
-    }
-  ],
-  "conditions": {
-    "file_count_threshold": 3,
-    "debounce_seconds": 300
-  }
+  "then": {
+    "type": "askAgent",
+    "prompt": "Test files or application code have been modified. Please provide guidance on code coverage:\n\n1. **Analyze the changes** to determine if coverage analysis is needed\n2. **Check current coverage** status if available\n3. **Provide recommendations** for running coverage:\n\n```bash\ncomposer test:coverage\n```\n\nOr view current coverage in Filament:\n- Navigate to System → Code Coverage\n- Click 'Run Coverage' to generate fresh reports\n\nCoverage thresholds:\n- Overall: 80% minimum\n- Type Coverage: 99.9% minimum\n\nTo run coverage for specific suite:\n```bash\npest --testsuite=Feature --coverage\npest --testsuite=Unit --coverage\n```\n\nTo generate HTML report:\n```bash\npest --coverage-html=coverage-html\nopen coverage-html/index.html\n```\n\n4. **Identify gaps** in test coverage for the modified files\n5. **Suggest additional tests** if coverage is below threshold"
+  },
+  "workspaceFolderName": "crm",
+  "shortName": "code-coverage-monitor"
 }

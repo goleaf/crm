@@ -245,6 +245,7 @@ final class SupportCaseResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
+            ->with(['company:id,name', 'contact:id,name', 'assignee:id,name', 'assignedTeam:id,name'])
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);

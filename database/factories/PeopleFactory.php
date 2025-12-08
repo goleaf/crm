@@ -45,7 +45,7 @@ final class PeopleFactory extends Factory
             'address_street' => fake()->streetAddress(),
             'address_city' => fake()->city(),
             'address_state' => fake()->state(),
-            'address_postal_code' => fake()->postcode(),
+            'address_postal_code' => (string) fake()->numberBetween(10000, 99999),
             'address_country' => fake()->countryCode(),
             'social_links' => [
                 'linkedin' => fake()->url(),

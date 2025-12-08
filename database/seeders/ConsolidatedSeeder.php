@@ -166,14 +166,44 @@ final class ConsolidatedSeeder extends Seeder
     {
         $this->command?->info('🎯 Creating leads...');
 
-        $this->leads = Lead::factory()
-            ->count(150)
-            ->create([
+        // Pre-fetch IDs for faster random selection
+        $companyIds = $this->companies->pluck('id')->all();
+        $userIds = $this->users->pluck('id')->all();
+
+        $leads = [];
+        $now = now();
+
+        for ($i = 0; $i < 150; $i++) {
+            $leads[] = [
                 'team_id' => $this->team->id,
-                'company_id' => fn () => $this->companies->random()->id,
-                'assigned_to_id' => fn () => $this->users->random()->id,
-                'creator_id' => fn () => $this->users->random()->id,
-            ]);
+                'creator_id' => $userIds[array_rand($userIds)],
+                'company_id' => $companyIds[array_rand($companyIds)],
+                'assigned_to_id' => $userIds[array_rand($userIds)],
+                'name' => fake()->name(),
+                'job_title' => fake()->jobTitle(),
+                'company_name' => fake()->company(),
+                'email' => fake()->unique()->safeEmail(),
+                'phone' => fake()->e164PhoneNumber(),
+                'mobile' => fake()->e164PhoneNumber(),
+                'website' => fake()->url(),
+                'source' => fake()->randomElement(\App\Enums\LeadSource::cases())->value,
+                'status' => fake()->randomElement(\App\Enums\LeadStatus::cases())->value,
+                'score' => fake()->numberBetween(0, 100),
+                'grade' => fake()->randomElement(\App\Enums\LeadGrade::cases())->value,
+                'assignment_strategy' => fake()->randomElement(\App\Enums\LeadAssignmentStrategy::cases())->value,
+                'nurture_status' => fake()->randomElement(\App\Enums\LeadNurtureStatus::cases())->value,
+                'territory' => fake()->state(),
+                'last_activity_at' => $now,
+                'created_at' => $now->copy()->subMinutes($i),
+                'updated_at' => $now->copy()->subMinutes($i),
+            ];
+        }
+
+        // Bulk insert leads
+        Lead::insert($leads);
+
+        // Reload leads for use in other seeders
+        $this->leads = Lead::where('team_id', $this->team->id)->get();
 
         $this->command?->info('✓ Created 150 leads');
     }
@@ -182,19 +212,50 @@ final class ConsolidatedSeeder extends Seeder
     {
         $this->command?->info('💼 Creating opportunities...');
 
-        $this->opportunities = Opportunity::factory()
-            ->count(100)
-            ->create([
+        // Pre-fetch IDs for faster random selection
+        $companyIds = $this->companies->pluck('id')->all();
+        $peopleIds = $this->people->pluck('id')->all();
+        $userIds = $this->users->pluck('id')->all();
+
+        // Create opportunities with bulk insert
+        $opportunities = [];
+        $collaborators = [];
+        $now = now();
+        $opportunityId = (Opportunity::max('id') ?? 0) + 1;
+
+        for ($i = 0; $i < 100; $i++) {
+            $opportunities[] = [
+                'name' => fake()->sentence(),
                 'team_id' => $this->team->id,
-                'company_id' => fn () => $this->companies->random()->id,
-                'contact_id' => fn () => $this->people->random()->id,
-            ])
-            ->each(function (Opportunity $opportunity): void {
-                // Attach collaborators
-                $collaboratorCount = random_int(1, 3);
-                $collaboratorIds = $this->users->pluck('id')->shuffle()->take($collaboratorCount);
-                $opportunity->collaborators()->attach($collaboratorIds->toArray());
-            });
+                'company_id' => $companyIds[array_rand($companyIds)],
+                'contact_id' => $peopleIds[array_rand($peopleIds)],
+                'created_at' => $now->copy()->subMinutes($i),
+                'updated_at' => $now->copy()->subMinutes($i),
+            ];
+
+            // Add collaborators
+            $collaboratorCount = random_int(1, 3);
+            $selectedCollaborators = array_rand(array_flip($userIds), $collaboratorCount);
+            $selectedCollaborators = is_array($selectedCollaborators) ? $selectedCollaborators : [$selectedCollaborators];
+
+            foreach ($selectedCollaborators as $userId) {
+                $collaborators[] = [
+                    'opportunity_id' => $opportunityId,
+                    'user_id' => $userId,
+                ];
+            }
+
+            $opportunityId++;
+        }
+
+        // Bulk insert opportunities
+        Opportunity::insert($opportunities);
+
+        // Bulk insert collaborators
+        DB::table('opportunity_user')->insert($collaborators);
+
+        // Reload opportunities for use in other seeders
+        $this->opportunities = Opportunity::where('team_id', $this->team->id)->get();
 
         $this->command->info('✓ Created 100 opportunities with collaborators');
     }
@@ -203,178 +264,331 @@ final class ConsolidatedSeeder extends Seeder
     {
         $this->command?->info('✅ Creating tasks...');
 
-        $taskCount = 0;
+        // Pre-fetch IDs for faster random selection
+        $userIds = $this->users->pluck('id')->all();
+        $companyIds = $this->companies->random(50)->pluck('id')->all();
+        $peopleIds = $this->people->random(50)->pluck('id')->all();
+        $opportunityIds = $this->opportunities->random(50)->pluck('id')->all();
+        $leadIds = $this->leads->random(50)->pluck('id')->all();
+
+        $tasks = [];
+        $taskables = [];
+        $taskAssignees = [];
+        $now = now();
+        $taskId = (Task::max('id') ?? 0) + 1;
+
+        // Helper to create task data
+        $createTaskData = function (int $index) use ($userIds, $now): array {
+            return [
+                'title' => fake()->sentence(3),
+                'team_id' => $this->team->id,
+                'creator_id' => $userIds[array_rand($userIds)],
+                'created_at' => $now->copy()->subMinutes($index),
+                'updated_at' => $now->copy()->subMinutes($index),
+            ];
+        };
+
+        // Helper to add taskable and assignees
+        $addTaskRelations = function (int $taskId, string $taskableType, int $taskableId) use (&$taskables, &$taskAssignees, $userIds, $now): void {
+            $taskables[] = [
+                'task_id' => $taskId,
+                'taskable_type' => $taskableType,
+                'taskable_id' => $taskableId,
+            ];
+
+            // Add 1-2 assignees
+            $assigneeCount = random_int(1, 2);
+            $selectedAssignees = array_rand(array_flip($userIds), $assigneeCount);
+            $selectedAssignees = is_array($selectedAssignees) ? $selectedAssignees : [$selectedAssignees];
+
+            foreach ($selectedAssignees as $userId) {
+                $taskAssignees[] = [
+                    'task_id' => $taskId,
+                    'user_id' => $userId,
+                ];
+            }
+        };
+
+        $index = 0;
 
         // Tasks for companies
-        $this->companies->random(50)->each(function (Company $company) use (&$taskCount): void {
-            $tasks = Task::factory()
-                ->count(random_int(1, 3))
-                ->create([
-                    'team_id' => $this->team->id,
-                    'creator_id' => $this->users->random()->id,
-                ]);
-
-            foreach ($tasks as $task) {
-                $company->tasks()->attach($task->id);
-                $task->assignees()->attach($this->users->random(random_int(1, 2))->pluck('id'));
-                $taskCount++;
+        foreach ($companyIds as $companyId) {
+            $count = random_int(1, 3);
+            for ($i = 0; $i < $count; $i++) {
+                $tasks[] = $createTaskData($index);
+                $addTaskRelations($taskId, Company::class, $companyId);
+                $taskId++;
+                $index++;
             }
-        });
+        }
 
         // Tasks for people
-        $this->people->random(50)->each(function (People $person) use (&$taskCount): void {
-            $tasks = Task::factory()
-                ->count(random_int(1, 3))
-                ->create([
-                    'team_id' => $this->team->id,
-                    'creator_id' => $this->users->random()->id,
-                ]);
-
-            foreach ($tasks as $task) {
-                $person->tasks()->attach($task->id);
-                $task->assignees()->attach($this->users->random(random_int(1, 2))->pluck('id'));
-                $taskCount++;
+        foreach ($peopleIds as $personId) {
+            $count = random_int(1, 3);
+            for ($i = 0; $i < $count; $i++) {
+                $tasks[] = $createTaskData($index);
+                $addTaskRelations($taskId, People::class, $personId);
+                $taskId++;
+                $index++;
             }
-        });
+        }
 
         // Tasks for opportunities
-        $this->opportunities->random(50)->each(function (Opportunity $opportunity) use (&$taskCount): void {
-            $tasks = Task::factory()
-                ->count(random_int(1, 3))
-                ->create([
-                    'team_id' => $this->team->id,
-                    'creator_id' => $this->users->random()->id,
-                ]);
-
-            foreach ($tasks as $task) {
-                $opportunity->tasks()->attach($task->id);
-                $task->assignees()->attach($this->users->random(random_int(1, 2))->pluck('id'));
-                $taskCount++;
+        foreach ($opportunityIds as $opportunityId) {
+            $count = random_int(1, 3);
+            for ($i = 0; $i < $count; $i++) {
+                $tasks[] = $createTaskData($index);
+                $addTaskRelations($taskId, Opportunity::class, $opportunityId);
+                $taskId++;
+                $index++;
             }
-        });
+        }
 
         // Tasks for leads
-        $this->leads->random(50)->each(function (Lead $lead) use (&$taskCount): void {
-            $tasks = Task::factory()
-                ->count(random_int(1, 3))
-                ->create([
-                    'team_id' => $this->team->id,
-                    'creator_id' => $this->users->random()->id,
-                ]);
-
-            foreach ($tasks as $task) {
-                $lead->tasks()->attach($task->id);
-                $task->assignees()->attach($this->users->random(random_int(1, 2))->pluck('id'));
-                $taskCount++;
+        foreach ($leadIds as $leadId) {
+            $count = random_int(1, 3);
+            for ($i = 0; $i < $count; $i++) {
+                $tasks[] = $createTaskData($index);
+                $addTaskRelations($taskId, Lead::class, $leadId);
+                $taskId++;
+                $index++;
             }
-        });
+        }
 
-        $this->command?->info("✓ Created {$taskCount} tasks with assignees");
+        // Bulk insert tasks
+        foreach (array_chunk($tasks, 500) as $chunk) {
+            Task::insert($chunk);
+        }
+
+        // Bulk insert taskables
+        foreach (array_chunk($taskables, 500) as $chunk) {
+            DB::table('taskables')->insert($chunk);
+        }
+
+        // Bulk insert task assignees
+        foreach (array_chunk($taskAssignees, 500) as $chunk) {
+            DB::table('task_user')->insert($chunk);
+        }
+
+        $this->command?->info('✓ Created '.count($tasks).' tasks with assignees');
     }
 
     public function seedNotes(): void
     {
         $this->command?->info('📝 Creating notes...');
 
-        $noteCount = 0;
+        // Pre-fetch IDs for faster random selection
+        $userIds = $this->users->pluck('id')->all();
+        $companyIds = $this->companies->random(50)->pluck('id')->all();
+        $peopleIds = $this->people->random(50)->pluck('id')->all();
+        $opportunityIds = $this->opportunities->random(50)->pluck('id')->all();
+        $leadIds = $this->leads->random(50)->pluck('id')->all();
+
+        $notes = [];
+        $noteables = [];
+        $now = now();
+        $noteId = (Note::max('id') ?? 0) + 1;
+
+        // Helper to create note data
+        $createNoteData = function (int $index) use ($userIds, $now): array {
+            return [
+                'title' => fake()->sentence(),
+                'team_id' => $this->team->id,
+                'creator_id' => $userIds[array_rand($userIds)],
+                'category' => \App\Enums\NoteCategory::GENERAL->value,
+                'visibility' => \App\Enums\NoteVisibility::INTERNAL->value,
+                'is_template' => false,
+                'created_at' => $now->copy()->subMinutes($index),
+                'updated_at' => $now->copy()->subMinutes($index),
+            ];
+        };
+
+        $index = 0;
 
         // Notes for companies
-        $this->companies->random(50)->each(function (Company $company) use (&$noteCount): void {
-            $notes = Note::factory()
-                ->count(random_int(2, 5))
-                ->create([
-                    'team_id' => $this->team->id,
-                    'creator_id' => $this->users->random()->id,
-                ]);
-
-            foreach ($notes as $note) {
-                $company->notes()->attach($note->id);
-                $noteCount++;
+        foreach ($companyIds as $companyId) {
+            $count = random_int(2, 5);
+            for ($i = 0; $i < $count; $i++) {
+                $notes[] = $createNoteData($index);
+                $noteables[] = [
+                    'note_id' => $noteId,
+                    'noteable_type' => Company::class,
+                    'noteable_id' => $companyId,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+                $noteId++;
+                $index++;
             }
-        });
+        }
 
         // Notes for people
-        $this->people->random(50)->each(function (People $person) use (&$noteCount): void {
-            $notes = Note::factory()
-                ->count(random_int(2, 5))
-                ->create([
-                    'team_id' => $this->team->id,
-                    'creator_id' => $this->users->random()->id,
-                ]);
-
-            foreach ($notes as $note) {
-                $person->notes()->attach($note->id);
-                $noteCount++;
+        foreach ($peopleIds as $personId) {
+            $count = random_int(2, 5);
+            for ($i = 0; $i < $count; $i++) {
+                $notes[] = $createNoteData($index);
+                $noteables[] = [
+                    'note_id' => $noteId,
+                    'noteable_type' => People::class,
+                    'noteable_id' => $personId,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+                $noteId++;
+                $index++;
             }
-        });
+        }
 
         // Notes for opportunities
-        $this->opportunities->random(50)->each(function (Opportunity $opportunity) use (&$noteCount): void {
-            $notes = Note::factory()
-                ->count(random_int(2, 5))
-                ->create([
-                    'team_id' => $this->team->id,
-                    'creator_id' => $this->users->random()->id,
-                ]);
-
-            foreach ($notes as $note) {
-                $opportunity->notes()->attach($note->id);
-                $noteCount++;
+        foreach ($opportunityIds as $opportunityId) {
+            $count = random_int(2, 5);
+            for ($i = 0; $i < $count; $i++) {
+                $notes[] = $createNoteData($index);
+                $noteables[] = [
+                    'note_id' => $noteId,
+                    'noteable_type' => Opportunity::class,
+                    'noteable_id' => $opportunityId,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+                $noteId++;
+                $index++;
             }
-        });
+        }
 
         // Notes for leads
-        $this->leads->random(50)->each(function (Lead $lead) use (&$noteCount): void {
-            $notes = Note::factory()
-                ->count(random_int(2, 5))
-                ->create([
-                    'team_id' => $this->team->id,
-                    'creator_id' => $this->users->random()->id,
-                ]);
-
-            foreach ($notes as $note) {
-                $lead->notes()->attach($note->id);
-                $noteCount++;
+        foreach ($leadIds as $leadId) {
+            $count = random_int(2, 5);
+            for ($i = 0; $i < $count; $i++) {
+                $notes[] = $createNoteData($index);
+                $noteables[] = [
+                    'note_id' => $noteId,
+                    'noteable_type' => Lead::class,
+                    'noteable_id' => $leadId,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+                $noteId++;
+                $index++;
             }
-        });
+        }
 
-        $this->command?->info("✓ Created {$noteCount} notes");
+        // Bulk insert notes
+        foreach (array_chunk($notes, 500) as $chunk) {
+            Note::insert($chunk);
+        }
+
+        // Bulk insert noteables
+        foreach (array_chunk($noteables, 500) as $chunk) {
+            DB::table('noteables')->insert($chunk);
+        }
+
+        $this->command?->info('✓ Created '.count($notes).' notes');
     }
 
     public function seedInvoices(): void
     {
         $this->command?->info('💰 Creating invoices...');
 
+        // Pre-fetch IDs for faster random selection
+        $companyIds = $this->companies->pluck('id')->all();
+        $peopleIds = $this->people->pluck('id')->all();
+        $opportunityIds = $this->opportunities->pluck('id')->all();
+        $userIds = $this->users->pluck('id')->all();
+
+        $invoices = [];
+        $lineItems = [];
+        $payments = [];
+        $now = now();
+        $invoiceId = (Invoice::max('id') ?? 0) + 1;
+        $lineItemId = (InvoiceLineItem::max('id') ?? 0) + 1;
+
         for ($i = 0; $i < 50; $i++) {
-            $invoice = Invoice::factory()->create([
+            $issueDate = $now->copy()->subDays(random_int(0, 90));
+            $invoiceNumber = 'INV-'.str_pad((string) ($invoiceId + $i), 6, '0', STR_PAD_LEFT);
+
+            $invoices[] = [
                 'team_id' => $this->team->id,
-                'company_id' => $this->companies->random()->id,
-                'contact_id' => $this->people->random()->id,
-                'opportunity_id' => $this->opportunities->random()->id,
-                'creator_id' => $this->users->random()->id,
-            ]);
+                'company_id' => $companyIds[array_rand($companyIds)],
+                'contact_id' => $peopleIds[array_rand($peopleIds)],
+                'opportunity_id' => $opportunityIds[array_rand($opportunityIds)],
+                'creator_id' => $userIds[array_rand($userIds)],
+                'invoice_number' => $invoiceNumber,
+                'issue_date' => $issueDate,
+                'due_date' => $issueDate->copy()->addDays(30),
+                'payment_terms' => 'Net 30',
+                'currency_code' => config('company.default_currency', 'USD'),
+                'status' => fake()->randomElement(\App\Enums\InvoiceStatus::cases())->value,
+                'subtotal' => 0,
+                'tax_total' => 0,
+                'discount_total' => 0,
+                'late_fee_rate' => 0,
+                'total' => 0,
+                'balance_due' => 0,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
 
-            // Create line items
-            InvoiceLineItem::factory()
-                ->count(random_int(2, 8))
-                ->create([
-                    'invoice_id' => $invoice->id,
+            // Create line items for this invoice
+            $lineItemCount = random_int(2, 8);
+            for ($j = 0; $j < $lineItemCount; $j++) {
+                $lineItems[] = [
+                    'invoice_id' => $invoiceId,
                     'team_id' => $this->team->id,
-                ]);
-
-            // Create payments for some invoices
-            if (random_int(1, 100) > 30) {
-                InvoicePayment::factory()
-                    ->count(random_int(1, 3))
-                    ->create([
-                        'invoice_id' => $invoice->id,
-                        'team_id' => $this->team->id,
-                    ]);
+                    'name' => fake()->sentence(3),
+                    'description' => fake()->sentence(),
+                    'quantity' => fake()->numberBetween(1, 5),
+                    'unit_price' => fake()->randomFloat(2, 50, 500),
+                    'tax_rate' => fake()->randomElement([0, 5, 8, 10]),
+                    'sort_order' => $j + 1,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+                $lineItemId++;
             }
 
-            // Sync financials
-            $invoice->syncFinancials();
+            // Create payments for some invoices (70% chance)
+            if (random_int(1, 100) > 30) {
+                $paymentCount = random_int(1, 3);
+                for ($k = 0; $k < $paymentCount; $k++) {
+                    $payments[] = [
+                        'invoice_id' => $invoiceId,
+                        'team_id' => $this->team->id,
+                        'amount' => fake()->randomFloat(2, 100, 500),
+                        'currency_code' => config('company.default_currency', 'USD'),
+                        'paid_at' => $now->copy()->subDays(random_int(0, 30)),
+                        'method' => fake()->randomElement(['card', 'bank_transfer', 'cash']),
+                        'reference' => fake()->uuid(),
+                        'status' => \App\Enums\InvoicePaymentStatus::COMPLETED->value,
+                        'notes' => null,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
+                }
+            }
+
+            $invoiceId++;
         }
+
+        // Bulk insert invoices
+        Invoice::insert($invoices);
+
+        // Bulk insert line items
+        foreach (array_chunk($lineItems, 500) as $chunk) {
+            InvoiceLineItem::insert($chunk);
+        }
+
+        // Bulk insert payments
+        if (! empty($payments)) {
+            foreach (array_chunk($payments, 500) as $chunk) {
+                InvoicePayment::insert($chunk);
+            }
+        }
+
+        // Sync financials for all invoices (this needs to be done after insert)
+        Invoice::where('team_id', $this->team->id)
+            ->whereIn('invoice_number', collect($invoices)->pluck('invoice_number'))
+            ->each(fn (Invoice $invoice) => $invoice->syncFinancials());
 
         $this->command?->info('✓ Created 50 invoices with line items and payments');
     }
@@ -383,14 +597,39 @@ final class ConsolidatedSeeder extends Seeder
     {
         $this->command?->info('🎫 Creating support cases...');
 
-        SupportCase::factory()
-            ->count(50)
-            ->create([
+        // Pre-fetch IDs for faster random selection
+        $companyIds = $this->companies->pluck('id')->all();
+        $peopleIds = $this->people->pluck('id')->all();
+        $userIds = $this->users->pluck('id')->all();
+
+        // Build all support cases data in memory first
+        $supportCases = [];
+        $now = now();
+
+        for ($i = 0; $i < 50; $i++) {
+            $supportCases[] = [
+                'case_number' => 'CASE-'.strtoupper(\Illuminate\Support\Str::random(8)),
+                'subject' => fake()->sentence(),
+                'description' => fake()->paragraph(),
+                'status' => fake()->randomElement(\App\Enums\CaseStatus::cases())->value,
+                'priority' => fake()->randomElement(\App\Enums\CasePriority::cases())->value,
+                'type' => fake()->randomElement(\App\Enums\CaseType::cases())->value,
+                'channel' => fake()->randomElement(\App\Enums\CaseChannel::cases())->value,
+                'queue' => fake()->randomElement(['general', 'billing', 'technical', 'product']),
+                'sla_due_at' => fake()->dateTimeBetween('+1 day', '+5 days'),
                 'team_id' => $this->team->id,
-                'company_id' => fn () => $this->companies->random()->id,
-                'contact_id' => fn () => $this->people->random()->id,
-                'assigned_to_id' => fn () => $this->users->random()->id,
-            ]);
+                'creator_id' => $userIds[array_rand($userIds)],
+                'company_id' => $companyIds[array_rand($companyIds)],
+                'contact_id' => $peopleIds[array_rand($peopleIds)],
+                'assigned_to_id' => $userIds[array_rand($userIds)],
+                'assigned_team_id' => $this->team->id,
+                'created_at' => $now->copy()->subMinutes($i),
+                'updated_at' => $now->copy()->subMinutes($i),
+            ];
+        }
+
+        // Bulk insert for maximum performance
+        SupportCase::insert($supportCases);
 
         $this->command?->info('✓ Created 50 support cases');
     }

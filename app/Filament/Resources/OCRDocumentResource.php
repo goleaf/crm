@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\OCRDocumentResource\Pages;
@@ -13,18 +15,18 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Storage;
 
-class OCRDocumentResource extends Resource
+final class OCRDocumentResource extends Resource
 {
     protected static ?string $model = OCRDocument::class;
 
     protected static ?string $modelLabel = 'OCR Document';
 
-    public static function getNavigationIcon(): ?string
+    public static function getNavigationIcon(): string
     {
         return 'heroicon-o-document-text';
     }
 
-    public static function getNavigationGroup(): ?string
+    public static function getNavigationGroup(): string
     {
         return 'OCR & Docs';
     }
@@ -59,7 +61,7 @@ class OCRDocumentResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'pending' => 'gray',
                         'processing' => 'warning',
                         'completed' => 'success',
@@ -68,8 +70,8 @@ class OCRDocumentResource extends Resource
                     }),
                 Tables\Columns\TextColumn::make('confidence_score')
                     ->label('Confidence')
-                    ->formatStateUsing(fn($state) => $state ? number_format($state * 100, 1) . '%' : '-')
-                    ->color(fn(OCRDocument $record) => $record->confidence_color),
+                    ->formatStateUsing(fn ($state): string => $state ? number_format($state * 100, 1).'%' : '-')
+                    ->color(fn (OCRDocument $record) => $record->confidence_color),
             ])
             ->filters([
                 //
@@ -80,11 +82,11 @@ class OCRDocumentResource extends Resource
                     ->label('Process OCR')
                     ->icon('heroicon-o-cpu-chip')
                     ->color('primary')
-                    ->action(function (OCRDocument $record, OCRService $ocrService) {
+                    ->action(function (OCRDocument $record, OCRService $ocrService): void {
                         try {
                             $record->markAsProcessing();
 
-                            // For demo purposes, we process synchronously here. 
+                            // For demo purposes, we process synchronously here.
                             // In production, dispatch a job.
                             $fullPath = Storage::disk('local')->path($record->file_path);
 
@@ -119,7 +121,7 @@ class OCRDocumentResource extends Resource
                                 ->send();
                         }
                     })
-                    ->visible(fn(OCRDocument $record) => $record->status !== 'processing'),
+                    ->visible(fn (OCRDocument $record): bool => $record->status !== 'processing'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -127,8 +129,6 @@ class OCRDocumentResource extends Resource
                 ]),
             ]);
     }
-
-
 
     public static function getRelations(): array
     {

@@ -9,7 +9,7 @@
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.10",
         "@tailwindcss/typography": "^0.5.19",
-        "@vitejs/plugin-vue": "^5.2.1",
+        "@vitejs/plugin-vue": "^6.0.2",
         "autoprefixer": "^10.4.22",
         "chokidar": "^5.0.0",
         "laravel-vite-plugin": "^2.0",
@@ -21,7 +21,7 @@
     },
     "dependencies": {
         "@tailwindcss/vite": "^4.1.17",
-        "@vueuse/core": "^11.4.0",
+        "@vueuse/core": "^14.1.0",
         "laravel-precognition-vue": "^0.5.11",
         "shiki": "^3.19.0"
     }

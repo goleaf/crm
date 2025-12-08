@@ -16,12 +16,12 @@ use Illuminate\Support\Facades\Process;
  * Provides programmatic access to code coverage data and analysis.
  * Integrates with PCOV for fast coverage generation.
  */
-class CodeCoverageService
+final readonly class CodeCoverageService
 {
     public function __construct(
-        private readonly string $coverageDir = 'coverage-html',
-        private readonly string $cloverFile = 'coverage.xml',
-        private readonly int $cacheTtl = 300
+        private string $coverageDir = 'coverage-html',
+        private string $cloverFile = 'coverage.xml',
+        private int $cacheTtl = 300
     ) {}
 
     /**
@@ -29,7 +29,7 @@ class CodeCoverageService
      */
     public function getCoverageStats(): array
     {
-        return Cache::remember('coverage.stats', $this->cacheTtl, function () {
+        return Cache::remember('coverage.stats', $this->cacheTtl, function (): array {
             if (! File::exists(base_path($this->cloverFile))) {
                 return $this->getDefaultStats();
             }
@@ -131,18 +131,15 @@ class CodeCoverageService
      */
     public function getCoverageHistory(int $days = 30): Collection
     {
-        return Cache::remember("coverage.history.{$days}", 3600, function () use ($days) {
+        return Cache::remember("coverage.history.{$days}", 3600, fn () =>
             // In a real implementation, this would query a database table
             // For now, return mock data
-            return collect(range(1, $days))->map(function ($day) {
-                return [
-                    'date' => now()->subDays($day)->format('Y-m-d'),
-                    'coverage' => rand(75, 85) + (rand(0, 99) / 100),
-                    'lines' => rand(1000, 1500),
-                    'methods' => rand(200, 300),
-                ];
-            })->reverse()->values();
-        });
+            collect(range(1, $days))->map(fn ($day): array => [
+                'date' => now()->subDays($day)->format('Y-m-d'),
+                'coverage' => random_int(75, 85) + (random_int(0, 99) / 100),
+                'lines' => random_int(1000, 1500),
+                'methods' => random_int(200, 300),
+            ])->reverse()->values());
     }
 
     /**
@@ -243,7 +240,7 @@ class CodeCoverageService
         foreach ($files as $file => $lines) {
             $category = $this->categorizeFile($file);
             // Simplified calculation - in reality would need proper metrics
-            $categories[$category] += count(array_filter($lines, fn ($line) => $line['count'] > 0));
+            $categories[$category] += count(array_filter($lines, fn (array $line): bool => $line['count'] > 0));
         }
 
         return $categories;

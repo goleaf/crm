@@ -45,7 +45,7 @@ final class DeliveryAddressFactory extends Factory
             'street' => $this->faker->streetAddress(),
             'city' => $this->faker->city(),
             'state' => $this->faker->state(),
-            'postal_code' => $this->faker->postcode(),
+            'postal_code' => (string) $this->faker->numberBetween(10000, 99999),
             'country' => $this->faker->country(),
             'instructions' => $this->faker->sentence(),
         ];

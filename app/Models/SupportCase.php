@@ -214,7 +214,7 @@ final class SupportCase extends Model implements HasCustomFields
             return null;
         }
 
-        $diff = now()->diffInMinutes($this->sla_due_at, false);
+        $diff = (int) now()->diffInMinutes($this->sla_due_at, false);
 
         return $diff > 0 ? $diff : 0;
     }

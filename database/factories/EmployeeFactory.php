@@ -58,7 +58,7 @@ final class EmployeeFactory extends Factory
             'address' => $this->faker->streetAddress(),
             'city' => $this->faker->city(),
             'state' => $this->faker->state(),
-            'postal_code' => $this->faker->postcode(),
+            'postal_code' => (string) $this->faker->numberBetween(10000, 99999),
             'country' => $this->faker->country(),
             'emergency_contact_name' => $this->faker->name(),
             'emergency_contact_phone' => $this->faker->phoneNumber(),

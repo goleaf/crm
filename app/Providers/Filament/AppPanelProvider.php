@@ -55,6 +55,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Laravel\Jetstream\Features;
 use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
@@ -137,7 +138,14 @@ final class AppPanelProvider extends PanelProvider
             ->default()
             ->id('app')
             ->domain("app.{$host}")
-            ->homeUrl(fn (): string => Dashboard::getUrl())
+            ->homeUrl(function (): string {
+                // Get current tenant for tenant-aware home URL
+                $tenant = Filament::getTenant();
+
+                return $tenant !== null
+                    ? Dashboard::getUrl(tenant: $tenant)
+                    : '/';
+            })
             ->brandName(brand_name())
             ->login(Login::class)
             ->registration(Register::class)
@@ -192,6 +200,12 @@ final class AppPanelProvider extends PanelProvider
                 EditProfile::class,
                 ApiTokens::class,
             ])
+            ->routes(function (): void {
+                if (app()->environment(['local', 'testing'])) {
+                    \Illuminate\Support\Facades\Route::get('/dev-login-form', \App\Filament\Pages\Auth\DeveloperLogin::class)
+                        ->name('filament.app.dev-login-form');
+                }
+            })
             ->spa()
             ->breadcrumbs(false)
             ->sidebarCollapsibleOnDesktop()
@@ -253,7 +267,7 @@ final class AppPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
-                fn (): string => Blade::render('@env(\'local\')<x-login-link email="manuk.minasyan1@gmail.com" redirect-url="'.url('/').'" />@endenv'),
+                fn (): string => Blade::render('@env(\'local\')<x-login-link email="manuk.minasyan1@gmail.com" :label="__(\'app.actions.developer_login\')" />@endenv'),
             )
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,

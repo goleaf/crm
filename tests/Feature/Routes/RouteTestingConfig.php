@@ -26,6 +26,8 @@ final class RouteTestingConfig
 
             // Development-only routes
             '_ignition.*',
+            'dev.login', // Developer login (tested separately in DeveloperLoginTest)
+            'filament.app.filament.app.dev-login-form', // Developer login form (tested separately)
 
             // Form submission routes (tested separately)
             '*.store',

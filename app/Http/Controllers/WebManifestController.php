@@ -39,4 +39,3 @@ final class WebManifestController extends Controller
         ]);
     }
 }
-

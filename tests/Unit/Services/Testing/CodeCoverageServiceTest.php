@@ -88,14 +88,12 @@ it('gets coverage trend', function (): void {
 it('gets coverage history', function (): void {
     Cache::shouldReceive('remember')
         ->once()
-        ->andReturnUsing(function ($key, $ttl, $callback) {
-            return collect(range(1, 7))->map(fn ($day) => [
-                'date' => now()->subDays($day)->format('Y-m-d'),
-                'coverage' => rand(75, 85),
-                'lines' => rand(1000, 1500),
-                'methods' => rand(200, 300),
-            ])->reverse()->values();
-        });
+        ->andReturnUsing(fn ($key, $ttl, $callback) => collect(range(1, 7))->map(fn ($day): array => [
+            'date' => now()->subDays($day)->format('Y-m-d'),
+            'coverage' => random_int(75, 85),
+            'lines' => random_int(1000, 1500),
+            'methods' => random_int(200, 300),
+        ])->reverse()->values());
 
     $history = $this->service->getCoverageHistory(7);
 

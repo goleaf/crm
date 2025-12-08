@@ -20,7 +20,7 @@ return new class extends Migration
         }
 
         // Create code coverage permission
-        $permission = Permission::firstOrCreate([
+        Permission::firstOrCreate([
             'name' => 'view_code_coverage',
             'guard_name' => 'web',
         ]);

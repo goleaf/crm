@@ -80,7 +80,7 @@ return [
 
     'parallel' => [
         'enabled' => env('TEST_PARALLEL_ENABLED', true),
-        'processes' => env('TEST_PARALLEL_PROCESSES', null), // null = auto-detect
+        'processes' => env('TEST_PARALLEL_PROCESSES'), // null = auto-detect
     ],
 
     /*
@@ -94,7 +94,7 @@ return [
 
     'stress' => [
         'enabled' => env('RUN_STRESS_TESTS', false),
-        'target' => env('STRESSLESS_TARGET', null),
+        'target' => env('STRESSLESS_TARGET'),
         'concurrency' => env('STRESSLESS_CONCURRENCY', 10),
         'duration' => env('STRESSLESS_DURATION', 10),
         'p95_threshold_ms' => env('STRESSLESS_P95_THRESHOLD_MS', 500),

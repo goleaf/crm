@@ -6,7 +6,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -16,19 +17,19 @@ return new class extends Migration {
         $prefix = $isSqlite ? '' : 'world.';
 
         Schema::table('companies', function (Blueprint $table) use ($prefix): void {
-            $table->foreignId('billing_country_id')->nullable()->after('billing_country')->constrained($prefix . 'countries')->nullOnDelete();
-            $table->foreignId('billing_state_id')->nullable()->after('billing_state')->constrained($prefix . 'states')->nullOnDelete();
-            $table->foreignId('billing_city_id')->nullable()->after('billing_city')->constrained($prefix . 'cities')->nullOnDelete();
+            $table->foreignId('billing_country_id')->nullable()->after('billing_country')->constrained($prefix.'countries')->nullOnDelete();
+            $table->foreignId('billing_state_id')->nullable()->after('billing_state')->constrained($prefix.'states')->nullOnDelete();
+            $table->foreignId('billing_city_id')->nullable()->after('billing_city')->constrained($prefix.'cities')->nullOnDelete();
 
-            $table->foreignId('shipping_country_id')->nullable()->after('shipping_country')->constrained($prefix . 'countries')->nullOnDelete();
-            $table->foreignId('shipping_state_id')->nullable()->after('shipping_state')->constrained($prefix . 'states')->nullOnDelete();
-            $table->foreignId('shipping_city_id')->nullable()->after('shipping_city')->constrained($prefix . 'cities')->nullOnDelete();
+            $table->foreignId('shipping_country_id')->nullable()->after('shipping_country')->constrained($prefix.'countries')->nullOnDelete();
+            $table->foreignId('shipping_state_id')->nullable()->after('shipping_state')->constrained($prefix.'states')->nullOnDelete();
+            $table->foreignId('shipping_city_id')->nullable()->after('shipping_city')->constrained($prefix.'cities')->nullOnDelete();
         });
 
         Schema::table('people', function (Blueprint $table) use ($prefix): void {
-            $table->foreignId('address_country_id')->nullable()->after('address_country')->constrained($prefix . 'countries')->nullOnDelete();
-            $table->foreignId('address_state_id')->nullable()->after('address_state')->constrained($prefix . 'states')->nullOnDelete();
-            $table->foreignId('address_city_id')->nullable()->after('address_city')->constrained($prefix . 'cities')->nullOnDelete();
+            $table->foreignId('address_country_id')->nullable()->after('address_country')->constrained($prefix.'countries')->nullOnDelete();
+            $table->foreignId('address_state_id')->nullable()->after('address_state')->constrained($prefix.'states')->nullOnDelete();
+            $table->foreignId('address_city_id')->nullable()->after('address_city')->constrained($prefix.'cities')->nullOnDelete();
         });
     }
 

@@ -7,10 +7,30 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Migration to add userstamps columns (editor_id, deleted_by) to CRM tables.
+ *
+ * This migration adds tracking columns for:
+ * - editor_id: Foreign key to users table, tracks who last edited the record
+ * - deleted_by: Foreign key to users table, tracks who soft-deleted the record (only for tables with SoftDeletes)
+ *
+ * Tables are configured in userstampTables() with a boolean indicating whether
+ * the table uses soft deletes (and thus needs the deleted_by column).
+ *
+ * @package Database\Migrations
+ *
+ * @see \App\Models\Concerns\HasCreator for the trait that uses these columns
+ * @see tests/Unit/Migrations/UserstampsColumnsTest.php for test coverage
+ */
 return new class extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * Adds editor_id and deleted_by columns to all configured tables.
+     * Handles SQLite compatibility by dropping/recreating the customers_view.
+     *
+     * @return void
      */
     public function up(): void
     {
@@ -55,6 +75,11 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
+     *
+     * Removes editor_id and deleted_by columns from all configured tables.
+     * Handles SQLite compatibility by dropping/recreating the customers_view.
+     *
+     * @return void
      */
     public function down(): void
     {
@@ -86,7 +111,13 @@ return new class extends Migration
     }
 
     /**
-     * @return array<string, bool>
+     * Get the list of tables that should have userstamps columns.
+     *
+     * The boolean value indicates whether the table uses soft deletes:
+     * - true: Table has SoftDeletes trait, needs both editor_id and deleted_by
+     * - false: Table does not use SoftDeletes, only needs editor_id
+     *
+     * @return array<string, bool> Table name => uses soft deletes
      */
     private function userstampTables(): array
     {
@@ -111,17 +142,32 @@ return new class extends Migration
             'projects' => true,
             'purchase_orders' => true,
             'quotes' => true,
-            'support_cases' => true,
+            'cases' => true,
             'task_templates' => false,
             'tasks' => true,
         ];
     }
 
+    /**
+     * Drop the customers_view if it exists.
+     *
+     * Required before modifying tables that are part of the view.
+     *
+     * @return void
+     */
     private function dropCustomersView(): void
     {
         DB::statement('DROP VIEW IF EXISTS customers_view');
     }
 
+    /**
+     * Create the customers_view combining companies and people.
+     *
+     * This view provides a unified interface for querying customers
+     * regardless of whether they are companies or individual people.
+     *
+     * @return void
+     */
     private function createCustomersView(): void
     {
         if (! $this->shouldManageCustomersView()) {
@@ -158,6 +204,14 @@ FROM people
 SQL);
     }
 
+    /**
+     * Determine if the customers_view should be managed.
+     *
+     * SQLite does not support complex views, so we skip view management
+     * when running on SQLite (typically in testing environments).
+     *
+     * @return bool True if the view should be created/dropped
+     */
     private function shouldManageCustomersView(): bool
     {
         return DB::getDriverName() !== 'sqlite';

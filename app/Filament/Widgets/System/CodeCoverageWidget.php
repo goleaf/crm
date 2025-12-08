@@ -10,7 +10,7 @@ use Filament\Notifications\Notification;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
-class CodeCoverageWidget extends BaseWidget
+final class CodeCoverageWidget extends BaseWidget
 {
     protected ?string $pollingInterval = null;
 
@@ -36,12 +36,6 @@ class CodeCoverageWidget extends BaseWidget
             'up' => 'heroicon-o-arrow-trending-up',
             'down' => 'heroicon-o-arrow-trending-down',
             default => 'heroicon-o-minus',
-        };
-
-        $trendColor = match ($trend) {
-            'up' => 'success',
-            'down' => 'danger',
-            default => 'gray',
         };
 
         $overallColor = match (true) {
@@ -72,14 +66,14 @@ class CodeCoverageWidget extends BaseWidget
         ];
     }
 
-    protected function getHeaderActions(): array
+    private function getHeaderActions(): array
     {
         return [
             Action::make('run_coverage')
                 ->label(__('app.actions.run_coverage'))
                 ->icon('heroicon-o-play')
                 ->color('primary')
-                ->action(function () {
+                ->action(function (): void {
                     $result = $this->coverageService->runCoverage();
 
                     if ($result['success']) {
@@ -103,13 +97,13 @@ class CodeCoverageWidget extends BaseWidget
             Action::make('view_report')
                 ->label(__('app.actions.view_report'))
                 ->icon('heroicon-o-document-text')
-                ->url(fn () => route('filament.app.pages.system.code-coverage'))
+                ->url(fn (): string => route('filament.app.pages.system.code-coverage'))
                 ->color('gray'),
 
             Action::make('refresh')
                 ->label(__('app.actions.refresh'))
                 ->icon('heroicon-o-arrow-path')
-                ->action(function () {
+                ->action(function (): void {
                     $this->coverageService->clearCache();
 
                     Notification::make()

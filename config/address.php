@@ -7,6 +7,7 @@ return [
 
     /**
      * @var array<string, string>
+     *
      * @deprecated Use WorldDataService for country lists.
      */
     'countries' => [

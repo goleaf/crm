@@ -129,39 +129,45 @@
     - **Property 28: Account type change audit trail**
     - **Validates: Requirements 11.4**
 
-- [ ] 5b. Implement account team collaboration features
-  - [ ] 5b.1 Verify AccountTeamMember model and relationships
+- [x] 5b. Implement account team collaboration features
+  - [x] 5b.1 Verify AccountTeamMember model and relationships
     - Ensure model has proper relationships to Company, User, Team
     - Verify role and access_level enums exist
     - _Requirements: 12.1, 12.2_
 
-  - [ ] 5b.2 Add account team methods to Company model
+  - [x] 5b.2 Add account team methods to Company model
     - Verify accountTeam(), accountTeamMembers(), ensureAccountOwnerOnTeam() methods
     - _Requirements: 12.1, 12.5_
 
-  - [ ] 5b.3 Write property test for account team member assignment
+  - [x] 5b.3 Write property test for account team member assignment
     - **Property 29: Account team member assignment**
     - **Validates: Requirements 12.1, 12.2**
+    - **Test File:** `tests/Unit/Properties/AccountsModule/AccountTeamCollaborationPropertyTest.php`
+    - **Status:** ✅ Implemented 2025-12-08 (80 tests, 353 assertions, 14.33s)
 
-  - [ ] 5b.4 Write property test for account team member removal
+  - [x] 5b.4 Write property test for account team member removal
     - **Property 30: Account team member removal preserves history**
     - **Validates: Requirements 12.4**
+    - **Test File:** `tests/Unit/Properties/AccountsModule/AccountTeamCollaborationPropertyTest.php`
+    - **Status:** ✅ Implemented 2025-12-08 (included in above test file)
 
-  - [ ] 5b.5 Write property test for account owner team synchronization
+  - [x] 5b.5 Write property test for account owner team synchronization
     - **Property 31: Account owner team synchronization**
     - **Validates: Requirements 12.5**
+    - **Test File:** `tests/Unit/Properties/AccountsModule/AccountTeamCollaborationPropertyTest.php`
+    - **Status:** ✅ Implemented 2025-12-08 (included in above test file)
 
-- [ ] 5c. Implement multi-currency support
-  - [ ] 5c.1 Update database migration to include currency_code field
+- [x] 5c. Implement multi-currency support
+  - [x] 5c.1 Update database migration to include currency_code field
     - Add currency_code field with default 'USD'
     - _Requirements: 13.1_
 
-  - [ ] 5c.2 Update Company model with currency_code
+  - [x] 5c.2 Update Company model with currency_code
     - Add currency_code to fillable array
     - Verify default value in attributes
     - _Requirements: 13.1_
 
-  - [ ] 5c.3 Write property test for currency code persistence
+  - [x] 5c.3 Write property test for currency code persistence
     - **Property 32: Currency code persistence**
     - **Validates: Requirements 13.1, 13.2**
 
