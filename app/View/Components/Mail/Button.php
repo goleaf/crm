@@ -11,7 +11,7 @@ final class Button extends Component
 {
     public function __construct(
         public string $url,
-        public ?string $color = null
+        public ?string $color = null,
     ) {
         $this->color = $color ?? 'primary';
     }

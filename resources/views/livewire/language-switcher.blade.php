@@ -1,12 +1,14 @@
 <div class="relative" x-data="{ open: false }">
+    @php($activeLocale = $availableLocales[$currentLocale] ?? ['flag' => '🌐', 'name' => strtoupper($currentLocale)])
+
     <button
         @click="open = !open"
         @click.away="open = false"
         type="button"
         class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
     >
-        <span class="text-lg">{{ $availableLocales[$currentLocale]['flag'] }}</span>
-        <span>{{ $availableLocales[$currentLocale]['name'] }}</span>
+        <span class="text-lg">{{ $activeLocale['flag'] }}</span>
+        <span>{{ $activeLocale['name'] }}</span>
         <svg class="h-4 w-4 transition" :class="{ 'rotate-180': open }" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
         </svg>

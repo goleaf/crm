@@ -66,14 +66,14 @@ final class DependencyEnforcementPropertyTest extends PropertyTestCase
             $this->assertGreaterThanOrEqual(
                 \Illuminate\Support\Facades\Date::parse($taskASchedule['scheduled_end']),
                 \Illuminate\Support\Facades\Date::parse($taskBSchedule['scheduled_start']),
-                'Task B must start on or after Task A finishes'
+                'Task B must start on or after Task A finishes',
             );
 
             // Property: Task C must start after Task B finishes
             $this->assertGreaterThanOrEqual(
                 \Illuminate\Support\Facades\Date::parse($taskBSchedule['scheduled_end']),
                 \Illuminate\Support\Facades\Date::parse($taskCSchedule['scheduled_start']),
-                'Task C must start on or after Task B finishes'
+                'Task C must start on or after Task B finishes',
             );
         }, 100);
     }
@@ -177,7 +177,7 @@ final class DependencyEnforcementPropertyTest extends PropertyTestCase
             $this->assertEquals(
                 $totalDuration,
                 $actualDuration,
-                'Project duration should equal sum of critical path task durations'
+                'Project duration should equal sum of critical path task durations',
             );
         }, 100);
     }

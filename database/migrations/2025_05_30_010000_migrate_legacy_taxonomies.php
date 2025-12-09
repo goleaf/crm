@@ -229,7 +229,7 @@ return new class extends Migration
                 [
                     'created_at' => $row->created_at ?? $now,
                     'updated_at' => $row->updated_at ?? $now,
-                ]
+                ],
             );
         }
     }
@@ -254,7 +254,7 @@ return new class extends Migration
                     [
                         'created_at' => $article->created_at ?? $now,
                         'updated_at' => $article->updated_at ?? $now,
-                    ]
+                    ],
                 );
             }
         }
@@ -277,7 +277,7 @@ return new class extends Migration
                     [
                         'created_at' => $link->created_at ?? $now,
                         'updated_at' => $link->updated_at ?? $now,
-                    ]
+                    ],
                 );
             }
         }
@@ -285,7 +285,7 @@ return new class extends Migration
 
     private function uniqueSlug(string $name, string $type, int $teamId): string
     {
-        $base = Str::slug($name) ?: Str::slug($type.'-'.$teamId);
+        $base = Str::slug($name) ?: Str::slug($type . '-' . $teamId);
         $slug = $base;
         $counter = 1;
 
@@ -294,7 +294,7 @@ return new class extends Migration
             'type' => $type,
             'team_id' => $teamId,
         ])->exists()) {
-            $slug = $base.'-'.$counter;
+            $slug = $base . '-' . $counter;
             $counter++;
         }
 

@@ -139,16 +139,16 @@ final class ViewInvoice extends ViewRecord
                                     ->formatStateUsing(fn (string $state): string => number_format((float) $state, 2)),
                                 TextEntry::make('unit_price')
                                     ->label('Unit Price')
-                                    ->formatStateUsing(fn (string $state, Invoice $record): string => ($record->currency_code ?? 'USD').' '.number_format((float) $state, 2)),
+                                    ->formatStateUsing(fn (string $state, Invoice $record): string => ($record->currency_code ?? 'USD') . ' ' . number_format((float) $state, 2)),
                                 TextEntry::make('tax_rate')
                                     ->label('Tax %')
-                                    ->formatStateUsing(fn (string $state): string => number_format((float) $state, 2).' %'),
+                                    ->formatStateUsing(fn (string $state): string => number_format((float) $state, 2) . ' %'),
                                 TextEntry::make('line_total')
                                     ->label('Line Total')
-                                    ->formatStateUsing(fn (string $state, Invoice $record): string => ($record->currency_code ?? 'USD').' '.number_format((float) $state, 2)),
+                                    ->formatStateUsing(fn (string $state, Invoice $record): string => ($record->currency_code ?? 'USD') . ' ' . number_format((float) $state, 2)),
                                 TextEntry::make('tax_total')
                                     ->label('Tax')
-                                    ->formatStateUsing(fn (string $state, Invoice $record): string => ($record->currency_code ?? 'USD').' '.number_format((float) $state, 2)),
+                                    ->formatStateUsing(fn (string $state, Invoice $record): string => ($record->currency_code ?? 'USD') . ' ' . number_format((float) $state, 2)),
                             ])
                             ->columns(3),
                     ]),

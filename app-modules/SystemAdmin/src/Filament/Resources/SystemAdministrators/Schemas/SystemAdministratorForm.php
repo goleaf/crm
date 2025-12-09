@@ -37,7 +37,7 @@ final class SystemAdministratorForm
                                 collect(SystemAdministratorRole::cases())
                                     ->mapWithKeys(fn (SystemAdministratorRole $role): array => [
                                         $role->value => $role->getLabel(),
-                                    ])
+                                    ]),
                             )
                             ->default(SystemAdministratorRole::SuperAdministrator->value)
                             ->required(),

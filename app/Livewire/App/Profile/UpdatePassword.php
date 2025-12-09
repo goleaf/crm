@@ -62,7 +62,7 @@ final class UpdatePassword extends BaseLivewireComponent
                             ->required()
                             ->dehydrated()
                             ->visible(
-                                fn (Get $get): bool => filled($get('password'))
+                                fn (Get $get): bool => filled($get('password')),
                             ),
                         Actions::make([
                             Action::make('save')
@@ -95,7 +95,7 @@ final class UpdatePassword extends BaseLivewireComponent
         ])->save();
 
         if (request()->hasSession() && filled($data['password'])) {
-            request()->session()->put(['password_hash_'.Filament::getAuthGuard() => $this->authUser()->getAuthPassword()]);
+            request()->session()->put(['password_hash_' . Filament::getAuthGuard() => $this->authUser()->getAuthPassword()]);
         }
 
         $this->reset('data');

@@ -31,7 +31,7 @@ final readonly class OpportunityStageService
     ];
 
     public function __construct(
-        private OpportunityMetricsService $metricsService
+        private OpportunityMetricsService $metricsService,
     ) {}
 
     /**
@@ -65,7 +65,7 @@ final readonly class OpportunityStageService
 
         if (! $this->canTransition($opportunity, $toStage)) {
             throw new \InvalidArgumentException(
-                "Cannot transition from '{$currentStage}' to '{$toStage}'"
+                "Cannot transition from '{$currentStage}' to '{$toStage}'",
             );
         }
 

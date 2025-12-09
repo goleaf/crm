@@ -26,7 +26,7 @@ final readonly class ApplyTenantScopes
             filament()->getTenancyScopeName(),
             fn (Builder $query) => $query
                 ->whereHas('teams', fn (Builder $query) => $query->where('teams.id', $tenant->getKey()))
-                ->orWhereHas('ownedTeams', fn (Builder $query) => $query->where('teams.id', $tenant->getKey()))
+                ->orWhereHas('ownedTeams', fn (Builder $query) => $query->where('teams.id', $tenant->getKey())),
         );
 
         return $next($request);

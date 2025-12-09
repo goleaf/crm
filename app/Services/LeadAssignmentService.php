@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Log;
 final readonly class LeadAssignmentService
 {
     public function __construct(
-        private TerritoryService $territoryService
+        private TerritoryService $territoryService,
     ) {}
 
     /**

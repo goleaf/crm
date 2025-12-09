@@ -17,10 +17,10 @@ use UnitEnum;
 final readonly class EnumValue implements ValidationRule
 {
     /**
-     * @param  class-string<UnitEnum>  $enumClass
+     * @param class-string<UnitEnum> $enumClass
      */
     public function __construct(
-        private string $enumClass
+        private string $enumClass,
     ) {}
 
     /**

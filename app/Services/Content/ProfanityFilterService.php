@@ -98,7 +98,7 @@ final class ProfanityFilterService
      */
     public function cachedCheck(string $text, string $language = 'english', int $ttl = 3600): bool
     {
-        $key = 'profanity_check_'.md5($text.$language);
+        $key = 'profanity_check_' . md5($text . $language);
 
         return Cache::remember($key, $ttl, fn (): bool => $this->hasProfanity($text, $language));
     }
@@ -137,7 +137,7 @@ final class ProfanityFilterService
     public function clearCache(?string $text = null, string $language = 'english'): void
     {
         if ($text) {
-            $key = 'profanity_check_'.md5($text.$language);
+            $key = 'profanity_check_' . md5($text . $language);
             Cache::forget($key);
         } else {
             // Clearing "all" specific caches is hard with standard cache drivers without tagging.

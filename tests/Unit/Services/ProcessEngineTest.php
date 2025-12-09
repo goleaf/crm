@@ -248,7 +248,7 @@ test('process handles escalations', function (): void {
         $this->user->id,
         'SLA breach',
         $step,
-        'Step taking too long'
+        'Step taking too long',
     );
 
     expect($escalation)->not->toBeNull()

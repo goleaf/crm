@@ -25,7 +25,7 @@ final class DocumentationService
         return Cache::remember(
             "documentation.{$type}",
             config('documentation.cache.ttl', 3600),
-            fn (): DocumentData => DocumentData::fromType($type)
+            fn (): DocumentData => DocumentData::fromType($type),
         );
     }
 
@@ -88,7 +88,7 @@ final class DocumentationService
                     excerpt: $this->generateExcerpt($content, $query),
                     url: DocumentSearchResultData::generateUrl($docType),
                     relevance: $this->calculateRelevance($content, $query),
-                )
+                ),
             );
         }
 
@@ -115,7 +115,7 @@ final class DocumentationService
 
         // Add ellipsis if needed
         if ($start > 0) {
-            $excerpt = '...'.$excerpt;
+            $excerpt = '...' . $excerpt;
         }
 
         if ($start + $length < strlen($content)) {
@@ -124,7 +124,7 @@ final class DocumentationService
 
         // Highlight the matched query if configured
         if (config('documentation.search.highlight', true)) {
-            $pattern = '/('.preg_quote($query, '/').')/i';
+            $pattern = '/(' . preg_quote($query, '/') . ')/i';
             $excerpt = preg_replace($pattern, '<mark>$1</mark>', $excerpt);
         }
 
@@ -141,7 +141,7 @@ final class DocumentationService
 
         // Check if the query is in a heading (more relevant)
         $headingRelevance = 0;
-        if (preg_match('/#+ .*'.preg_quote($query, '/').'.*$/im', $content)) {
+        if (preg_match('/#+ .*' . preg_quote($query, '/') . '.*$/im', $content)) {
             $headingRelevance = 2.0;
         }
 
@@ -162,6 +162,6 @@ final class DocumentationService
     {
         $basePath = $document['base_path'] ?? config('documentation.markdown.base_path');
 
-        return rtrim((string) $basePath, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$document['file'];
+        return rtrim((string) $basePath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $document['file'];
     }
 }

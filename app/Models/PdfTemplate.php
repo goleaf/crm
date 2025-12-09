@@ -14,26 +14,26 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
- * @property int $id
- * @property int $team_id
- * @property int|null $creator_id
- * @property string $name
- * @property string $key
+ * @property int         $id
+ * @property int         $team_id
+ * @property int|null    $creator_id
+ * @property string      $name
+ * @property string      $key
  * @property string|null $entity_type
  * @property string|null $description
- * @property string $layout
- * @property array|null $merge_fields
- * @property array|null $styling
- * @property array|null $watermark
- * @property array|null $permissions
- * @property bool $encryption_enabled
+ * @property string      $layout
+ * @property array|null  $merge_fields
+ * @property array|null  $styling
+ * @property array|null  $watermark
+ * @property array|null  $permissions
+ * @property bool        $encryption_enabled
  * @property string|null $encryption_password
- * @property int $version
- * @property int|null $parent_template_id
- * @property bool $is_active
- * @property bool $is_archived
+ * @property int         $version
+ * @property int|null    $parent_template_id
+ * @property bool        $is_active
+ * @property bool        $is_archived
  * @property Carbon|null $archived_at
- * @property array|null $metadata
+ * @property array|null  $metadata
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at

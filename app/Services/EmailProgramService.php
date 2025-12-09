@@ -92,7 +92,7 @@ final class EmailProgramService
         string $bounceType,
         ?string $reason = null,
         ?string $diagnosticCode = null,
-        ?array $rawMessage = null
+        ?array $rawMessage = null,
     ): void {
         $recipient = EmailProgramRecipient::query()
             ->where('email', $email)
@@ -135,7 +135,7 @@ final class EmailProgramService
         ?string $reason = null,
         ?string $feedback = null,
         ?string $ipAddress = null,
-        ?string $userAgent = null
+        ?string $userAgent = null,
     ): void {
         EmailProgramUnsubscribe::updateOrCreate(
             ['team_id' => $teamId, 'email' => $email],
@@ -145,7 +145,7 @@ final class EmailProgramService
                 'feedback' => $feedback,
                 'ip_address' => $ipAddress,
                 'user_agent' => $userAgent,
-            ]
+            ],
         );
 
         // Update all pending recipients for this email
@@ -257,7 +257,7 @@ final class EmailProgramService
                     'email_program_step_id' => $step->id,
                     'date' => $date,
                 ],
-                $metrics
+                $metrics,
             );
         }
 
@@ -270,7 +270,7 @@ final class EmailProgramService
                 'email_program_step_id' => null,
                 'date' => $date,
             ],
-            $programMetrics
+            $programMetrics,
         );
     }
 

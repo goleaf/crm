@@ -91,7 +91,7 @@ final class WorkflowDefinitionResource extends Resource
                                     WorkflowTriggerType::ON_CREATE->value,
                                     WorkflowTriggerType::ON_EDIT->value,
                                     WorkflowTriggerType::AFTER_SAVE->value,
-                                ]
+                                ],
                             )),
 
                         Forms\Components\KeyValue::make('schedule_config')

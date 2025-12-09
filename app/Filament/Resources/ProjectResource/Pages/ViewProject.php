@@ -87,7 +87,7 @@ final class ViewProject extends ViewRecord
                                 ->money('USD'),
                             TextEntry::make('percent_complete')
                                 ->label(__('app.labels.progress'))
-                                ->formatStateUsing(fn (float $state): string => number_format($state, 0).'%'),
+                                ->formatStateUsing(fn (float $state): string => number_format($state, 0) . '%'),
                         ]),
                     ]),
             ]);

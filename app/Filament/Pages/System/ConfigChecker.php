@@ -66,7 +66,7 @@ final class ConfigChecker extends Page implements HasTable
         return $table
             ->query(
                 // We fake a query because we are displaying static data from the service
-                \App\Models\User::query()->whereRaw('1=0')
+                \App\Models\User::query()->whereRaw('1=0'),
             )
             ->rows($issues); // Filament v4.3 supports passing rows directly if using array driver or similar, but typically we need a query.
         // Wait, Filament standard table requires a builder.

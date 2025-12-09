@@ -76,10 +76,10 @@ final class KnowledgeArticleResource extends Resource
                         fn (Builder $builder): Builder => $builder->withExists([
                             'reactions as reacted_by_me' => fn (Builder $reactionQuery): Builder => $reactionQuery->where(
                                 config('laravel-reactions.user.foreign_key', 'user_id'),
-                                auth()->id()
+                                auth()->id(),
                             ),
-                        ])
-                    )
+                        ]),
+                    ),
             )
             ->columns([
                 TextColumn::make('title')

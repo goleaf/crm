@@ -22,7 +22,7 @@ final readonly class CallbackController
     public function __invoke(
         Request $request,
         string $provider,
-        CreatesNewSocialUsers $creator
+        CreatesNewSocialUsers $creator,
     ): RedirectResponse {
         if (! $request->has('code')) {
             return $this->handleError('Authorization was cancelled or failed. Please try again.');
@@ -54,7 +54,7 @@ final readonly class CallbackController
     private function resolveUser(
         string $provider,
         SocialiteUser $socialUser,
-        CreatesNewSocialUsers $creator
+        CreatesNewSocialUsers $creator,
     ): User {
         return DB::transaction(function () use ($provider, $socialUser, $creator): User {
             $existingAccount = UserSocialAccount::query()
@@ -83,7 +83,7 @@ final readonly class CallbackController
     private function createUser(
         SocialiteUser $socialUser,
         CreatesNewSocialUsers $creator,
-        string $provider
+        string $provider,
     ): User {
         return $creator->create([
             'name' => $this->extractName($socialUser),
@@ -98,7 +98,7 @@ final readonly class CallbackController
             [
                 'provider_name' => $provider,
                 'provider_id' => (string) $providerId,
-            ]
+            ],
         );
     }
 

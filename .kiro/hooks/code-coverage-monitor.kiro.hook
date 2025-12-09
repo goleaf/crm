@@ -1,24 +1,20 @@
 {
-  "version": "1.0",
+  "enabled": true,
   "name": "Code Coverage Monitor",
   "description": "Automatically run code coverage analysis when test files are modified and alert on coverage drops",
-  "enabled": true,
-  "trigger": {
-    "type": "file_change",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
     "patterns": [
       "tests/**/*Test.php",
       "app/**/*.php",
       "app-modules/**/*.php"
     ]
   },
-  "actions": [
-    {
-      "type": "message",
-      "content": "Test files or application code modified. Consider running coverage analysis:\n\n```bash\ncomposer test:coverage\n```\n\nOr view current coverage in Filament:\n- Navigate to System → Code Coverage\n- Click 'Run Coverage' to generate fresh reports\n\nCoverage thresholds:\n- Overall: 80% minimum\n- Type Coverage: 99.9% minimum\n\nTo run coverage for specific suite:\n```bash\npest --testsuite=Feature --coverage\npest --testsuite=Unit --coverage\n```\n\nTo generate HTML report:\n```bash\npest --coverage-html=coverage-html\nopen coverage-html/index.html\n```"
-    }
-  ],
-  "conditions": {
-    "file_count_threshold": 3,
-    "debounce_seconds": 300
-  }
+  "then": {
+    "type": "askAgent",
+    "prompt": "Test files or application code have been modified. Please provide guidance on code coverage:\n\n1. **Analyze Recent Changes**: Review the modified files to understand what code paths may need coverage updates.\n\n2. **Coverage Status**: Check current coverage metrics:\n   - Overall coverage (target: 80% minimum)\n   - Type coverage (target: 99.9% minimum)\n   - Identify any coverage drops\n\n3. **Recommendations**: Suggest:\n   - Which test suites to run (`composer test:coverage`)\n   - Specific areas needing additional tests\n   - Whether to run full coverage or targeted suite coverage\n\n4. **Filament Integration**: Remind about:\n   - System → Code Coverage page for visual reports\n   - Running coverage via Filament UI\n   - Viewing HTML reports at `coverage-html/index.html`\n\n5. **Quick Commands**:\n   ```bash\n   # Full coverage\n   composer test:coverage\n   \n   # Specific suite\n   pest --testsuite=Feature --coverage\n   pest --testsuite=Unit --coverage\n   \n   # HTML report\n   pest --coverage-html=coverage-html\n   ```\n\nProvide actionable recommendations based on the changes made."
+  },
+  "workspaceFolderName": "crm",
+  "shortName": "code-coverage-monitor"
 }

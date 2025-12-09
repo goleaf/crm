@@ -10,15 +10,15 @@ use Illuminate\Support\Facades\Crypt;
 /**
  * System settings model for managing application configuration.
  *
- * @property int $id
- * @property string $key
- * @property mixed $value
- * @property string $type
- * @property string $group
- * @property string|null $description
- * @property bool $is_public
- * @property bool $is_encrypted
- * @property int|null $team_id
+ * @property int                        $id
+ * @property string                     $key
+ * @property mixed                      $value
+ * @property string                     $type
+ * @property string                     $group
+ * @property string|null                $description
+ * @property bool                       $is_public
+ * @property bool                       $is_encrypted
+ * @property int|null                   $team_id
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  */

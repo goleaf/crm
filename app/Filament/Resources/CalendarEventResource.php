@@ -12,6 +12,7 @@ use App\Filament\Resources\CalendarEventResource\Pages\EditCalendarEvent;
 use App\Filament\Resources\CalendarEventResource\Pages\ListCalendarEvents;
 use App\Filament\Support\Filters\DateScopeFilter;
 use App\Models\CalendarEvent;
+use App\Models\Lead;
 use App\Support\Helpers\ArrayHelper;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Repeater;
@@ -205,6 +206,10 @@ final class CalendarEventResource extends Resource
                         'success' => CalendarEventStatus::COMPLETED->value,
                         'danger' => CalendarEventStatus::CANCELLED->value,
                     ]),
+                TextColumn::make('related.name')
+                    ->label(__('app.labels.lead'))
+                    ->formatStateUsing(fn (mixed $state, CalendarEvent $record): string => $record->related instanceof Lead ? $record->related->name : '—')
+                    ->toggleable(),
                 TextColumn::make('start_at')
                     ->label('Starts')
                     ->dateTime()
@@ -253,6 +258,49 @@ final class CalendarEventResource extends Resource
             ])
             ->defaultSort('start_at', 'desc')
             ->filters([
+                Filter::make('activity_filters')
+                    ->label('Activity Filters')
+                    ->form([
+                        TextInput::make('title')
+                            ->label(__('app.labels.title')),
+                        Select::make('creator_id')
+                            ->label(__('app.labels.created_by'))
+                            ->relationship('creator', 'name')
+                            ->searchable()
+                            ->preload(),
+                        Select::make('lead_id')
+                            ->label(__('app.labels.lead'))
+                            ->options(fn (): array => Lead::query()->orderBy('name')->pluck('name', 'id')->all())
+                            ->searchable()
+                            ->preload(),
+                        DateTimePicker::make('schedule_from')
+                            ->label('Schedule From')
+                            ->seconds(false),
+                        DateTimePicker::make('schedule_to')
+                            ->label('Schedule To')
+                            ->seconds(false),
+                        DateTimePicker::make('created_from')
+                            ->label('Created From')
+                            ->seconds(false),
+                        DateTimePicker::make('created_to')
+                            ->label('Created To')
+                            ->seconds(false),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when($data['title'] ?? null, fn (Builder $query, string $title): Builder => $query->where('title', 'like', "%{$title}%"))
+                            ->when($data['creator_id'] ?? null, fn (Builder $query, int $creatorId): Builder => $query->where('creator_id', $creatorId))
+                            ->when(
+                                $data['lead_id'] ?? null,
+                                fn (Builder $query, int $leadId): Builder => $query
+                                    ->where('related_type', Lead::class)
+                                    ->where('related_id', $leadId),
+                            )
+                            ->when($data['schedule_from'] ?? null, fn (Builder $query, string $from): Builder => $query->where('start_at', '>=', $from))
+                            ->when($data['schedule_to'] ?? null, fn (Builder $query, string $to): Builder => $query->where('start_at', '<=', $to))
+                            ->when($data['created_from'] ?? null, fn (Builder $query, string $from): Builder => $query->where('created_at', '>=', $from))
+                            ->when($data['created_to'] ?? null, fn (Builder $query, string $to): Builder => $query->where('created_at', '<=', $to));
+                    }),
                 DateScopeFilter::make(name: 'start_at_range', column: 'start_at'),
                 SelectFilter::make('status')
                     ->label(__('app.labels.status'))
@@ -293,6 +341,7 @@ final class CalendarEventResource extends Resource
             ->with([
                 'creator:id,name',
                 'team:id,name',
+                'related',
                 'recurrenceParent:id,title,recurrence_rule',
             ])
             ->withoutGlobalScopes([

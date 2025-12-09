@@ -64,7 +64,7 @@ final class UserFactory extends Factory
 
         return $this->afterCreating(function (User $user) use ($callback): void {
             $team = Team::factory()->create([
-                'name' => $user->name.'\'s Team',
+                'name' => $user->name . '\'s Team',
                 'user_id' => $user->id,
                 'personal_team' => true,
             ]);

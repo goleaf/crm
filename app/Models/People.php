@@ -12,6 +12,7 @@ use App\Models\Concerns\HasTags;
 use App\Models\Concerns\HasTaxonomies;
 use App\Models\Concerns\HasTeam;
 use App\Models\Concerns\LogsActivity;
+use App\Models\Group;
 use App\Observers\PeopleObserver;
 use App\Services\AvatarService;
 use App\Services\Opportunities\OpportunityMetricsService;
@@ -35,7 +36,7 @@ use Relaticle\CustomFields\Models\Concerns\UsesCustomFields;
 use Relaticle\CustomFields\Models\Contracts\HasCustomFields;
 
 /**
- * @property Carbon|null $deleted_at
+ * @property Carbon|null    $deleted_at
  * @property CreationSource $creation_source
  */
 #[ObservedBy(PeopleObserver::class)]
@@ -301,6 +302,14 @@ final class People extends Model implements HasCustomFields
     }
 
     /**
+     * @return BelongsToMany<Group, $this>
+     */
+    public function groups(): BelongsToMany
+    {
+        return $this->belongsToMany(Group::class)->withTimestamps();
+    }
+
+    /**
      * @return BelongsTo<People, $this>
      */
     public function reportsTo(): BelongsTo
@@ -352,7 +361,7 @@ final class People extends Model implements HasCustomFields
                 'type' => 'contact',
                 'id' => $this->getKey(),
                 'title' => 'Contact created',
-                'summary' => $this->creator?->name !== null ? 'Created by '.$this->creator->name : 'Created',
+                'summary' => $this->creator?->name !== null ? 'Created by ' . $this->creator->name : 'Created',
                 'created_at' => $this->created_at,
             ],
         ]);
@@ -376,7 +385,7 @@ final class People extends Model implements HasCustomFields
                     'title' => $note->title,
                     'summary' => method_exists($note, 'plainBody') ? $note->plainBody() : null,
                     'created_at' => $note->created_at,
-                ])
+                ]),
         );
 
         $timeline = $timeline->merge(
@@ -388,7 +397,7 @@ final class People extends Model implements HasCustomFields
                     'title' => $task->title,
                     'summary' => $this->formatTaskSummary($task),
                     'created_at' => $task->created_at,
-                ])
+                ]),
         );
 
         $timeline = $timeline->merge(
@@ -400,7 +409,7 @@ final class People extends Model implements HasCustomFields
                     'title' => $case->subject,
                     'summary' => $this->formatCaseSummary($case),
                     'created_at' => $case->created_at,
-                ])
+                ]),
         );
 
         $metrics = resolve(OpportunityMetricsService::class);
@@ -412,10 +421,10 @@ final class People extends Model implements HasCustomFields
                 ->map(fn (Opportunity $opportunity): array => [
                     'type' => 'opportunity',
                     'id' => $opportunity->getKey(),
-                    'title' => $opportunity->name ?? 'Opportunity #'.$opportunity->getKey(),
+                    'title' => $opportunity->name ?? 'Opportunity #' . $opportunity->getKey(),
                     'summary' => $this->formatOpportunitySummary($opportunity, $metrics),
                     'created_at' => $opportunity->created_at,
-                ])
+                ]),
         );
 
         return $timeline
@@ -453,11 +462,11 @@ final class People extends Model implements HasCustomFields
         $parts = [];
 
         if ($stage !== null) {
-            $parts[] = 'Stage: '.$stage;
+            $parts[] = 'Stage: ' . $stage;
         }
 
         if (is_numeric($amount)) {
-            $parts[] = 'Amount: $'.number_format($amount, 2);
+            $parts[] = 'Amount: $' . number_format($amount, 2);
         }
 
         return $parts === [] ? 'Opportunity activity' : implode(' • ', $parts);
@@ -472,7 +481,7 @@ final class People extends Model implements HasCustomFields
             ],
             [
                 'description' => null,
-            ]
+            ],
         );
 
         $this->roles()->syncWithoutDetaching([$role->getKey()]);

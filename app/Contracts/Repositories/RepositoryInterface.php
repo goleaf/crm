@@ -19,13 +19,15 @@ interface RepositoryInterface
     public function find(int $id): ?Model;
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
+     *
      * @return TModel
      */
     public function create(array $data): Model;
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
+     *
      * @return TModel
      */
     public function update(Model $model, array $data): Model;

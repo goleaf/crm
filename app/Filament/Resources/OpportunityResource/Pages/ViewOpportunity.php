@@ -119,7 +119,7 @@ final class ViewOpportunity extends ViewRecord
     /**
      * Apply win/loss updates to the opportunity and its custom fields.
      *
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
      */
     private function applyOutcome(Opportunity $record, array $data, bool $isWin): void
     {
@@ -165,7 +165,7 @@ final class ViewOpportunity extends ViewRecord
     /**
      * Create an order from the opportunity with a single line item for the deal amount.
      *
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
      */
     private function convertToOrder(Opportunity $record, array $data): void
     {

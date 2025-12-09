@@ -54,7 +54,7 @@ it('applies advanced filters when provided', function (): void {
             'companies' => [
                 ['field' => 'industry', 'operator' => '=', 'value' => 'software'],
             ],
-        ]
+        ],
     );
 
     expect($results['companies'])

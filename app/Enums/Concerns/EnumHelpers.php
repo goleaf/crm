@@ -86,7 +86,7 @@ trait EnumHelpers
      */
     public static function rule(): string
     {
-        return 'in:'.implode(',', self::values());
+        return 'in:' . implode(',', self::values());
     }
 
     /**
@@ -96,7 +96,7 @@ trait EnumHelpers
      */
     public static function rules(): array
     {
-        return ['in:'.implode(',', self::values())];
+        return ['in:' . implode(',', self::values())];
     }
 
     /**

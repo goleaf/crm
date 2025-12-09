@@ -14,7 +14,7 @@
     ]
   },
   "then": {
-    "type": "runCommand",
+    "type": "executeCommand",
     "command": "php artisan scramble:export"
   },
   "workspaceFolderName": "crm",

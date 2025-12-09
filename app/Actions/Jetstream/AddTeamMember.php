@@ -30,7 +30,7 @@ final readonly class AddTeamMember implements AddsTeamMembers
         event(new \Laravel\Jetstream\Events\AddingTeamMember($team, $newTeamMember));
 
         $team->users()->attach(
-            $newTeamMember, ['role' => $role]
+            $newTeamMember, ['role' => $role],
         );
 
         event(new \Laravel\Jetstream\Events\TeamMemberAdded($team, $newTeamMember));
@@ -47,7 +47,7 @@ final readonly class AddTeamMember implements AddsTeamMembers
         ], $this->rules(), [
             'email.exists' => __('We were unable to find a registered user with this email address.'),
         ])->after(
-            $this->ensureUserIsNotAlreadyOnTeam($team, $email)
+            $this->ensureUserIsNotAlreadyOnTeam($team, $email),
         )->validateWithBag('addTeamMember');
     }
 
@@ -74,7 +74,7 @@ final readonly class AddTeamMember implements AddsTeamMembers
             $validator->errors()->addIf(
                 $team->hasUserWithEmail($email),
                 'email',
-                __('This user already belongs to the team.')
+                __('This user already belongs to the team.'),
             );
         };
     }

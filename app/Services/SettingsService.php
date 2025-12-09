@@ -42,7 +42,7 @@ final class SettingsService
         string $type = 'string',
         string $group = 'general',
         ?int $teamId = null,
-        bool $isEncrypted = false
+        bool $isEncrypted = false,
     ): Setting {
         $setting = Setting::updateOrCreate(
             ['key' => $key, 'team_id' => $teamId],
@@ -50,7 +50,7 @@ final class SettingsService
                 'type' => $type,
                 'group' => $group,
                 'is_encrypted' => $isEncrypted,
-            ]
+            ],
         );
 
         $setting->setValue($value);
@@ -126,7 +126,7 @@ final class SettingsService
      */
     private function getCacheKey(string $key, ?int $teamId): string
     {
-        return self::CACHE_PREFIX.($teamId ? "team:{$teamId}:" : 'global:').$key;
+        return self::CACHE_PREFIX . ($teamId ? "team:{$teamId}:" : 'global:') . $key;
     }
 
     /**

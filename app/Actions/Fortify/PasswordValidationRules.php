@@ -7,6 +7,7 @@ namespace App\Actions\Fortify;
 use App\Models\User;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
+use LaraUtilX\Rules\RejectCommonPasswords;
 use Ziming\LaravelZxcvbn\Rules\ZxcvbnRule;
 
 trait PasswordValidationRules
@@ -14,7 +15,8 @@ trait PasswordValidationRules
     /**
      * Get the validation rules used to validate passwords.
      *
-     * @param  array<string, mixed>  $input
+     * @param array<string, mixed> $input
+     *
      * @return array<int, Rule|array<mixed>|string>
      */
     protected function passwordRules(?User $user = null, array $input = [], bool $requiresConfirmation = true): array
@@ -24,6 +26,7 @@ trait PasswordValidationRules
             'string',
             Password::default(),
             new ZxcvbnRule($this->passwordUserInputs($user, $input)),
+            new RejectCommonPasswords(),
         ];
 
         if ($requiresConfirmation) {
@@ -34,7 +37,8 @@ trait PasswordValidationRules
     }
 
     /**
-     * @param  array<string, mixed>  $input
+     * @param array<string, mixed> $input
+     *
      * @return array<int, string>
      */
     private function passwordUserInputs(?User $user, array $input): array

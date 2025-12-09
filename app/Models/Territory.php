@@ -155,7 +155,7 @@ final class Territory extends Model
      */
     public function updatePath(): void
     {
-        $path = $this->parent ? $this->parent->path.'/'.$this->id : (string) $this->id;
+        $path = $this->parent ? $this->parent->path . '/' . $this->id : (string) $this->id;
         $this->update(['path' => $path]);
     }
 

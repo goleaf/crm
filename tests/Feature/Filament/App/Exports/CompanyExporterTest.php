@@ -97,18 +97,18 @@ test('exports include company custom fields', function (): void {
         section: new CustomFieldSectionData(
             name: 'General',
             code: 'general',
-            type: CustomFieldSectionType::HEADLESS
+            type: CustomFieldSectionType::HEADLESS,
         ),
         systemDefined: false,
         width: CustomFieldWidth::_50,
         settings: new CustomFieldSettingsData(
-            list_toggleable_hidden: false
-        )
+            list_toggleable_hidden: false,
+        ),
     );
 
     $fieldMigrator = $migrator->new(
         model: Company::class,
-        fieldData: $fieldData
+        fieldData: $fieldData,
     );
 
     $fieldMigrator->create();

@@ -22,12 +22,12 @@ final class ProcessEngine
     /**
      * Start a new process execution.
      *
-     * @param  array<string, mixed>  $contextData
+     * @param array<string, mixed> $contextData
      */
     public function startExecution(
         ProcessDefinition $definition,
         int $userId,
-        array $contextData = []
+        array $contextData = [],
     ): ProcessExecution {
         return DB::transaction(function () use ($definition, $userId, $contextData) {
             $execution = ProcessExecution::create([
@@ -50,7 +50,7 @@ final class ProcessEngine
                 $userId,
                 ProcessEventType::EXECUTION_STARTED,
                 'Process execution started',
-                ['context_data' => $contextData]
+                ['context_data' => $contextData],
             );
 
             return $execution;
@@ -93,7 +93,7 @@ final class ProcessEngine
             $execution->update([
                 'execution_state' => array_merge(
                     $execution->execution_state ?? [],
-                    ['current_step' => $step->step_order]
+                    ['current_step' => $step->step_order],
                 ),
             ]);
 
@@ -102,7 +102,7 @@ final class ProcessEngine
                 $step,
                 null,
                 ProcessEventType::STEP_STARTED,
-                "Step '{$step->step_name}' started"
+                "Step '{$step->step_name}' started",
             );
 
             // Check if step requires approval
@@ -118,12 +118,12 @@ final class ProcessEngine
     /**
      * Complete a step.
      *
-     * @param  array<string, mixed>  $outputData
+     * @param array<string, mixed> $outputData
      */
     public function completeStep(
         ProcessExecution $execution,
         ProcessExecutionStep $step,
-        array $outputData = []
+        array $outputData = [],
     ): ProcessExecutionStep {
         return DB::transaction(function () use ($execution, $step, $outputData) {
             $step->update([
@@ -138,7 +138,7 @@ final class ProcessEngine
                 null,
                 ProcessEventType::STEP_COMPLETED,
                 "Step '{$step->step_name}' completed",
-                ['output_data' => $outputData]
+                ['output_data' => $outputData],
             );
 
             // Check if all steps are completed
@@ -162,7 +162,7 @@ final class ProcessEngine
     public function failStep(
         ProcessExecution $execution,
         ProcessExecutionStep $step,
-        string $errorMessage
+        string $errorMessage,
     ): ProcessExecutionStep {
         return DB::transaction(function () use ($execution, $step, $errorMessage) {
             $step->update([
@@ -181,7 +181,7 @@ final class ProcessEngine
                 null,
                 ProcessEventType::STEP_FAILED,
                 "Step '{$step->step_name}' failed",
-                ['error' => $errorMessage]
+                ['error' => $errorMessage],
             );
 
             return $step->fresh();
@@ -204,7 +204,7 @@ final class ProcessEngine
                 null,
                 null,
                 ProcessEventType::EXECUTION_COMPLETED,
-                'Process execution completed'
+                'Process execution completed',
             );
 
             return $execution->fresh();
@@ -217,7 +217,7 @@ final class ProcessEngine
     public function approveStep(
         ProcessApproval $approval,
         int $approverId,
-        ?string $notes = null
+        ?string $notes = null,
     ): ProcessApproval {
         return DB::transaction(function () use ($approval, $approverId, $notes) {
             $approval->update([
@@ -233,7 +233,7 @@ final class ProcessEngine
                 $approverId,
                 ProcessEventType::APPROVAL_GRANTED,
                 'Approval granted',
-                ['notes' => $notes]
+                ['notes' => $notes],
             );
 
             // Continue execution if step was waiting
@@ -251,7 +251,7 @@ final class ProcessEngine
     public function rejectStep(
         ProcessApproval $approval,
         int $approverId,
-        ?string $notes = null
+        ?string $notes = null,
     ): ProcessApproval {
         return DB::transaction(function () use ($approval, $approverId, $notes) {
             $approval->update([
@@ -267,7 +267,7 @@ final class ProcessEngine
                 $approverId,
                 ProcessEventType::APPROVAL_REJECTED,
                 'Approval rejected',
-                ['notes' => $notes]
+                ['notes' => $notes],
             );
 
             // Fail the execution
@@ -289,7 +289,7 @@ final class ProcessEngine
         int $escalatedById,
         string $reason,
         ?ProcessExecutionStep $step = null,
-        ?string $notes = null
+        ?string $notes = null,
     ): ProcessEscalation {
         return DB::transaction(function () use ($execution, $escalatedToId, $escalatedById, $reason, $step, $notes) {
             $escalation = ProcessEscalation::create([
@@ -311,7 +311,7 @@ final class ProcessEngine
                 $escalatedById,
                 ProcessEventType::ESCALATION_TRIGGERED,
                 'Process escalated',
-                ['reason' => $reason, 'notes' => $notes]
+                ['reason' => $reason, 'notes' => $notes],
             );
 
             return $escalation;
@@ -321,12 +321,12 @@ final class ProcessEngine
     /**
      * Rollback an execution.
      *
-     * @param  array<string, mixed>  $rollbackData
+     * @param array<string, mixed> $rollbackData
      */
     public function rollback(
         ProcessExecution $execution,
         int $userId,
-        array $rollbackData = []
+        array $rollbackData = [],
     ): ProcessExecution {
         return DB::transaction(function () use ($execution, $userId, $rollbackData) {
             $execution->update([
@@ -340,7 +340,7 @@ final class ProcessEngine
                 $userId,
                 ProcessEventType::ROLLBACK_COMPLETED,
                 'Process rolled back',
-                ['rollback_data' => $rollbackData]
+                ['rollback_data' => $rollbackData],
             );
 
             return $execution->fresh();
@@ -402,7 +402,7 @@ final class ProcessEngine
             $step,
             null,
             ProcessEventType::APPROVAL_REQUESTED,
-            'Approval requested'
+            'Approval requested',
         );
 
         return $approval;
@@ -411,7 +411,7 @@ final class ProcessEngine
     /**
      * Log an audit event.
      *
-     * @param  array<string, mixed>|null  $eventData
+     * @param array<string, mixed>|null $eventData
      */
     private function logAuditEvent(
         ProcessExecution $execution,
@@ -419,7 +419,7 @@ final class ProcessEngine
         ?int $userId,
         ProcessEventType $eventType,
         string $description,
-        ?array $eventData = null
+        ?array $eventData = null,
     ): ProcessAuditLog {
         return ProcessAuditLog::create([
             'team_id' => $execution->team_id,
@@ -450,7 +450,7 @@ final class ProcessEngine
     /**
      * Calculate step due date from step configuration.
      *
-     * @param  array<string, mixed>  $stepConfig
+     * @param array<string, mixed> $stepConfig
      */
     private function calculateStepDueDate(array $stepConfig): ?Carbon
     {
@@ -462,7 +462,7 @@ final class ProcessEngine
     /**
      * Calculate approval due date from configuration.
      *
-     * @param  array<string, mixed>  $config
+     * @param array<string, mixed> $config
      */
     private function calculateApprovalDueDate(array $config): ?Carbon
     {

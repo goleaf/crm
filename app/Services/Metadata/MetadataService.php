@@ -19,8 +19,8 @@ final readonly class MetadataService
     /**
      * Set metadata on a model.
      *
-     * @param  Model&HasMetadata  $model
-     * @param  string|array<string, mixed>  $key
+     * @param Model&HasMetadata           $model
+     * @param string|array<string, mixed> $key
      */
     public function set(Model $model, string|array $key, mixed $value = null): Model
     {
@@ -35,8 +35,9 @@ final readonly class MetadataService
     /**
      * Get metadata from a model.
      *
-     * @param  Model&HasMetadata  $model
-     * @param  string|list<string>|null  $key
+     * @param Model&HasMetadata        $model
+     * @param string|list<string>|null $key
+     *
      * @return mixed|Collection<string, mixed>
      */
     public function get(Model $model, string|array|null $key = null, bool $raw = false): mixed
@@ -49,8 +50,8 @@ final readonly class MetadataService
     /**
      * Remove metadata from a model.
      *
-     * @param  Model&HasMetadata  $model
-     * @param  string|list<string>  $key
+     * @param Model&HasMetadata   $model
+     * @param string|list<string> $key
      */
     public function remove(Model $model, string|array $key): Model
     {
@@ -65,7 +66,7 @@ final readonly class MetadataService
     /**
      * Check if model has specific metadata.
      *
-     * @param  Model&HasMetadata  $model
+     * @param Model&HasMetadata $model
      */
     public function has(Model $model, string $key): bool
     {
@@ -77,7 +78,8 @@ final readonly class MetadataService
     /**
      * Get all metadata from a model.
      *
-     * @param  Model&HasMetadata  $model
+     * @param Model&HasMetadata $model
+     *
      * @return Collection<string, mixed>
      */
     public function all(Model $model): Collection
@@ -90,8 +92,8 @@ final readonly class MetadataService
     /**
      * Bulk set metadata on a model.
      *
-     * @param  Model&HasMetadata  $model
-     * @param  array<string, mixed>  $metadata
+     * @param Model&HasMetadata    $model
+     * @param array<string, mixed> $metadata
      */
     public function bulkSet(Model $model, array $metadata): Model
     {
@@ -106,8 +108,8 @@ final readonly class MetadataService
     /**
      * Bulk remove metadata from a model.
      *
-     * @param  Model&HasMetadata  $model
-     * @param  list<string>  $keys
+     * @param Model&HasMetadata $model
+     * @param list<string>      $keys
      */
     public function bulkRemove(Model $model, array $keys): Model
     {
@@ -122,8 +124,8 @@ final readonly class MetadataService
     /**
      * Sync metadata on a model (replace all existing metadata).
      *
-     * @param  Model&HasMetadata  $model
-     * @param  array<string, mixed>  $metadata
+     * @param Model&HasMetadata    $model
+     * @param array<string, mixed> $metadata
      */
     public function sync(Model $model, array $metadata): Model
     {
@@ -147,8 +149,8 @@ final readonly class MetadataService
     /**
      * Merge metadata with existing values.
      *
-     * @param  Model&HasMetadata  $model
-     * @param  array<string, mixed>  $metadata
+     * @param Model&HasMetadata    $model
+     * @param array<string, mixed> $metadata
      */
     public function merge(Model $model, array $metadata): Model
     {
@@ -166,7 +168,7 @@ final readonly class MetadataService
     /**
      * Get metadata with default value if not exists.
      *
-     * @param  Model&HasMetadata  $model
+     * @param Model&HasMetadata $model
      */
     public function getWithDefault(Model $model, string $key, mixed $default): mixed
     {
@@ -180,7 +182,7 @@ final readonly class MetadataService
     /**
      * Increment a numeric metadata value.
      *
-     * @param  Model&HasMetadata  $model
+     * @param Model&HasMetadata $model
      */
     public function increment(Model $model, string $key, int|float $amount = 1): Model
     {
@@ -198,7 +200,7 @@ final readonly class MetadataService
     /**
      * Decrement a numeric metadata value.
      *
-     * @param  Model&HasMetadata  $model
+     * @param Model&HasMetadata $model
      */
     public function decrement(Model $model, string $key, int|float $amount = 1): Model
     {
@@ -216,7 +218,7 @@ final readonly class MetadataService
     /**
      * Toggle a boolean metadata value.
      *
-     * @param  Model&HasMetadata  $model
+     * @param Model&HasMetadata $model
      */
     public function toggle(Model $model, string $key): Model
     {
@@ -234,7 +236,7 @@ final readonly class MetadataService
     /**
      * Ensure the model uses the HasMetadata trait.
      *
-     * @param  Model&HasMetadata  $model
+     * @param Model&HasMetadata $model
      *
      * @throws \InvalidArgumentException
      */
@@ -242,7 +244,7 @@ final readonly class MetadataService
     {
         if (! in_array(HasMetadata::class, class_uses_recursive($model), true)) {
             throw new \InvalidArgumentException(
-                sprintf('Model %s must use the HasMetadata trait', $model::class)
+                sprintf('Model %s must use the HasMetadata trait', $model::class),
             );
         }
     }

@@ -1,4 +1,29 @@
 {
-    "_hash": "6142bfcb78f54dfbf5247ae5e463f25bdb8fff1890806e2e45aa81a59c211653",
-    "patches": []
+    "_hash": "d80143b6d80f0cfa1de94cdd89f23264eb1990849df62a8473eaa520ef996857",
+    "patches": {
+        "vivek-mistry/facade-maker": [
+            {
+                "package": "vivek-mistry/facade-maker",
+                "description": "Fix stub path case sensitivity for Linux filesystems",
+                "url": "patches/vivek-mistry-facade-maker-stub-case.patch",
+                "sha256": "acdab6046a62b6679b1d44c11e26ca7de91de5050771974fd3a35233383be22f",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ],
+        "dipesh79/laravel-schema-docs": [
+            {
+                "package": "dipesh79/laravel-schema-docs",
+                "description": "Add cross-database schema extraction support",
+                "url": "patches/dipesh79-laravel-schema-docs-sql-support.patch",
+                "sha256": "a9d7f31d3d227832e3e5d7a61e1b81c3e1575d7d989ce542dbef3efcba4d8ce2",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ]
+    }
 }

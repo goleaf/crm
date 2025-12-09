@@ -67,7 +67,8 @@ final class GlobalSearchService
     /**
      * Execute a multi-entity search with optional per-entity filters.
      *
-     * @param  array<string, array<int, array<string, mixed>>>  $filters
+     * @param array<string, array<int, array<string, mixed>>> $filters
+     *
      * @return array<string, Collection<int, mixed>>
      */
     public function search(string $query, array $filters = [], int $limitPerEntity = 5): array
@@ -85,7 +86,8 @@ final class GlobalSearchService
     }
 
     /**
-     * @param  list<string>  $tokens
+     * @param list<string> $tokens
+     *
      * @return Collection<int, Company>
      */
     private function searchCompanies(array $tokens, array $filters, ?int $teamId, int $limit): Collection
@@ -100,7 +102,8 @@ final class GlobalSearchService
     }
 
     /**
-     * @param  list<string>  $tokens
+     * @param list<string> $tokens
+     *
      * @return Collection<int, People>
      */
     private function searchPeople(array $tokens, array $filters, ?int $teamId, int $limit): Collection
@@ -115,7 +118,8 @@ final class GlobalSearchService
     }
 
     /**
-     * @param  list<string>  $tokens
+     * @param list<string> $tokens
+     *
      * @return Collection<int, Opportunity>
      */
     private function searchOpportunities(array $tokens, array $filters, ?int $teamId, int $limit): Collection
@@ -130,7 +134,8 @@ final class GlobalSearchService
     }
 
     /**
-     * @param  list<string>  $tokens
+     * @param list<string> $tokens
+     *
      * @return Collection<int, Task>
      */
     private function searchTasks(array $tokens, array $filters, ?int $teamId, int $limit): Collection
@@ -145,7 +150,8 @@ final class GlobalSearchService
     }
 
     /**
-     * @param  list<string>  $tokens
+     * @param list<string> $tokens
+     *
      * @return Collection<int, SupportCase>
      */
     private function searchSupportCases(array $tokens, array $filters, ?int $teamId, int $limit): Collection
@@ -160,8 +166,8 @@ final class GlobalSearchService
     }
 
     /**
-     * @param  list<string>  $tokens
-     * @param  list<string>  $columns
+     * @param list<string> $tokens
+     * @param list<string> $columns
      */
     private function applyTokens(Builder $builder, array $tokens, array $columns): void
     {
@@ -181,8 +187,8 @@ final class GlobalSearchService
     }
 
     /**
-     * @param  array<int, array{field: string, operator: string, value: mixed}>  $filters
-     * @param  list<string>  $allowedFields
+     * @param array<int, array{field: string, operator: string, value: mixed}> $filters
+     * @param list<string>                                                     $allowedFields
      */
     private function applyFilters(Builder $builder, array $filters, array $allowedFields): void
     {
@@ -201,10 +207,10 @@ final class GlobalSearchService
                 $normalized = strtolower((string) $operator);
 
                 match ($normalized) {
-                    'contains' => $query->where($field, 'like', '%'.$value.'%'),
-                    'not_contains' => $query->where($field, 'not like', '%'.$value.'%'),
-                    'starts_with' => $query->where($field, 'like', $value.'%'),
-                    'ends_with' => $query->where($field, 'like', '%'.$value),
+                    'contains' => $query->where($field, 'like', '%' . $value . '%'),
+                    'not_contains' => $query->where($field, 'not like', '%' . $value . '%'),
+                    'starts_with' => $query->where($field, 'like', $value . '%'),
+                    'ends_with' => $query->where($field, 'like', '%' . $value),
                     'in' => $query->whereIn($field, (array) $value),
                     'not_in' => $query->whereNotIn($field, (array) $value),
                     'gte', '>=' => $query->where($field, '>=', $value),

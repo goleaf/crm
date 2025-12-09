@@ -6,10 +6,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
-        if (!Schema::hasTable('unsplash_assets')) {
+        if (! Schema::hasTable('unsplash_assets')) {
             Schema::create('unsplash_assets', function (Blueprint $table): void {
                 $table->id();
                 $table->string('unsplash_id')->unique();
@@ -31,7 +32,7 @@ return new class extends Migration {
             });
         }
 
-        if (!Schema::hasTable('unsplashables')) {
+        if (! Schema::hasTable('unsplashables')) {
             Schema::create('unsplashables', function (Blueprint $table): void {
                 $table->id();
                 $table->foreignId('unsplash_asset_id')->constrained()->cascadeOnDelete();

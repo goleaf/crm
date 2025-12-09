@@ -22,10 +22,10 @@ use UnitEnum;
 final readonly class EnumCast implements CastsAttributes
 {
     /**
-     * @param  class-string<TEnum>  $enumClass
+     * @param class-string<TEnum> $enumClass
      */
     public function __construct(
-        private string $enumClass
+        private string $enumClass,
     ) {
         if (! enum_exists($enumClass)) {
             throw new InvalidArgumentException("Class {$enumClass} is not an enum.");
@@ -35,7 +35,8 @@ final readonly class EnumCast implements CastsAttributes
     /**
      * Cast the given value.
      *
-     * @param  array<string, mixed>  $attributes
+     * @param array<string, mixed> $attributes
+     *
      * @return TEnum|null
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): ?UnitEnum
@@ -63,7 +64,7 @@ final readonly class EnumCast implements CastsAttributes
     /**
      * Prepare the given value for storage.
      *
-     * @param  array<string, mixed>  $attributes
+     * @param array<string, mixed> $attributes
      */
     public function set(Model $model, string $key, mixed $value, array $attributes): ?string
     {
@@ -91,7 +92,7 @@ final readonly class EnumCast implements CastsAttributes
         }
 
         throw new InvalidArgumentException(
-            "Value must be an instance of {$this->enumClass} or a valid enum value."
+            "Value must be an instance of {$this->enumClass} or a valid enum value.",
         );
     }
 }

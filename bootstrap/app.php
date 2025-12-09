@@ -11,11 +11,16 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Sentry\Laravel\Integration;
 use Vectorial1024\LaravelCacheEvict\CacheEvictCommand;
 
-return Application::configure(basePath: dirname(__DIR__))
+// Compat: ensure legacy Filament\Forms\Form type exists for packages not updated to Schemas.
+if (! class_exists(\Filament\Forms\Form::class) && class_exists(\Filament\Schemas\Schema::class)) {
+    class_alias(\Filament\Schemas\Schema::class, \Filament\Forms\Form::class);
+}
+
+$app = Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
-        api: __DIR__.'/../routes/api.php',
-        commands: __DIR__.'/../routes/console.php',
+        web: __DIR__ . '/../routes/web.php',
+        api: __DIR__ . '/../routes/api.php',
+        commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
@@ -24,6 +29,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'crm.permission' => \App\Http\Middleware\EnsurePermission::class,
             'crm.team' => \App\Http\Middleware\EnsureTeamContext::class,
             'crm.custom' => \App\Http\Middleware\ApplyCustomMiddleware::class,
+            'localizationRedirect' => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRedirectFilter::class,
+            'localeSessionRedirect' => \Mcamara\LaravelLocalization\Middleware\LocaleSessionRedirect::class,
+            'localeViewPath' => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationViewPath::class,
         ]);
 
         $middleware->append([
@@ -82,3 +90,7 @@ return Application::configure(basePath: dirname(__DIR__))
         //        Model::automaticallyEagerLoadRelationships(); TODO: Before enabling this, check the test suite for any issues with eager loading.
     })
     ->create();
+
+$app->useLangPath(__DIR__ . '/../lang');
+
+return $app;

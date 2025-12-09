@@ -32,8 +32,8 @@ use Spatie\Permission\Traits\HasRoles;
 use Zap\Models\Concerns\HasSchedules;
 
 /**
- * @property string $name
- * @property string $email
+ * @property string      $name
+ * @property string      $email
  * @property string|null $password
  * @property string|null $profile_photo_path
  * @property-read string $profile_photo_url

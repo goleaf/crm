@@ -19,10 +19,10 @@ final class PortalAccessService
         return PortalUser::updateOrCreate(
             ['people_id' => $contact->getKey()],
             [
-                'email' => $contact->primary_email ?? $contact->alternate_email ?? $contact->portal_username ?? Str::uuid().'@example.com',
+                'email' => $contact->primary_email ?? $contact->alternate_email ?? $contact->portal_username ?? Str::uuid() . '@example.com',
                 'password' => Hash::make($password),
                 'is_active' => true,
-            ]
+            ],
         );
     }
 

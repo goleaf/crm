@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property ProcessEventType $event_type
+ * @property ProcessEventType          $event_type
  * @property array<string, mixed>|null $event_data
  * @property array<string, mixed>|null $state_before
  * @property array<string, mixed>|null $state_after

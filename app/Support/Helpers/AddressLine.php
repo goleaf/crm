@@ -12,7 +12,7 @@ final class AddressLine
     /**
      * Format a single-line or multi-line address string.
      *
-     * @param  AddressData|array<string, mixed>|null  $address
+     * @param AddressData|array<string, mixed>|null $address
      */
     public static function format(AddressData|array|null $address, bool $multiline = false): string
     {

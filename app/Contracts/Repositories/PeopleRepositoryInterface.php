@@ -18,12 +18,12 @@ interface PeopleRepositoryInterface extends RepositoryInterface
     public function search(string $term, int $perPage = 15): LengthAwarePaginator;
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
      */
     public function create(array $data): People;
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
      */
     public function update(People $people, array $data): People;
 

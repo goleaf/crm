@@ -86,8 +86,8 @@ final class TeamMembers extends BaseLivewireComponent implements Tables\Contract
                     ->visible(
                         fn (Membership $record): bool => $this->authUser()->id !== $record->user_id && Gate::check(
                             'removeTeamMember',
-                            $this->team
-                        )
+                            $this->team,
+                        ),
                     )
                     ->label(__('teams.actions.remove_team_member'))
                     ->color('danger')
@@ -109,14 +109,14 @@ final class TeamMembers extends BaseLivewireComponent implements Tables\Contract
     }
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
      */
     public function updateTeamRole(Team $team, Membership $teamMember, array $data): void
     {
         if (! Gate::check('updateTeamMember', $team)) {
             $this->sendNotification(
                 __('teams.notifications.permission_denied.cannot_update_team_member'),
-                type: 'danger'
+                type: 'danger',
             );
 
             return;
@@ -142,12 +142,12 @@ final class TeamMembers extends BaseLivewireComponent implements Tables\Contract
         } catch (AuthorizationException) {
             $this->sendNotification(
                 __('teams.notifications.permission_denied.cannot_remove_team_member'),
-                type: 'danger'
+                type: 'danger',
             );
         } catch (ValidationException $e) {
             $this->sendNotification(
                 $e->validator->errors()->first(),
-                type: 'danger'
+                type: 'danger',
             );
         }
     }
@@ -165,12 +165,12 @@ final class TeamMembers extends BaseLivewireComponent implements Tables\Contract
         } catch (AuthorizationException) {
             $this->sendNotification(
                 title: __('teams.notifications.permission_denied.cannot_leave_team'),
-                type: 'danger'
+                type: 'danger',
             );
         } catch (ValidationException $e) {
             $this->sendNotification(
                 $e->validator->errors()->first(),
-                type: 'danger'
+                type: 'danger',
             );
         }
     }

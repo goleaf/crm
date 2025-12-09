@@ -108,7 +108,7 @@ it('handles special characters in company names', function (): void {
 it('handles very long company names', function (): void {
     $longName = str_repeat('A', 255);
     $primary = Company::factory()->create(['name' => $longName]);
-    $duplicate = Company::factory()->create(['name' => $longName.' Inc']);
+    $duplicate = Company::factory()->create(['name' => $longName . ' Inc']);
 
     $score = $this->service->calculateSimilarity($primary, $duplicate);
 

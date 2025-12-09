@@ -126,7 +126,8 @@ final class SalesAnalyticsChartWidget extends ChartWidget
     }
 
     /**
-     * @param  \Illuminate\Database\Eloquent\Builder<Opportunity>  $opportunities
+     * @param \Illuminate\Database\Eloquent\Builder<Opportunity> $opportunities
+     *
      * @return array{month: string, value: float, weighted_value: float, count: int}
      */
     private function getMonthData(int $monthsAgo, \Illuminate\Database\Eloquent\Builder $opportunities, OpportunityMetricsService $metrics): array

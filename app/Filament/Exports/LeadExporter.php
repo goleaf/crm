@@ -9,7 +9,9 @@ use App\Enums\LeadGrade;
 use App\Enums\LeadNurtureStatus;
 use App\Enums\LeadSource;
 use App\Enums\LeadStatus;
+use App\Enums\LeadType;
 use App\Models\Lead;
+use App\Support\Helpers\NumberHelper;
 use Carbon\Carbon;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Models\Export;
@@ -35,6 +37,14 @@ final class LeadExporter extends BaseExporter
             ExportColumn::make('source')
                 ->label(__('app.labels.source'))
                 ->formatStateUsing(fn (LeadSource|string|null $state): string => $state instanceof LeadSource ? $state->getLabel() : (string) $state),
+            ExportColumn::make('lead_type')
+                ->label(__('app.labels.lead_type'))
+                ->formatStateUsing(fn (LeadType|string|null $state): string => $state instanceof LeadType ? $state->getLabel() : (string) $state),
+            ExportColumn::make('lead_value')
+                ->label(__('app.labels.lead_value'))
+                ->formatStateUsing(fn (mixed $state): string => NumberHelper::currency($state)),
+            ExportColumn::make('expected_close_date')
+                ->label(__('app.labels.expected_close_date')),
             ExportColumn::make('grade')
                 ->label(__('app.labels.grade'))
                 ->formatStateUsing(fn (LeadGrade|string|null $state): string => $state instanceof LeadGrade ? $state->getLabel() : (string) $state),
@@ -77,10 +87,10 @@ final class LeadExporter extends BaseExporter
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'Your lead export has completed and '.Number::format($export->successful_rows).' '.str('row')->plural($export->successful_rows).' exported.';
+        $body = 'Your lead export has completed and ' . Number::format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
 
         if (($failedRowsCount = $export->getFailedRowsCount()) !== 0) {
-            $body .= ' '.Number::format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to export.';
+            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';
         }
 
         return $body;

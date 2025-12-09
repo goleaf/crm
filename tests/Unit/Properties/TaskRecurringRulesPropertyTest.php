@@ -48,7 +48,7 @@ test('property: daily recurrence generates correct next occurrence date', functi
 
         expect($nextDate)->not->toBeNull();
         expect($nextDate->isSameDay($expectedDate))->toBeTrue(
-            "Next occurrence should be {$interval} days after start. Expected: {$expectedDate}, Got: {$nextDate}"
+            "Next occurrence should be {$interval} days after start. Expected: {$expectedDate}, Got: {$nextDate}",
         );
     }, 100);
 })->group('property');
@@ -82,7 +82,7 @@ test('property: weekly recurrence generates correct next occurrence date', funct
 
         expect($nextDate)->not->toBeNull();
         expect($nextDate->isSameDay($expectedDate))->toBeTrue(
-            "Next occurrence should be {$interval} weeks after start"
+            "Next occurrence should be {$interval} weeks after start",
         );
     }, 100);
 })->group('property');
@@ -115,7 +115,7 @@ test('property: monthly recurrence generates correct next occurrence date', func
 
         expect($nextDate)->not->toBeNull();
         expect($nextDate->isSameDay($expectedDate))->toBeTrue(
-            "Next occurrence should be {$interval} months after start"
+            "Next occurrence should be {$interval} months after start",
         );
     }, 100);
 })->group('property');
@@ -150,7 +150,7 @@ test('property: recurrence respects end date', function (): void {
         // Property: All occurrences should be before or on end date
         foreach ($occurrences as $occurrence) {
             expect($occurrence->start_date->lessThanOrEqualTo($endDate))->toBeTrue(
-                "Occurrence at {$occurrence->start_date} should not be after end date {$endDate}"
+                "Occurrence at {$occurrence->start_date} should not be after end date {$endDate}",
             );
         }
 
@@ -159,12 +159,12 @@ test('property: recurrence respects end date', function (): void {
         if ($lastOccurrence) {
             $nextAfterLast = $this->recurrenceService->calculateNextOccurrenceDate(
                 $lastOccurrence,
-                $recurrence
+                $recurrence,
             );
 
             if ($nextAfterLast !== null) {
                 expect($nextAfterLast->lessThanOrEqualTo($endDate))->toBeTrue(
-                    'Next occurrence after last should not exceed end date'
+                    'Next occurrence after last should not exceed end date',
                 );
             }
         }
@@ -266,7 +266,7 @@ test('property: inactive recurrence does not generate occurrences', function ():
 
         // Property: Should not generate occurrence when inactive
         expect($nextTask)->toBeNull(
-            'Inactive recurrence should not generate new occurrences'
+            'Inactive recurrence should not generate new occurrences',
         );
     }, 100);
 })->group('property');
@@ -298,7 +298,7 @@ test('property: yearly recurrence generates correct intervals', function (): voi
 
         expect($nextDate)->not->toBeNull();
         expect($nextDate->isSameDay($expectedDate))->toBeTrue(
-            "Next occurrence should be {$interval} years after start"
+            "Next occurrence should be {$interval} years after start",
         );
     }, 100);
 })->group('property');
@@ -330,7 +330,7 @@ test('property: series updates affect all future occurrences', function (): void
         }
 
         // Update the series
-        $newTitle = 'Updated Title '.fake()->word();
+        $newTitle = 'Updated Title ' . fake()->word();
         $updatedCount = $this->recurrenceService->updateSeriesOccurrences($task, [
             'title' => $newTitle,
         ]);

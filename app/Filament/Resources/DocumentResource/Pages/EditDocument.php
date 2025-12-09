@@ -29,7 +29,7 @@ final class EditDocument extends EditRecord
     }
 
     /**
-     * @param  array<int|string>  $userIds
+     * @param array<int|string> $userIds
      */
     private function syncQuickShares(array $userIds): void
     {
@@ -49,7 +49,7 @@ final class EditDocument extends EditRecord
                     [
                         'team_id' => $this->record->team_id,
                         'permission' => 'view',
-                    ]
+                    ],
                 );
             });
     }

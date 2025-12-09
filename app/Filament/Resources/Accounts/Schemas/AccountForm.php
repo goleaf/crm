@@ -101,7 +101,7 @@ final class AccountForm
                             ->numeric()
                             ->step(0.01)
                             ->minValue(0)
-                            ->prefix(fn (Get $get): string => ($get('currency') ?? config('company.default_currency', 'USD')).' '),
+                            ->prefix(fn (Get $get): string => ($get('currency') ?? config('company.default_currency', 'USD')) . ' '),
                         TextInput::make('employee_count')
                             ->label('Employees')
                             ->integer()
@@ -130,7 +130,7 @@ final class AccountForm
                                 'name',
                                 fn (Builder $query, ?Account $record): Builder => $record instanceof \App\Models\Account
                                     ? $query->whereKeyNot($record->getKey())
-                                    : $query
+                                    : $query,
                             )
                             ->label('Parent Account')
                             ->searchable()

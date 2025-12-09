@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property QuoteStatus|null $from_status
- * @property QuoteStatus $to_status
+ * @property QuoteStatus      $to_status
  */
 final class QuoteStatusHistory extends Model
 {

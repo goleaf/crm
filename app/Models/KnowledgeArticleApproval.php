@@ -13,8 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * @property Carbon|null $due_at
- * @property Carbon|null $decided_at
+ * @property Carbon|null    $due_at
+ * @property Carbon|null    $decided_at
  * @property ApprovalStatus $status
  */
 #[ObservedBy(KnowledgeArticleApprovalObserver::class)]

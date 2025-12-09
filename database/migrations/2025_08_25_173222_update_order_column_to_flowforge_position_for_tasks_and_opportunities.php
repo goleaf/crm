@@ -117,8 +117,8 @@ return new class extends Migration
     /**
      * Set Flowforge position values for a group of records.
      *
-     * @param  array  $records  Array of records with id property
-     * @param  string  $table  Table name ('tasks' or 'opportunities')
+     * @param array  $records Array of records with id property
+     * @param string $table   Table name ('tasks' or 'opportunities')
      */
     private function setPositionsForGroup(array $records, string $table): void
     {

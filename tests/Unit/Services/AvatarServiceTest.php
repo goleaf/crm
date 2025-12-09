@@ -14,7 +14,7 @@ beforeEach(function (): void {
         cacheTtl: 3600,
         defaultTextColor: '#FFFFFF',
         defaultBgColor: '#3182CE',
-        backgroundColors: ['#FF5733', '#33FF57', '#3357FF']
+        backgroundColors: ['#FF5733', '#33FF57', '#3357FF'],
     );
 });
 

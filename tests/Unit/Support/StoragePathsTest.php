@@ -46,7 +46,7 @@ it('builds safe pdf paths with hashed tenant isolation', function (): void {
     $path = StoragePaths::pdfStoragePath(7, $fileName);
 
     expect($fileName)->toMatch('/^[a-z0-9\\-]+\\.pdf$/')
-        ->and($path)->toStartWith('pdfs/'.md5('7').'/')
+        ->and($path)->toStartWith('pdfs/' . md5('7') . '/')
         ->and(PathBuilder::isSafe($path))->toBeTrue();
 });
 
@@ -54,7 +54,7 @@ it('builds hashed profile photo paths and filenames', function (): void {
     $directory = StoragePaths::profilePhotoDirectory(9, 3);
     $fileName = StoragePaths::profilePhotoFileName('Avatar My Face.png');
 
-    expect($directory)->toBe('profile-photos/'.md5('3').'/'.md5('9'))
+    expect($directory)->toBe('profile-photos/' . md5('3') . '/' . md5('9'))
         ->and(PathBuilder::isSafe($directory))->toBeTrue()
         ->and($fileName)->toMatch('/^\\d{14}-[a-z0-9]{6}-avatar-my-face\\.png$/');
 });

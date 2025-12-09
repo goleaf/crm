@@ -28,7 +28,7 @@ final class VendorFactory extends Factory
             'name' => $this->faker->company(),
             'status' => VendorStatus::ACTIVE,
             'contact_name' => $this->faker->name(),
-            'contact_email' => $this->faker->companyEmail(),
+            'contact_email' => $this->faker->unique()->safeEmail(),
             'contact_phone' => $this->faker->phoneNumber(),
             'payment_terms' => 'Net 30',
             'shipping_terms' => 'Standard',

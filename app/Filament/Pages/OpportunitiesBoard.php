@@ -77,7 +77,7 @@ final class OpportunitiesBoard extends BoardPage
                     })
                     ->select('opportunities.*', 'cfv.integer_value')
                     ->with(['company', 'contact'])
-                    ->withCustomFieldValues()
+                    ->withCustomFieldValues(),
             )
             ->recordTitleAttribute('name')
             ->columnIdentifier('cfv.integer_value')
@@ -187,7 +187,7 @@ final class OpportunitiesBoard extends BoardPage
                             ])
                             ->withoutSections()
                             ->values()
-                            ->all()
+                            ->all(),
                     ))
                     ->fillForm(fn (Opportunity $record): array => [
                         'custom_fields' => $this->prefillCustomFields($record, [
@@ -253,7 +253,7 @@ final class OpportunitiesBoard extends BoardPage
         string $cardId,
         string $targetColumnId,
         ?string $afterCardId = null,
-        ?string $beforeCardId = null
+        ?string $beforeCardId = null,
     ): void {
         $board = $this->getBoard();
         $query = $board->getQuery();
@@ -293,7 +293,8 @@ final class OpportunitiesBoard extends BoardPage
     /**
      * Extract collaborator IDs from the form payload to avoid mass-assigning pivot data.
      *
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
+     *
      * @return array<int, int|string>
      */
     private function pullCollaborators(array &$data): array
@@ -316,7 +317,7 @@ final class OpportunitiesBoard extends BoardPage
     {
         return $this->stages()->map(fn (array $stage): \Relaticle\Flowforge\Column => Column::make((string) $stage['id'])
             ->color($stage['color'])
-            ->label($stage['name'])
+            ->label($stage['name']),
         )->toArray();
     }
 
@@ -382,7 +383,7 @@ final class OpportunitiesBoard extends BoardPage
     }
 
     /**
-     * @param  list<OpportunityCustomField>  $fields
+     * @param list<OpportunityCustomField> $fields
      */
     private function prefillCustomFields(Opportunity $record, array $fields): array
     {
@@ -398,7 +399,7 @@ final class OpportunitiesBoard extends BoardPage
     }
 
     /**
-     * @param  list<OpportunityCustomField>  $fields
+     * @param list<OpportunityCustomField> $fields
      */
     private function updateCustomFields(Opportunity $record, array $data, array $fields): void
     {
@@ -419,7 +420,8 @@ final class OpportunitiesBoard extends BoardPage
     }
 
     /**
-     * @param  list<OpportunityCustomField>  $codes
+     * @param list<OpportunityCustomField> $codes
+     *
      * @return array<string, CustomField>
      */
     private function customFieldsByCodes(array $codes): array
@@ -439,7 +441,7 @@ final class OpportunitiesBoard extends BoardPage
         return match ($view) {
             'mine' => $query->when(
                 Auth::id(),
-                fn (Builder $builder, int $userId): Builder => $builder->where('creator_id', $userId)
+                fn (Builder $builder, int $userId): Builder => $builder->where('creator_id', $userId),
             ),
             'closing_30' => $this->applyCloseDateWindow($query, 30),
             'stalled' => $query->where('updated_at', '<=', now()->subDays(14)),
@@ -459,7 +461,7 @@ final class OpportunitiesBoard extends BoardPage
             'customFieldValues',
             fn (Builder $builder): Builder => $builder
                 ->where('custom_field_id', $closeDateField->getKey())
-                ->whereDate('date_value', '<=', now()->addDays($days)->toDateString())
+                ->whereDate('date_value', '<=', now()->addDays($days)->toDateString()),
         );
     }
 }

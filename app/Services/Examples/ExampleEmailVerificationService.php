@@ -25,20 +25,21 @@ final readonly class ExampleEmailVerificationService
     /**
      * Create a new email verification service instance.
      *
-     * @param  string  $apiKey  API key for the verification service
-     * @param  string  $apiUrl  Base URL for the verification API
-     * @param  int  $timeout  Request timeout in seconds
+     * @param string $apiKey  API key for the verification service
+     * @param string $apiUrl  Base URL for the verification API
+     * @param int    $timeout Request timeout in seconds
      */
     public function __construct(
         private string $apiKey,
         private string $apiUrl,
-        private int $timeout = 10
+        private int $timeout = 10,
     ) {}
 
     /**
      * Verify an email address.
      *
-     * @param  string  $email  The email address to verify
+     * @param string $email The email address to verify
+     *
      * @return EmailVerificationResult The verification result
      */
     public function verify(string $email): EmailVerificationResult
@@ -59,7 +60,7 @@ final readonly class ExampleEmailVerificationService
                 return new EmailVerificationResult(
                     isValid: false,
                     isDisposable: false,
-                    error: 'API request failed'
+                    error: 'API request failed',
                 );
             }
 
@@ -67,7 +68,7 @@ final readonly class ExampleEmailVerificationService
 
             return new EmailVerificationResult(
                 isValid: $data['valid'] ?? false,
-                isDisposable: $data['disposable'] ?? false
+                isDisposable: $data['disposable'] ?? false,
             );
 
         } catch (\Exception $e) {
@@ -80,7 +81,7 @@ final readonly class ExampleEmailVerificationService
             return new EmailVerificationResult(
                 isValid: false,
                 isDisposable: false,
-                error: $e->getMessage()
+                error: $e->getMessage(),
             );
         }
     }
@@ -88,7 +89,8 @@ final readonly class ExampleEmailVerificationService
     /**
      * Verify multiple email addresses in batch.
      *
-     * @param  array<string>  $emails  Array of email addresses to verify
+     * @param array<string> $emails Array of email addresses to verify
+     *
      * @return array<string, EmailVerificationResult> Results keyed by email
      */
     public function verifyBatch(array $emails): array
@@ -114,7 +116,7 @@ final readonly class ExampleEmailVerificationService
         return new self(
             apiKey: config('services.email_verification.api_key'),
             apiUrl: config('services.email_verification.api_url'),
-            timeout: config('services.email_verification.timeout', 10)
+            timeout: config('services.email_verification.timeout', 10),
         );
     }
 }
@@ -130,14 +132,14 @@ final readonly class EmailVerificationResult
     /**
      * Create a new email verification result.
      *
-     * @param  bool  $isValid  Whether the email is valid
-     * @param  bool  $isDisposable  Whether the email is from a disposable domain
-     * @param  string|null  $error  Error message if verification failed
+     * @param bool        $isValid      Whether the email is valid
+     * @param bool        $isDisposable Whether the email is from a disposable domain
+     * @param string|null $error        Error message if verification failed
      */
     public function __construct(
         public bool $isValid,
         public bool $isDisposable,
-        public ?string $error = null
+        public ?string $error = null,
     ) {}
 
     /**

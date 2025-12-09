@@ -45,7 +45,7 @@ final class TaskObserver
         resolve(ActivityService::class)->log(
             $task,
             'created',
-            ['title' => $task->title]
+            ['title' => $task->title],
         );
     }
 
@@ -57,7 +57,7 @@ final class TaskObserver
             resolve(ActivityService::class)->log(
                 $task,
                 'updated',
-                $changes
+                $changes,
             );
         }
     }
@@ -67,7 +67,7 @@ final class TaskObserver
         resolve(ActivityService::class)->log(
             $task,
             'deleted',
-            ['title' => $task->title]
+            ['title' => $task->title],
         );
     }
 }

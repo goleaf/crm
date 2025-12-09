@@ -16,7 +16,7 @@ use Illuminate\Support\Collection as BaseCollection;
  * allowing you to store arbitrary key-value pairs without modifying the schema.
  *
  * @property Collection<int, ModelMeta> $metaData
- * @property array<string, mixed> $defaultMetaValues
+ * @property array<string, mixed>       $defaultMetaValues
  */
 trait HasMetadata
 {
@@ -69,7 +69,7 @@ trait HasMetadata
     /**
      * Set metadata value(s).
      *
-     * @param  string|array<string, mixed>  $key
+     * @param string|array<string, mixed> $key
      */
     public function setMeta(string|array $key, mixed $value = null): self
     {
@@ -110,7 +110,7 @@ trait HasMetadata
     /**
      * Set multiple metadata values.
      *
-     * @param  array<string, mixed>  $metas
+     * @param array<string, mixed> $metas
      */
     protected function setMetaArray(array $metas): self
     {
@@ -124,7 +124,7 @@ trait HasMetadata
     /**
      * Unset metadata value(s).
      *
-     * @param  string|list<string>  $key
+     * @param string|list<string> $key
      */
     public function unsetMeta(string|array $key): self
     {
@@ -152,7 +152,7 @@ trait HasMetadata
     /**
      * Unset multiple metadata values.
      *
-     * @param  list<string>  $keys
+     * @param list<string> $keys
      */
     protected function unsetMetaArray(array $keys): self
     {
@@ -166,7 +166,8 @@ trait HasMetadata
     /**
      * Get metadata value(s).
      *
-     * @param  string|list<string>|null  $key
+     * @param string|list<string>|null $key
+     *
      * @return mixed|BaseCollection<string, mixed>
      */
     public function getMeta(string|array|null $key = null, bool $raw = false): mixed
@@ -201,7 +202,8 @@ trait HasMetadata
     /**
      * Get multiple metadata values.
      *
-     * @param  list<string>  $keys
+     * @param list<string> $keys
+     *
      * @return BaseCollection<string, mixed>
      */
     protected function getMetaArray(array $keys, bool $raw = false): BaseCollection
@@ -294,7 +296,8 @@ trait HasMetadata
     /**
      * Scope to filter by metadata.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
+     * @param \Illuminate\Database\Eloquent\Builder<static> $query
+     *
      * @return \Illuminate\Database\Eloquent\Builder<static>
      */
     protected function scopeWhereMeta($query, string $key, mixed $value, ?string $alias = null): mixed
@@ -308,13 +311,14 @@ trait HasMetadata
             })
             ->where("{$alias}.key", '=', strtolower($key))
             ->where("{$alias}.value", '=', $value)
-            ->select($this->getTable().'.*');
+            ->select($this->getTable() . '.*');
     }
 
     /**
      * Scope to join metadata table.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<static>  $query
+     * @param \Illuminate\Database\Eloquent\Builder<static> $query
+     *
      * @return \Illuminate\Database\Eloquent\Builder<static>
      */
     protected function scopeMeta($query, ?string $alias = null): mixed
@@ -326,6 +330,6 @@ trait HasMetadata
                 $join->on($this->getQualifiedKeyName(), '=', "{$alias}.metable_id")
                     ->where("{$alias}.metable_type", '=', $this->getMorphClass());
             })
-            ->select($this->getTable().'.*');
+            ->select($this->getTable() . '.*');
     }
 }

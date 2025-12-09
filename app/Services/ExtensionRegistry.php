@@ -24,9 +24,9 @@ final class ExtensionRegistry
     /**
      * Register a new extension.
      *
-     * @param  array<string, mixed>  $configuration
-     * @param  array<string, mixed>  $permissions
-     * @param  array<string, mixed>  $metadata
+     * @param array<string, mixed> $configuration
+     * @param array<string, mixed> $permissions
+     * @param array<string, mixed> $metadata
      */
     public function register(
         int $teamId,
@@ -42,7 +42,7 @@ final class ExtensionRegistry
         string $handlerMethod = 'handle',
         array $configuration = [],
         array $permissions = [],
-        array $metadata = []
+        array $metadata = [],
     ): Extension {
         // Validate handler class exists
         if (! class_exists($handlerClass)) {
@@ -136,13 +136,14 @@ final class ExtensionRegistry
     /**
      * Execute a hook with guardrails.
      *
-     * @param  array<string, mixed>  $context
+     * @param array<string, mixed> $context
+     *
      * @return array<string, mixed>
      */
     public function executeHook(
         string $targetModel,
         HookEvent $event,
-        array $context = []
+        array $context = [],
     ): array {
         $hooks = $this->getHooksFor($targetModel, $event);
 
@@ -156,7 +157,8 @@ final class ExtensionRegistry
     /**
      * Execute a single extension with guardrails.
      *
-     * @param  array<string, mixed>  $context
+     * @param array<string, mixed> $context
+     *
      * @return array<string, mixed>
      */
     public function executeExtension(Extension $extension, array $context = []): array
@@ -187,7 +189,7 @@ final class ExtensionRegistry
             // Execute with timeout
             $result = $this->executeWithTimeout(
                 $extension,
-                $scopedContext
+                $scopedContext,
             );
 
             // Validate result
@@ -253,7 +255,8 @@ final class ExtensionRegistry
     /**
      * Create a scoped context for extension execution.
      *
-     * @param  array<string, mixed>  $context
+     * @param array<string, mixed> $context
+     *
      * @return array<string, mixed>
      */
     private function createScopedContext(Extension $extension, array $context): array
@@ -279,7 +282,8 @@ final class ExtensionRegistry
     /**
      * Execute extension with timeout.
      *
-     * @param  array<string, mixed>  $context
+     * @param array<string, mixed> $context
+     *
      * @return array<string, mixed>
      */
     private function executeWithTimeout(Extension $extension, array $context): array
@@ -304,8 +308,9 @@ final class ExtensionRegistry
     /**
      * Validate extension result.
      *
-     * @param  array<string, mixed>  $result
-     * @param  array<string, mixed>  $originalContext
+     * @param array<string, mixed> $result
+     * @param array<string, mixed> $originalContext
+     *
      * @return array<string, mixed>
      */
     private function validateResult(array $result, array $originalContext): array
@@ -326,8 +331,8 @@ final class ExtensionRegistry
     /**
      * Log extension execution.
      *
-     * @param  array<string, mixed>|null  $inputData
-     * @param  array<string, mixed>|null  $outputData
+     * @param array<string, mixed>|null $inputData
+     * @param array<string, mixed>|null $outputData
      */
     private function logExecution(
         Extension $extension,
@@ -336,7 +341,7 @@ final class ExtensionRegistry
         ?array $inputData,
         ?array $outputData,
         int $executionTimeMs,
-        ?string $errorMessage = null
+        ?string $errorMessage = null,
     ): ExtensionExecution {
         return ExtensionExecution::create([
             'team_id' => $extension->team_id,

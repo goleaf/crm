@@ -52,7 +52,7 @@ test('property: notes remain accessible after edits', function (): void {
 
         // Verify initial association
         expect($record->notes()->where('note_id', $note->id)->exists())->toBeTrue(
-            "Note {$note->id} should be initially associated with {$recordType} {$record->id}"
+            "Note {$note->id} should be initially associated with {$recordType} {$record->id}",
         );
 
         // Edit the note multiple times
@@ -65,13 +65,13 @@ test('property: notes remain accessible after edits', function (): void {
         // Property: Note should still be accessible from the record
         $record->refresh();
         expect($record->notes()->where('note_id', $note->id)->exists())->toBeTrue(
-            "Note {$note->id} should remain associated with {$recordType} {$record->id} after {$editCount} edits"
+            "Note {$note->id} should remain associated with {$recordType} {$record->id} after {$editCount} edits",
         );
 
         // Verify the note is in the record's notes collection
         $recordNotes = $record->notes;
         expect($recordNotes->contains($note))->toBeTrue(
-            "Record's notes collection should contain the edited note"
+            "Record's notes collection should contain the edited note",
         );
     }, 100);
 })->group('property');
@@ -105,7 +105,7 @@ test('property: notes remain accessible after soft delete', function (): void {
 
         // Verify initial association
         expect($record->notes()->where('note_id', $note->id)->exists())->toBeTrue(
-            "Note {$note->id} should be initially associated with {$recordType} {$record->id}"
+            "Note {$note->id} should be initially associated with {$recordType} {$record->id}",
         );
 
         // Soft delete the note
@@ -116,10 +116,10 @@ test('property: notes remain accessible after soft delete', function (): void {
         $trashedNote = $record->notes()->withTrashed()->where('note_id', $note->id)->first();
 
         expect($trashedNote)->not()->toBeNull(
-            "Soft-deleted note {$note->id} should be accessible via withTrashed from {$recordType} {$record->id}"
+            "Soft-deleted note {$note->id} should be accessible via withTrashed from {$recordType} {$record->id}",
         );
         expect($trashedNote->trashed())->toBeTrue(
-            'Retrieved note should be marked as trashed'
+            'Retrieved note should be marked as trashed',
         );
     }, 100);
 })->group('property');
@@ -165,7 +165,7 @@ test('property: notes can be linked to multiple records', function (): void {
             $hasNote = $record->notes()->where('note_id', $note->id)->exists();
 
             expect($hasNote)->toBeTrue(
-                "Note {$note->id} should be associated with {$recordType} {$record->id}"
+                "Note {$note->id} should be associated with {$recordType} {$record->id}",
             );
         }
 
@@ -181,7 +181,7 @@ test('property: notes can be linked to multiple records', function (): void {
             $hasNote = $record->notes()->where('note_id', $note->id)->exists();
 
             expect($hasNote)->toBeTrue(
-                "Note {$note->id} should remain associated after edit"
+                "Note {$note->id} should remain associated after edit",
             );
         }
     }, 100);
@@ -220,7 +220,7 @@ test('property: note attachment is immediate', function (): void {
         // Property: Note count should increase by 1
         $newCount = $record->notes()->count();
         expect($newCount)->toBe($initialCount + 1,
-            "Note count should increase from {$initialCount} to ".($initialCount + 1)
+            "Note count should increase from {$initialCount} to " . ($initialCount + 1),
         );
 
         // Property: Note should be in the collection
@@ -228,7 +228,7 @@ test('property: note attachment is immediate', function (): void {
         $hasNote = $record->notes->contains($note);
 
         expect($hasNote)->toBeTrue(
-            "Note {$note->id} should be in record's notes collection immediately after attachment"
+            "Note {$note->id} should be in record's notes collection immediately after attachment",
         );
     }, 100);
 })->group('property');
@@ -262,7 +262,7 @@ test('property: note detachment is immediate', function (): void {
 
         // Verify attachment
         expect($record->notes()->where('note_id', $note->id)->exists())->toBeTrue(
-            'Note should be attached before detachment'
+            'Note should be attached before detachment',
         );
 
         // Detach the note
@@ -273,7 +273,7 @@ test('property: note detachment is immediate', function (): void {
         $hasNote = $record->notes()->where('note_id', $note->id)->exists();
 
         expect($hasNote)->toBeFalse(
-            "Note {$note->id} should not be in record's notes collection after detachment"
+            "Note {$note->id} should not be in record's notes collection after detachment",
         );
     }, 100);
 })->group('property');
@@ -314,7 +314,7 @@ test('property: note history persists after detachment', function (): void {
 
         // Should have at least the initial history
         expect($historyCount >= $initialHistoryCount)->toBeTrue(
-            "Note should maintain or increase history entries after edit (had {$initialHistoryCount}, now has {$historyCount})"
+            "Note should maintain or increase history entries after edit (had {$initialHistoryCount}, now has {$historyCount})",
         );
 
         // Detach note from record
@@ -325,7 +325,7 @@ test('property: note history persists after detachment', function (): void {
         $historyAfterDetach = $note->histories()->count();
 
         expect($historyAfterDetach)->toBe($historyCount,
-            'Note history should be preserved after detachment'
+            'Note history should be preserved after detachment',
         );
     }, 100);
 })->group('property');
@@ -365,7 +365,7 @@ test('property: notes remain accessible when record is soft-deleted', function (
 
         // Verify initial associations
         expect($record->notes()->count())->toBe($noteCount,
-            "Record should have {$noteCount} notes before deletion"
+            "Record should have {$noteCount} notes before deletion",
         );
 
         // Soft delete the record
@@ -376,14 +376,14 @@ test('property: notes remain accessible when record is soft-deleted', function (
         $notesAfterDelete = $trashedRecord->notes()->count();
 
         expect($notesAfterDelete)->toBe($noteCount,
-            "All {$noteCount} notes should remain accessible after record soft delete"
+            "All {$noteCount} notes should remain accessible after record soft delete",
         );
 
         // Verify each note is still associated
         foreach ($notes as $note) {
             $hasNote = $trashedRecord->notes()->where('note_id', $note->id)->exists();
             expect($hasNote)->toBeTrue(
-                "Note {$note->id} should remain associated with soft-deleted record"
+                "Note {$note->id} should remain associated with soft-deleted record",
             );
         }
     }, 100);
@@ -410,13 +410,13 @@ test('property: pivot table maintains referential integrity', function (): void 
         $hasNote = $record->notes()->where('notes.id', $note->id)->exists();
 
         expect($hasNote)->toBeTrue(
-            "Note {$note->id} should be accessible via relationship after attachment to Company {$record->id}"
+            "Note {$note->id} should be accessible via relationship after attachment to Company {$record->id}",
         );
 
         // Property: Count should increase
         $noteCount = $record->notes()->count();
         expect($noteCount)->toBeGreaterThan(0,
-            'Company should have at least one note'
+            'Company should have at least one note',
         );
 
         // Property: Pivot record timestamps should exist
@@ -424,7 +424,7 @@ test('property: pivot table maintains referential integrity', function (): void 
         if ($pivotRecord) {
             $pivotData = $pivotRecord->pivot;
             expect($pivotData->created_at)->not()->toBeNull(
-                'Pivot should have created_at timestamp'
+                'Pivot should have created_at timestamp',
             );
         }
     }, 100);

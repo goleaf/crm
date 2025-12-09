@@ -10,13 +10,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property float $quantity
- * @property float $unit_price
- * @property float $discount_value
+ * @property float                  $quantity
+ * @property float                  $unit_price
+ * @property float                  $discount_value
  * @property QuoteDiscountType|null $discount_type
- * @property float $tax_rate
- * @property float $line_total
- * @property float $tax_total
+ * @property float                  $tax_rate
+ * @property float                  $line_total
+ * @property float                  $tax_total
  */
 final class QuoteLineItem extends Model
 {
@@ -80,7 +80,7 @@ final class QuoteLineItem extends Model
                     ?? Quote::query()->whereKey($lineItem->quote_id)->value('team_id');
             }
 
-            if ($lineItem->sort_order === 0 && $lineItem->quote !== null) {
+            if (($lineItem->sort_order === null || $lineItem->sort_order === 0) && $lineItem->quote !== null) {
                 $lineItem->sort_order = (int) (($lineItem->quote->lineItems()->max('sort_order') ?? 0) + 1);
             }
 

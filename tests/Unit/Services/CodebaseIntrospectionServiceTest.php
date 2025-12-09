@@ -37,7 +37,7 @@ it('builds a snapshot covering views, routes, classes, and models', function ():
         action: [
             'as' => 'companies.index',
             'uses' => [\App\Http\Controllers\HomeController::class, '__invoke'],
-            'controller' => \App\Http\Controllers\HomeController::class.'@__invoke',
+            'controller' => \App\Http\Controllers\HomeController::class . '@__invoke',
             'middleware' => ['auth'],
         ],
     );
@@ -82,7 +82,7 @@ it('builds a snapshot covering views, routes, classes, and models', function ():
 });
 
 /**
- * @param  Collection<int, mixed>  $items
+ * @param Collection<int, mixed> $items
  */
 function fakeQuery(Collection $items): object
 {

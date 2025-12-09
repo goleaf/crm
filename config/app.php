@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Support\Env;
+
 return [
 
     /*
@@ -15,7 +17,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => Env::make()->appName(),
 
     /*
     |--------------------------------------------------------------------------
@@ -28,7 +30,7 @@ return [
     |
     */
 
-    'env' => env('APP_ENV', 'production'),
+    'env' => Env::make()->appEnv(),
 
     /*
     |--------------------------------------------------------------------------
@@ -41,7 +43,7 @@ return [
     |
     */
 
-    'debug' => (bool) env('APP_DEBUG', false),
+    'debug' => Env::make()->appDebug(),
 
     /*
     |--------------------------------------------------------------------------
@@ -54,7 +56,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => Env::make()->appUrl(),
 
     /*
     |--------------------------------------------------------------------------
@@ -67,8 +69,8 @@ return [
     |
     */
 
-    'sysadmin_domain' => env('SYSADMIN_DOMAIN'),
-    'sysadmin_path' => env('SYSADMIN_PATH', 'sysadmin'),
+    'sysadmin_domain' => Env::make()->sysadminDomain(),
+    'sysadmin_path' => Env::make()->sysadminPath(),
 
     /*
     |--------------------------------------------------------------------------
@@ -81,7 +83,7 @@ return [
     |
     */
 
-    'timezone' => env('APP_TIMEZONE', 'UTC'),
+    'timezone' => Env::make()->appTimezone(),
 
     /*
     |--------------------------------------------------------------------------
@@ -94,11 +96,11 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => Env::make()->appLocale(),
 
-    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+    'fallback_locale' => Env::make()->appFallbackLocale(),
 
-    'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
+    'faker_locale' => Env::make()->appFakerLocale(),
 
     /*
     |--------------------------------------------------------------------------
@@ -124,11 +126,11 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
-    'key' => env('APP_KEY'),
+    'key' => Env::make()->appKey(),
 
     'previous_keys' => [
         ...array_filter(
-            explode(',', (string) env('APP_PREVIOUS_KEYS', ''))
+            explode(',', Env::make()->appPreviousKeys()),
         ),
     ],
 
@@ -146,8 +148,8 @@ return [
     */
 
     'maintenance' => [
-        'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
-        'store' => env('APP_MAINTENANCE_STORE', 'database'),
+        'driver' => Env::make()->appMaintenanceDriver(),
+        'store' => Env::make()->appMaintenanceStore(),
     ],
 
 ];

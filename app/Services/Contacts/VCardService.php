@@ -25,7 +25,7 @@ final class VCardService
 
         return collect($cards)
             ->filter(fn (?string $card): bool => is_string($card) && str_contains(strtoupper($card), 'BEGIN:VCARD'))
-            ->map(fn (string $card): array => $this->parseVCard($card.'END:VCARD'));
+            ->map(fn (string $card): array => $this->parseVCard($card . 'END:VCARD'));
     }
 
     public function export(People $contact): string
@@ -75,23 +75,23 @@ final class VCardService
         $lines = [
             'BEGIN:VCARD',
             "VERSION:{$version}",
-            'FN:'.$contact->name,
+            'FN:' . $contact->name,
         ];
 
         if ($contact->primary_email) {
-            $lines[] = 'EMAIL;TYPE=INTERNET:'.$contact->primary_email;
+            $lines[] = 'EMAIL;TYPE=INTERNET:' . $contact->primary_email;
         }
 
         if ($contact->phone_mobile) {
-            $lines[] = 'TEL;TYPE=CELL:'.$contact->phone_mobile;
+            $lines[] = 'TEL;TYPE=CELL:' . $contact->phone_mobile;
         }
 
         if ($contact->job_title) {
-            $lines[] = 'TITLE:'.$contact->job_title;
+            $lines[] = 'TITLE:' . $contact->job_title;
         }
 
         if ($contact->company?->name) {
-            $lines[] = 'ORG:'.$contact->company->name;
+            $lines[] = 'ORG:' . $contact->company->name;
         }
 
         $lines[] = 'END:VCARD';

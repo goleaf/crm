@@ -11,11 +11,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property string $relationship_type
- * @property int $priority
- * @property int $quantity
+ * @property string     $relationship_type
+ * @property int        $priority
+ * @property int        $quantity
  * @property float|null $price_override
- * @property bool $is_required
+ * @property bool       $is_required
  */
 final class ProductRelationship extends Model
 {

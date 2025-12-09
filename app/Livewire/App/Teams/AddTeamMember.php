@@ -92,7 +92,7 @@ final class AddTeamMember extends BaseLivewireComponent
             $this->authUser(),
             $team,
             $data['email'],
-            $data['role'] ?? null
+            $data['role'] ?? null,
         );
 
         $this->sendNotification(__('teams.notifications.team_invitation_sent.success'));

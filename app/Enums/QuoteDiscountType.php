@@ -24,13 +24,9 @@ enum QuoteDiscountType: string implements HasLabel
      */
     public static function options(): array
     {
-        $options = [];
-
-        foreach (self::cases() as $type) {
-            $options[$type->value] = ${$type}->getLabel();
-        }
-
-        return $options;
+        return collect(self::cases())
+            ->mapWithKeys(fn (self $type): array => [$type->value => $type->getLabel()])
+            ->all();
     }
 
     public function calculate(float $base, float $value): float

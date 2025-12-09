@@ -17,14 +17,14 @@ final class PdfService
     /**
      * Generate a PDF from a template and entity data.
      *
-     * @param  array<string, mixed>  $mergeData
-     * @param  array<string, mixed>  $options
+     * @param array<string, mixed> $mergeData
+     * @param array<string, mixed> $options
      */
     public function generate(
         PdfTemplate $template,
         Model $entity,
         array $mergeData = [],
-        array $options = []
+        array $options = [],
     ): PdfGeneration {
         $fileName = $this->generateFileName($template, $entity);
         $filePath = StoragePaths::pdfStoragePath($template->team_id, $fileName);
@@ -78,7 +78,7 @@ final class PdfService
     /**
      * Render the template with merge data.
      *
-     * @param  array<string, mixed>  $mergeData
+     * @param array<string, mixed> $mergeData
      */
     private function renderTemplate(PdfTemplate $template, Model $entity, array $mergeData): string
     {
@@ -90,11 +90,11 @@ final class PdfService
 
         $allData = array_merge(
             $this->extractEntityData($entity),
-            $mergeData
+            $mergeData,
         );
 
         foreach ($allData as $key => $value) {
-            $placeholder = '{{'.$key.'}}';
+            $placeholder = '{{' . $key . '}}';
             $html = str_replace($placeholder, (string) $value, $html);
         }
 
@@ -127,7 +127,7 @@ final class PdfService
     /**
      * Create PDF with styling and options.
      *
-     * @param  array<string, mixed>  $options
+     * @param array<string, mixed> $options
      */
     private function createPdf(string $html, PdfTemplate $template, array $options): \Barryvdh\DomPDF\PDF
     {
@@ -156,7 +156,7 @@ final class PdfService
     /**
      * Apply watermark to HTML content.
      *
-     * @param  array<string, mixed>  $watermark
+     * @param array<string, mixed> $watermark
      */
     private function applyWatermark(string $html, array $watermark): string
     {
@@ -172,10 +172,10 @@ final class PdfService
             $opacity,
             $fontSize,
             $color,
-            htmlspecialchars($text)
+            htmlspecialchars($text),
         );
 
-        return str_replace('</body>', $watermarkHtml.'</body>', $html);
+        return str_replace('</body>', $watermarkHtml . '</body>', $html);
     }
 
     /**

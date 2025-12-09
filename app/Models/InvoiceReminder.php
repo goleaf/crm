@@ -15,8 +15,8 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property InvoiceReminderType $reminder_type
- * @property Carbon $remind_at
- * @property Carbon|null $sent_at
+ * @property Carbon              $remind_at
+ * @property Carbon|null         $sent_at
  */
 #[ObservedBy(InvoiceReminderObserver::class)]
 final class InvoiceReminder extends Model

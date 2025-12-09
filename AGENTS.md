@@ -13,6 +13,7 @@
 - `composer lint` runs Rector v2 (with Laravel 12 sets and composer-based detection) followed by `pint --parallel` to keep refactoring and formatting aligned before commits.
 - `composer test:refactor` runs Rector in dry-run mode to verify no pending refactors without writing files (used in CI).
 - `composer test` executes linting, Rector dry-run checks, type coverage, `phpstan analyse`, and the default Pest parallel suite; `composer test:ci` mirrors the CI pipeline with the dedicated phpunit config.
+- `composer test:pest:profile` profiles test execution to identify slow-running tests for optimization (see `docs/test-profiling.md`).
 - `composer test:translations` runs the translation checker to ensure all keys are present in all supported locales.
 
 ## Coding Style & Naming Conventions
@@ -59,8 +60,75 @@
 - Permissions follow pattern: `{action}::{Resource}` (e.g., `view_any::Company`, `create::Task`).
 - See `docs/filament-shield-integration.md` and `.kiro/steering/filament-shield.md` for complete patterns.
 
+## Helper Functions
+
+- Comprehensive helper classes in `app/Support/Helpers/` provide utilities for common operations:
+  - `ArrayHelper` - Array manipulation, joining, grouping, filtering (wraps Laravel Arr)
+  - `StringHelper` - String formatting, truncation, case conversion, highlighting
+  - `DateHelper` - Date formatting, relative time, business days, ranges
+  - `NumberHelper` - Currency, percentages, file sizes, abbreviations, ordinals
+  - `ColorHelper` - Color manipulation, brightness checks, conversions
+  - `UrlHelper` - URL validation, query parameters, UTM tracking, shortening
+  - `FileHelper` - File type detection, MIME types, icon classes, storage operations
+- Always use helpers instead of manual implementations for consistency and type safety
+- All helpers handle null values gracefully and include proper type hints
+- See `docs/helper-functions-guide.md` for comprehensive usage examples and patterns
+- When adding new helper methods, include PHPDoc, usage examples, and tests
+
+## Documentation Structure
+
+### Primary Documentation (`docs/`)
+The `docs/` folder contains comprehensive guides for all major integrations and patterns. **Always consult these first** before implementing features:
+
+**Core Patterns**:
+- `docs/laravel-validation-enhancements.md` - Modern validation patterns, Form Requests, custom rules
+- `docs/controller-refactoring-guide.md` - Action classes, Single Action Controllers, service integration
+- `docs/laravel-container-services.md` - Service container patterns, dependency injection
+- `docs/test-profiling.md` - Test performance optimization, profiling strategies
+
+**Integrations**:
+- `docs/laravel-sharelink-integration.md` - Secure shareable links with expiration/passwords
+- `docs/localazy-github-actions-integration.md` - Automated translation management
+- `docs/laravel-precognition.md` - Real-time form validation
+- `docs/filament-shield-integration.md` - Role-based access control (RBAC)
+- `docs/warden-security-audit.md` - Security auditing and vulnerability scanning
+- `docs/blasp-profanity-filter-integration.md` - Multi-language profanity filtering
+- `docs/world-data-enhanced-features.md` - Country/state/city data with utilities
+- `docs/laravel-union-paginator.md` - Multi-model pagination patterns
+- `docs/pcov-code-coverage-integration.md` - Fast code coverage with PCOV
+- `docs/pest-route-testing-complete-guide.md` - Comprehensive route testing
+
+**Testing & Quality**:
+- `docs/testing-infrastructure.md` - Testing setup and patterns
+- `docs/testing-ecosystem-overview.md` - Complete testing stack overview
+- `docs/helper-functions-guide.md` - Utility helper classes and usage
+
+**Filament**:
+- `docs/filament-minimal-tabs.md` - Minimal tabs component usage
+- `docs/minimal-tabs-quick-reference.md` - Quick reference for tabs
+
+### Steering Rules (`.kiro/steering/`)
+Steering files provide concise rules and conventions. They reference `docs/` for detailed implementation:
+
+- `.kiro/steering/laravel-conventions.md` - Laravel coding standards
+- `.kiro/steering/filament-conventions.md` - Filament v4.3+ patterns
+- `.kiro/steering/testing-standards.md` - Testing requirements
+- `.kiro/steering/translations.md` - Translation conventions
+- `.kiro/steering/controller-refactoring.md` - Controller patterns (→ `docs/controller-refactoring-guide.md`)
+- `.kiro/steering/test-profiling.md` - Test profiling rules (→ `docs/test-profiling.md`)
+- `.kiro/steering/laravel-sharelink.md` - ShareLink conventions (→ `docs/laravel-sharelink-integration.md`)
+- `.kiro/steering/localazy-integration.md` - Translation management (→ `docs/localazy-github-actions-integration.md`)
+
+### Workflow for New Features
+1. **Check `docs/` first** - Find the comprehensive guide for the pattern/integration
+2. **Review `.kiro/steering/`** - Understand the conventions and rules
+3. **Implement** - Follow the documented patterns
+4. **Test** - Use testing patterns from `docs/testing-infrastructure.md`
+5. **Update docs** - If behavior changes, update both `docs/` and `.kiro/steering/`
+
 ## Repository expectations
 
+- **Always consult `docs/` before implementing** - Comprehensive guides prevent common errors and ensure consistency
 - Document public utilities in `docs/` when you change behavior. Also read and use `.kiro/system`, `.kiro/hooks/`, `.kiro/steering/` inside existing files
 - When adjusting model inheritance or shared base models, update the relevant `.kiro/steering` rule (e.g., `laravel-conventions.md`) in the same change so future edits avoid repeating the issue.
 - When fixing enum method/translation issues (label/color), also update the relevant `.kiro/steering` guideline (e.g., `filament-conventions.md`) in the same change to prevent regressions.
@@ -77,6 +145,12 @@
 - World data (countries, states, cities, currencies, languages, timezones) is accessed via `WorldDataService` singleton with caching; use dependent selects in Filament forms for country → state → city hierarchies (storing `_id` foreign keys, not strings)—see `docs/world-data-integration.md` and `.kiro/steering/world-data-package.md`.
 - Union pagination (`austinw/laravel-union-paginator`) combines data from multiple models into paginated results; use `ActivityFeedService` for activity feeds, `UnifiedSearchService` for cross-model search, and ensure consistent column counts/types across union queries—see `docs/laravel-union-paginator.md` and `.kiro/steering/laravel-union-paginator.md` for patterns and performance optimization.
 - **Filename Generation**: Use `Blaspsoft\Onym\Facades\Onym` for generating sanitized, structured filenames (UUIDs, slugs, timestamps) for all user uploads; configure default strategies in `config/onym.php` and integrate with Filament's `FileUpload` via `getUploadedFileNameForStorageUsing`—see `docs/laravel-onym-integration.md`.
+- **Validation**: Use modern Laravel validation patterns with Form Requests, invokable validation rules, `Rule::enum()` for enums, conditional validation with `Rule::when()`, and Precognition for real-time validation—see `docs/laravel-validation-enhancements.md` for comprehensive patterns.
+- **Controller Refactoring**: Extract business logic to Action classes, use Single Action Controllers for complex operations, delegate validation to Form Requests, and keep controllers thin (HTTP concerns only)—see `docs/controller-refactoring-guide.md` and `.kiro/steering/controller-refactoring.md`.
+- **Test Profiling**: Use `composer test:pest:profile` to identify slow tests; target < 100ms for unit tests, < 500ms for feature tests; mock external services, use database transactions, and create minimal test data—see `docs/test-profiling.md` and `.kiro/steering/test-profiling.md`.
+- **ShareLink**: Use `ShareLinkService` (singleton) for creating secure, temporary shareable links with expiration, password protection, click limits, and burn-after-reading; access via Filament resource at System → Share Links—see `docs/laravel-sharelink-integration.md` and `.kiro/steering/laravel-sharelink.md`.
+- **Localazy**: Translation management integrated with GitHub Actions for automated upload/download; use Translation Checker for database-backed storage, export before uploading, import after downloading—see `docs/localazy-github-actions-integration.md` and `.kiro/steering/localazy-integration.md`.
+- **ShareLink Integration**: Use `ShareLinkService` (singleton) to create secure, temporary shareable links for any Eloquent model with expiration, password protection, click limits, and burn-after-reading support; access via Filament at System → Share Links for full management UI—see `docs/laravel-sharelink-integration.md` and `.kiro/steering/laravel-sharelink.md` for usage patterns and security features.
 
 ## Translation Management Integration
 - Translation management uses Laravel Translation Checker (`outhebox/laravel-translations`) with database-backed storage.
@@ -119,3 +193,29 @@
 - Ensure `APP_ENV` is `local` or `testing` for Playwright routes to be exposed.
 - See `docs/playwright-integration.md` for full documentation.
 - When implementing features from `.kiro/specs`, verify E2E flows using Playwright when UI interaction is critical.
+
+## World Data Service Enhancements
+- The existing `nnjeim/world` integration has been enhanced with 10 additional CRM-focused utility methods.
+- **Regional Filtering**: `getCountriesByRegion()`, `getCountriesBySubregion()`, `getRegions()`, `getEUCountries()` for geographic grouping.
+- **Enhanced Lookups**: `getCountriesByPhoneCode()` for dialing code searches, `getCountryWithDetails()` for eager-loaded relationships.
+- **Address Utilities**: `formatAddress()` for display-ready strings, `getCountryFlag()` for emoji flags (🇺🇸🇬🇧🇫🇷).
+- **Validation**: `validatePostalCode()` validates formats for 50+ countries (US, GB, CA, AU, DE, FR, IT, ES, and more).
+- **Distance**: `getDistanceBetweenCities()` calculates kilometers using Haversine formula.
+- Use `WorldDataService` (singleton) for all world data access; inject via constructor with readonly properties.
+- See `docs/world-data-enhanced-features.md` and `.kiro/steering/world-data-package.md` for complete usage patterns.
+- Example: Country columns in Filament tables can display flag emojis using `$worldData->getCountryFlag($country->iso2)`.
+
+---
+
+## 📚 Complete Documentation Index
+
+**Start here for all implementation patterns**: [`docs/README.md`](docs/README.md)
+
+This index provides quick access to all comprehensive guides organized by category:
+- **Core Patterns**: Validation, Controllers, Services, Testing
+- **Security**: Shield, Warden, Profanity Filter
+- **Data**: World Data, Metadata, Union Pagination
+- **UI**: Filament, Minimal Tabs, Blade Hot Refresh
+- **Integrations**: ShareLink, Localazy, OCR, Playwright
+
+**Always consult `docs/` before implementing to minimize errors and ensure consistency.**

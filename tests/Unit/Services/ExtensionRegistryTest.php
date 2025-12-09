@@ -42,7 +42,7 @@ final class ExtensionRegistryTest extends TestCase
             description: 'Test description',
             targetModel: \App\Models\Company::class,
             targetEvent: HookEvent::AFTER_SAVE,
-            priority: 100
+            priority: 100,
         );
 
         expect($extension)->toBeInstanceOf(Extension::class);
@@ -65,7 +65,7 @@ final class ExtensionRegistryTest extends TestCase
             name: 'Test Extension',
             slug: 'test-extension',
             type: ExtensionType::LOGIC_HOOK,
-            handlerClass: 'NonExistentClass'
+            handlerClass: 'NonExistentClass',
         );
     }
 
@@ -84,7 +84,7 @@ final class ExtensionRegistryTest extends TestCase
             slug: 'test-extension',
             type: ExtensionType::LOGIC_HOOK,
             handlerClass: TestHandler::class,
-            handlerMethod: 'nonExistentMethod'
+            handlerMethod: 'nonExistentMethod',
         );
     }
 
@@ -263,7 +263,8 @@ final class RecursiveHandler
     public static ?Extension $extension = null;
 
     /**
-     * @param  array<string, mixed>  $context
+     * @param array<string, mixed> $context
+     *
      * @return array<string, mixed>
      */
     public function handle(array $context): array
@@ -282,7 +283,8 @@ final class ContextInspectorHandler
     public static ?array $lastContext = null;
 
     /**
-     * @param  array<string, mixed>  $context
+     * @param array<string, mixed> $context
+     *
      * @return array<string, mixed>
      */
     public function handle(array $context): array

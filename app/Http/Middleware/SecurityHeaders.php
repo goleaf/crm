@@ -53,13 +53,13 @@ final class SecurityHeaders
             ->map(function (array|string $value, string $directive): string {
                 $values = is_array($value) ? $value : [$value];
 
-                return trim($directive.' '.implode(' ', array_filter($values)));
+                return trim($directive . ' ' . implode(' ', array_filter($values)));
             })
             ->filter()
             ->implode('; ');
 
         if (filled($config['report_uri'] ?? null)) {
-            $policy .= '; report-uri '.$config['report_uri'];
+            $policy .= '; report-uri ' . $config['report_uri'];
         }
 
         $header = ($config['report_only'] ?? false)

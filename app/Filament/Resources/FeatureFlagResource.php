@@ -123,7 +123,7 @@ final class FeatureFlagResource extends Resource
                     modifyRuleUsing: fn (Unique $rule, Get $get) => $rule
                         ->where('feature', $get('feature'))
                         ->where('scope', $get('scope'))
-                        ->where('active', $get('active'))
+                        ->where('active', $get('active')),
                 )
                 ->required()
                 ->columnSpanFull(),

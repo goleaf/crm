@@ -12,7 +12,7 @@ use Laravel\Jetstream\Events\TeamCreated;
 final readonly class SeedTeamPermissions
 {
     public function __construct(
-        private PermissionService $permissions
+        private PermissionService $permissions,
     ) {}
 
     public function handle(TeamCreated $event): void

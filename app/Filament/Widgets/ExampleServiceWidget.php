@@ -18,7 +18,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 final class ExampleServiceWidget extends BaseWidget
 {
     public function __construct(
-        private readonly OpportunityMetricsService $metricsService
+        private readonly OpportunityMetricsService $metricsService,
     ) {
         parent::__construct();
     }
@@ -35,11 +35,11 @@ final class ExampleServiceWidget extends BaseWidget
                 ->color('primary'),
 
             Stat::make(__('app.labels.total_value'), $metrics['total_value_formatted'])
-                ->description($metrics['change_percentage'].'% '.__('app.labels.from_last_month'))
+                ->description($metrics['change_percentage'] . '% ' . __('app.labels.from_last_month'))
                 ->descriptionIcon($metrics['trend_icon'])
                 ->color($metrics['trend_color']),
 
-            Stat::make(__('app.labels.win_rate'), $metrics['win_rate'].'%')
+            Stat::make(__('app.labels.win_rate'), $metrics['win_rate'] . '%')
                 ->description(__('app.labels.closed_won'))
                 ->descriptionIcon('heroicon-o-check-circle')
                 ->color('success'),

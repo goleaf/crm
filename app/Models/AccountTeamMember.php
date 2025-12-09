@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property AccountTeamRole $role
+ * @property AccountTeamRole        $role
  * @property AccountTeamAccessLevel $access_level
  */
 final class AccountTeamMember extends Model

@@ -402,7 +402,7 @@ describe('Relation Managers', function (): void {
         $relationManagers = $page->getRelationManagers();
 
         expect($relationManagers)->toContain(
-            CompanyResource\RelationManagers\AnnualRevenuesRelationManager::class
+            CompanyResource\RelationManagers\AnnualRevenuesRelationManager::class,
         );
     });
 
@@ -413,7 +413,7 @@ describe('Relation Managers', function (): void {
         $relationManagers = $page->getRelationManagers();
 
         expect($relationManagers)->toContain(
-            CompanyResource\RelationManagers\CasesRelationManager::class
+            CompanyResource\RelationManagers\CasesRelationManager::class,
         );
     });
 
@@ -424,7 +424,7 @@ describe('Relation Managers', function (): void {
         $relationManagers = $page->getRelationManagers();
 
         expect($relationManagers)->toContain(
-            CompanyResource\RelationManagers\PeopleRelationManager::class
+            CompanyResource\RelationManagers\PeopleRelationManager::class,
         );
     });
 
@@ -435,7 +435,7 @@ describe('Relation Managers', function (): void {
         $relationManagers = $page->getRelationManagers();
 
         expect($relationManagers)->toContain(
-            CompanyResource\RelationManagers\TasksRelationManager::class
+            CompanyResource\RelationManagers\TasksRelationManager::class,
         );
     });
 
@@ -446,7 +446,7 @@ describe('Relation Managers', function (): void {
         $relationManagers = $page->getRelationManagers();
 
         expect($relationManagers)->toContain(
-            CompanyResource\RelationManagers\NotesRelationManager::class
+            CompanyResource\RelationManagers\NotesRelationManager::class,
         );
     });
 
@@ -457,7 +457,7 @@ describe('Relation Managers', function (): void {
         $relationManagers = $page->getRelationManagers();
 
         expect($relationManagers)->toContain(
-            \App\Filament\RelationManagers\ActivitiesRelationManager::class
+            \App\Filament\RelationManagers\ActivitiesRelationManager::class,
         );
     });
 });

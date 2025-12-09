@@ -24,13 +24,13 @@ final class TextCleaner
         try {
             $response = (new Prism)->text()
                 ->using(Provider::OpenAI, 'gpt-4o')
-                ->withPrompt("Fix the following OCR text, correcting only obvious scanning errors (typos, spacing, broken words). maintain original formatting where possible:\n\n".$text)
+                ->withPrompt("Fix the following OCR text, correcting only obvious scanning errors (typos, spacing, broken words). maintain original formatting where possible:\n\n" . $text)
                 ->generate();
 
             return $response->text;
         } catch (\Throwable $e) {
             // Log error but return original text so flow doesn't break
-            logger()->error('OCR AI Cleanup failed: '.$e->getMessage());
+            logger()->error('OCR AI Cleanup failed: ' . $e->getMessage());
 
             return $text;
         }

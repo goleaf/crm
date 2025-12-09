@@ -16,6 +16,7 @@ Based on [Laravel News — 5 Underrated Filament Features](https://laravel-news.
 ## 3) Native Global Search
 - Resources keep `protected static ?string $recordTitleAttribute` and `getNavigationGroup()` so titles and search labels stay consistent.
 - For richer search, override `getGloballySearchableAttributes()` / `getGlobalSearchResultDetails()` on resources; follow the steering notes in `.kiro/steering/filament-navigation.md`.
+- The in-panel search experience uses `charrafimed/global-search-modal` (3xl modal, grouped counts, 15-item history/favorites, grouped recents). Keep the placeholder copy in `ui.placeholders.global_search` when tweaking the panel plugin configuration.
 
 ## 4) Standalone Packages
 - Trend + Chart.js widgets rely only on core Filament + Laravel Easy Metrics; no Apex dependency required for new charts.

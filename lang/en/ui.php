@@ -125,6 +125,7 @@ return [
 
     'placeholders' => [
         'search' => 'Search...',
+        'global_search' => 'Search across companies, people, tasks, and more...',
         'select' => 'Select an option',
         'enter_name' => 'Enter name',
         'enter_email' => 'Enter email',

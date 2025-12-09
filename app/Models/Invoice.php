@@ -25,24 +25,24 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 /**
- * @property int $id
- * @property int $team_id
- * @property string $number
- * @property int $sequence
+ * @property int           $id
+ * @property int           $team_id
+ * @property string        $number
+ * @property int           $sequence
  * @property InvoiceStatus $status
- * @property Carbon|null $issue_date
- * @property Carbon|null $due_date
- * @property float $subtotal
- * @property float $tax_total
- * @property float $discount_total
- * @property float $late_fee_amount
- * @property float $total
- * @property float $balance_due
- * @property Carbon|null $late_fee_applied_at
- * @property Carbon|null $sent_at
- * @property Carbon|null $paid_at
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property Carbon|null   $issue_date
+ * @property Carbon|null   $due_date
+ * @property float         $subtotal
+ * @property float         $tax_total
+ * @property float         $discount_total
+ * @property float         $late_fee_amount
+ * @property float         $total
+ * @property float         $balance_due
+ * @property Carbon|null   $late_fee_applied_at
+ * @property Carbon|null   $sent_at
+ * @property Carbon|null   $paid_at
+ * @property Carbon|null   $created_at
+ * @property Carbon|null   $updated_at
  */
 #[ObservedBy(InvoiceObserver::class)]
 final class Invoice extends Model implements HasMedia

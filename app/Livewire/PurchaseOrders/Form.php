@@ -259,7 +259,7 @@ final class Form extends BaseLivewireComponent
             ->latest()
             ->limit(50)
             ->get()
-            ->mapWithKeys(fn (Order $order): array => [$order->id => trim($order->number.' '.$order->company?->name ?? '')])
+            ->mapWithKeys(fn (Order $order): array => [$order->id => trim($order->number . ' ' . $order->company?->name ?? '')])
             ->toArray();
     }
 

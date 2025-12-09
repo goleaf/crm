@@ -76,6 +76,9 @@ final class RouteTestingConfig
             'calendar.export.ical',
             'notes.print',
             'purchase-orders.index',
+            'laravelschemadocs.index',
+            'laravelschemadocs.erd',
+            'laravelschemadocs.show',
         ];
     }
 
@@ -111,6 +114,7 @@ final class RouteTestingConfig
             'notes.print' => ['note'],
             'contacts.show' => ['contact'],
             'auth.socialite.redirect' => ['provider'],
+            'laravelschemadocs.show' => ['name'],
         ];
     }
 
@@ -158,7 +162,7 @@ final class RouteTestingConfig
         return array_merge(
             self::publicRoutes(),
             self::authenticatedRoutes(),
-            self::apiRoutes()
+            self::apiRoutes(),
         );
     }
 
@@ -169,7 +173,7 @@ final class RouteTestingConfig
     {
         foreach (self::excludedRoutes() as $pattern) {
             if (str_contains((string) $pattern, '*')) {
-                $regex = '/^'.str_replace('*', '.*', $pattern).'$/';
+                $regex = '/^' . str_replace('*', '.*', $pattern) . '$/';
                 if (preg_match($regex, $routeName)) {
                     return true;
                 }

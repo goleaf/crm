@@ -88,7 +88,7 @@ final class NotesByCategoryChart extends ApexChartWidget
                 }
 
                 return $data;
-            }
+            },
         );
     }
 

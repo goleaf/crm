@@ -19,7 +19,7 @@ final class TaskGenerator
     /**
      * Generate a random task with all fields populated.
      *
-     * @param  array<string, mixed>  $overrides
+     * @param array<string, mixed> $overrides
      */
     public static function generate(Team $team, ?User $creator = null, array $overrides = []): Task
     {
@@ -43,7 +43,7 @@ final class TaskGenerator
     /**
      * Generate a task with subtasks.
      *
-     * @param  int  $subtaskCount  Number of subtasks to create
+     * @param int $subtaskCount Number of subtasks to create
      */
     public static function generateWithSubtasks(Team $team, int $subtaskCount = 3): Task
     {
@@ -59,7 +59,7 @@ final class TaskGenerator
     /**
      * Generate a task with assignees.
      *
-     * @param  int  $assigneeCount  Number of assignees
+     * @param int $assigneeCount Number of assignees
      */
     public static function generateWithAssignees(Team $team, int $assigneeCount = 2): Task
     {
@@ -78,7 +78,7 @@ final class TaskGenerator
     /**
      * Generate a task with categories.
      *
-     * @param  int  $categoryCount  Number of categories
+     * @param int $categoryCount Number of categories
      */
     public static function generateWithCategories(Team $team, int $categoryCount = 2): Task
     {
@@ -95,7 +95,7 @@ final class TaskGenerator
     /**
      * Generate a task with dependencies.
      *
-     * @param  int  $dependencyCount  Number of dependencies
+     * @param int $dependencyCount Number of dependencies
      */
     public static function generateWithDependencies(Team $team, int $dependencyCount = 2): Task
     {

@@ -10,6 +10,7 @@ use App\Enums\LeadGrade;
 use App\Enums\LeadNurtureStatus;
 use App\Enums\LeadSource;
 use App\Enums\LeadStatus;
+use App\Enums\LeadType;
 use App\Models\Lead;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
@@ -61,6 +62,35 @@ final class LeadImporter extends BaseImporter
                 ->example('Acme Corp')
                 ->fillRecordUsing(function (Lead $record, ?string $state): void {
                     $record->company_name = $state ? trim($state) : null;
+                }),
+            ImportColumn::make('description')
+                ->rules(['nullable', 'string'])
+                ->example('Interested in a product demo')
+                ->fillRecordUsing(function (Lead $record, ?string $state): void {
+                    $record->description = $state ? trim($state) : $record->description;
+                }),
+            ImportColumn::make('lead_value')
+                ->label('Lead Value')
+                ->rules(['nullable', 'numeric', 'min:0'])
+                ->example('15000')
+                ->fillRecordUsing(function (Lead $record, mixed $state): void {
+                    $record->lead_value = is_numeric($state) ? (float) $state : $record->lead_value;
+                }),
+            ImportColumn::make('lead_type')
+                ->label('Lead Type')
+                ->rules(['nullable', new Enum(LeadType::class)])
+                ->options(LeadType::options())
+                ->example(LeadType::NEW_BUSINESS->value)
+                ->fillRecordUsing(function (Lead $record, mixed $state): void {
+                    $type = $state instanceof LeadType ? $state : (is_string($state) ? LeadType::tryFrom($state) : null);
+                    $record->lead_type = $type ?? $record->lead_type;
+                }),
+            ImportColumn::make('expected_close_date')
+                ->label('Expected Close Date')
+                ->rules(['nullable', 'date'])
+                ->example(now()->addMonth()->toDateString())
+                ->fillRecordUsing(function (Lead $record, ?string $state): void {
+                    $record->expected_close_date = $state ?: $record->expected_close_date;
                 }),
             ImportColumn::make('status')
                 ->rules(['nullable', new Enum(LeadStatus::class)])
@@ -175,10 +205,10 @@ final class LeadImporter extends BaseImporter
 
     public static function getCompletedNotificationBody(Import $import): string
     {
-        $body = 'Your lead import has completed and '.Number::format($import->successful_rows).' '.str('row')->plural($import->successful_rows).' imported.';
+        $body = 'Your lead import has completed and ' . Number::format($import->successful_rows) . ' ' . str('row')->plural($import->successful_rows) . ' imported.';
 
         if (($failedRowsCount = $import->getFailedRowsCount()) !== 0) {
-            $body .= ' '.Number::format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to import.';
+            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to import.';
         }
 
         return $body;

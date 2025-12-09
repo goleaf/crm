@@ -18,7 +18,7 @@ final readonly class ExampleIntegrationService
     public function __construct(
         private string $apiKey,
         private int $timeout = 10,
-        private int $retries = 3
+        private int $retries = 3,
     ) {}
 
     /**
@@ -29,7 +29,7 @@ final readonly class ExampleIntegrationService
         return new self(
             apiKey: config('services.example.api_key', ''),
             timeout: (int) config('services.example.timeout', 10),
-            retries: (int) config('services.example.retries', 3)
+            retries: (int) config('services.example.retries', 3),
         );
     }
 

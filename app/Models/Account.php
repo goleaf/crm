@@ -24,9 +24,9 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
- * @property array<string, mixed>|null $billing_address
- * @property array<string, mixed>|null $shipping_address
- * @property array<string, mixed>|null $social_links
+ * @property array<string, mixed>|null             $billing_address
+ * @property array<string, mixed>|null             $shipping_address
+ * @property array<string, mixed>|null             $social_links
  * @property array<int, array<string, mixed>>|null $addresses
  */
 final class Account extends Model implements HasMedia
@@ -274,7 +274,7 @@ final class Account extends Model implements HasMedia
                     'title' => $note->title ?? 'Note',
                     'summary' => method_exists($note, 'plainBody') ? $note->plainBody() : null,
                     'created_at' => $note->created_at,
-                ])
+                ]),
         );
 
         // Add tasks
@@ -287,7 +287,7 @@ final class Account extends Model implements HasMedia
                     'title' => $task->title ?? 'Task',
                     'summary' => $this->formatTaskSummary($task),
                     'created_at' => $task->created_at,
-                ])
+                ]),
         );
 
         // Add opportunities
@@ -297,10 +297,10 @@ final class Account extends Model implements HasMedia
                 ->map(fn (Opportunity $opportunity): array => [
                     'type' => 'opportunity',
                     'id' => $opportunity->getKey(),
-                    'title' => $opportunity->name ?? 'Opportunity #'.$opportunity->getKey(),
+                    'title' => $opportunity->name ?? 'Opportunity #' . $opportunity->getKey(),
                     'summary' => $this->formatOpportunitySummary($opportunity),
                     'created_at' => $opportunity->created_at,
-                ])
+                ]),
         );
 
         // Add cases
@@ -310,10 +310,10 @@ final class Account extends Model implements HasMedia
                 ->map(fn (SupportCase $case): array => [
                     'type' => 'case',
                     'id' => $case->getKey(),
-                    'title' => $case->subject ?? 'Case #'.$case->case_number,
+                    'title' => $case->subject ?? 'Case #' . $case->case_number,
                     'summary' => $this->formatCaseSummary($case),
                     'created_at' => $case->created_at,
-                ])
+                ]),
         );
 
         // Add attachments
@@ -325,7 +325,7 @@ final class Account extends Model implements HasMedia
                     'title' => $media->file_name,
                     'summary' => $media->mime_type,
                     'created_at' => $media->created_at,
-                ])
+                ]),
         );
 
         return $timeline
@@ -360,11 +360,11 @@ final class Account extends Model implements HasMedia
         $parts = [];
 
         if (isset($opportunity->stage)) {
-            $parts[] = 'Stage: '.$opportunity->stage;
+            $parts[] = 'Stage: ' . $opportunity->stage;
         }
 
         if (isset($opportunity->amount)) {
-            $parts[] = 'Amount: $'.number_format((float) $opportunity->amount, 2);
+            $parts[] = 'Amount: $' . number_format((float) $opportunity->amount, 2);
         }
 
         return $parts === [] ? 'Opportunity activity' : implode(' • ', $parts);
@@ -418,7 +418,7 @@ final class Account extends Model implements HasMedia
     }
 
     /**
-     * @param  array<int, array<string, mixed>>  $addresses
+     * @param array<int, array<string, mixed>> $addresses
      */
     private function syncLegacyAddressColumns(array $addresses): void
     {
@@ -433,7 +433,8 @@ final class Account extends Model implements HasMedia
     }
 
     /**
-     * @param  array<int, array<string, mixed>>  $addresses
+     * @param array<int, array<string, mixed>> $addresses
+     *
      * @return array<int, array<string, mixed>>
      */
     private function mergeLegacyAddresses(array $addresses): array

@@ -17,7 +17,18 @@ export default defineConfig({
                 'app-modules/Documentation/resources/css/documentation.css',
                 'app-modules/Documentation/resources/js/documentation.js',
             ],
-            refresh: true,
+            refresh: [
+                // Blade templates
+                'resources/views/**/*.blade.php',
+                'app/Filament/**/*.php',
+                'app/Livewire/**/*.php',
+                'app-modules/**/resources/views/**/*.blade.php',
+                // Routes
+                'routes/**/*.php',
+                // Config files that affect UI
+                'config/filament.php',
+                'config/app.php',
+            ],
         }),
         tailwindcss(),
     ],

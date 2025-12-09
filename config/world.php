@@ -214,22 +214,4 @@ return [
         'timezones' => \Nnjeim\World\Models\Timezone::class,
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Cache TTL (seconds)
-    | How long to cache world data queries.
-    |--------------------------------------------------------------------------
-    */
-
-    'cache_ttl' => (int) env('WORLD_CACHE_TTL', 3600),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Popular countries for quick access
-    | ISO2 codes for frequently accessed countries.
-    |--------------------------------------------------------------------------
-    */
-
-    'popular_countries' => ['US', 'GB', 'CA', 'AU', 'DE', 'FR', 'ES', 'IT', 'JP', 'CN'],
-
 ];

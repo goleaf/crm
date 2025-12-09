@@ -134,7 +134,7 @@ it('downloads photo to storage', function (): void {
         url: 'https://images.unsplash.com/photo-123',
         filename: 'test-photo.jpg',
         disk: 'public',
-        path: 'unsplash'
+        path: 'unsplash',
     );
 
     expect($path)->toBe('unsplash/test-photo.jpg');
@@ -150,7 +150,7 @@ it('returns null when download fails', function (): void {
 
     $path = $this->service->downloadPhoto(
         url: 'https://images.unsplash.com/photo-123',
-        filename: 'test-photo.jpg'
+        filename: 'test-photo.jpg',
     );
 
     expect($path)->toBeNull();

@@ -12,7 +12,7 @@ use Relaticle\CustomFields\Facades\CustomFields;
 final class TaskForm
 {
     /**
-     * @param  array<string>  $excludeFields
+     * @param array<string> $excludeFields
      *
      * @throws \Exception
      */

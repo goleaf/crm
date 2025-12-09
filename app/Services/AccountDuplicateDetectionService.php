@@ -13,7 +13,8 @@ final class AccountDuplicateDetectionService
     /**
      * Find potential duplicates for an account within the same team.
      *
-     * @param  float  $threshold  Score threshold expressed as a percentage (0-100)
+     * @param float $threshold Score threshold expressed as a percentage (0-100)
+     *
      * @return Collection<int, array{account: Account, score: float}>
      */
     public function find(Account $account, float $threshold = 60.0, int $limit = 5): Collection
@@ -139,7 +140,8 @@ final class AccountDuplicateDetectionService
     }
 
     /**
-     * @param  array<int, ?string>  $phones
+     * @param array<int, ?string> $phones
+     *
      * @return array<int, string>
      */
     private function normalizePhones(array $phones): array
@@ -154,7 +156,7 @@ final class AccountDuplicateDetectionService
 
                 return $digits !== '' ? $digits : null;
             },
-            $phones
+            $phones,
         )));
     }
 

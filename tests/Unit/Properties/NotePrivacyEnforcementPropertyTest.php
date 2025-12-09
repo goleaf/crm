@@ -50,7 +50,7 @@ test('property: private notes are only visible to creator', function (): void {
             ->where('id', $privateNote->id);
 
         expect($creatorQuery->exists())->toBeTrue(
-            "Creator should be able to see their own private note {$privateNote->id}"
+            "Creator should be able to see their own private note {$privateNote->id}",
         );
 
         // Acting as another user in the same team
@@ -67,7 +67,7 @@ test('property: private notes are only visible to creator', function (): void {
             ->exists();
 
         expect($visibleToOther)->toBeFalse(
-            "Other users should not see private note {$privateNote->id} created by user {$this->user->id}"
+            "Other users should not see private note {$privateNote->id} created by user {$this->user->id}",
         );
     }, 100);
 })->group('property');
@@ -94,7 +94,7 @@ test('property: internal notes are visible to all team members', function (): vo
             ->exists();
 
         expect($creatorCanSee)->toBeTrue(
-            "Creator should see internal note {$internalNote->id}"
+            "Creator should see internal note {$internalNote->id}",
         );
 
         // Acting as another team member
@@ -105,7 +105,7 @@ test('property: internal notes are visible to all team members', function (): vo
             ->exists();
 
         expect($otherCanSee)->toBeTrue(
-            "Other team members should see internal note {$internalNote->id}"
+            "Other team members should see internal note {$internalNote->id}",
         );
     }, 100);
 })->group('property');
@@ -134,7 +134,7 @@ test('property: external notes are visible to team members', function (): void {
             ->exists();
 
         expect($canSee)->toBeTrue(
-            "Team members should see external note {$externalNote->id}"
+            "Team members should see external note {$externalNote->id}",
         );
     }, 100);
 })->group('property');
@@ -150,7 +150,7 @@ test('property: external notes are visible to team members', function (): void {
 test('property: search results respect privacy for private notes', function (): void {
     runPropertyTest(function (): void {
         // Generate a private note with searchable content
-        $searchTerm = 'unique_search_term_'.fake()->uuid();
+        $searchTerm = 'unique_search_term_' . fake()->uuid();
         $privateNote = generateNote($this->team, $this->user, [
             'visibility' => NoteVisibility::PRIVATE,
             'title' => "Note with {$searchTerm}",
@@ -168,7 +168,7 @@ test('property: search results respect privacy for private notes', function (): 
             ->get();
 
         expect($creatorResults->contains($privateNote))->toBeTrue(
-            'Creator should find their private note in search results'
+            'Creator should find their private note in search results',
         );
 
         // Other user searches
@@ -183,7 +183,7 @@ test('property: search results respect privacy for private notes', function (): 
             ->get();
 
         expect($otherResults->contains($privateNote))->toBeFalse(
-            'Other users should not find private note in search results'
+            'Other users should not find private note in search results',
         );
     }, 100);
 })->group('property');
@@ -232,10 +232,10 @@ test('property: activity timelines respect note privacy', function (): void {
             ->get();
 
         expect($creatorNotes->contains($privateNote))->toBeTrue(
-            'Creator should see private note in timeline'
+            'Creator should see private note in timeline',
         );
         expect($creatorNotes->contains($internalNote))->toBeTrue(
-            'Creator should see internal note in timeline'
+            'Creator should see internal note in timeline',
         );
 
         // Other user views timeline
@@ -248,10 +248,10 @@ test('property: activity timelines respect note privacy', function (): void {
             ->get();
 
         expect($otherNotes->contains($privateNote))->toBeFalse(
-            'Other users should not see private note in timeline'
+            'Other users should not see private note in timeline',
         );
         expect($otherNotes->contains($internalNote))->toBeTrue(
-            'Other users should see internal note in timeline'
+            'Other users should see internal note in timeline',
         );
     }, 100);
 })->group('property');
@@ -278,7 +278,7 @@ test('property: visibility changes are immediately enforced', function (): void 
             ->exists();
 
         expect($canSeeBefore)->toBeTrue(
-            'Other user should see internal note before visibility change'
+            'Other user should see internal note before visibility change',
         );
 
         // Change to private
@@ -298,7 +298,7 @@ test('property: visibility changes are immediately enforced', function (): void 
             ->exists();
 
         expect($canSeeAfter)->toBeFalse(
-            'Other user should not see note after it becomes private'
+            'Other user should not see note after it becomes private',
         );
     }, 100);
 })->group('property');
@@ -328,7 +328,7 @@ test('property: soft-deleted private notes respect privacy', function (): void {
             ->exists();
 
         expect($creatorCanSeeInTrash)->toBeTrue(
-            'Creator should see their private note in trash'
+            'Creator should see their private note in trash',
         );
 
         // Other user should not see it even in trash
@@ -343,7 +343,7 @@ test('property: soft-deleted private notes respect privacy', function (): void {
             ->exists();
 
         expect($otherCanSeeInTrash)->toBeFalse(
-            'Other users should not see private note even in trash'
+            'Other users should not see private note even in trash',
         );
     }, 100);
 })->group('property');

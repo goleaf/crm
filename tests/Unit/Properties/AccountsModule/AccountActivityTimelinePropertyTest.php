@@ -15,9 +15,10 @@ use App\Models\SupportCase;
 use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
-use Relaticle\CustomFields\Services\TenantContextService;
 
 use function Pest\Laravel\actingAs;
+
+use Relaticle\CustomFields\Services\TenantContextService;
 
 /**
  * **Feature: core-crm-modules, Property 9: Activity timeline completeness**
@@ -50,7 +51,7 @@ test('activity timeline includes all related record types', function (): void {
         NoteField::BODY->value,
         CustomFieldType::RICH_EDITOR->value,
         [],
-        $team
+        $team,
     );
 
     $taskDescriptionField = createCustomFieldFor(
@@ -58,7 +59,7 @@ test('activity timeline includes all related record types', function (): void {
         TaskField::DESCRIPTION->value,
         CustomFieldType::RICH_EDITOR->value,
         [],
-        $team
+        $team,
     );
 
     $stageField = createCustomFieldFor(
@@ -66,7 +67,7 @@ test('activity timeline includes all related record types', function (): void {
         OpportunityField::STAGE->value,
         CustomFieldType::SELECT->value,
         OpportunityField::STAGE->getOptions() ?? [],
-        $team
+        $team,
     );
 
     // Create random number of each type
@@ -84,7 +85,7 @@ test('activity timeline includes all related record types', function (): void {
                 'created_at' => now()->subMinutes(fake()->numberBetween(1, 100)),
             ]);
         $account->notes()->attach($note);
-        $note->saveCustomFieldValue($noteField, '<p>'.fake()->sentence().'</p>');
+        $note->saveCustomFieldValue($noteField, '<p>' . fake()->sentence() . '</p>');
     }
 
     // Create tasks
@@ -95,7 +96,7 @@ test('activity timeline includes all related record types', function (): void {
             'created_at' => now()->subMinutes(fake()->numberBetween(1, 100)),
         ]);
         $account->tasks()->attach($task);
-        $task->saveCustomFieldValue($taskDescriptionField, '<p>'.fake()->sentence().'</p>');
+        $task->saveCustomFieldValue($taskDescriptionField, '<p>' . fake()->sentence() . '</p>');
     }
 
     // Create opportunities
@@ -171,7 +172,7 @@ test('activity timeline returns items in descending chronological order', functi
         NoteField::BODY->value,
         CustomFieldType::RICH_EDITOR->value,
         [],
-        $team
+        $team,
     );
 
     $taskDescriptionField = createCustomFieldFor(
@@ -179,7 +180,7 @@ test('activity timeline returns items in descending chronological order', functi
         TaskField::DESCRIPTION->value,
         CustomFieldType::RICH_EDITOR->value,
         [],
-        $team
+        $team,
     );
 
     $stageField = createCustomFieldFor(
@@ -187,7 +188,7 @@ test('activity timeline returns items in descending chronological order', functi
         OpportunityField::STAGE->value,
         CustomFieldType::SELECT->value,
         OpportunityField::STAGE->getOptions() ?? [],
-        $team
+        $team,
     );
 
     $itemCount = fake()->numberBetween(5, 15);
@@ -206,7 +207,7 @@ test('activity timeline returns items in descending chronological order', functi
                     'created_at' => $createdAt,
                 ]);
             $account->notes()->attach($note);
-            $note->saveCustomFieldValue($noteField, '<p>'.fake()->sentence().'</p>');
+            $note->saveCustomFieldValue($noteField, '<p>' . fake()->sentence() . '</p>');
         } elseif ($type === 'task') {
             $task = Task::factory()->create([
                 'title' => fake()->sentence(),
@@ -215,7 +216,7 @@ test('activity timeline returns items in descending chronological order', functi
                 'updated_at' => $createdAt,
             ]);
             $account->tasks()->attach($task);
-            $task->saveCustomFieldValue($taskDescriptionField, '<p>'.fake()->sentence().'</p>');
+            $task->saveCustomFieldValue($taskDescriptionField, '<p>' . fake()->sentence() . '</p>');
         } elseif ($type === 'opportunity') {
             $opportunity = Opportunity::factory()
                 ->for($team, 'team')
@@ -245,7 +246,7 @@ test('activity timeline returns items in descending chronological order', functi
 
         if ($previousTimestamp !== null) {
             expect($item['created_at']->lte($previousTimestamp))
-                ->toBeTrue('Timeline item at '.$item['created_at'].' should be <= '.$previousTimestamp);
+                ->toBeTrue('Timeline item at ' . $item['created_at'] . ' should be <= ' . $previousTimestamp);
         }
         $previousTimestamp = $item['created_at'];
     }
@@ -281,7 +282,7 @@ test('activity timeline items contain required metadata fields', function (): vo
         NoteField::BODY->value,
         CustomFieldType::RICH_EDITOR->value,
         [],
-        $team
+        $team,
     );
 
     $taskDescriptionField = createCustomFieldFor(
@@ -289,7 +290,7 @@ test('activity timeline items contain required metadata fields', function (): vo
         TaskField::DESCRIPTION->value,
         CustomFieldType::RICH_EDITOR->value,
         [],
-        $team
+        $team,
     );
 
     $stageField = createCustomFieldFor(
@@ -297,7 +298,7 @@ test('activity timeline items contain required metadata fields', function (): vo
         OpportunityField::STAGE->value,
         CustomFieldType::SELECT->value,
         OpportunityField::STAGE->getOptions() ?? [],
-        $team
+        $team,
     );
 
     // Create one of each type
@@ -305,14 +306,14 @@ test('activity timeline items contain required metadata fields', function (): vo
         ->for($team, 'team')
         ->create(['title' => fake()->sentence()]);
     $account->notes()->attach($note);
-    $note->saveCustomFieldValue($noteField, '<p>'.fake()->sentence().'</p>');
+    $note->saveCustomFieldValue($noteField, '<p>' . fake()->sentence() . '</p>');
 
     $task = Task::factory()->create([
         'title' => fake()->sentence(),
         'team_id' => $team->id,
     ]);
     $account->tasks()->attach($task);
-    $task->saveCustomFieldValue($taskDescriptionField, '<p>'.fake()->sentence().'</p>');
+    $task->saveCustomFieldValue($taskDescriptionField, '<p>' . fake()->sentence() . '</p>');
 
     $opportunity = Opportunity::factory()
         ->for($team, 'team')
@@ -369,7 +370,7 @@ test('activity timeline respects limit parameter', function (): void {
         NoteField::BODY->value,
         CustomFieldType::RICH_EDITOR->value,
         [],
-        $team
+        $team,
     );
 
     // Create many notes (more than we'll request)
@@ -382,7 +383,7 @@ test('activity timeline respects limit parameter', function (): void {
                 'created_at' => now()->subMinutes($i),
             ]);
         $account->notes()->attach($note);
-        $note->saveCustomFieldValue($noteField, '<p>'.fake()->sentence().'</p>');
+        $note->saveCustomFieldValue($noteField, '<p>' . fake()->sentence() . '</p>');
     }
 
     $limit = fake()->numberBetween(5, 15);

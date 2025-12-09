@@ -96,7 +96,7 @@ final class ProjectResource extends Resource
                                 ->maxLength(3),
                             Placeholder::make('actual_cost')
                                 ->label(__('app.labels.actual_cost'))
-                                ->content(fn (?Project $record): string => $record instanceof \App\Models\Project ? '$'.number_format($record->actual_cost, 2) : '$0.00'),
+                                ->content(fn (?Project $record): string => $record instanceof \App\Models\Project ? '$' . number_format($record->actual_cost, 2) : '$0.00'),
                         ]),
                     ]),
 
@@ -135,7 +135,7 @@ final class ProjectResource extends Resource
                     ->toggleable(),
                 TextColumn::make('percent_complete')
                     ->label(__('app.labels.progress'))
-                    ->formatStateUsing(fn (float $state): string => number_format($state, 0).'%')
+                    ->formatStateUsing(fn (float $state): string => number_format($state, 0) . '%')
                     ->sortable(),
                 TextColumn::make('budget')
                     ->label(__('app.labels.budget'))

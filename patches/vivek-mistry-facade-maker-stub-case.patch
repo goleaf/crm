@@ -1,0 +1,20 @@
+--- a/src/Commands/FacadeDeveloper.php
++++ b/src/Commands/FacadeDeveloper.php
+@@ -112,7 +112,7 @@
+ 
+         
+ 
+-        $facadeStubsPath = __DIR__.'/../stubs/facades.stub';
++        $facadeStubsPath = __DIR__.'/../Stubs/facades.stub';
+ 
+         $contents = $this->getStubContents($facadeStubsPath, $stubsVariable);
+ 
+@@ -126,7 +126,7 @@
+             'CLASS_NAME' => ucwords(Pluralizer::singular($facadeServiceClass)),
+         ];
+ 
+-        $facadeStubsPath = __DIR__.'/../stubs/facades-services.stub';
++        $facadeStubsPath = __DIR__.'/../Stubs/facades-services.stub';
+ 
+         $contents = $this->getStubContents($facadeStubsPath, $stubsVariable);
+ 

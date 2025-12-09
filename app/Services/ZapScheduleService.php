@@ -38,9 +38,12 @@ final readonly class ZapScheduleService
             ->when($teamId, fn ($query) => $query->where('metadata->team_id', $teamId))
             ->get();
 
-        if ($existing->isNotEmpty() && $existing->every(
+        $canReuseExisting = $existing->isNotEmpty() && $existing->every(
             fn (Schedule $schedule): bool => data_get($schedule->metadata, 'hours_hash') === $hoursHash
-        )) {
+                && ! empty(data_get($schedule->metadata, 'day_names')),
+        );
+
+        if ($canReuseExisting) {
             return $existing;
         }
 
@@ -50,7 +53,10 @@ final readonly class ZapScheduleService
 
         $groupedHours = collect($businessHours)
             ->filter(fn (mixed $value): bool => is_array($value) && isset($value['start'], $value['end']))
-            ->groupBy(fn (array $hours): string => $hours['start'].'-'.$hours['end']);
+            ->groupBy(
+                fn (array $hours): string => $hours['start'] . '-' . $hours['end'],
+                preserveKeys: true,
+            );
 
         if ($groupedHours->isEmpty()) {
             return collect();
@@ -60,6 +66,7 @@ final readonly class ZapScheduleService
         $endDate = Date::now()->addYear()->toDateString();
 
         return $groupedHours->map(function (Collection $days, string $timeRange) use (
+            $user,
             $teamId,
             $hoursHash,
             $startDate,
@@ -69,7 +76,7 @@ final readonly class ZapScheduleService
             $dayNames = array_keys($days->toArray());
 
             return Zap::for($user)
-                ->named('Business Hours: '.implode(', ', array_map(ucfirst(...), $dayNames)))
+                ->named('Business Hours: ' . implode(', ', array_map(ucfirst(...), $dayNames)))
                 ->availability()
                 ->between($startDate, $endDate)
                 ->weekly($dayNames)
@@ -78,6 +85,7 @@ final readonly class ZapScheduleService
                     'source' => 'business_hours',
                     'team_id' => $teamId,
                     'hours_hash' => $hoursHash,
+                    'day_names' => $dayNames,
                 ])
                 ->save();
         })->values();
@@ -96,7 +104,9 @@ final readonly class ZapScheduleService
             ?? ($event->is_all_day ? $start->copy()->endOfDay() : $start->copy()->addMinutes($event->durationMinutes() ?? 60));
 
         $startDate = $start->toDateString();
-        $endDate = $end->toDateString();
+        $endDate = $start->isSameDay($end)
+            ? $start->copy()->addDay()->toDateString()
+            : $end->toDateString();
 
         $periods = [[
             'date' => $startDate,
@@ -149,6 +159,11 @@ final readonly class ZapScheduleService
             $this->scheduleService->delete($schedule);
         }
 
+        Schedule::query()
+            ->whereKey($event->zap_schedule_id)
+            ->orWhere('metadata->calendar_event_id', $event->getKey())
+            ->delete();
+
         if ($event->zap_schedule_id !== null) {
             $event->forceFill([
                 'zap_schedule_id' => null,
@@ -157,20 +172,28 @@ final readonly class ZapScheduleService
         }
     }
 
-    public function bookableSlotsForDate(User $user, string|Carbon $date, int $duration = 60, ?int $bufferMinutes = null): array
+    public function bookableSlotsForDate(User $user, string|Carbon $date, ?int $duration = null, ?int $bufferMinutes = null): array
     {
         $this->refreshBusinessHoursAvailability($user);
 
         $dateString = $date instanceof Carbon ? $date->toDateString() : $date;
 
-        return $user->getBookableSlots($dateString, $duration, $bufferMinutes);
+        return $user->getBookableSlots(
+            $dateString,
+            $this->resolveSlotDuration($duration),
+            $this->resolveBufferMinutes($bufferMinutes),
+        );
     }
 
-    public function nextBookableSlot(User $user, ?string $afterDate = null, int $duration = 60, ?int $bufferMinutes = null): ?array
+    public function nextBookableSlot(User $user, ?string $afterDate = null, ?int $duration = null, ?int $bufferMinutes = null): ?array
     {
         $this->refreshBusinessHoursAvailability($user);
 
-        return $user->getNextBookableSlot($afterDate, $duration, $bufferMinutes);
+        return $user->getNextBookableSlot(
+            $afterDate,
+            $this->resolveSlotDuration($duration),
+            $this->resolveBufferMinutes($bufferMinutes),
+        );
     }
 
     private function findExistingSchedule(CalendarEvent $event): ?Schedule
@@ -180,5 +203,15 @@ final readonly class ZapScheduleService
         }
 
         return Schedule::find($event->zap_schedule_id);
+    }
+
+    private function resolveSlotDuration(?int $duration): int
+    {
+        return max(1, $duration ?? (int) config('zap.time_slots.default_slot_duration_minutes', 60));
+    }
+
+    private function resolveBufferMinutes(?int $bufferMinutes): int
+    {
+        return max(0, $bufferMinutes ?? (int) config('zap.time_slots.buffer_minutes', 0));
     }
 }

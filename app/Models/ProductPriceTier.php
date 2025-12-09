@@ -14,11 +14,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * @property int $product_id
- * @property int $min_quantity
- * @property int|null $max_quantity
- * @property float $price
- * @property string $currency_code
+ * @property int         $product_id
+ * @property int         $min_quantity
+ * @property int|null    $max_quantity
+ * @property float       $price
+ * @property string      $currency_code
  * @property Carbon|null $starts_at
  * @property Carbon|null $ends_at
  */

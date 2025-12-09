@@ -10,7 +10,7 @@ use Illuminate\View\Component;
 final class Header extends Component
 {
     public function __construct(
-        public string $url
+        public string $url,
     ) {}
 
     public function render(): View

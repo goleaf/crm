@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 final class DuplicateDetectionService
 {
     /**
-     * @param  float  $threshold  Score threshold expressed as a percentage (0-100)
+     * @param float $threshold Score threshold expressed as a percentage (0-100)
      */
     public function findDuplicates(Company $company, float $threshold = 60.0, int $limit = 5): Collection
     {

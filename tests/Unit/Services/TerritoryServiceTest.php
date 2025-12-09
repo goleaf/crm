@@ -313,7 +313,7 @@ test('can transfer record between territories', function (): void {
         $fromTerritory,
         $toTerritory,
         $user,
-        'Rebalancing'
+        'Rebalancing',
     );
 
     expect($transfer)->not->toBeNull();

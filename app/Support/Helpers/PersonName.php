@@ -15,7 +15,7 @@ final class PersonName
             collect([$prefix, $first, $last])
                 ->map(fn (?string $value): string => trim((string) $value))
                 ->filter()
-                ->implode(' ')
+                ->implode(' '),
         );
 
         $suffix = trim((string) $suffix);
@@ -41,7 +41,7 @@ final class PersonName
         return PersonNameFormatter::initials(
             collect([$first, $last])->filter()->implode(' '),
             2,
-            ''
+            '',
         );
     }
 }

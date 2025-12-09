@@ -23,7 +23,7 @@ final class RecentNotes extends TableWidget
             ->query(
                 Note::query()
                     ->with(['creator', 'companies', 'people'])
-                    ->latest('created_at')
+                    ->latest('created_at'),
             )
             ->defaultPaginationPageOption(10)
             ->paginationPageOptions([5, 10, 25])
@@ -40,9 +40,9 @@ final class RecentNotes extends TableWidget
                 TextColumn::make('category')
                     ->label(__('app.labels.category'))
                     ->badge()
-                    ->formatStateUsing(fn (?string $state): string => NoteCategory::tryFrom((string) $state)?->label() ?? 'General'
+                    ->formatStateUsing(fn (?string $state): string => NoteCategory::tryFrom((string) $state)?->label() ?? 'General',
                     )
-                    ->color(fn (?string $state): string => NoteCategory::tryFrom((string) $state)?->color() ?? 'gray'
+                    ->color(fn (?string $state): string => NoteCategory::tryFrom((string) $state)?->color() ?? 'gray',
                     ),
 
                 TextColumn::make('visibility')
@@ -50,11 +50,11 @@ final class RecentNotes extends TableWidget
                     ->badge()
                     ->formatStateUsing(fn (NoteVisibility|string|null $state): string => $state instanceof NoteVisibility
                             ? $state->getLabel()
-                            : (NoteVisibility::tryFrom((string) $state)?->getLabel() ?? 'Internal')
+                            : (NoteVisibility::tryFrom((string) $state)?->getLabel() ?? 'Internal'),
                     )
                     ->color(fn (NoteVisibility|string|null $state): string => $state instanceof NoteVisibility
                             ? $state->color()
-                            : (NoteVisibility::tryFrom((string) $state)?->color() ?? 'primary')
+                            : (NoteVisibility::tryFrom((string) $state)?->color() ?? 'primary'),
                     ),
 
                 IconColumn::make('is_template')

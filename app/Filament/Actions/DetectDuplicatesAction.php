@@ -75,7 +75,7 @@ final class DetectDuplicatesAction
                     '• %s (%s) - %d%% match',
                     $lead->name,
                     $lead->email ?? 'no email',
-                    (int) $score
+                    (int) $score,
                 );
             } else {
                 /** @var Account $account */
@@ -84,7 +84,7 @@ final class DetectDuplicatesAction
                     '• %s (%s) - %d%% match',
                     $account->name,
                     $account->website ?? 'no website',
-                    (int) $score
+                    (int) $score,
                 );
             }
         }

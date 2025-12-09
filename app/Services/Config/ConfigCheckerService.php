@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 final readonly class ConfigCheckerService
 {
     public function __construct(
-        private int $cacheTtl = 300
+        private int $cacheTtl = 300,
     ) {}
 
     /**

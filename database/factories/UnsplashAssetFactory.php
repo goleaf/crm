@@ -57,7 +57,7 @@ final class UnsplashAssetFactory extends Factory
     public function downloaded(): static
     {
         return $this->state(fn (array $attributes): array => [
-            'local_path' => 'unsplash/'.$attributes['unsplash_id'].'.jpg',
+            'local_path' => 'unsplash/' . $attributes['unsplash_id'] . '.jpg',
             'downloaded_at' => now(),
         ]);
     }
@@ -82,9 +82,9 @@ final class UnsplashAssetFactory extends Factory
             'exif' => [
                 'make' => fake()->randomElement(['Canon', 'Nikon', 'Sony', 'Fujifilm']),
                 'model' => fake()->randomElement(['EOS R5', 'D850', 'A7R IV', 'X-T4']),
-                'exposure_time' => '1/'.fake()->numberBetween(100, 8000),
-                'aperture' => 'f/'.fake()->randomFloat(1, 1.4, 22),
-                'focal_length' => fake()->numberBetween(14, 600).'mm',
+                'exposure_time' => '1/' . fake()->numberBetween(100, 8000),
+                'aperture' => 'f/' . fake()->randomFloat(1, 1.4, 22),
+                'focal_length' => fake()->numberBetween(14, 600) . 'mm',
                 'iso' => fake()->randomElement([100, 200, 400, 800, 1600, 3200]),
             ],
         ]);

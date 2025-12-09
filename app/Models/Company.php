@@ -52,11 +52,11 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
- * @property string $name
- * @property string $address
- * @property string $country
- * @property string $phone
- * @property Carbon|null $deleted_at
+ * @property string         $name
+ * @property string         $address
+ * @property string         $country
+ * @property string         $phone
+ * @property Carbon|null    $deleted_at
  * @property CreationSource $creation_source
  * @property-read string $created_by
  * @property array<int, array<string, mixed>>|null $addresses
@@ -214,7 +214,7 @@ final class Company extends Model implements HasCustomFields, HasMedia
                 'team_id' => $this->team_id,
                 'role' => AccountTeamRole::OWNER,
                 'access_level' => AccountTeamAccessLevel::MANAGE,
-            ]
+            ],
         );
     }
 
@@ -273,7 +273,7 @@ final class Company extends Model implements HasCustomFields, HasMedia
     /**
      * Filter companies within an inclusive employee count range.
      *
-     * @param  Builder<self>  $query
+     * @param Builder<self> $query
      */
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
     protected function employeeCountBetween(Builder $query, ?int $minEmployees = null, ?int $maxEmployees = null): Builder
@@ -410,7 +410,7 @@ final class Company extends Model implements HasCustomFields, HasMedia
                 'type' => 'company',
                 'id' => $this->getKey(),
                 'title' => 'Company created',
-                'summary' => $this->creator?->name !== null ? 'Created by '.$this->creator->name : 'Created',
+                'summary' => $this->creator?->name !== null ? 'Created by ' . $this->creator->name : 'Created',
                 'created_at' => $this->created_at,
             ],
         ]);
@@ -444,7 +444,7 @@ final class Company extends Model implements HasCustomFields, HasMedia
                         $this->extractCustomFieldValue($noteField, $note),
                     ]),
                     'created_at' => $note->created_at,
-                ])
+                ]),
         );
 
         $timeline = $timeline->merge(
@@ -457,7 +457,7 @@ final class Company extends Model implements HasCustomFields, HasMedia
                     'title' => $task->title,
                     'summary' => $this->formatTaskSummary($task, $taskStatusField, $taskPriorityField, $taskDescriptionField),
                     'created_at' => $task->created_at,
-                ])
+                ]),
         );
 
         $timeline = $timeline->merge(
@@ -470,7 +470,7 @@ final class Company extends Model implements HasCustomFields, HasMedia
                     'title' => $opportunity->name,
                     'summary' => $this->formatOpportunitySummary($opportunity, $opportunityStageField, $opportunityAmountField),
                     'created_at' => $opportunity->created_at,
-                ])
+                ]),
         );
 
         return $timeline
@@ -511,16 +511,16 @@ final class Company extends Model implements HasCustomFields, HasMedia
         Task $task,
         ?CustomField $statusField,
         ?CustomField $priorityField,
-        ?CustomField $descriptionField
+        ?CustomField $descriptionField,
     ): string {
         $parts = [];
 
         if ($statusField instanceof \Relaticle\CustomFields\Models\CustomField) {
-            $parts[] = 'Status: '.$this->optionLabel($statusField, $this->extractCustomFieldValue($statusField, $task));
+            $parts[] = 'Status: ' . $this->optionLabel($statusField, $this->extractCustomFieldValue($statusField, $task));
         }
 
         if ($priorityField instanceof \Relaticle\CustomFields\Models\CustomField) {
-            $parts[] = 'Priority: '.$this->optionLabel($priorityField, $this->extractCustomFieldValue($priorityField, $task));
+            $parts[] = 'Priority: ' . $this->optionLabel($priorityField, $this->extractCustomFieldValue($priorityField, $task));
         }
 
         if ($descriptionField instanceof \Relaticle\CustomFields\Models\CustomField) {
@@ -535,13 +535,13 @@ final class Company extends Model implements HasCustomFields, HasMedia
         $parts = [];
 
         if ($stageField instanceof \Relaticle\CustomFields\Models\CustomField) {
-            $parts[] = 'Stage: '.$this->optionLabel($stageField, $this->extractCustomFieldValue($stageField, $opportunity));
+            $parts[] = 'Stage: ' . $this->optionLabel($stageField, $this->extractCustomFieldValue($stageField, $opportunity));
         }
 
         if ($amountField instanceof \Relaticle\CustomFields\Models\CustomField) {
             $amount = $this->extractCustomFieldValue($amountField, $opportunity);
             if (is_numeric($amount)) {
-                $parts[] = 'Amount: $'.number_format((float) $amount, 2);
+                $parts[] = 'Amount: $' . number_format((float) $amount, 2);
             }
         }
 
@@ -564,9 +564,9 @@ final class Company extends Model implements HasCustomFields, HasMedia
         $filtered = array_filter(
             array_map(
                 static fn (mixed $value): string => trim((string) $value),
-                $parts
+                $parts,
             ),
-            static fn (string $value): bool => $value !== ''
+            static fn (string $value): bool => $value !== '',
         );
 
         return implode(' • ', $filtered);
@@ -726,7 +726,7 @@ final class Company extends Model implements HasCustomFields, HasMedia
     }
 
     /**
-     * @param  array<int, array<string, mixed>>  $addresses
+     * @param array<int, array<string, mixed>> $addresses
      */
     private function syncLegacyAddressColumns(array $addresses): void
     {
@@ -767,7 +767,8 @@ final class Company extends Model implements HasCustomFields, HasMedia
     }
 
     /**
-     * @param  array<int, array<string, mixed>>  $addresses
+     * @param array<int, array<string, mixed>> $addresses
+     *
      * @return array<int, array<string, mixed>>
      */
     private function mergeLegacyAddresses(array $addresses): array

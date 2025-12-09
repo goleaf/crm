@@ -111,7 +111,7 @@ final readonly class TesseractDriver implements DriverInterface
             throw new OCRException("Tesseract execution failed: {$e->getMessage()}", 0, $e);
         }
 
-        $textFile = $outputPath.'.txt';
+        $textFile = $outputPath . '.txt';
 
         if (! File::exists($textFile)) {
             throw new OCRException('Tesseract did not produce output file');
@@ -131,7 +131,7 @@ final readonly class TesseractDriver implements DriverInterface
             File::makeDirectory($tempDir, 0755, true);
         }
 
-        return $tempDir.'/'.uniqid('ocr_', true);
+        return $tempDir . '/' . uniqid('ocr_', true);
     }
 
     private function calculateConfidence(string $text): float

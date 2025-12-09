@@ -73,7 +73,8 @@ return [
     |
     */
     'time_slots' => [
-        'buffer_minutes' => 0, // Buffer time between sessions (e.g., 10 minutes between appointments)
+        'default_slot_duration_minutes' => 60, // Default slot length for bookable windows
+        'buffer_minutes' => 15, // Buffer time between sessions (e.g., 10 minutes between appointments)
     ],
 
     /*

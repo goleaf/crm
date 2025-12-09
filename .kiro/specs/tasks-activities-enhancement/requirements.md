@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This specification defines the enhancement and completion of the Tasks & Activities system within the CRM application. The system currently has foundational models for Tasks, Notes, and Activities but requires additional features to provide comprehensive task management, note-taking, and activity tracking capabilities. This enhancement will enable users to effectively manage their work, collaborate on tasks, track time, and maintain a complete audit trail of all CRM activities.
+This specification defines the enhancement and completion of the Tasks & Activities system within the CRM application. The system currently has foundational models for Tasks, Notes, and Activities but requires additional features to provide comprehensive task management, note-taking, and activity tracking capabilities. This enhancement will enable users to effectively manage their work through timeline-based tracking, advanced filtering, employee profile integration, task breakdown structures, and workflow automation. Users will be able to collaborate on tasks, track time, visualize project timelines, and maintain a complete audit trail of all CRM activities.
 
 ## Glossary
 
@@ -23,6 +23,15 @@ This specification defines the enhancement and completion of the Tasks & Activit
 - **Task Priority**: The relative importance or urgency of a task
 - **Task Template**: A reusable task configuration for common workflows
 - **Billable Time**: Time entries that can be invoiced to clients
+- **Timeline View**: A visual representation of tasks displayed as horizontal bars on a time-based axis
+- **Gantt Chart**: A project management view showing task schedules, dependencies, and progress over time
+- **Saved Filter**: A named combination of filter criteria that can be reused and shared
+- **Employee Workload**: The total assigned tasks and estimated hours for an employee
+- **Capacity Threshold**: The maximum workload an employee can handle in a given time period
+- **Workflow Trigger**: A condition that automatically initiates task creation or other actions
+- **Bulk Action**: An operation performed on multiple selected tasks simultaneously
+- **Task Export**: The process of converting task data to external file formats
+- **Smart Suggestion**: An AI-powered recommendation based on historical task patterns
 
 ## Requirements
 
@@ -315,8 +324,108 @@ This specification defines the enhancement and completion of the Tasks & Activit
 
 ### Requirement 25
 
-**User Story:** As a user, I want tasks and notes to invalidate related AI summaries, so that summaries stay current with changes.
+**User Story:** As a user, I want to @mention team members in task descriptions and comments, so that I can notify specific people about important information.
 
 #### Acceptance Criteria
 
-_AI summary requirements removed as feature has been deprecated._
+1. WHEN a user types @ followed by a username in a task description or comment THEN the Task System SHALL display an autocomplete list of team members
+2. WHEN a user mentions another user THEN the Task System SHALL create a mention record linking the user to the task
+3. WHEN a user is mentioned THEN the Task System SHALL send a notification to the mentioned user
+4. WHEN a user views a task where they are mentioned THEN the Task System SHALL highlight their mention
+5. WHEN a user views their mentions list THEN the Task System SHALL display all tasks where they have been mentioned
+
+### Requirement 26
+
+**User Story:** As a project manager, I want to view tasks in a timeline/Gantt chart view, so that I can visualize project schedules and dependencies.
+
+#### Acceptance Criteria
+
+1. WHEN a user views the timeline view THEN the Task System SHALL display all tasks as horizontal bars positioned by their start and end dates
+2. WHEN a user views task dependencies in timeline view THEN the Task System SHALL display visual connectors between dependent tasks
+3. WHEN a user drags a task bar in timeline view THEN the Task System SHALL update the task's start and end dates
+4. WHEN a user zooms the timeline view THEN the Task System SHALL adjust the time scale (day, week, month, quarter views)
+5. WHEN a user filters tasks in timeline view THEN the Task System SHALL update the timeline to show only filtered tasks
+
+### Requirement 27
+
+**User Story:** As a user, I want advanced filtering with multiple criteria combinations, so that I can quickly find specific tasks.
+
+#### Acceptance Criteria
+
+1. WHEN a user applies multiple filters THEN the Task System SHALL combine all filter criteria using AND logic
+2. WHEN a user saves a filter combination THEN the Task System SHALL store the filter as a named saved filter
+3. WHEN a user applies a saved filter THEN the Task System SHALL restore all filter criteria and apply them to the task list
+4. WHEN a user shares a saved filter THEN the Task System SHALL make the filter available to specified team members
+5. WHEN a user views filter results THEN the Task System SHALL display the count of matching tasks and active filter criteria
+
+### Requirement 28
+
+**User Story:** As a manager, I want to view employee workload and task distribution, so that I can balance work assignments effectively.
+
+#### Acceptance Criteria
+
+1. WHEN a manager views employee workload THEN the Task System SHALL display each employee's assigned task count and total estimated hours
+2. WHEN a manager views workload by time period THEN the Task System SHALL show task distribution across days, weeks, or months
+3. WHEN a manager identifies overloaded employees THEN the Task System SHALL highlight employees exceeding capacity thresholds
+4. WHEN a manager views employee availability THEN the Task System SHALL display time off and existing commitments
+5. WHEN a manager reassigns tasks THEN the Task System SHALL update workload calculations in real-time
+
+### Requirement 29
+
+**User Story:** As a user, I want to link tasks to projects with automatic project timeline updates, so that project schedules stay current.
+
+#### Acceptance Criteria
+
+1. WHEN a user links a task to a project THEN the Task System SHALL create a relationship between the task and project
+2. WHEN a task's dates change THEN the Task System SHALL recalculate the project's start and end dates based on all linked tasks
+3. WHEN a user views a project THEN the Task System SHALL display all linked tasks grouped by status
+4. WHEN a user filters project tasks THEN the Task System SHALL provide project-specific filtering options
+5. WHEN a project milestone task is completed THEN the Task System SHALL update the project's milestone completion status
+
+### Requirement 30
+
+**User Story:** As a user, I want automated task creation based on workflow triggers, so that routine tasks are created automatically.
+
+#### Acceptance Criteria
+
+1. WHEN a workflow trigger condition is met THEN the Task System SHALL automatically create tasks defined in the workflow
+2. WHEN a task is created by workflow THEN the Task System SHALL populate all fields from the workflow template
+3. WHEN a workflow creates multiple tasks THEN the Task System SHALL establish dependencies as defined in the workflow
+4. WHEN a workflow-created task is completed THEN the Task System SHALL trigger any subsequent workflow actions
+5. WHEN a user views a workflow-created task THEN the Task System SHALL display the originating workflow name
+
+### Requirement 31
+
+**User Story:** As a user, I want to bulk update multiple tasks simultaneously, so that I can efficiently manage large task sets.
+
+#### Acceptance Criteria
+
+1. WHEN a user selects multiple tasks THEN the Task System SHALL enable bulk action options
+2. WHEN a user bulk updates task status THEN the Task System SHALL update all selected tasks to the new status
+3. WHEN a user bulk assigns tasks THEN the Task System SHALL add the specified assignees to all selected tasks
+4. WHEN a user bulk updates dates THEN the Task System SHALL apply the date changes to all selected tasks
+5. WHEN a user bulk deletes tasks THEN the Task System SHALL soft delete all selected tasks and send confirmation
+
+### Requirement 32
+
+**User Story:** As a user, I want to export tasks to external formats, so that I can share task data with external tools.
+
+#### Acceptance Criteria
+
+1. WHEN a user exports tasks to CSV THEN the Task System SHALL generate a CSV file with all task fields and relationships
+2. WHEN a user exports tasks to Excel THEN the Task System SHALL generate an Excel file with formatted columns and filters
+3. WHEN a user exports tasks to iCalendar THEN the Task System SHALL generate an ICS file with tasks as calendar events
+4. WHEN a user exports filtered tasks THEN the Task System SHALL export only tasks matching the current filter criteria
+5. WHEN a user exports tasks with subtasks THEN the Task System SHALL include subtask hierarchy in the export
+
+### Requirement 33
+
+**User Story:** As a user, I want to receive smart task suggestions based on my work patterns, so that I can work more efficiently.
+
+#### Acceptance Criteria
+
+1. WHEN a user views task suggestions THEN the Task System SHALL analyze historical task patterns and suggest similar tasks
+2. WHEN a user creates a task similar to previous tasks THEN the Task System SHALL suggest assignees based on past assignments
+3. WHEN a user sets task dates THEN the Task System SHALL suggest realistic durations based on historical data
+4. WHEN a user views overdue tasks THEN the Task System SHALL suggest priority adjustments based on urgency
+5. WHEN a user views task dependencies THEN the Task System SHALL suggest potential dependency relationships based on task patterns

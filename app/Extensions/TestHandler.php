@@ -12,7 +12,8 @@ final class TestHandler
     /**
      * Handle extension execution.
      *
-     * @param  array<string, mixed>  $context
+     * @param array<string, mixed> $context
+     *
      * @return array<string, mixed>
      */
     public function handle(array $context): array

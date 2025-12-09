@@ -74,7 +74,7 @@ final class TasksBoard extends BoardPage
                         $join->on('tasks.id', '=', 'cfv.entity_id')
                             ->where('cfv.custom_field_id', '=', $this->statusCustomField()->getKey());
                     })
-                    ->select('tasks.*', 'cfv.integer_value')
+                    ->select('tasks.*', 'cfv.integer_value'),
             )
             ->recordTitleAttribute('title')
             ->columnIdentifier('cfv.integer_value')
@@ -168,7 +168,7 @@ final class TasksBoard extends BoardPage
         string $cardId,
         string $targetColumnId,
         ?string $afterCardId = null,
-        ?string $beforeCardId = null
+        ?string $beforeCardId = null,
     ): void {
         $board = $this->getBoard();
         $query = $board->getQuery();
@@ -216,7 +216,7 @@ final class TasksBoard extends BoardPage
     {
         return $this->statuses()->map(fn (array $status): Column => Column::make((string) $status['id'])
             ->color($status['color'])
-            ->label($status['name'])
+            ->label($status['name']),
         )->toArray();
     }
 

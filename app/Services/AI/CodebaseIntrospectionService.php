@@ -116,7 +116,7 @@ final readonly class CodebaseIntrospectionService
     }
 
     /**
-     * @param  list<string>  $namespaces
+     * @param list<string> $namespaces
      */
     private function matchesNamespace(string $class, array $namespaces): bool
     {
@@ -128,7 +128,8 @@ final readonly class CodebaseIntrospectionService
     }
 
     /**
-     * @param  Collection<string, ModelProperty>  $properties
+     * @param Collection<string, ModelProperty> $properties
+     *
      * @return list<array<string, mixed>>
      */
     private function mapProperties(Collection $properties): array

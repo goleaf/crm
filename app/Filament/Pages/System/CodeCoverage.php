@@ -11,13 +11,13 @@ use Filament\Pages\Page;
 use Filament\Support\Enums\IconPosition;
 use Illuminate\Support\Facades\File;
 
-class CodeCoverage extends Page
+final class CodeCoverage extends Page
 {
     protected string $view = 'filament.pages.system.code-coverage';
 
     protected static ?int $navigationSort = 50;
 
-    public static function getNavigationIcon(): ?string
+    public static function getNavigationIcon(): string
     {
         return 'heroicon-o-chart-bar';
     }
@@ -31,7 +31,7 @@ class CodeCoverage extends Page
     public bool $pcovEnabled = false;
 
     public function __construct(
-        private readonly CodeCoverageService $coverageService
+        private readonly CodeCoverageService $coverageService,
     ) {
         parent::__construct();
     }
@@ -69,7 +69,7 @@ class CodeCoverage extends Page
                 ->icon('heroicon-o-play-circle')
                 ->iconPosition(IconPosition::Before)
                 ->color('primary')
-                ->action(function () {
+                ->action(function (): void {
                     $result = $this->coverageService->runCoverage(html: true);
 
                     if ($result['success']) {
@@ -98,7 +98,7 @@ class CodeCoverage extends Page
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('gray')
                 ->visible(fn () => File::exists(base_path('coverage-html/index.html')))
-                ->url(fn () => asset('coverage-html/index.html'))
+                ->url(fn (): string => asset('coverage-html/index.html'))
                 ->openUrlInNewTab(),
 
             Action::make('download_xml')
@@ -106,15 +106,13 @@ class CodeCoverage extends Page
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
                 ->visible(fn () => File::exists(base_path('coverage.xml')))
-                ->action(function () {
-                    return response()->download(base_path('coverage.xml'));
-                }),
+                ->action(fn () => response()->download(base_path('coverage.xml'))),
 
             Action::make('clear_cache')
                 ->label(__('app.actions.clear_cache'))
                 ->icon('heroicon-o-trash')
                 ->color('danger')
-                ->action(function () {
+                ->action(function (): void {
                     $this->coverageService->clearCache();
                     $this->loadCoverageData();
 

@@ -73,7 +73,7 @@ final class ResourceAllocationPropertyTest extends PropertyTestCase
             $this->assertEquals(
                 $totalAllocated,
                 $calculatedTotal,
-                'Total allocation should equal sum of all allocations'
+                'Total allocation should equal sum of all allocations',
             );
         }, 100);
     }
@@ -105,7 +105,7 @@ final class ResourceAllocationPropertyTest extends PropertyTestCase
             // Property: Employee should be flagged as over-allocated
             $this->assertTrue(
                 $employee->isOverAllocated(),
-                'Employee with >100% allocation should be flagged as over-allocated'
+                'Employee with >100% allocation should be flagged as over-allocated',
             );
 
             // Property: Total allocation should be 110%
@@ -133,7 +133,7 @@ final class ResourceAllocationPropertyTest extends PropertyTestCase
             $this->assertEquals(
                 $expectedCapacity,
                 $availableCapacity,
-                'Available capacity should equal 100 minus allocated percentage'
+                'Available capacity should equal 100 minus allocated percentage',
             );
         }, 100);
     }

@@ -60,7 +60,7 @@ final class SystemAdministratorsTable
                         collect(SystemAdministratorRole::cases())
                             ->mapWithKeys(fn (SystemAdministratorRole $role): array => [
                                 $role->value => $role->getLabel(),
-                            ])
+                            ]),
                     ),
 
                 TernaryFilter::make('email_verified_at')

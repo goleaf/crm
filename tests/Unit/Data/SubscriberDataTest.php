@@ -10,7 +10,7 @@ test('can create subscriber data', function (): void {
         first_name: 'John',
         last_name: 'Doe',
         tags: ['newsletter', 'customer'],
-        skip_confirmation: true
+        skip_confirmation: true,
     );
 
     expect($subscriber->email)->toBe('test@example.com')

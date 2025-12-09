@@ -14,14 +14,14 @@ final class ActivityService
     /**
      * Log an activity for a model.
      *
-     * @param  array<string, mixed>  $changes
+     * @param array<string, mixed> $changes
      */
     public function log(
         Model $subject,
         string $event,
         ?array $changes = null,
         ?User $causer = null,
-        ?Team $team = null
+        ?Team $team = null,
     ): Activity {
         // Resolve causer
         if (! $causer instanceof \App\Models\User && auth()->check()) {

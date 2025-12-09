@@ -11,8 +11,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * @property Carbon|null $published_at
- * @property ArticleStatus $status
+ * @property Carbon|null       $published_at
+ * @property ArticleStatus     $status
  * @property ArticleVisibility $visibility
  */
 final class KnowledgeArticleVersion extends Model

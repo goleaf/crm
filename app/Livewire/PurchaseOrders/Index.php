@@ -115,8 +115,8 @@ final class Index extends BaseLivewireComponent
             ->when($teamId !== null, fn (Builder $query): Builder => $query->where('team_id', $teamId))
             ->when($this->search !== '', fn (Builder $query): Builder => $query->where(function (Builder $builder): void {
                 $builder
-                    ->where('number', 'like', '%'.$this->search.'%')
-                    ->orWhereHas('vendor', fn (Builder $vendorQuery): Builder => $vendorQuery->where('name', 'like', '%'.$this->search.'%'));
+                    ->where('number', 'like', '%' . $this->search . '%')
+                    ->orWhereHas('vendor', fn (Builder $vendorQuery): Builder => $vendorQuery->where('name', 'like', '%' . $this->search . '%'));
             }))
             ->when($this->status !== null && $this->status !== '', fn (Builder $query): Builder => $query->where('status', $this->status))
             ->when($this->vendorId !== null, fn (Builder $query): Builder => $query->where('vendor_id', $this->vendorId))

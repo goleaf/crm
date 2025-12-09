@@ -21,7 +21,7 @@ final class TaskRelatedGenerator
     /**
      * Generate a task reminder.
      *
-     * @param  array<string, mixed>  $overrides
+     * @param array<string, mixed> $overrides
      */
     public static function generateReminder(Task $task, ?User $user = null, array $overrides = []): TaskReminder
     {
@@ -41,7 +41,7 @@ final class TaskRelatedGenerator
     /**
      * Generate a task recurrence pattern.
      *
-     * @param  array<string, mixed>  $overrides
+     * @param array<string, mixed> $overrides
      */
     public static function generateRecurrence(Task $task, array $overrides = []): TaskRecurrence
     {
@@ -63,13 +63,13 @@ final class TaskRelatedGenerator
     /**
      * Generate a task delegation.
      *
-     * @param  array<string, mixed>  $overrides
+     * @param array<string, mixed> $overrides
      */
     public static function generateDelegation(
         Task $task,
         User $fromUser,
         User $toUser,
-        array $overrides = []
+        array $overrides = [],
     ): TaskDelegation {
         $data = array_merge([
             'task_id' => $task->id,
@@ -86,7 +86,7 @@ final class TaskRelatedGenerator
     /**
      * Generate a task checklist item.
      *
-     * @param  array<string, mixed>  $overrides
+     * @param array<string, mixed> $overrides
      */
     public static function generateChecklistItem(Task $task, array $overrides = []): TaskChecklistItem
     {
@@ -103,7 +103,8 @@ final class TaskRelatedGenerator
     /**
      * Generate multiple checklist items.
      *
-     * @param  int  $count  Number of items to generate
+     * @param int $count Number of items to generate
+     *
      * @return array<TaskChecklistItem>
      */
     public static function generateChecklistItems(Task $task, int $count = 3): array
@@ -120,7 +121,7 @@ final class TaskRelatedGenerator
     /**
      * Generate a task comment.
      *
-     * @param  array<string, mixed>  $overrides
+     * @param array<string, mixed> $overrides
      */
     public static function generateComment(Task $task, ?User $user = null, array $overrides = []): TaskComment
     {
@@ -138,7 +139,7 @@ final class TaskRelatedGenerator
     /**
      * Generate a task time entry.
      *
-     * @param  array<string, mixed>  $overrides
+     * @param array<string, mixed> $overrides
      */
     public static function generateTimeEntry(Task $task, ?User $user = null, array $overrides = []): TaskTimeEntry
     {
@@ -165,7 +166,8 @@ final class TaskRelatedGenerator
     /**
      * Generate multiple time entries.
      *
-     * @param  int  $count  Number of entries to generate
+     * @param int $count Number of entries to generate
+     *
      * @return array<TaskTimeEntry>
      */
     public static function generateTimeEntries(Task $task, User $user, int $count = 3): array

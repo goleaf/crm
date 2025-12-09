@@ -22,8 +22,8 @@ use Zap\Models\Schedule;
 
 /**
  * @property CalendarEventStatus $status
- * @property CalendarEventType $type
- * @property CalendarSyncStatus $sync_status
+ * @property CalendarEventType   $type
+ * @property CalendarSyncStatus  $sync_status
  */
 #[ObservedBy(CalendarEventObserver::class)]
 final class CalendarEvent extends Model
@@ -35,6 +35,20 @@ final class CalendarEvent extends Model
 
     use HasTeam;
     use SoftDeletes;
+
+    protected static function booted(): void
+    {
+        static::deleted(function (self $event): void {
+            resolve(\App\Services\ZapScheduleService::class)->deleteCalendarEventSchedule($event);
+        });
+    }
+
+    protected function performDeleteOnModel(): void
+    {
+        resolve(\App\Services\ZapScheduleService::class)->deleteCalendarEventSchedule($this);
+
+        parent::performDeleteOnModel();
+    }
 
     /**
      * @var list<string>
@@ -179,13 +193,13 @@ final class CalendarEvent extends Model
     /**
      * Scope to filter events within a date range.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<CalendarEvent>  $query
+     * @param \Illuminate\Database\Eloquent\Builder<CalendarEvent> $query
      */
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
     protected function inDateRange(
         \Illuminate\Database\Eloquent\Builder $query,
         \DateTimeInterface $start,
-        \DateTimeInterface $end
+        \DateTimeInterface $end,
     ): \Illuminate\Database\Eloquent\Builder {
         return $query->whereBetween('start_at', [$start, $end]);
     }
@@ -193,12 +207,12 @@ final class CalendarEvent extends Model
     /**
      * Scope to filter events by team.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<CalendarEvent>  $query
+     * @param \Illuminate\Database\Eloquent\Builder<CalendarEvent> $query
      */
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
     protected function forTeam(
         \Illuminate\Database\Eloquent\Builder $query,
-        int $teamId
+        int $teamId,
     ): \Illuminate\Database\Eloquent\Builder {
         return $query->where('team_id', $teamId);
     }
@@ -206,13 +220,13 @@ final class CalendarEvent extends Model
     /**
      * Scope to filter events by types.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<CalendarEvent>  $query
-     * @param  array<string>  $types
+     * @param \Illuminate\Database\Eloquent\Builder<CalendarEvent> $query
+     * @param array<string>                                        $types
      */
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
     protected function ofTypes(
         \Illuminate\Database\Eloquent\Builder $query,
-        array $types
+        array $types,
     ): \Illuminate\Database\Eloquent\Builder {
         return $query->whereIn('type', $types);
     }
@@ -220,13 +234,13 @@ final class CalendarEvent extends Model
     /**
      * Scope to filter events by statuses.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<CalendarEvent>  $query
-     * @param  array<string>  $statuses
+     * @param \Illuminate\Database\Eloquent\Builder<CalendarEvent> $query
+     * @param array<string>                                        $statuses
      */
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
     protected function withStatuses(
         \Illuminate\Database\Eloquent\Builder $query,
-        array $statuses
+        array $statuses,
     ): \Illuminate\Database\Eloquent\Builder {
         return $query->whereIn('status', $statuses);
     }
@@ -234,12 +248,12 @@ final class CalendarEvent extends Model
     /**
      * Scope to search events by text.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<CalendarEvent>  $query
+     * @param \Illuminate\Database\Eloquent\Builder<CalendarEvent> $query
      */
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
     protected function search(
         \Illuminate\Database\Eloquent\Builder $query,
-        string $search
+        string $search,
     ): \Illuminate\Database\Eloquent\Builder {
         return $query->where(function (\Illuminate\Contracts\Database\Query\Builder $q) use ($search): void {
             $q->where('title', 'like', "%{$search}%")
@@ -251,11 +265,11 @@ final class CalendarEvent extends Model
     /**
      * Scope to eager load common relationships.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder<CalendarEvent>  $query
+     * @param \Illuminate\Database\Eloquent\Builder<CalendarEvent> $query
      */
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
     protected function withCommonRelations(
-        \Illuminate\Database\Eloquent\Builder $query
+        \Illuminate\Database\Eloquent\Builder $query,
     ): \Illuminate\Database\Eloquent\Builder {
         return $query->with(['creator:id,name', 'team:id,name']);
     }

@@ -122,7 +122,7 @@ test('property: exact email matches for leads produce high similarity scores', f
 // Property: Exact domain matches for accounts score highly
 test('property: exact domain matches for accounts produce high similarity scores', function (): void {
     $team = Team::factory()->create();
-    $domain = 'https://'.fake()->unique()->domainName();
+    $domain = 'https://' . fake()->unique()->domainName();
 
     $account1 = Account::factory()->create([
         'team_id' => $team->id,

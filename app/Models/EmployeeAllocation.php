@@ -9,11 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
- * @property int $id
- * @property int $employee_id
- * @property string $allocatable_type
- * @property int $allocatable_id
- * @property float $allocation_percentage
+ * @property int                             $id
+ * @property int                             $employee_id
+ * @property string                          $allocatable_type
+ * @property int                             $allocatable_id
+ * @property float                           $allocation_percentage
  * @property \Illuminate\Support\Carbon|null $start_date
  * @property \Illuminate\Support\Carbon|null $end_date
  * @property \Illuminate\Support\Carbon|null $created_at

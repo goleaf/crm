@@ -31,7 +31,7 @@ it('verifies valid email addresses', function (): void {
     $service = new ExampleEmailVerificationService(
         apiKey: 'test-key',
         apiUrl: 'https://api.emailverification.com',
-        timeout: 10
+        timeout: 10,
     );
 
     $result = $service->verify('john@example.com');
@@ -54,7 +54,7 @@ it('detects disposable email addresses', function (): void {
     $service = new ExampleEmailVerificationService(
         apiKey: 'test-key',
         apiUrl: 'https://api.emailverification.com',
-        timeout: 10
+        timeout: 10,
     );
 
     $result = $service->verify('temp@tempmail.com');
@@ -76,7 +76,7 @@ it('detects invalid email addresses', function (): void {
     $service = new ExampleEmailVerificationService(
         apiKey: 'test-key',
         apiUrl: 'https://api.emailverification.com',
-        timeout: 10
+        timeout: 10,
     );
 
     $result = $service->verify('invalid-email');
@@ -95,7 +95,7 @@ it('handles API failures gracefully', function (): void {
     $service = new ExampleEmailVerificationService(
         apiKey: 'test-key',
         apiUrl: 'https://api.emailverification.com',
-        timeout: 10
+        timeout: 10,
     );
 
     $result = $service->verify('john@example.com');
@@ -116,7 +116,7 @@ it('handles network exceptions gracefully', function (): void {
     $service = new ExampleEmailVerificationService(
         apiKey: 'test-key',
         apiUrl: 'https://api.emailverification.com',
-        timeout: 10
+        timeout: 10,
     );
 
     $result = $service->verify('john@example.com');
@@ -137,7 +137,7 @@ it('verifies multiple emails in batch', function (): void {
     $service = new ExampleEmailVerificationService(
         apiKey: 'test-key',
         apiUrl: 'https://api.emailverification.com',
-        timeout: 10
+        timeout: 10,
     );
 
     $results = $service->verifyBatch([
@@ -185,7 +185,7 @@ it('sends correct API request', function (): void {
     $service = new ExampleEmailVerificationService(
         apiKey: 'test-key',
         apiUrl: 'https://api.emailverification.com',
-        timeout: 10
+        timeout: 10,
     );
 
     $service->verify('john@example.com');

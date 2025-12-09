@@ -61,6 +61,7 @@ it('rolls back on transaction failure', function (): void {
     try {
         \DB::transaction(function (): void {
             $this->service->set('rollback.key', 'value', 'string', 'general');
+
             throw new \Exception('Force rollback');
         });
     } catch (\Exception) {

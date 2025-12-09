@@ -11,15 +11,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @property int $id
- * @property int $team_id
- * @property int|null $creator_id
- * @property string $name
- * @property string|null $description
- * @property int|null $estimated_duration_minutes
- * @property bool $is_milestone
- * @property array|null $default_assignees
- * @property array|null $checklist_items
+ * @property int                             $id
+ * @property int                             $team_id
+ * @property int|null                        $creator_id
+ * @property string                          $name
+ * @property string|null                     $description
+ * @property int|null                        $estimated_duration_minutes
+ * @property bool                            $is_milestone
+ * @property array|null                      $default_assignees
+ * @property array|null                      $checklist_items
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  */
@@ -69,7 +69,7 @@ final class TaskTemplate extends Model
             self::class,
             'task_template_dependencies',
             'task_template_id',
-            'depends_on_template_id'
+            'depends_on_template_id',
         )->withTimestamps();
     }
 
@@ -82,14 +82,14 @@ final class TaskTemplate extends Model
             self::class,
             'task_template_dependencies',
             'depends_on_template_id',
-            'task_template_id'
+            'task_template_id',
         )->withTimestamps();
     }
 
     /**
      * Create a task from this template.
      *
-     * @param  array<string, mixed>  $overrides
+     * @param array<string, mixed> $overrides
      */
     public function createTask(array $overrides = []): Task
     {

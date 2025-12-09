@@ -66,7 +66,7 @@ final class CaseQueueRoutingService
     /**
      * Check if a case matches a routing rule.
      *
-     * @param  array<string, mixed>  $rule
+     * @param array<string, mixed> $rule
      */
     private function matchesRule(SupportCase $case, array $rule): bool
     {

@@ -9,12 +9,12 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 /**
  * Model for storing flexible metadata on any model.
  *
- * @property int $id
- * @property string $metable_type
- * @property int $metable_id
- * @property string $type
- * @property string $key
- * @property mixed $value
+ * @property int                        $id
+ * @property string                     $metable_type
+ * @property int                        $metable_id
+ * @property string                     $type
+ * @property string                     $key
+ * @property mixed                      $value
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  */

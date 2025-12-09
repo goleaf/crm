@@ -63,7 +63,7 @@ it('caches results with correct cache key', function (): void {
         ->with(
             "team.{$this->team->id}.activity.page.1.per.25",
             300,
-            \Mockery::type('Closure')
+            \Mockery::type('Closure'),
         )
         ->andReturn($this->service->getTeamActivity($this->team->id));
 

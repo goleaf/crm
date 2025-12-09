@@ -9,12 +9,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property int $id
- * @property int $primary_company_id
- * @property int $duplicate_company_id
- * @property int|null $merged_by_user_id
- * @property array|null $field_selections
- * @property array|null $transferred_relationships
+ * @property int                        $id
+ * @property int                        $primary_company_id
+ * @property int                        $duplicate_company_id
+ * @property int|null                   $merged_by_user_id
+ * @property array|null                 $field_selections
+ * @property array|null                 $transferred_relationships
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  */

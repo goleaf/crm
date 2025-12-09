@@ -47,7 +47,7 @@ final class LogoutOtherBrowserSessions extends BaseLivewireComponent
                                         ->currentPassword(),
                                 ])
                                 ->action(
-                                    fn (array $data) => $this->logoutOtherBrowserSessions($data['password'])
+                                    fn (array $data) => $this->logoutOtherBrowserSessions($data['password']),
                                 ),
                         ]),
                     ]),
@@ -71,7 +71,7 @@ final class LogoutOtherBrowserSessions extends BaseLivewireComponent
         request()
             ->session()
             ->put([
-                'password_hash_'.Auth::getDefaultDriver() => filament()->auth()->user()->getAuthPassword(),
+                'password_hash_' . Auth::getDefaultDriver() => filament()->auth()->user()->getAuthPassword(),
             ]);
 
         $this->sendNotification(__('profile.notifications.logged_out_other_sessions.success'));

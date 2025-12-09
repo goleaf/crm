@@ -52,7 +52,7 @@ final class BusinessOverviewWidget extends BaseWidget
                     'class' => 'relative overflow-hidden',
                 ]),
 
-            Stat::make('Avg Sales Cycle', $businessData['avg_sales_cycle'].' days')
+            Stat::make('Avg Sales Cycle', $businessData['avg_sales_cycle'] . ' days')
                 ->description($this->getSalesCycleDescription($businessData['avg_sales_cycle']))
                 ->descriptionIcon('heroicon-o-clock')
                 ->color('warning')
@@ -60,7 +60,7 @@ final class BusinessOverviewWidget extends BaseWidget
                     'class' => 'relative overflow-hidden',
                 ]),
 
-            Stat::make('Task Completion', $businessData['completion_rate'].'%')
+            Stat::make('Task Completion', $businessData['completion_rate'] . '%')
                 ->description($this->getCompletionDescription($businessData['completion_rate']))
                 ->descriptionIcon($this->getCompletionIcon($businessData['completion_rate']))
                 ->color($this->getCompletionColor($businessData['completion_rate']))
@@ -203,9 +203,9 @@ final class BusinessOverviewWidget extends BaseWidget
     private function formatCurrency(float $amount): string
     {
         return match (true) {
-            $amount >= 1000000 => '$'.number_format($amount / 1000000, 1).'M',
-            $amount >= 1000 => '$'.number_format($amount / 1000, 1).'K',
-            default => '$'.number_format($amount, 0)
+            $amount >= 1000000 => '$' . number_format($amount / 1000000, 1) . 'M',
+            $amount >= 1000 => '$' . number_format($amount / 1000, 1) . 'K',
+            default => '$' . number_format($amount, 0)
         };
     }
 

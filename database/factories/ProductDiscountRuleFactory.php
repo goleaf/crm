@@ -25,7 +25,7 @@ final class ProductDiscountRuleFactory extends Factory
         return [
             'product_id' => Product::factory(),
             'team_id' => fn (array $attributes) => Product::find($attributes['product_id'])?->team_id ?? Team::factory(),
-            'name' => 'Rule '.fake()->unique()->numberBetween(1, 9999),
+            'name' => 'Rule ' . fake()->unique()->numberBetween(1, 9999),
             'scope' => 'product',
             'discount_type' => QuoteDiscountType::PERCENT,
             'discount_value' => fake()->numberBetween(5, 20),

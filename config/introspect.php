@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 $moduleSources = array_map(
-    static fn (string $path): string => trim(str_replace(base_path().DIRECTORY_SEPARATOR, '', $path), DIRECTORY_SEPARATOR),
+    static fn (string $path): string => trim(str_replace(base_path() . DIRECTORY_SEPARATOR, '', $path), DIRECTORY_SEPARATOR),
     glob(base_path('app-modules/*/src')) ?: [],
 );
 

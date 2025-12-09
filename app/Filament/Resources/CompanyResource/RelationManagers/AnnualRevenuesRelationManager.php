@@ -54,7 +54,7 @@ final class AnnualRevenuesRelationManager extends RelationManager
                     ->required()
                     ->step(0.01)
                     ->minValue(0)
-                    ->prefix(fn (Get $get): string => ($get('currency_code') ?? $defaultCurrency()).' '),
+                    ->prefix(fn (Get $get): string => ($get('currency_code') ?? $defaultCurrency()) . ' '),
                 Select::make('currency_code')
                     ->label('Currency')
                     ->options(config('company.currency_codes'))
@@ -77,7 +77,7 @@ final class AnnualRevenuesRelationManager extends RelationManager
                 TextColumn::make('amount')
                     ->label('Amount')
                     ->sortable()
-                    ->formatStateUsing(fn (CompanyRevenue $record): string => ($record->currency_code ?? 'USD').' '.number_format((float) $record->amount, 2)),
+                    ->formatStateUsing(fn (CompanyRevenue $record): string => ($record->currency_code ?? 'USD') . ' ' . number_format((float) $record->amount, 2)),
                 TextColumn::make('creator.name')
                     ->label('Recorded By')
                     ->toggleable()

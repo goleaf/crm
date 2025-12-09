@@ -12,7 +12,8 @@ final class AutoComplete
     /**
      * Build suggestion payloads from a collection.
      *
-     * @param  Collection<array-key, mixed>|array<int, mixed>  $items
+     * @param Collection<array-key, mixed>|array<int, mixed> $items
+     *
      * @return array<int, array{value:mixed,label:string}>
      */
     public static function fromCollection(Collection|array $items, string $labelKey = 'name', string $valueKey = 'id', int $limit = 8): array
@@ -29,7 +30,8 @@ final class AutoComplete
     /**
      * Build suggestions from an Eloquent query with optional search term.
      *
-     * @param  Builder<\Illuminate\Database\Eloquent\Model>  $query
+     * @param Builder<\Illuminate\Database\Eloquent\Model> $query
+     *
      * @return array<int, array{value:mixed,label:string}>
      */
     public static function fromQuery(Builder $query, ?string $search = null, string $labelColumn = 'name', string $valueColumn = 'id', int $limit = 8): array
@@ -37,7 +39,7 @@ final class AutoComplete
         $builder = clone $query;
 
         if ($search !== null && $search !== '') {
-            $builder->where($labelColumn, 'like', '%'.$search.'%');
+            $builder->where($labelColumn, 'like', '%' . $search . '%');
         }
 
         return self::fromCollection($builder->limit($limit)->get([$labelColumn, $valueColumn]), $labelColumn, $valueColumn, $limit);
@@ -46,7 +48,8 @@ final class AutoComplete
     /**
      * Wrap suggestions with a placeholder when no matches exist.
      *
-     * @param  array<int, array{value:mixed,label:string}>  $suggestions
+     * @param array<int, array{value:mixed,label:string}> $suggestions
+     *
      * @return array<int, array{value:mixed,label:string}>
      */
     public static function withFallback(array $suggestions, string $label = 'No results found'): array

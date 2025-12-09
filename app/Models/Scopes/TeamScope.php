@@ -17,7 +17,7 @@ final class TeamScope implements Scope
     /**
      * Apply the scope to a given Eloquent query builder.
      *
-     * @param  Builder<TModel>  $builder
+     * @param Builder<TModel> $builder
      */
     public function apply(Builder $builder, Model $model): void
     {

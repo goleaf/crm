@@ -52,7 +52,8 @@ final class EasyMetrics
     }
 
     /**
-     * @param  array<int, string>|string|null  $options
+     * @param array<int, string>|string|null $options
+     *
      * @return array{labels: array<int, string>, data: array<int, int>}
      */
     public static function doughnutCounts(string|Builder $query, string $groupBy, array|string|null $options = null): array
@@ -111,7 +112,8 @@ final class EasyMetrics
     }
 
     /**
-     * @param  array<int, mixed>  $data
+     * @param array<int, mixed> $data
+     *
      * @return array<int, int>
      */
     private static function mapToIntegers(array $data): array

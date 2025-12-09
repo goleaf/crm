@@ -55,7 +55,7 @@ describe('Authenticated Routes', function (): void {
         // Generate signed URL
         $url = \Illuminate\Support\Facades\URL::signedRoute(
             'team-invitations.accept',
-            ['invitation' => $invitation]
+            ['invitation' => $invitation],
         );
 
         $this->actingAs($user)
@@ -72,7 +72,7 @@ describe('Authenticated Routes', function (): void {
             [
                 'id' => $user->id,
                 'hash' => sha1($user->email),
-            ]
+            ],
         );
 
         $this->actingAs($user)

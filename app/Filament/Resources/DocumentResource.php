@@ -114,8 +114,8 @@ final class DocumentResource extends Resource
                                             defaultFilename: '',
                                             strategy: 'uuid',
                                             extension: $file->getClientOriginalExtension(),
-                                            options: ['suffix' => '_'.now()->format('Ymd')]
-                                        )
+                                            options: ['suffix' => '_' . now()->format('Ymd')],
+                                        ),
                                     )
                                     ->helperText('Optional: upload the first version now.')
                                     ->dehydrated(false),
@@ -133,7 +133,7 @@ final class DocumentResource extends Resource
                                         return User::query()
                                             ->when($teamId, fn (Builder $query, int $team): Builder => $query->whereHas(
                                                 'teams',
-                                                fn (Builder $builder): Builder => $builder->where('teams.id', $team)
+                                                fn (Builder $builder): Builder => $builder->where('teams.id', $team),
                                             ))
                                             ->orderBy('name')
                                             ->pluck('name', 'id');
@@ -155,7 +155,7 @@ final class DocumentResource extends Resource
 
                                                 return $query->when($teamId, fn (Builder $builder, int $team): Builder => $builder->whereHas(
                                                     'teams',
-                                                    fn (Builder $teamQuery): Builder => $teamQuery->where('teams.id', $team)
+                                                    fn (Builder $teamQuery): Builder => $teamQuery->where('teams.id', $team),
                                                 ));
                                             })
                                             ->searchable()

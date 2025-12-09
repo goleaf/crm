@@ -3,7 +3,47 @@
 declare(strict_types=1);
 
 return [
-    // ... existing enum translations ...
+    'calendar_event_type' => [
+        'meeting' => 'Meeting',
+        'call' => 'Call',
+        'lunch' => 'Lunch',
+        'demo' => 'Demo',
+        'follow_up' => 'Follow-up',
+        'other' => 'Other',
+    ],
+
+    'calendar_event_status' => [
+        'scheduled' => 'Scheduled',
+        'confirmed' => 'Confirmed',
+        'completed' => 'Completed',
+        'cancelled' => 'Cancelled',
+    ],
+
+    'lead_type' => [
+        'new_business' => 'New Business',
+        'existing_business' => 'Existing Business',
+    ],
+
+    'quote_status' => [
+        'draft' => 'Draft',
+        'sent' => 'Sent',
+        'accepted' => 'Accepted',
+        'rejected' => 'Rejected',
+    ],
+
+    'quote_discount_type' => [
+        'percent' => 'Percent',
+        'fixed' => 'Fixed Amount',
+    ],
+
+    'address_type' => [
+        'billing' => 'Billing',
+        'shipping' => 'Shipping',
+        'headquarters' => 'Headquarters',
+        'mailing' => 'Mailing',
+        'office' => 'Office',
+        'other' => 'Other',
+    ],
 
     'ocr_document_status' => [
         'pending' => 'Pending',

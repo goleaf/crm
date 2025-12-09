@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\Concerns\HasTeam;
+use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -54,5 +55,27 @@ final class Activity extends Model
         return [
             'changes' => 'array',
         ];
+    }
+
+    /**
+     * Adapter for filament-activity-log expectations (Spatie-compatible).
+     */
+    public function getChangesAttribute($value = null): Collection
+    {
+        $changes = $value ?? $this->getAttributes()['changes'] ?? [];
+
+        return collect($changes ?? []);
+    }
+
+    /**
+     * Provide a Spatie-style properties attribute mapped to our changes payload.
+     *
+     * @return array<string, mixed>
+     */
+    public function getPropertiesAttribute(): array
+    {
+        $raw = $this->getAttributes()['changes'] ?? [];
+
+        return $raw instanceof Collection ? $raw->toArray() : ($raw ?? []);
     }
 }

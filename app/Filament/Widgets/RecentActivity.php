@@ -22,7 +22,7 @@ final class RecentActivity extends TableWidget
             ->query(
                 Note::query()
                     ->with(['creator'])
-                    ->latest('created_at')
+                    ->latest('created_at'),
             )
             ->defaultPaginationPageOption(5)
             ->paginationPageOptions([5, 10])

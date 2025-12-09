@@ -12,11 +12,13 @@ use App\Enums\LeadGrade;
 use App\Enums\LeadNurtureStatus;
 use App\Enums\LeadSource;
 use App\Enums\LeadStatus;
+use App\Enums\LeadType;
 use App\Models\Concerns\HasCreator;
 use App\Models\Concerns\HasNotesAndNotables;
 use App\Models\Concerns\HasTags;
 use App\Models\Concerns\HasTaxonomies;
 use App\Models\Concerns\HasTeam;
+use App\Models\CalendarEvent;
 use App\Models\Concerns\LogsActivity;
 use App\Observers\LeadObserver;
 use Database\Factories\LeadFactory;
@@ -25,6 +27,7 @@ use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
@@ -36,9 +39,9 @@ use Relaticle\CustomFields\Models\CustomField;
 use Relaticle\CustomFields\Services\TenantContextService;
 
 /**
- * @property Carbon|null $deleted_at
+ * @property Carbon|null    $deleted_at
  * @property CreationSource $creation_source
- * @property LeadStatus $status
+ * @property LeadStatus     $status
  */
 #[ObservedBy(LeadObserver::class)]
 #[UsePolicy(\App\Policies\LeadPolicy::class)]
@@ -69,6 +72,10 @@ final class Lead extends Model implements HasCustomFields
         'phone',
         'mobile',
         'website',
+        'description',
+        'lead_value',
+        'lead_type',
+        'expected_close_date',
         'source',
         'status',
         'score',
@@ -127,6 +134,9 @@ final class Lead extends Model implements HasCustomFields
             'grade' => LeadGrade::class,
             'assignment_strategy' => LeadAssignmentStrategy::class,
             'nurture_status' => LeadNurtureStatus::class,
+            'lead_type' => LeadType::class,
+            'lead_value' => 'decimal:2',
+            'expected_close_date' => 'date',
             'score' => 'integer',
             'qualified_at' => 'datetime',
             'converted_at' => 'datetime',
@@ -216,6 +226,17 @@ final class Lead extends Model implements HasCustomFields
         return $this->morphToMany(Task::class, 'taskable');
     }
 
+    /**
+     * Scheduled activities (meetings, calls, lunches) linked to the lead.
+     *
+     * @return MorphMany<CalendarEvent, $this>
+     */
+    public function calendarEvents(): MorphMany
+    {
+        return $this->morphMany(CalendarEvent::class, 'related')
+            ->latest('start_at');
+    }
+
     public function isConverted(): bool
     {
         return $this->converted_at !== null;
@@ -234,7 +255,7 @@ final class Lead extends Model implements HasCustomFields
                 'id' => $this->getKey(),
                 'title' => 'Lead created',
                 'summary' => $this->buildSummary([
-                    $this->source?->getLabel() ? 'Source: '.$this->source->getLabel() : null,
+                    $this->source?->getLabel() ? 'Source: ' . $this->source->getLabel() : null,
                     $this->assignmentSummary(),
                 ]),
                 'created_at' => $this->created_at,
@@ -247,7 +268,7 @@ final class Lead extends Model implements HasCustomFields
                 'id' => $this->getKey(),
                 'title' => 'Lead updated',
                 'summary' => $this->buildSummary([
-                    $this->status?->getLabel() ? 'Status: '.$this->status->getLabel() : null,
+                    $this->status?->getLabel() ? 'Status: ' . $this->status->getLabel() : null,
                     $this->assignmentSummary(),
                 ]),
                 'created_at' => $this->updated_at,
@@ -260,7 +281,7 @@ final class Lead extends Model implements HasCustomFields
                 'id' => $this->getKey(),
                 'title' => 'Lead qualified',
                 'summary' => $this->buildSummary([
-                    $this->qualifiedBy?->name ? 'Qualified by '.$this->qualifiedBy->name : null,
+                    $this->qualifiedBy?->name ? 'Qualified by ' . $this->qualifiedBy->name : null,
                     $this->qualification_notes,
                 ]),
                 'created_at' => $this->qualified_at,
@@ -273,8 +294,8 @@ final class Lead extends Model implements HasCustomFields
                 'id' => $this->getKey(),
                 'title' => 'Converted to deal',
                 'summary' => $this->buildSummary([
-                    $this->convertedCompany?->name ? 'Company: '.$this->convertedCompany->name : null,
-                    $this->convertedOpportunity?->name ? 'Opportunity: '.$this->convertedOpportunity->name : null,
+                    $this->convertedCompany?->name ? 'Company: ' . $this->convertedCompany->name : null,
+                    $this->convertedOpportunity?->name ? 'Opportunity: ' . $this->convertedOpportunity->name : null,
                 ]),
                 'created_at' => $this->converted_at,
             ]);
@@ -286,8 +307,8 @@ final class Lead extends Model implements HasCustomFields
                 'id' => $this->getKey(),
                 'title' => 'Possible duplicate',
                 'summary' => $this->buildSummary([
-                    $this->duplicateOf?->name ? 'Marked duplicate of '.$this->duplicateOf->name : 'Marked duplicate',
-                    $this->duplicate_score !== null ? 'Confidence: '.$this->duplicate_score.'%' : null,
+                    $this->duplicateOf?->name ? 'Marked duplicate of ' . $this->duplicateOf->name : 'Marked duplicate',
+                    $this->duplicate_score !== null ? 'Confidence: ' . $this->duplicate_score . '%' : null,
                 ]),
                 'created_at' => $this->updated_at ?? $this->created_at,
             ]);
@@ -298,10 +319,14 @@ final class Lead extends Model implements HasCustomFields
         $taskStatusField = $this->resolveCustomField(Task::class, TaskField::STATUS->value);
         $taskPriorityField = $this->resolveCustomField(Task::class, TaskField::PRIORITY->value);
 
+        $notesQuery = $this->notes();
+
+        if (method_exists(Note::class, 'customFieldValues')) {
+            $notesQuery->with('customFieldValues.customField');
+        }
+
         $timeline = $timeline->merge(
-            $this->notes()
-                ->with('customFieldValues.customField')
-                ->get()
+            $notesQuery->get()
                 ->map(fn (Note $note): array => [
                     'type' => 'note',
                     'id' => $note->getKey(),
@@ -310,20 +335,40 @@ final class Lead extends Model implements HasCustomFields
                         $this->formatRichText((string) $this->extractCustomFieldValue($noteField, $note)),
                     ]),
                     'created_at' => $note->created_at,
-                ])
+                ]),
         );
 
+        $tasksQuery = $this->tasks();
+
+        if (method_exists(Task::class, 'customFieldValues')) {
+            $tasksQuery->with('customFieldValues.customField');
+        }
+
         $timeline = $timeline->merge(
-            $this->tasks()
-                ->with('customFieldValues.customField')
-                ->get()
+            $tasksQuery->get()
                 ->map(fn (Task $task): array => [
                     'type' => 'task',
                     'id' => $task->getKey(),
                     'title' => $task->title,
                     'summary' => $this->formatTaskSummary($task, $taskStatusField, $taskPriorityField, $taskDescriptionField),
                     'created_at' => $task->created_at,
-                ])
+                ]),
+        );
+
+        $timeline = $timeline->merge(
+            $this->calendarEvents()
+                ->get()
+                ->map(fn (CalendarEvent $event): array => [
+                    'type' => 'activity',
+                    'id' => $event->getKey(),
+                    'title' => $event->title,
+                    'summary' => $this->buildSummary([
+                        'Type: ' . $event->type->getLabel(),
+                        $this->formatEventSchedule($event),
+                        $event->location,
+                    ]),
+                    'created_at' => $event->start_at ?? $event->created_at,
+                ]),
         );
 
         return $timeline
@@ -338,23 +383,23 @@ final class Lead extends Model implements HasCustomFields
             return null;
         }
 
-        return 'Assigned to '.$this->assignedTo->name;
+        return 'Assigned to ' . $this->assignedTo->name;
     }
 
     private function formatTaskSummary(
         Task $task,
         ?CustomField $statusField,
         ?CustomField $priorityField,
-        ?CustomField $descriptionField
+        ?CustomField $descriptionField,
     ): string {
         $parts = [];
 
         if ($statusField instanceof \Relaticle\CustomFields\Models\CustomField) {
-            $parts[] = 'Status: '.$this->optionLabel($statusField, $this->extractCustomFieldValue($statusField, $task));
+            $parts[] = 'Status: ' . $this->optionLabel($statusField, $this->extractCustomFieldValue($statusField, $task));
         }
 
         if ($priorityField instanceof \Relaticle\CustomFields\Models\CustomField) {
-            $parts[] = 'Priority: '.$this->optionLabel($priorityField, $this->extractCustomFieldValue($priorityField, $task));
+            $parts[] = 'Priority: ' . $this->optionLabel($priorityField, $this->extractCustomFieldValue($priorityField, $task));
         }
 
         if ($descriptionField instanceof \Relaticle\CustomFields\Models\CustomField) {
@@ -366,9 +411,25 @@ final class Lead extends Model implements HasCustomFields
         return $this->buildSummary($parts);
     }
 
+    private function formatEventSchedule(CalendarEvent $event): string
+    {
+        $start = $event->start_at?->format('M j, Y g:i A');
+        $end = $event->end_at?->format('M j, Y g:i A');
+
+        if ($start === null && $end === null) {
+            return '';
+        }
+
+        if ($start !== null && $end !== null) {
+            return "{$start} to {$end}";
+        }
+
+        return $start ?? (string) $end;
+    }
+
     private function extractCustomFieldValue(?CustomField $field, ?Model $model): mixed
     {
-        if (! $field instanceof \Relaticle\CustomFields\Models\CustomField || ! $model instanceof \Illuminate\Database\Eloquent\Model) {
+        if (!$field instanceof \Relaticle\CustomFields\Models\CustomField || !$model instanceof \Illuminate\Database\Eloquent\Model) {
             return null;
         }
 
@@ -382,9 +443,9 @@ final class Lead extends Model implements HasCustomFields
         $filtered = array_filter(
             array_map(
                 static fn (mixed $value): string => trim((string) $value),
-                $parts
+                $parts,
             ),
-            static fn (string $value): bool => $value !== ''
+            static fn (string $value): bool => $value !== '',
         );
 
         return implode(' • ', $filtered);
@@ -429,7 +490,7 @@ final class Lead extends Model implements HasCustomFields
         if (array_key_exists($cacheKey, self::$customFieldCache)) {
             $cached = self::$customFieldCache[$cacheKey];
 
-            if (! $cached instanceof \Relaticle\CustomFields\Models\CustomField) {
+            if (!$cached instanceof \Relaticle\CustomFields\Models\CustomField) {
                 return null;
             }
 

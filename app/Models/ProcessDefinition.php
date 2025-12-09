@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * @property ProcessStatus $status
+ * @property ProcessStatus             $status
  * @property array<string, mixed>|null $steps
  * @property array<string, mixed>|null $business_rules
  * @property array<string, mixed>|null $event_triggers

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 final readonly class UnifiedSearchService
 {
     public function __construct(
-        private int $defaultPerPage = 20
+        private int $defaultPerPage = 20,
     ) {}
 
     /**

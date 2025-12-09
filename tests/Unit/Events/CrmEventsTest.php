@@ -20,7 +20,7 @@ it('dispatches CRM events for account lifecycle', function (): void {
 
     Event::assertDispatched(fn (\App\Events\CrmModelCreated $event): bool => $event->model->is($account));
 
-    $account->update(['name' => 'Updated '.$account->name]);
+    $account->update(['name' => 'Updated ' . $account->name]);
     Event::assertDispatched(fn (\App\Events\CrmModelUpdated $event): bool => $event->model->is($account));
 
     $account->delete();

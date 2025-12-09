@@ -10,7 +10,7 @@ use Illuminate\View\Component;
 final class Layout extends Component
 {
     public function __construct(
-        public ?string $theme = null
+        public ?string $theme = null,
     ) {
         $this->theme = $theme ?? config('mail.markdown.theme', 'default');
     }

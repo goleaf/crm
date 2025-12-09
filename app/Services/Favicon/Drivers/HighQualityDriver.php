@@ -31,7 +31,7 @@ final class HighQualityDriver implements Fetcher
     public function fetch(string $url): ?Favicon
     {
         if (! $this->urlIsValid($url)) {
-            throw new InvalidUrlException($url.' is not a valid URL');
+            throw new InvalidUrlException($url . ' is not a valid URL');
         }
 
         if ($this->useCache && $favicon = $this->attemptToFetchFromCache($url)) {
@@ -65,7 +65,7 @@ final class HighQualityDriver implements Fetcher
     {
         try {
             $response = $this->withRequestExceptionHandling(
-                fn () => $this->httpClient()->get($url)
+                fn () => $this->httpClient()->get($url),
             );
 
             if (! $response->successful()) {
@@ -85,7 +85,7 @@ final class HighQualityDriver implements Fetcher
                     ->setIconSize(180);
             }
 
-            $iconUrl = $this->stripPathFromUrl($url).'/apple-touch-icon.png';
+            $iconUrl = $this->stripPathFromUrl($url) . '/apple-touch-icon.png';
             /** @var Response $testResponse */
             $testResponse = $this->httpClient()->head($iconUrl);
 
@@ -109,7 +109,7 @@ final class HighQualityDriver implements Fetcher
     {
         try {
             $response = $this->withRequestExceptionHandling(
-                fn () => $this->httpClient()->get($url)
+                fn () => $this->httpClient()->get($url),
             );
 
             if (! $response->successful()) {
@@ -160,10 +160,10 @@ final class HighQualityDriver implements Fetcher
         try {
             $urlWithoutProtocol = str_replace(['https://', 'http://'], '', $url);
 
-            $faviconUrl = 'https://www.google.com/s2/favicons?sz=256&domain='.$urlWithoutProtocol;
+            $faviconUrl = 'https://www.google.com/s2/favicons?sz=256&domain=' . $urlWithoutProtocol;
 
             $response = $this->withRequestExceptionHandling(
-                fn () => $this->httpClient()->get($faviconUrl)
+                fn () => $this->httpClient()->get($faviconUrl),
             );
 
             if ($response->successful()) {
@@ -184,11 +184,11 @@ final class HighQualityDriver implements Fetcher
     private function tryDuckDuckGo(string $url): ?Favicon
     {
         $urlWithoutProtocol = str_replace(['https://', 'http://'], '', $url);
-        $faviconUrl = 'https://icons.duckduckgo.com/ip3/'.$urlWithoutProtocol.'.ico';
+        $faviconUrl = 'https://icons.duckduckgo.com/ip3/' . $urlWithoutProtocol . '.ico';
 
         try {
             $response = $this->withRequestExceptionHandling(
-                fn () => $this->httpClient()->get($faviconUrl)
+                fn () => $this->httpClient()->get($faviconUrl),
             );
 
             if ($response->successful()) {
@@ -229,14 +229,14 @@ final class HighQualityDriver implements Fetcher
         $host = $parsedBase['host'] ?? '';
 
         if (str_starts_with($path, '//')) {
-            return $scheme.':'.$path;
+            return $scheme . ':' . $path;
         }
 
         if (str_starts_with($path, '/')) {
-            return $scheme.'://'.$host.$path;
+            return $scheme . '://' . $host . $path;
         }
 
-        return $scheme.'://'.$host.'/'.ltrim($path, '/');
+        return $scheme . '://' . $host . '/' . ltrim($path, '/');
     }
 
     private function stripPathFromUrl(string $url): string
@@ -247,10 +247,10 @@ final class HighQualityDriver implements Fetcher
             return $url;
         }
 
-        $result = $parsedUrl['scheme'].'://'.$parsedUrl['host'];
+        $result = $parsedUrl['scheme'] . '://' . $parsedUrl['host'];
 
         if (isset($parsedUrl['port'])) {
-            $result .= ':'.$parsedUrl['port'];
+            $result .= ':' . $parsedUrl['port'];
         }
 
         return $result;

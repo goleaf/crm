@@ -28,7 +28,7 @@ test('property: creating projects from templates preserves all template attribut
             ->create([
                 'team_id' => $team->id,
                 'creator_id' => $creator->id,
-                'name' => 'Template '.$i,
+                'name' => 'Template ' . $i,
                 'description' => fake()->paragraph(),
                 'budget' => fake()->randomFloat(2, 10000, 500000),
                 'currency' => fake()->randomElement(['USD', 'EUR', 'GBP']),
@@ -86,7 +86,7 @@ test('property: creating projects from templates preserves all template attribut
         }
 
         // Create a new project from the template
-        $newProject = $template->createFromTemplate('New Project '.$i);
+        $newProject = $template->createFromTemplate('New Project ' . $i);
 
         // Verify all template attributes are preserved
         expect($newProject->template_id)->toBe($template->id)

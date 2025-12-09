@@ -26,7 +26,7 @@ final readonly class EmailToCaseService
     /**
      * Create a case from an incoming email.
      *
-     * @param  array<string, mixed>  $emailData
+     * @param array<string, mixed> $emailData
      */
     public function createFromEmail(array $emailData, Team $team): SupportCase
     {
@@ -108,7 +108,7 @@ final readonly class EmailToCaseService
     /**
      * Add an email to an existing case thread.
      *
-     * @param  array<string, mixed>  $emailData
+     * @param array<string, mixed> $emailData
      */
     private function addEmailToThread(SupportCase $case, array $emailData): void
     {

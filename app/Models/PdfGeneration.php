@@ -13,25 +13,25 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 
 /**
- * @property int $id
- * @property int $team_id
- * @property int $pdf_template_id
- * @property int|null $user_id
- * @property string $entity_type
- * @property int $entity_id
- * @property string $file_path
- * @property string $file_name
- * @property int|null $file_size
- * @property int $page_count
- * @property array|null $merge_data
- * @property array|null $generation_options
- * @property bool $has_watermark
- * @property bool $is_encrypted
+ * @property int                 $id
+ * @property int                 $team_id
+ * @property int                 $pdf_template_id
+ * @property int|null            $user_id
+ * @property string              $entity_type
+ * @property int                 $entity_id
+ * @property string              $file_path
+ * @property string              $file_name
+ * @property int|null            $file_size
+ * @property int                 $page_count
+ * @property array|null          $merge_data
+ * @property array|null          $generation_options
+ * @property bool                $has_watermark
+ * @property bool                $is_encrypted
  * @property PdfGenerationStatus $status
- * @property string|null $error_message
- * @property Carbon $generated_at
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property string|null         $error_message
+ * @property Carbon              $generated_at
+ * @property Carbon|null         $created_at
+ * @property Carbon|null         $updated_at
  */
 final class PdfGeneration extends Model
 {

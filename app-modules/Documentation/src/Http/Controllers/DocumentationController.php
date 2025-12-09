@@ -12,7 +12,7 @@ use Relaticle\Documentation\Services\DocumentationService;
 final readonly class DocumentationController
 {
     public function __construct(
-        private DocumentationService $documentationService
+        private DocumentationService $documentationService,
     ) {}
 
     /**

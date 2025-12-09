@@ -25,7 +25,7 @@ final class ProductCategoryFactory extends Factory
         return [
             'team_id' => Team::factory(),
             'name' => $name,
-            'slug' => \Illuminate\Support\Str::slug($name).'-'.fake()->unique()->numberBetween(1000, 9999),
+            'slug' => \Illuminate\Support\Str::slug($name) . '-' . fake()->unique()->numberBetween(1000, 9999),
             'parent_id' => null,
             'description' => fake()->sentence(),
         ];

@@ -25,7 +25,7 @@ final class TeamResolver implements PermissionsTeamResolver
     }
 
     /**
-     * @param  int|string|Model|null  $id
+     * @param int|string|Model|null $id
      */
     public function setPermissionsTeamId($id): void
     {

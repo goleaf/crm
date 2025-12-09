@@ -31,7 +31,7 @@ it('performs complex operation with mocked dependencies', function (): void {
         ->with(
             Mockery::type(People::class),
             'Contact updated via complex operation',
-            Mockery::type('array')
+            Mockery::type('array'),
         );
 
     // Create service with mocked dependencies

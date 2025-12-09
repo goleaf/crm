@@ -65,6 +65,18 @@ return [
             'description' => 'Comprehensive SuiteCRM capabilities by category and subfeature.',
             'base_path' => base_path('docs'),
         ],
+        'krayin-packages' => [
+            'title' => 'Krayin Packages Overview',
+            'file' => 'krayin-packages.md',
+            'description' => 'Summary of Krayin CRM package architecture and default modules.',
+            'base_path' => base_path('docs'),
+        ],
+        'krayin-activities' => [
+            'title' => 'Krayin Activities',
+            'file' => 'krayin-activities.md',
+            'description' => 'Scheduling calls, lunches, and meetings with filters and calendar view.',
+            'base_path' => base_path('docs'),
+        ],
     ],
 
     /*

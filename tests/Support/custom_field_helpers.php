@@ -11,7 +11,7 @@ use Relaticle\CustomFields\Models\CustomFieldSection;
 use Relaticle\CustomFields\Services\TenantContextService;
 
 /**
- * @param  array<int, string>  $options
+ * @param array<int, string> $options
  */
 function createCustomFieldFor(string $entity, string $code, string $type, array $options = [], ?Team $team = null): CustomField
 {
@@ -30,7 +30,7 @@ function createCustomFieldFor(string $entity, string $code, string $type, array 
             'sort_order' => 1,
             'system_defined' => true,
             'active' => true,
-        ]
+        ],
     );
 
     $customField = CustomField::query()->create([

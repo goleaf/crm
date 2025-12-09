@@ -127,8 +127,9 @@ trait HasNotableEntries
     }
 
     /**
-     * @param  \DateTimeInterface|string  $startDate
-     * @param  \DateTimeInterface|string  $endDate
+     * @param \DateTimeInterface|string $startDate
+     * @param \DateTimeInterface|string $endDate
+     *
      * @return EloquentCollection<int, NotableEntry>
      */
     public function notableNotesInRange($startDate, $endDate): EloquentCollection

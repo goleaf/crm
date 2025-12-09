@@ -11,8 +11,8 @@ interface DriverInterface
     /**
      * Extract text from a file.
      *
-     * @param  string  $filePath  Full path to the file
-     * @param  array  $options  Driver-specific options
+     * @param string $filePath Full path to the file
+     * @param array  $options  Driver-specific options
      */
     public function extract(string $filePath, array $options = []): OCRResult;
 

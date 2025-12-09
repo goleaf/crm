@@ -51,9 +51,9 @@ final class OrderObserver
                     'Order %s is %s (%s).',
                     $order->number ?? $order->id,
                     $order->status->label(),
-                    $order->fulfillment_status->label()
+                    $order->fulfillment_status->label(),
                 ),
-                url: $url
+                url: $url,
             );
         }
     }

@@ -118,7 +118,7 @@ final class ExtensionRegistryPropertyTest extends TestCase
 
         // Run 100 iterations with random permission configurations
         for ($i = 0; $i < 100; $i++) {
-            $requiredPermission = 'test-permission-'.$i.'-'.fake()->word();
+            $requiredPermission = 'test-permission-' . $i . '-' . fake()->word();
 
             $extension = Extension::factory()->active()->create([
                 'handler_class' => PermissionCheckHandler::class,
@@ -202,7 +202,7 @@ final class ExtensionRegistryPropertyTest extends TestCase
 
             $context = array_merge(
                 $this->generateRandomContext(),
-                ['id' => $id, 'team_id' => $teamId]
+                ['id' => $id, 'team_id' => $teamId],
             );
 
             CriticalFieldRemovalHandler::$shouldRemoveId = fake()->boolean();
@@ -257,7 +257,8 @@ final class ScopedContextHandler
     public static ?array $lastContext = null;
 
     /**
-     * @param  array<string, mixed>  $context
+     * @param array<string, mixed> $context
+     *
      * @return array<string, mixed>
      */
     public function handle(array $context): array
@@ -273,7 +274,8 @@ final class RandomFailureHandler
     public static bool $shouldFail = false;
 
     /**
-     * @param  array<string, mixed>  $context
+     * @param array<string, mixed> $context
+     *
      * @return array<string, mixed>
      */
     public function handle(array $context): array
@@ -291,7 +293,8 @@ final class PermissionCheckHandler
     public static bool $wasExecuted = false;
 
     /**
-     * @param  array<string, mixed>  $context
+     * @param array<string, mixed> $context
+     *
      * @return array<string, mixed>
      */
     public function handle(array $context): array
@@ -311,7 +314,8 @@ final class RecursionTestHandler
     public static int $callCount = 0;
 
     /**
-     * @param  array<string, mixed>  $context
+     * @param array<string, mixed> $context
+     *
      * @return array<string, mixed>
      */
     public function handle(array $context): array
@@ -333,7 +337,8 @@ final class CriticalFieldRemovalHandler
     public static bool $shouldRemoveTeamId = false;
 
     /**
-     * @param  array<string, mixed>  $context
+     * @param array<string, mixed> $context
+     *
      * @return array<string, mixed>
      */
     public function handle(array $context): array

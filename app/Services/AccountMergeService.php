@@ -17,9 +17,10 @@ final class AccountMergeService
     /**
      * Merge a duplicate company into a primary company.
      *
-     * @param  Company  $primary  The company to keep
-     * @param  Company  $duplicate  The company to merge and soft delete
-     * @param  array<string, mixed>  $fieldSelections  Field values to use (key => 'primary' or 'duplicate')
+     * @param Company              $primary         The company to keep
+     * @param Company              $duplicate       The company to merge and soft delete
+     * @param array<string, mixed> $fieldSelections Field values to use (key => 'primary' or 'duplicate')
+     *
      * @return array{success: bool, merge_id: int|null, error: string|null}
      */
     public function merge(Company $primary, Company $duplicate, array $fieldSelections = []): array
@@ -78,7 +79,7 @@ final class AccountMergeService
             return [
                 'success' => false,
                 'merge_id' => null,
-                'error' => 'Merge operation failed: '.$e->getMessage(),
+                'error' => 'Merge operation failed: ' . $e->getMessage(),
             ];
         }
     }
@@ -181,7 +182,7 @@ final class AccountMergeService
     /**
      * Apply field selections from the merge preview.
      *
-     * @param  array<string, string>  $fieldSelections  Map of field => 'primary' or 'duplicate'
+     * @param array<string, string> $fieldSelections Map of field => 'primary' or 'duplicate'
      */
     private function applyFieldSelections(Company $primary, Company $duplicate, array $fieldSelections): void
     {

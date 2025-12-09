@@ -1,0 +1,56 @@
+{
+  "writeKey": "${LOCALAZY_WRITE_KEY}",
+  "readKey": "${LOCALAZY_READ_KEY}",
+  "upload": {
+    "type": "php",
+    "files": [
+      {
+        "file": "lang/en/app.php",
+        "path": "app.php"
+      },
+      {
+        "file": "lang/en/auth.php",
+        "path": "auth.php"
+      },
+      {
+        "file": "lang/en/custom-fields.php",
+        "path": "custom-fields.php"
+      },
+      {
+        "file": "lang/en/enums.php",
+        "path": "enums.php"
+      },
+      {
+        "file": "lang/en/notifications.php",
+        "path": "notifications.php"
+      },
+      {
+        "file": "lang/en/pagination.php",
+        "path": "pagination.php"
+      },
+      {
+        "file": "lang/en/passwords.php",
+        "path": "passwords.php"
+      },
+      {
+        "file": "lang/en/profile.php",
+        "path": "profile.php"
+      },
+      {
+        "file": "lang/en/requests.php",
+        "path": "requests.php"
+      },
+      {
+        "file": "lang/en/teams.php",
+        "path": "teams.php"
+      },
+      {
+        "file": "lang/en/validation.php",
+        "path": "validation.php"
+      }
+    ]
+  },
+  "download": {
+    "files": "lang/${lang}/${file}"
+  }
+}

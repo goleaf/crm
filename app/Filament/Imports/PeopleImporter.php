@@ -58,12 +58,13 @@ final class PeopleImporter extends BaseImporter
                             [
                                 'creator_id' => $importer->import->user_id,
                                 'creation_source' => CreationSource::IMPORT,
-                            ]
+                            ],
                         );
 
                         $record->company_id = $company->getKey();
                     } catch (\Exception $e) {
                         report($e);
+
                         throw $e; // Re-throw to fail the import for this row
                     }
                 }),
@@ -311,7 +312,7 @@ final class PeopleImporter extends BaseImporter
             $emails = $emails->merge(
                 is_string($emailsField)
                     ? explode(',', $emailsField)
-                    : (array) $emailsField
+                    : (array) $emailsField,
             );
         }
 
@@ -329,10 +330,10 @@ final class PeopleImporter extends BaseImporter
 
     public static function getCompletedNotificationBody(Import $import): string
     {
-        $body = 'Your people import has completed and '.Number::format($import->successful_rows).' '.str('row')->plural($import->successful_rows).' imported.';
+        $body = 'Your people import has completed and ' . Number::format($import->successful_rows) . ' ' . str('row')->plural($import->successful_rows) . ' imported.';
 
         if (($failedRowsCount = $import->getFailedRowsCount()) !== 0) {
-            $body .= ' '.Number::format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to import.';
+            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to import.';
         }
 
         return $body;

@@ -39,7 +39,7 @@ test('orders use referenceable counters and keep sequences in sync', function ()
     ]);
 
     $counterValue = DB::table('model_reference_counters')
-        ->where('key', Order::class.':2026')
+        ->where('key', Order::class . ':2026')
         ->value('value');
 
     expect($order->number)->toBe('ORD-2026-00008')

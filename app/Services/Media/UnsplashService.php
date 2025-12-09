@@ -38,7 +38,7 @@ final class UnsplashService
         int $page = 1,
         ?int $perPage = null,
         ?string $orientation = null,
-        ?string $color = null
+        ?string $color = null,
     ): array {
         $perPage ??= $this->defaults['per_page'] ?? 30;
         $orientation ??= $this->defaults['orientation'];
@@ -65,7 +65,7 @@ final class UnsplashService
         ?string $query = null,
         ?string $orientation = null,
         array $collections = [],
-        int $count = 1
+        int $count = 1,
     ): array {
         $response = $this->get('/photos/random', array_filter([
             'query' => $query,
@@ -98,7 +98,7 @@ final class UnsplashService
     {
         // Must include Client-ID in the tracking request
         $response = Http::withHeaders([
-            'Authorization' => 'Client-ID '.$this->accessKey,
+            'Authorization' => 'Client-ID ' . $this->accessKey,
         ])->get($downloadLocation);
 
         return $response->successful();
@@ -118,7 +118,7 @@ final class UnsplashService
             return null;
         }
 
-        $fullPath = rtrim((string) $path, '/').'/'.ltrim($filename, '/');
+        $fullPath = rtrim((string) $path, '/') . '/' . ltrim($filename, '/');
 
         if (Storage::disk($disk)->put($fullPath, $contents)) {
             return $fullPath;
@@ -146,13 +146,13 @@ final class UnsplashService
     {
         $client = Http::baseUrl($this->baseUrl)
             ->withHeaders([
-                'Authorization' => 'Client-ID '.$this->accessKey,
+                'Authorization' => 'Client-ID ' . $this->accessKey,
                 'Accept-Version' => 'v1',
             ])
             ->timeout(config('unsplash.http.timeout', 30))
             ->retry(
                 config('unsplash.http.retry.times', 3),
-                config('unsplash.http.retry.sleep', 1000)
+                config('unsplash.http.retry.sleep', 1000),
             );
 
         return $client->get($endpoint, $query);

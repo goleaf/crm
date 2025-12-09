@@ -49,7 +49,7 @@ final class UnsplashAsset extends Model
                 'likes' => $data['likes'] ?? 0,
                 'promoted_at' => $data['promoted_at'] ?? null,
                 'download_location' => $data['links']['download_location'] ?? null,
-            ]
+            ],
         );
     }
 
@@ -86,14 +86,14 @@ final class UnsplashAsset extends Model
         $userCms = "?utm_source={$utm}&utm_medium=referral";
 
         $name = $this->user['name'];
-        $userLink = $this->user['links']['html'].$userCms;
+        $userLink = $this->user['links']['html'] . $userCms;
         $unsplashLink = "https://unsplash.com/{$userCms}";
 
         return sprintf(
             'Photo by <a href="%s" target="_blank" rel="noopener noreferrer">%s</a> on <a href="%s" target="_blank" rel="noopener noreferrer">Unsplash</a>',
             $userLink,
             $name,
-            $unsplashLink
+            $unsplashLink,
         );
     }
 

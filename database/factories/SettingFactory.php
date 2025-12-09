@@ -23,7 +23,7 @@ final class SettingFactory extends Factory
     public function definition(): array
     {
         return [
-            'key' => fake()->unique()->word().'.'.fake()->word(),
+            'key' => fake()->unique()->word() . '.' . fake()->word(),
             'value' => fake()->sentence(),
             'type' => fake()->randomElement(['string', 'integer', 'boolean', 'json', 'array']),
             'group' => fake()->randomElement(['general', 'company', 'locale', 'email', 'scheduler', 'notification']),

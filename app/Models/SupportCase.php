@@ -25,12 +25,12 @@ use Relaticle\CustomFields\Models\Concerns\UsesCustomFields;
 use Relaticle\CustomFields\Models\Contracts\HasCustomFields;
 
 /**
- * @property Carbon|null $deleted_at
+ * @property Carbon|null    $deleted_at
  * @property CreationSource $creation_source
- * @property CaseStatus $status
- * @property CasePriority $priority
- * @property CaseType $type
- * @property CaseChannel $channel
+ * @property CaseStatus     $status
+ * @property CasePriority   $priority
+ * @property CaseType       $type
+ * @property CaseChannel    $channel
  */
 #[ObservedBy(SupportCaseObserver::class)]
 final class SupportCase extends Model implements HasCustomFields

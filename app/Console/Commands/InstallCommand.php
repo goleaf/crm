@@ -8,15 +8,16 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
-use Relaticle\SystemAdmin\Enums\SystemAdministratorRole;
-use Relaticle\SystemAdmin\Models\SystemAdministrator;
-use Throwable;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\spin;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\warning;
+
+use Relaticle\SystemAdmin\Enums\SystemAdministratorRole;
+use Relaticle\SystemAdmin\Models\SystemAdministrator;
+use Throwable;
 
 final class InstallCommand extends Command
 {
@@ -34,7 +35,7 @@ final class InstallCommand extends Command
         if ($prefix !== 'crm') {
             $this->signature = "{$prefix}:install {--force : Force installation even if already configured}";
         }
-        $this->description = 'Install and configure '.brand_name();
+        $this->description = 'Install and configure ' . brand_name();
     }
 
     /**
@@ -42,7 +43,7 @@ final class InstallCommand extends Command
      */
     public function getName(): string
     {
-        return brand_command_prefix().':install';
+        return brand_command_prefix() . ':install';
     }
 
     public function handle(): int
@@ -60,23 +61,23 @@ final class InstallCommand extends Command
 
     private function displayWelcome(): void
     {
-        $this->output->write(PHP_EOL.'  <fg=cyan>
+        $this->output->write(PHP_EOL . '  <fg=cyan>
  ____      _       _   _      _
 |  _ \ ___| | __ _| |_(_) ___| | ___
 | |_) / _ \ |/ _` | __| |/ __| |/ _ \
 |  _ <  __/ | (_| | |_| | (__| |  __/
-|_| \_\___|_|\__,_|\__|_|\___|_|\___|</>'.PHP_EOL.PHP_EOL);
+|_| \_\___|_|\__,_|\__|_|\___|_|\___|</>' . PHP_EOL . PHP_EOL);
     }
 
     private function shouldProceed(): bool
     {
         if (! $this->option('force') && $this->isAlreadyInstalled()) {
-            warning(brand_name().' appears to be already installed.');
+            warning(brand_name() . ' appears to be already installed.');
 
             return confirm(
                 label: 'Do you want to continue anyway?',
                 default: false,
-                hint: 'This may overwrite existing configuration'
+                hint: 'This may overwrite existing configuration',
             );
         }
 
@@ -93,7 +94,7 @@ final class InstallCommand extends Command
     /** @return array<string, mixed> */
     private function getConfiguration(): array
     {
-        $this->info('Let\'s configure your '.brand_name().' installation...');
+        $this->info('Let\'s configure your ' . brand_name() . ' installation...');
 
         $database = select(
             label: 'Which database would you like to use?',
@@ -103,19 +104,19 @@ final class InstallCommand extends Command
                 'mysql' => 'MySQL/MariaDB',
             ],
             default: 'sqlite',
-            hint: 'SQLite requires no additional setup'
+            hint: 'SQLite requires no additional setup',
         );
 
         $installDemoData = confirm(
             label: 'Install demo data?',
             default: true,
-            hint: 'Includes sample companies, contacts, and more'
+            hint: 'Includes sample companies, contacts, and more',
         );
 
         $createSysAdmin = confirm(
             label: 'Create system administrator account?',
             default: true,
-            hint: 'You can create one later using: php artisan sysadmin:create'
+            hint: 'You can create one later using: php artisan sysadmin:create',
         );
 
         return [
@@ -145,7 +146,7 @@ final class InstallCommand extends Command
         foreach ($installationSteps as $stepName => $stepFunction) {
             $success = spin(
                 callback: fn (): mixed => $stepFunction(),
-                message: "Installing {$stepName}..."
+                message: "Installing {$stepName}...",
             );
 
             if (! $success) {
@@ -373,7 +374,7 @@ final class InstallCommand extends Command
                 $overwrite = confirm(
                     label: 'Do you want to create another one?',
                     default: false,
-                    hint: 'You can have multiple system administrators'
+                    hint: 'You can have multiple system administrators',
                 );
 
                 if (! $overwrite) {
@@ -384,14 +385,14 @@ final class InstallCommand extends Command
             $name = text(
                 label: 'System Administrator name',
                 default: 'System Admin',
-                required: true
+                required: true,
             );
 
             $email = text(
                 label: 'System Administrator email address',
-                default: 'sysadmin@'.strtolower((string) preg_replace('/[^a-z0-9]/', '', brand_name())).'.local',
+                default: 'sysadmin@' . strtolower((string) preg_replace('/[^a-z0-9]/', '', brand_name())) . '.local',
                 required: true,
-                validate: fn (string $value): ?string => filter_var($value, FILTER_VALIDATE_EMAIL) ? null : 'Please enter a valid email address'
+                validate: fn (string $value): ?string => filter_var($value, FILTER_VALIDATE_EMAIL) ? null : 'Please enter a valid email address',
             );
 
             // Check if email already exists
@@ -405,7 +406,7 @@ final class InstallCommand extends Command
                 label: 'System Administrator password (min. 8 characters)',
                 default: 'password123',
                 required: true,
-                validate: fn (string $value): ?string => strlen($value) >= 8 ? null : 'Password must be at least 8 characters'
+                validate: fn (string $value): ?string => strlen($value) >= 8 ? null : 'Password must be at least 8 characters',
             );
 
             // Create the system administrator
@@ -435,7 +436,7 @@ final class InstallCommand extends Command
     {
         $this->newLine();
 
-        $this->info('🎉 '.brand_name().' installed successfully!');
+        $this->info('🎉 ' . brand_name() . ' installed successfully!');
 
         $this->newLine();
         $this->line('  <options=bold>Start all development services:</>');
@@ -467,7 +468,7 @@ final class InstallCommand extends Command
         $this->line('  • Real-time logs (Pail)');
 
         $this->newLine();
-        $docUrl = config('laravel-crm.ui.github_url') ? config('laravel-crm.ui.github_url').'/blob/main/docs' : '#';
+        $docUrl = config('laravel-crm.ui.github_url') ? config('laravel-crm.ui.github_url') . '/blob/main/docs' : '#';
         $this->line("  Documentation: {$docUrl}");
         $this->newLine();
 

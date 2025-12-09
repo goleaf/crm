@@ -141,7 +141,7 @@ final class SeederGeneratorService
     }
 
     /**
-     * @param  array<string, string|int|bool|null>  $options
+     * @param array<string, string|int|bool|null> $options
      */
     public function run(array $options): string
     {
@@ -151,7 +151,7 @@ final class SeederGeneratorService
     }
 
     /**
-     * @param  array<int, mixed>|string  $values
+     * @param array<int, mixed>|string $values
      */
     private function implodeList(array|string $values): string
     {
@@ -161,7 +161,8 @@ final class SeederGeneratorService
     }
 
     /**
-     * @param  array<int, mixed>|string|null  $values
+     * @param array<int, mixed>|string|null $values
+     *
      * @return array<int, string>
      */
     private function explodeList(array|string|null $values): array

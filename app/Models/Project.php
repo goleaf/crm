@@ -19,30 +19,30 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 /**
- * @property int $id
- * @property int $team_id
- * @property int|null $creator_id
- * @property int|null $template_id
- * @property string $name
- * @property string $slug
- * @property string|null $description
- * @property ProjectStatus $status
+ * @property int                             $id
+ * @property int                             $team_id
+ * @property int|null                        $creator_id
+ * @property int|null                        $template_id
+ * @property string                          $name
+ * @property string                          $slug
+ * @property string|null                     $description
+ * @property ProjectStatus                   $status
  * @property \Illuminate\Support\Carbon|null $start_date
  * @property \Illuminate\Support\Carbon|null $end_date
  * @property \Illuminate\Support\Carbon|null $actual_start_date
  * @property \Illuminate\Support\Carbon|null $actual_end_date
- * @property float|null $budget
- * @property float $actual_cost
- * @property string $currency
- * @property float $percent_complete
- * @property array|null $phases
- * @property array|null $milestones
- * @property array|null $deliverables
- * @property array|null $risks
- * @property array|null $issues
- * @property array|null $documentation
- * @property array|null $dashboard_config
- * @property bool $is_template
+ * @property float|null                      $budget
+ * @property float                           $actual_cost
+ * @property string                          $currency
+ * @property float                           $percent_complete
+ * @property array|null                      $phases
+ * @property array|null                      $milestones
+ * @property array|null                      $deliverables
+ * @property array|null                      $risks
+ * @property array|null                      $issues
+ * @property array|null                      $documentation
+ * @property array|null                      $dashboard_config
+ * @property bool                            $is_template
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at

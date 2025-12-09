@@ -22,7 +22,7 @@ it('detects debug mode in production', function (): void {
 });
 
 it('detects weak app key', function (): void {
-    config(['app.key' => 'base64:'.base64_encode('short')]);
+    config(['app.key' => 'base64:' . base64_encode('short')]);
 
     $audit = new EnvironmentSecurityAudit;
     $result = $audit->run();
@@ -102,7 +102,7 @@ it('passes when configuration is secure', function (): void {
     config([
         'app.env' => 'production',
         'app.debug' => false,
-        'app.key' => 'base64:'.base64_encode(random_bytes(32)),
+        'app.key' => 'base64:' . base64_encode(random_bytes(32)),
         'app.url' => 'https://example.com',
         'session.secure' => true,
         'database.default' => 'mysql',

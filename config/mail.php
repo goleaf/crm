@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Support\Env;
+
 return [
 
     /*
@@ -16,7 +18,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'log'),
+    'default' => Env::make()->mailMailer(),
 
     /*
     |--------------------------------------------------------------------------
@@ -41,14 +43,14 @@ return [
 
         'smtp' => [
             'transport' => 'smtp',
-            'url' => env('MAIL_URL'),
-            'host' => env('MAIL_HOST', '127.0.0.1'),
-            'port' => env('MAIL_PORT', 2525),
-            'encryption' => env('MAIL_ENCRYPTION', 'tls'),
-            'username' => env('MAIL_USERNAME'),
-            'password' => env('MAIL_PASSWORD'),
+            'url' => Env::make()->mailUrl(),
+            'host' => Env::make()->mailHost(),
+            'port' => Env::make()->mailPort(),
+            'encryption' => Env::make()->mailEncryption(),
+            'username' => Env::make()->mailUsername(),
+            'password' => Env::make()->mailPassword(),
             'timeout' => null,
-            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+            'local_domain' => Env::make()->mailEhloDomain(),
         ],
 
         'ses' => [
@@ -69,12 +71,12 @@ return [
 
         'sendmail' => [
             'transport' => 'sendmail',
-            'path' => env('MAIL_SENDMAIL_PATH', '/usr/sbin/sendmail -bs -i'),
+            'path' => Env::make()->mailSendmailPath(),
         ],
 
         'log' => [
             'transport' => 'log',
-            'channel' => env('MAIL_LOG_CHANNEL'),
+            'channel' => Env::make()->mailLogChannel(),
         ],
 
         'array' => [
@@ -99,8 +101,8 @@ return [
 
         'mailcoach' => [
             'transport' => 'mailcoach',
-            'domain' => env('MAILCOACH_DOMAIN'),
-            'token' => env('MAILCOACH_API_TOKEN'),
+            'domain' => Env::make()->mailcoachDomain(),
+            'token' => Env::make()->mailcoachApiToken(),
         ],
     ],
 
@@ -116,8 +118,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => Env::make()->mailFromAddress(),
+        'name' => Env::make()->mailFromName(),
     ],
 
     /*
@@ -132,7 +134,7 @@ return [
     */
 
     'markdown' => [
-        'theme' => env('MAIL_MARKDOWN_THEME', 'default'),
+        'theme' => Env::make()->mailMarkdownTheme(),
         'paths' => [
             resource_path('views/mail-templates'),
         ],

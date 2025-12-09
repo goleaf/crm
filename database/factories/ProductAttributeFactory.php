@@ -25,7 +25,7 @@ final class ProductAttributeFactory extends Factory
         return [
             'team_id' => Team::factory(),
             'name' => $name,
-            'slug' => \Illuminate\Support\Str::slug($name).'-'.fake()->unique()->numberBetween(1000, 9999),
+            'slug' => \Illuminate\Support\Str::slug($name) . '-' . fake()->unique()->numberBetween(1000, 9999),
             'data_type' => fake()->randomElement(['string', 'number', 'boolean']),
             'is_configurable' => fake()->boolean(),
             'is_filterable' => fake()->boolean(),

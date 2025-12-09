@@ -34,7 +34,7 @@ final class SecurityStatusWidget extends BaseWidget
             return [
                 Stat::make(
                     __('app.labels.vulnerabilities'),
-                    $result->getVulnerabilityCount()
+                    $result->getVulnerabilityCount(),
                 )
                     ->description(__('app.labels.security_issues_found'))
                     ->descriptionIcon($result->hasVulnerabilities() ? 'heroicon-o-shield-exclamation' : 'heroicon-o-shield-check')
@@ -43,7 +43,7 @@ final class SecurityStatusWidget extends BaseWidget
 
                 Stat::make(
                     __('app.labels.packages_audited'),
-                    $result->getPackagesAudited()
+                    $result->getPackagesAudited(),
                 )
                     ->description(__('app.labels.dependencies_checked'))
                     ->descriptionIcon('heroicon-o-cube')
@@ -51,7 +51,7 @@ final class SecurityStatusWidget extends BaseWidget
 
                 Stat::make(
                     __('app.labels.last_audit'),
-                    $result->getAuditTimestamp()?->diffForHumans() ?? __('app.labels.never')
+                    $result->getAuditTimestamp()?->diffForHumans() ?? __('app.labels.never'),
                 )
                     ->description(__('app.labels.last_security_check'))
                     ->descriptionIcon('heroicon-o-clock')

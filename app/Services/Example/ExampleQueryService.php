@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Cache;
 final readonly class ExampleQueryService
 {
     public function __construct(
-        private int $cacheTtl = 3600
+        private int $cacheTtl = 3600,
     ) {}
 
     /**
@@ -27,7 +27,7 @@ final readonly class ExampleQueryService
         return Cache::remember(
             "contact.metrics.{$contact->id}",
             $this->cacheTtl,
-            fn (): array => $this->calculateMetrics($contact)
+            fn (): array => $this->calculateMetrics($contact),
         );
     }
 

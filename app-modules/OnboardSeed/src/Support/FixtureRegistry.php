@@ -18,9 +18,9 @@ final class FixtureRegistry
     /**
      * Register an entity in the registry
      *
-     * @param  string  $type  The entity type (e.g., 'companies', 'people')
-     * @param  string  $key  The entity key
-     * @param  Model  $entity  The entity model
+     * @param string $type   The entity type (e.g., 'companies', 'people')
+     * @param string $key    The entity key
+     * @param Model  $entity The entity model
      */
     public static function register(string $type, string $key, Model $entity): void
     {
@@ -34,8 +34,9 @@ final class FixtureRegistry
     /**
      * Get an entity from the registry
      *
-     * @param  string  $type  The entity type
-     * @param  string  $key  The entity key
+     * @param string $type The entity type
+     * @param string $key  The entity key
+     *
      * @return Model|null The entity or null if not found
      */
     public static function get(string $type, string $key): ?Model

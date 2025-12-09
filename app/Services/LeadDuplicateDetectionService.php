@@ -110,7 +110,8 @@ final class LeadDuplicateDetectionService
     }
 
     /**
-     * @param  array<int, ?string>  $phones
+     * @param array<int, ?string> $phones
+     *
      * @return array<int, string>
      */
     private function normalizePhones(array $phones): array
@@ -125,7 +126,7 @@ final class LeadDuplicateDetectionService
 
                 return $digits !== '' ? $digits : null;
             },
-            $phones
+            $phones,
         )));
     }
 

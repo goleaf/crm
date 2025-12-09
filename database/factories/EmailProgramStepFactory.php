@@ -24,7 +24,7 @@ final class EmailProgramStepFactory extends Factory
             'description' => fake()->paragraph(),
             'subject_line' => fake()->sentence(),
             'preview_text' => fake()->sentence(),
-            'html_content' => '<p>Hello {{first_name}},</p><p>'.fake()->paragraph().'</p>',
+            'html_content' => '<p>Hello {{first_name}},</p><p>' . fake()->paragraph() . '</p>',
             'plain_text_content' => fake()->paragraph(),
             'from_name' => fake()->name(),
             'from_email' => fake()->safeEmail(),

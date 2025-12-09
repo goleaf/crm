@@ -8,16 +8,16 @@ use App\Enums\WorkflowConditionLogic;
 use App\Enums\WorkflowTriggerType;
 
 /**
- * @property WorkflowTriggerType|null $trigger_type
- * @property string|null $target_model
+ * @property WorkflowTriggerType|null              $trigger_type
+ * @property string|null                           $target_model
  * @property array<int, array<string, mixed>>|null $conditions
- * @property WorkflowConditionLogic $condition_logic
- * @property bool $allow_repeated_runs
- * @property int|null $max_runs_per_record
- * @property array<string, mixed>|null $schedule_config
- * @property bool $test_mode
- * @property bool $enable_logging
- * @property string $log_level
+ * @property WorkflowConditionLogic                $condition_logic
+ * @property bool                                  $allow_repeated_runs
+ * @property int|null                              $max_runs_per_record
+ * @property array<string, mixed>|null             $schedule_config
+ * @property bool                                  $test_mode
+ * @property bool                                  $enable_logging
+ * @property string                                $log_level
  */
 final class WorkflowDefinition extends ProcessDefinition
 {
@@ -138,7 +138,7 @@ final class WorkflowDefinition extends ProcessDefinition
     /**
      * Evaluate a single condition.
      *
-     * @param  array<string, mixed>  $condition
+     * @param array<string, mixed> $condition
      */
     private function evaluateCondition(array $condition, object $model): bool
     {

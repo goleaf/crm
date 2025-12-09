@@ -148,7 +148,7 @@ final class TaskResource extends Resource
                 TrashedFilter::make(),
             ]))
             ->groups(array_filter([
-                ...collect(['status', 'priority'])->map(fn (string $fieldCode): ?\Filament\Tables\Grouping\Group => $customFields->has($fieldCode) ? self::makeCustomFieldGroup($fieldCode, $customFields, $valueResolver) : null
+                ...collect(['status', 'priority'])->map(fn (string $fieldCode): ?\Filament\Tables\Grouping\Group => $customFields->has($fieldCode) ? self::makeCustomFieldGroup($fieldCode, $customFields, $valueResolver) : null,
                 )->filter()->toArray(),
             ]))
             ->recordActions([
@@ -175,7 +175,7 @@ final class TaskResource extends Resource
                                         // Only send notification if one doesn't already exist
                                         if (! $notificationExists) {
                                             Notification::make()
-                                                ->title('New Task Assignment: '.$record->title)
+                                                ->title('New Task Assignment: ' . $record->title)
                                                 ->actions([
                                                     Action::make('view')
                                                         ->button()
@@ -194,6 +194,7 @@ final class TaskResource extends Resource
                                 DB::commit();
                             } catch (Throwable $e) {
                                 DB::rollBack();
+
                                 throw $e;
                             }
 
@@ -221,7 +222,7 @@ final class TaskResource extends Resource
     }
 
     /**
-     * @param  SupportCollection<string, CustomField>  $customFields
+     * @param SupportCollection<string, CustomField> $customFields
      */
     private static function makeCustomFieldGroup(string $fieldCode, SupportCollection $customFields, ValueResolvers $valueResolver): Group
     {
@@ -236,7 +237,7 @@ final class TaskResource extends Resource
                     ->whereColumn('custom_field_values.entity_id', 'tasks.id')
                     ->limit(1)
                     ->getQuery(),
-                $direction
+                $direction,
             ))
             ->getTitleFromRecordUsing(function (Task $record) use ($valueResolver, $field, $label): string {
                 $value = $valueResolver->resolve($record, $field);

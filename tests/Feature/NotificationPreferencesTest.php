@@ -27,7 +27,7 @@ it('respects notification channel preferences', function (): void {
         $user,
         'Order updated',
         'Order ORD-1 moved forward',
-        url: '/orders/1'
+        url: '/orders/1',
     );
 
     Notification::assertSentTo(
@@ -39,7 +39,7 @@ it('respects notification channel preferences', function (): void {
                 ->and($channels)->not()->toContain('mail');
 
             return true;
-        }
+        },
     );
 });
 
@@ -54,7 +54,7 @@ it('skips alerts when activity notifications are disabled', function (): void {
     resolve(NotificationService::class)->sendActivityAlert(
         $user,
         'Update',
-        'Body'
+        'Body',
     );
 
     Notification::assertNothingSent();

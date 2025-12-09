@@ -12,7 +12,7 @@ final readonly class NoProfanity implements ValidationRule
 {
     public function __construct(
         private string $language = 'english',
-        private bool $logViolations = true
+        private bool $logViolations = true,
     ) {}
 
     public function validate(string $attribute, mixed $value, Closure $fail): void

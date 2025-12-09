@@ -154,7 +154,7 @@ final class TimeLoggingIntegrityPropertyTest extends PropertyTestCase
             $this->assertEquals(
                 $expectedAmount,
                 $actualAmount,
-                'Billing amount should equal duration in hours times rate'
+                'Billing amount should equal duration in hours times rate',
             );
         }, 100);
     }
@@ -184,7 +184,7 @@ final class TimeLoggingIntegrityPropertyTest extends PropertyTestCase
             // Property: Non-billable entries should have no billing rate
             $this->assertNull(
                 $entry->billing_rate,
-                'Non-billable entries should have null billing rate'
+                'Non-billable entries should have null billing rate',
             );
 
             // Property: Billing amount should be 0
@@ -195,7 +195,7 @@ final class TimeLoggingIntegrityPropertyTest extends PropertyTestCase
             $this->assertEquals(
                 0,
                 $billingAmount,
-                'Non-billable entries should have zero billing amount'
+                'Non-billable entries should have zero billing amount',
             );
         }, 100);
     }
@@ -225,28 +225,28 @@ final class TimeLoggingIntegrityPropertyTest extends PropertyTestCase
             $this->assertEquals(
                 $task->id,
                 $entry->task_id,
-                'Time entry should be attributed to correct task'
+                'Time entry should be attributed to correct task',
             );
 
             // Property: Entry should be attributed to correct user
             $this->assertEquals(
                 $otherUser->id,
                 $entry->user_id,
-                'Time entry should be attributed to correct user'
+                'Time entry should be attributed to correct user',
             );
 
             // Property: Entry should be retrievable from task
             $taskEntries = $task->timeEntries;
             $this->assertTrue(
                 $taskEntries->contains('id', $entry->id),
-                'Time entry should be retrievable from task'
+                'Time entry should be retrievable from task',
             );
 
             // Property: Entry should be retrievable from user
             $userEntries = TaskTimeEntry::where('user_id', $otherUser->id)->get();
             $this->assertTrue(
                 $userEntries->contains('id', $entry->id),
-                'Time entry should be retrievable from user'
+                'Time entry should be retrievable from user',
             );
         }, 100);
     }

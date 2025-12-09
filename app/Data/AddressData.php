@@ -24,7 +24,7 @@ final class AddressData extends Data
     ) {}
 
     /**
-     * @param  array<string, mixed>  $payload
+     * @param array<string, mixed> $payload
      */
     public static function fromArray(array $payload, ?AddressType $fallbackType = null): self
     {

@@ -6,9 +6,10 @@ use App\Models\Note;
 use App\Models\People;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
-use Tests\Feature\Routes\RouteTestingConfig;
 
 use function Spatie\PestPluginRouteTest\routeTesting;
+
+use Tests\Feature\Routes\RouteTestingConfig;
 
 describe('All Routes Comprehensive Test', function (): void {
     it('can list all registered routes', function (): void {
@@ -116,7 +117,7 @@ describe('All Routes Comprehensive Test', function (): void {
 
         // Log untested routes for review
         if ($untestedRoutes !== []) {
-            $this->info('Untested routes: '.implode(', ', $untestedRoutes));
+            $this->info('Untested routes: ' . implode(', ', $untestedRoutes));
         }
 
         // This is informational - we don't fail if there are untested routes

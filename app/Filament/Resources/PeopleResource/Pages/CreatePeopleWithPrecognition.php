@@ -44,7 +44,7 @@ final class CreatePeopleWithPrecognition extends CreateRecord
                                     ->afterStateUpdated(function ($state): void {
                                         $this->validateFieldPrecognitively('email', $state);
                                     })
-                                    ->helperText(fn ($state, $component): ?string => $this->getValidationHelperText('email', $state)
+                                    ->helperText(fn ($state, $component): ?string => $this->getValidationHelperText('email', $state),
                                     ),
 
                                 Forms\Components\TextInput::make('phone')
@@ -118,7 +118,7 @@ final class CreatePeopleWithPrecognition extends CreateRecord
             [$field => $value],
             [$field => $rules[$field]],
             $this->getValidationMessages(),
-            $this->getValidationAttributes()
+            $this->getValidationAttributes(),
         );
 
         if ($validator->fails()) {
@@ -212,7 +212,7 @@ final class CreatePeopleWithPrecognition extends CreateRecord
 
         // Show success indicator for unique fields
         if ($field === 'email') {
-            return '✓ '.__('app.messages.email_available');
+            return '✓ ' . __('app.messages.email_available');
         }
 
         return null;

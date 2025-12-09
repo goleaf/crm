@@ -1,0 +1,64 @@
+name: Localazy Upload
+
+on:
+  # Run when English translation files are updated
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'lang/en/**/*.php'
+      - 'app-modules/*/src/resources/lang/en/**/*.php'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  upload-translations:
+    runs-on: ubuntu-latest
+    name: Upload Source Translations to Localazy
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          extensions: json, dom, curl, libxml, mbstring, zip
+          tools: composer:v2
+
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: dependencies-php-composer-${{ hashFiles('composer.lock') }}
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --no-progress --ansi --prefer-dist --optimize-autoloader
+
+      - name: Prepare Laravel Application
+        run: |
+          cp .env.ci .env
+          php artisan key:generate
+
+      - name: Export translations from database
+        run: php artisan translations:export --language=en
+
+      - name: Upload translations to Localazy
+        uses: localazy/upload@v1
+        with:
+          read_key: ${{ secrets.LOCALAZY_READ_KEY }}
+          write_key: ${{ secrets.LOCALAZY_WRITE_KEY }}
+
+      - name: Create summary
+        run: |
+          echo "## 📤 Translations Uploaded" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "English source translations have been uploaded to Localazy." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Uploaded Files" >> $GITHUB_STEP_SUMMARY
+          find lang/en -name "*.php" -type f >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          find app-modules/*/src/resources/lang/en -name "*.php" -type f 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "No module translations found" >> $GITHUB_STEP_SUMMARY

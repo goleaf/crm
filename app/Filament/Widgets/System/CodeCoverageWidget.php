@@ -10,14 +10,14 @@ use Filament\Notifications\Notification;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
-class CodeCoverageWidget extends BaseWidget
+final class CodeCoverageWidget extends BaseWidget
 {
     protected ?string $pollingInterval = null;
 
     protected static ?int $sort = 10;
 
     public function __construct(
-        private readonly CodeCoverageService $coverageService
+        private readonly CodeCoverageService $coverageService,
     ) {
         parent::__construct();
     }
@@ -38,12 +38,6 @@ class CodeCoverageWidget extends BaseWidget
             default => 'heroicon-o-minus',
         };
 
-        $trendColor = match ($trend) {
-            'up' => 'success',
-            'down' => 'danger',
-            default => 'gray',
-        };
-
         $overallColor = match (true) {
             $stats['overall'] >= 80 => 'success',
             $stats['overall'] >= 60 => 'warning',
@@ -51,8 +45,8 @@ class CodeCoverageWidget extends BaseWidget
         };
 
         return [
-            Stat::make(__('app.labels.overall_coverage'), number_format($stats['overall'], 1).'%')
-                ->description($stats['covered_statements'].' / '.$stats['total_statements'].' '.__('app.labels.lines'))
+            Stat::make(__('app.labels.overall_coverage'), number_format($stats['overall'], 1) . '%')
+                ->description($stats['covered_statements'] . ' / ' . $stats['total_statements'] . ' ' . __('app.labels.lines'))
                 ->descriptionIcon($trendIcon)
                 ->color($overallColor)
                 ->chart($this->getCoverageChart())
@@ -60,26 +54,26 @@ class CodeCoverageWidget extends BaseWidget
                     'class' => 'cursor-pointer',
                 ]),
 
-            Stat::make(__('app.labels.method_coverage'), number_format($stats['methods'], 1).'%')
-                ->description($stats['covered_methods'].' / '.$stats['total_methods'].' '.__('app.labels.methods'))
+            Stat::make(__('app.labels.method_coverage'), number_format($stats['methods'], 1) . '%')
+                ->description($stats['covered_methods'] . ' / ' . $stats['total_methods'] . ' ' . __('app.labels.methods'))
                 ->descriptionIcon('heroicon-o-code-bracket')
                 ->color($stats['methods'] >= 80 ? 'success' : 'warning'),
 
-            Stat::make(__('app.labels.class_coverage'), number_format($stats['classes'], 1).'%')
-                ->description($stats['covered_classes'].' / '.$stats['total_classes'].' '.__('app.labels.classes'))
+            Stat::make(__('app.labels.class_coverage'), number_format($stats['classes'], 1) . '%')
+                ->description($stats['covered_classes'] . ' / ' . $stats['total_classes'] . ' ' . __('app.labels.classes'))
                 ->descriptionIcon('heroicon-o-cube')
                 ->color($stats['classes'] >= 80 ? 'success' : 'warning'),
         ];
     }
 
-    protected function getHeaderActions(): array
+    private function getHeaderActions(): array
     {
         return [
             Action::make('run_coverage')
                 ->label(__('app.actions.run_coverage'))
                 ->icon('heroicon-o-play')
                 ->color('primary')
-                ->action(function () {
+                ->action(function (): void {
                     $result = $this->coverageService->runCoverage();
 
                     if ($result['success']) {
@@ -103,13 +97,13 @@ class CodeCoverageWidget extends BaseWidget
             Action::make('view_report')
                 ->label(__('app.actions.view_report'))
                 ->icon('heroicon-o-document-text')
-                ->url(fn () => route('filament.app.pages.system.code-coverage'))
+                ->url(fn (): string => route('filament.app.pages.system.code-coverage'))
                 ->color('gray'),
 
             Action::make('refresh')
                 ->label(__('app.actions.refresh'))
                 ->icon('heroicon-o-arrow-path')
-                ->action(function () {
+                ->action(function (): void {
                     $this->coverageService->clearCache();
 
                     Notification::make()

@@ -92,7 +92,8 @@ final class CasesRelationManager extends RelationManager
     }
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
+     *
      * @return array<string, mixed>
      */
     private function mutateFormDataBeforeCreate(array $data): array
@@ -103,7 +104,8 @@ final class CasesRelationManager extends RelationManager
     }
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
+     *
      * @return array<string, mixed>
      */
     private function mutateFormDataBeforeSave(array $data): array

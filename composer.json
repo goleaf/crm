@@ -17,8 +17,11 @@
         "aliziodev/laravel-taxonomy": "^2.8",
         "ashallendesign/favicon-fetcher": "^3.8",
         "austinw/laravel-union-paginator": "^2.2",
+        "awcodes/filament-badgeable-column": "^3.0",
+        "awcodes/filament-curator": "^3.7",
         "awcodes/overlook": "^v3.0",
         "barryvdh/laravel-dompdf": "^3.1",
+        "beacon-hq/bag": "*",
         "bensampo/laravel-enum": "^6.12",
         "bezhansalleh/filament-shield": "*",
         "binafy/laravel-reactions": "^1.0",
@@ -26,16 +29,21 @@
         "blade-ui-kit/blade-icons": "^1.8",
         "blaspsoft/blasp": "*",
         "blaspsoft/onym": "*",
+        "charrafimed/global-search-modal": "^4.2",
         "dedoc/scramble": "^0.13.7",
         "devrabiul/laravel-geo-genius": "^1.4",
         "devrabiul/laravel-toaster-magic": "^1.5",
         "dgtlss/warden": "^1.3",
+        "dipesh79/laravel-schema-docs": "^1.1",
         "eg-mohamed/notable": "^1.4",
         "eg-mohamed/referenceable": "^2.0",
-        "filament/filament": "^4.0",
+        "eliseekn/laravel-metrics": "^3.1",
+        "filament/filament": "^4.3.1",
         "filament/spatie-laravel-media-library-plugin": "^4.3",
+        "grazulex/laravel-sharelink": "^1.2",
         "hdaklue/larapath": "^2.2.4",
         "hosmelq/name-of-person": "*",
+        "inerba/filament-db-config": "^1.2",
         "intervention/validation": "^4.6",
         "jonpurvis/squeaky": "^2.2",
         "kodeine/laravel-meta": "*",
@@ -53,15 +61,22 @@
         "mansoor/filament-unsplash-picker": "^4.0",
         "marksitko/laravel-unsplash": "^2.3",
         "mateffy/laravel-introspect": "^1.1",
+        "mcamara/laravel-localization": "*",
+        "mwguerra/filemanager": "^0.1.8",
         "naoray/laravel-github-monolog": "^3.3",
         "nnjeim/world": "*",
         "nunomaduro/laravel-optimize-database": "^1.0",
+        "nuwave/lighthouse": "^6.63",
+        "omarchouman/lara-util-x": "^1.3",
         "prism-php/prism": "^0.98.5",
+        "pxlrbt/filament-activity-log": "^2.0",
+        "pxlrbt/filament-favicon": "^1.1",
         "relaticle/custom-fields": "^2.0",
         "relaticle/flowforge": "@dev",
         "sakanjo/laravel-easy-metrics": "^1.1",
         "sentry/sentry-laravel": "^4.13",
         "spatie/eloquent-sortable": "^4.4",
+        "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-data": "^4.15",
         "spatie/laravel-login-link": "^1.3",
         "spatie/laravel-mailcoach-mailer": "^1.5",
@@ -78,6 +93,7 @@
         "symfony/yaml": "^7.2",
         "treblle/security-headers": "^0.0.3",
         "vectorial1024/laravel-cache-evict": "^2.0",
+        "waad/truffle": "*",
         "wildside/userstamps": "^3.1",
         "willvincent/laravel-unique": "^1.2",
         "ziming/laravel-zxcvbn": "*"
@@ -90,6 +106,8 @@
         "driftingly/rector-laravel": "^2.0",
         "fakerphp/faker": "^1.23",
         "hyvor/laravel-playwright": "^2.0",
+        "inspector-apm/mcp-server": "^1.2",
+        "iperamuna/laravel-auto-translations": "^0.0.1",
         "itsgoingd/clockwork": "^5.3",
         "larastan/larastan": "^3.0",
         "laravel/boost": "^1.0",
@@ -99,6 +117,7 @@
         "laravel/telescope": "^5.15",
         "larswiegers/laravel-translations-checker": "^0.9.3",
         "mockery/mockery": "^1.6",
+        "mubbi/laravel-commit-lint": "^1.1",
         "nunomaduro/collision": "^8.0",
         "nunomaduro/phpinsights": "^2.13",
         "outhebox/laravel-translations": "^1.4",
@@ -112,7 +131,9 @@
         "spatie/laravel-horizon-watcher": "^1.1",
         "spatie/pest-plugin-route-testing": "^1.1",
         "squizlabs/php_codesniffer": "^3.10",
-        "tyghaykal/laravel-seed-generator": "^2.2"
+        "tyghaykal/laravel-seed-generator": "^2.2",
+        "vivek-mistry/facade-maker": "^1.0",
+        "worksome/envy": "^1.4"
     },
     "autoload": {
         "psr-4": {
@@ -129,7 +150,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\": "tests/",
+            "AutoTranslations\\": "tests/Stubs/AutoTranslations/"
         }
     },
     "scripts": {
@@ -176,6 +198,7 @@
         "test:config": "php artisan config:check",
         "test:coverage": "pest --coverage --min=80",
         "test:pest": "php -d memory_limit=1G ./vendor/bin/pest --parallel",
+        "test:pest:profile": "php -d memory_limit=1G ./vendor/bin/pest --profile",
         "test:pest:shard": "pest --parallel --shard=${SHARD}",
         "test:pest:ci": "php -d memory_limit=1G ./vendor/bin/pest --parallel --configuration phpunit.ci.xml",
         "test:pest:ci:shard": "php -d memory_limit=1G ./vendor/bin/pest --parallel --configuration phpunit.ci.xml --shard=${SHARD}",
@@ -198,7 +221,17 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+        "dont-discover": [
+            "omarchouman/lara-util-x"
+        ]
+    },
+    "patches": {
+        "vivek-mistry/facade-maker": {
+            "Fix stub path case sensitivity for Linux filesystems": "patches/vivek-mistry-facade-maker-stub-case.patch"
+        },
+            "dipesh79/laravel-schema-docs": {
+                "Add cross-database schema extraction support": "patches/dipesh79-laravel-schema-docs-sql-support.patch"
+            }
         }
     },
     "config": {

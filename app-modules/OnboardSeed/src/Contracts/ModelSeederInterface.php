@@ -13,9 +13,10 @@ interface ModelSeederInterface
     /**
      * Run the model seed process
      *
-     * @param  Team  $team  The team to create data for
-     * @param  Authenticatable  $user  The user creating the data
-     * @param  array<string, mixed>  $context  Context data from previous seeders
+     * @param Team                 $team    The team to create data for
+     * @param Authenticatable      $user    The user creating the data
+     * @param array<string, mixed> $context Context data from previous seeders
+     *
      * @return array<string, mixed> Seeded data for use by subsequent seeders
      */
     public function seed(Team $team, Authenticatable $user, array $context = []): array;

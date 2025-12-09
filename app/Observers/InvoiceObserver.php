@@ -35,9 +35,9 @@ final readonly class InvoiceObserver
                     message: sprintf(
                         'Invoice %s moved to %s.',
                         $invoice->number ?? $invoice->id,
-                        $invoice->status->label()
+                        $invoice->status->label(),
                     ),
-                    url: $url
+                    url: $url,
                 );
             }
         }

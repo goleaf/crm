@@ -202,7 +202,7 @@ test('territory transfer maintains audit trail', function (): void {
         $fromTerritory,
         $toTerritory,
         $user,
-        'Territory rebalancing'
+        'Territory rebalancing',
     );
 
     expect($transfer)->not->toBeNull()

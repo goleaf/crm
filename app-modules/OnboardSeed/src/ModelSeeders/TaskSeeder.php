@@ -32,9 +32,10 @@ final class TaskSeeder extends BaseModelSeeder
     /**
      * Create task entities from fixtures
      *
-     * @param  Team  $team  The team to create data for
-     * @param  User  $user  The user creating the data
-     * @param  array<string, mixed>  $context  Context data from previous seeders
+     * @param Team                 $team    The team to create data for
+     * @param User                 $user    The user creating the data
+     * @param array<string, mixed> $context Context data from previous seeders
+     *
      * @return array<string, mixed> Seeded data for use by subsequent seeders
      */
     protected function createEntitiesFromFixtures(Team $team, Authenticatable $user, array $context = []): array
@@ -61,7 +62,7 @@ final class TaskSeeder extends BaseModelSeeder
     /**
      * Assign people to a task based on people keys
      *
-     * @param  array<int, string>  $peopleKeys
+     * @param array<int, string> $peopleKeys
      */
     private function assignPeopleToTask(Task $task, array $peopleKeys): void
     {
@@ -85,13 +86,13 @@ final class TaskSeeder extends BaseModelSeeder
     /**
      * Create a task from fixture data
      *
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
      */
     private function createTaskFromFixture(
         Team $team,
         Authenticatable $user,
         string $key,
-        array $data
+        array $data,
     ): Task {
         $attributes = [
             'title' => $data['title'],
@@ -119,7 +120,8 @@ final class TaskSeeder extends BaseModelSeeder
     /**
      * Format a date value for the task due date
      *
-     * @param  mixed  $dateValue  The date value returned from template expression
+     * @param mixed $dateValue The date value returned from template expression
+     *
      * @return string The formatted date string
      */
     private function formatDate(mixed $dateValue): string

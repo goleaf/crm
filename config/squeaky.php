@@ -51,7 +51,7 @@ return [
     |
     */
     'locales' => array_values(array_unique(array_filter(
-        array_map(trim(...), explode(',', (string) env('SQUEAKY_LOCALES', 'en')))
+        array_map(trim(...), explode(',', (string) env('SQUEAKY_LOCALES', 'en'))),
     ))),
 
     'fallback_locale' => env('SQUEAKY_FALLBACK_LOCALE', 'en'),

@@ -30,7 +30,7 @@ beforeEach(function (): void {
             $fieldEnum->value,
             $fieldEnum->getFieldType(),
             $fieldEnum->getOptions() ?? [],
-            $this->team
+            $this->team,
         );
     }
 });

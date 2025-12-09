@@ -11,7 +11,7 @@ interface CreatesNewSocialUsers
     /**
      * Create a new social user.
      *
-     * @param  array<string, string>  $input
+     * @param array<string, string> $input
      */
     public function create(array $input): User;
 }

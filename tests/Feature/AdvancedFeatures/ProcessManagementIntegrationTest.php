@@ -89,7 +89,7 @@ test('complete process execution with approvals and escalations', function (): v
         $initiator->id,
         'SLA at risk',
         $step2,
-        'Approval taking too long'
+        'Approval taking too long',
     );
 
     expect($escalation)->not->toBeNull()

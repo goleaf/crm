@@ -15,7 +15,7 @@ final readonly class UpdateUserProfileInformation implements UpdatesUserProfileI
     /**
      * Validate and update the given user's profile information.
      *
-     * @param  array<string, mixed>  $input
+     * @param array<string, mixed> $input
      */
     public function update(User $user, array $input): void
     {
@@ -46,7 +46,7 @@ final readonly class UpdateUserProfileInformation implements UpdatesUserProfileI
     /**
      * Update the given verified user's profile information.
      *
-     * @param  array<string, string>  $input
+     * @param array<string, string> $input
      */
     private function updateVerifiedUser(User $user, array $input): void
     {

@@ -10,16 +10,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property int $id
- * @property int $employee_id
- * @property int|null $approved_by
- * @property TimeOffType $type
- * @property \Illuminate\Support\Carbon $start_date
- * @property \Illuminate\Support\Carbon $end_date
- * @property float $days
- * @property TimeOffStatus $status
- * @property string|null $reason
- * @property string|null $rejection_reason
+ * @property int                             $id
+ * @property int                             $employee_id
+ * @property int|null                        $approved_by
+ * @property TimeOffType                     $type
+ * @property \Illuminate\Support\Carbon      $start_date
+ * @property \Illuminate\Support\Carbon      $end_date
+ * @property float                           $days
+ * @property TimeOffStatus                   $status
+ * @property string|null                     $reason
+ * @property string|null                     $rejection_reason
  * @property \Illuminate\Support\Carbon|null $approved_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at

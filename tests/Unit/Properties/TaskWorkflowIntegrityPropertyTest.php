@@ -21,7 +21,7 @@ beforeEach(function (): void {
         TaskField::STATUS->value,
         'select',
         ['Not Started', 'In Progress', 'Completed'],
-        $this->team
+        $this->team,
     );
 
     $this->completedOption = $this->statusField->options->firstWhere('name', 'Completed');
@@ -59,7 +59,7 @@ test('property: tasks with incomplete dependencies cannot be completed', functio
 
         // Property: Task should be blocked
         expect($blocked)->toBeTrue(
-            "Task {$task->id} should be blocked when dependency {$incompleteDep->id} is incomplete"
+            "Task {$task->id} should be blocked when dependency {$incompleteDep->id} is incomplete",
         );
 
         // Property: Attempting to complete should throw exception
@@ -104,7 +104,7 @@ test('property: tasks with all dependencies completed can be completed', functio
         $blocked = $task->isBlocked();
 
         expect($blocked)->toBeFalse(
-            "Task {$task->id} should not be blocked when all dependencies are completed"
+            "Task {$task->id} should not be blocked when all dependencies are completed",
         );
 
         // Should be able to complete the task
@@ -155,7 +155,7 @@ test('property: parent task percent complete is average of subtasks', function (
         // Property: Parent's percent_complete should equal average of subtasks
         expect((float) $parent->fresh()->percent_complete)->toBe(
             $expectedAverage,
-            "Parent task {$parent->id} percent_complete should be {$expectedAverage}, got {$parent->percent_complete}"
+            "Parent task {$parent->id} percent_complete should be {$expectedAverage}, got {$parent->percent_complete}",
         );
     }, 100);
 })->group('property');
@@ -203,7 +203,7 @@ test('property: subtask progress changes propagate to parent', function (): void
 
         expect((float) $newParentProgress)->toBe(
             $expectedAverage,
-            'Parent progress should update when subtask changes'
+            'Parent progress should update when subtask changes',
         );
     }, 100);
 })->group('property');
@@ -234,14 +234,14 @@ test('property: task start dates cannot violate dependency constraints', functio
         $violates = $task->violatesDependencyConstraints();
 
         expect($violates)->toBeTrue(
-            "Task {$task->id} starting at {$task->start_date} should violate constraint with dependency ending at {$dependency->end_date}"
+            "Task {$task->id} starting at {$task->start_date} should violate constraint with dependency ending at {$dependency->end_date}",
         );
 
         // Property: Earliest start date should be after dependency end
         $earliestStart = $task->getEarliestStartDate();
 
         expect($earliestStart->greaterThanOrEqualTo($dependency->end_date))->toBeTrue(
-            'Earliest start date should be after dependency end date'
+            'Earliest start date should be after dependency end date',
         );
     }, 100);
 })->group('property');
@@ -268,7 +268,7 @@ test('property: completing a task sets percent complete to 100', function (): vo
         // Property: percent_complete should be 100
         expect((float) $task->fresh()->percent_complete)->toBe(
             100.0,
-            "Task {$task->id} should have 100% progress when completed, had {$initialProgress}% initially"
+            "Task {$task->id} should have 100% progress when completed, had {$initialProgress}% initially",
         );
     }, 100);
 })->group('property');

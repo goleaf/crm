@@ -77,7 +77,7 @@ final class EmailProgramRecipient extends Model
 
     protected function getFullNameAttribute(): string
     {
-        $name = $this->name ?? trim(trim((string) $this->first_name).' '.trim((string) $this->last_name));
+        $name = $this->name ?? trim(trim((string) $this->first_name) . ' ' . trim((string) $this->last_name));
 
         return PersonNameFormatter::full($name, (string) $this->email);
     }

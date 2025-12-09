@@ -15,7 +15,8 @@ final class CreateDocument extends CreateRecord
     protected static string $resource = DocumentResource::class;
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
+     *
      * @return array<string, mixed>
      */
     protected function mutateFormDataBeforeCreate(array $data): array
@@ -59,7 +60,7 @@ final class CreateDocument extends CreateRecord
     }
 
     /**
-     * @param  array<int|string>  $userIds
+     * @param array<int|string> $userIds
      */
     private function syncQuickShares(Document $document, array $userIds): void
     {
@@ -79,7 +80,7 @@ final class CreateDocument extends CreateRecord
                     [
                         'team_id' => $document->team_id,
                         'permission' => 'view',
-                    ]
+                    ],
                 );
             });
     }

@@ -69,7 +69,7 @@ final class LineItemsRelationManager extends RelationManager
                     ->money(fn (\App\Models\InvoiceLineItem $record): string => $record->invoice->currency_code ?? 'USD'),
                 TextColumn::make('tax_rate')
                     ->label('Tax %')
-                    ->formatStateUsing(fn (float|int|string|null $state): string => number_format((float) $state, 2).' %'),
+                    ->formatStateUsing(fn (float|int|string|null $state): string => number_format((float) $state, 2) . ' %'),
                 TextColumn::make('line_total')
                     ->label('Line Total')
                     ->money(fn (\App\Models\InvoiceLineItem $record): string => $record->invoice->currency_code ?? 'USD'),

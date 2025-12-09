@@ -17,6 +17,7 @@ use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
 use Relaticle\CustomFields\Models\Concerns\UsesCustomFields;
 use Relaticle\CustomFields\Models\Contracts\HasCustomFields;
 use Relaticle\CustomFields\Services\TenantContextService;
@@ -134,14 +135,14 @@ test('company calculates total pipeline value using open opportunities', functio
         OpportunityField::STAGE->value,
         CustomFieldType::SELECT->value,
         OpportunityField::STAGE->getOptions() ?? [],
-        $company->team
+        $company->team,
     );
     $amountField = createCustomFieldFor(
         Opportunity::class,
         OpportunityField::AMOUNT->value,
         CustomFieldType::CURRENCY->value,
         [],
-        $company->team
+        $company->team,
     );
 
     $stageField->loadMissing('options');
@@ -184,7 +185,7 @@ test('company activity timeline aggregates notes tasks and opportunities in orde
         NoteField::BODY->value,
         CustomFieldType::RICH_EDITOR->value,
         [],
-        $company->team
+        $company->team,
     );
 
     $taskDescriptionField = createCustomFieldFor(
@@ -192,21 +193,21 @@ test('company activity timeline aggregates notes tasks and opportunities in orde
         TaskField::DESCRIPTION->value,
         CustomFieldType::RICH_EDITOR->value,
         [],
-        $company->team
+        $company->team,
     );
     $taskStatusField = createCustomFieldFor(
         Task::class,
         TaskField::STATUS->value,
         CustomFieldType::SELECT->value,
         TaskField::STATUS->getOptions() ?? [],
-        $company->team
+        $company->team,
     );
     $taskPriorityField = createCustomFieldFor(
         Task::class,
         TaskField::PRIORITY->value,
         CustomFieldType::SELECT->value,
         TaskField::PRIORITY->getOptions() ?? [],
-        $company->team
+        $company->team,
     );
 
     $stageField = createCustomFieldFor(
@@ -214,14 +215,14 @@ test('company activity timeline aggregates notes tasks and opportunities in orde
         OpportunityField::STAGE->value,
         CustomFieldType::SELECT->value,
         OpportunityField::STAGE->getOptions() ?? [],
-        $company->team
+        $company->team,
     );
     $amountField = createCustomFieldFor(
         Opportunity::class,
         OpportunityField::AMOUNT->value,
         CustomFieldType::CURRENCY->value,
         [],
-        $company->team
+        $company->team,
     );
 
     $stageField->loadMissing('options');
@@ -369,9 +370,9 @@ test('duplicate detection identifies similar names', function (): void {
     $variations = [
         strtoupper($baseName),
         strtolower($baseName),
-        $baseName.' Inc',
-        $baseName.' Corporation',
-        $baseName.' LLC',
+        $baseName . ' Inc',
+        $baseName . ' Corporation',
+        $baseName . ' LLC',
     ];
 
     $original = Company::factory()->for($team)->create([
@@ -421,14 +422,14 @@ test('pipeline value equals sum of open opportunity amounts', function (): void 
         OpportunityField::STAGE->value,
         CustomFieldType::SELECT->value,
         OpportunityField::STAGE->getOptions() ?? [],
-        $company->team
+        $company->team,
     );
     $amountField = createCustomFieldFor(
         Opportunity::class,
         OpportunityField::AMOUNT->value,
         CustomFieldType::CURRENCY->value,
         [],
-        $company->team
+        $company->team,
     );
 
     $stageField->loadMissing('options');
@@ -488,7 +489,7 @@ test('activity timeline returns items in descending chronological order', functi
         NoteField::BODY->value,
         CustomFieldType::RICH_EDITOR->value,
         [],
-        $company->team
+        $company->team,
     );
 
     $taskDescriptionField = createCustomFieldFor(
@@ -496,7 +497,7 @@ test('activity timeline returns items in descending chronological order', functi
         TaskField::DESCRIPTION->value,
         CustomFieldType::RICH_EDITOR->value,
         [],
-        $company->team
+        $company->team,
     );
 
     $stageField = createCustomFieldFor(
@@ -504,7 +505,7 @@ test('activity timeline returns items in descending chronological order', functi
         OpportunityField::STAGE->value,
         CustomFieldType::SELECT->value,
         OpportunityField::STAGE->getOptions() ?? [],
-        $company->team
+        $company->team,
     );
 
     $itemCount = fake()->numberBetween(3, 10);
@@ -525,7 +526,7 @@ test('activity timeline returns items in descending chronological order', functi
                     'created_at' => $createdAt,
                 ]);
             $company->notes()->attach($note);
-            $note->saveCustomFieldValue($noteField, '<p>'.fake()->sentence().'</p>');
+            $note->saveCustomFieldValue($noteField, '<p>' . fake()->sentence() . '</p>');
         } elseif ($type === 'task') {
             $task = Task::factory()->create([
                 'title' => fake()->sentence(),
@@ -533,7 +534,7 @@ test('activity timeline returns items in descending chronological order', functi
                 'updated_at' => $createdAt,
             ]);
             $company->tasks()->attach($task);
-            $task->saveCustomFieldValue($taskDescriptionField, '<p>'.fake()->sentence().'</p>');
+            $task->saveCustomFieldValue($taskDescriptionField, '<p>' . fake()->sentence() . '</p>');
         } else {
             $opportunity = Opportunity::factory()
                 ->for($company->team, 'team')
@@ -646,7 +647,7 @@ test('merge preserves all unique data based on field selections', function (): v
         'employee_count' => fake()->numberBetween(10, 500),
         'description' => fake()->paragraph(),
         'phone' => fake()->phoneNumber(),
-        'primary_email' => fake()->companyEmail(),
+        'primary_email' => fake()->unique()->safeEmail(),
     ]);
 
     $duplicate = Company::factory()->create([
@@ -657,7 +658,7 @@ test('merge preserves all unique data based on field selections', function (): v
         'employee_count' => fake()->numberBetween(10, 500),
         'description' => fake()->paragraph(),
         'phone' => fake()->phoneNumber(),
-        'primary_email' => fake()->companyEmail(),
+        'primary_email' => fake()->unique()->safeEmail(),
     ]);
 
     // Store original values
@@ -800,7 +801,7 @@ test('duplicate detection identifies similar accounts on creation', function ():
     // Create an existing company
     $existing = Company::factory()->create([
         'name' => fake()->company(),
-        'website' => 'https://'.fake()->domainName(),
+        'website' => 'https://' . fake()->domainName(),
         'industry' => fake()->randomElement(Industry::cases()),
     ]);
 
@@ -815,12 +816,12 @@ test('duplicate detection identifies similar accounts on creation', function ():
         // Same name, different website
         [
             'name' => $existing->name,
-            'website' => 'https://'.fake()->domainName(),
+            'website' => 'https://' . fake()->domainName(),
             'expectedMinScore' => 60,
         ],
         // Similar name (with suffix), same website
         [
-            'name' => $existing->name.' LLC',
+            'name' => $existing->name . ' LLC',
             'website' => $existing->website,
             'expectedMinScore' => 70,
         ],
@@ -842,12 +843,12 @@ test('duplicate detection identifies similar accounts on creation', function ():
         $duplicates = $service->findDuplicates($newCompany, threshold: 50.0);
 
         expect($duplicates->isNotEmpty())->toBeTrue(
-            "Expected to find duplicates for variation: {$variation['name']}"
+            "Expected to find duplicates for variation: {$variation['name']}",
         );
 
         $foundExisting = $duplicates->firstWhere('company.id', $existing->getKey());
         expect($foundExisting)->not->toBeNull(
-            'Expected to find existing company in duplicates'
+            'Expected to find existing company in duplicates',
         );
         expect($foundExisting['score'])->toBeGreaterThanOrEqual($variation['expectedMinScore']);
     }
@@ -909,7 +910,7 @@ test('account type changes are preserved in activity history', function (): void
     // Change the account type to a different random type
     $availableTypes = array_filter(
         AccountType::cases(),
-        fn (AccountType $type): bool => $type !== $initialType
+        fn (AccountType $type): bool => $type !== $initialType,
     );
     $newType = fake()->randomElement($availableTypes);
 
@@ -927,16 +928,18 @@ test('account type changes are preserved in activity history', function (): void
 
     // Find the activity that logged the account_type change
     $accountTypeChangeActivity = $activities->first(function ($activity): bool {
-        $changes = $activity->changes;
+        $changes = $activity->changes instanceof Collection ? $activity->changes->toArray() : (array) $activity->changes;
 
-        return is_array($changes)
-            && isset($changes['attributes']['account_type']);
+        return isset($changes['attributes']['account_type']);
     });
 
     expect($accountTypeChangeActivity)->not->toBeNull('Expected to find activity logging account_type change');
 
     // Verify the activity contains the old and new values
-    $changes = $accountTypeChangeActivity->changes;
+    $changes = $accountTypeChangeActivity->changes instanceof Collection
+        ? $accountTypeChangeActivity->changes->toArray()
+        : (array) $accountTypeChangeActivity->changes;
+
     expect($changes)->toBeArray()
         ->and($changes['attributes']['account_type'])->toBe($newType->value)
         ->and($changes['old']['account_type'])->toBe($initialType->value);

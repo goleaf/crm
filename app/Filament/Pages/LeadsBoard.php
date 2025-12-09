@@ -64,7 +64,7 @@ final class LeadsBoard extends BoardPage
             ->query(
                 Lead::query()
                     ->whereNull('deleted_at')
-                    ->with(['company', 'assignedTo'])
+                    ->with(['company', 'assignedTo']),
             )
             ->recordTitleAttribute('name')
             ->columnIdentifier('status')
@@ -152,7 +152,7 @@ final class LeadsBoard extends BoardPage
         string $cardId,
         string $targetColumnId,
         ?string $afterCardId = null,
-        ?string $beforeCardId = null
+        ?string $beforeCardId = null,
     ): void {
         $board = $this->getBoard();
         $query = $board->getQuery();

@@ -19,7 +19,7 @@ it('saves and lists searches per team', function (): void {
         query: 'Acme',
         filters: [
             ['field' => 'industry', 'operator' => 'contains', 'value' => 'software'],
-        ]
+        ],
     );
 
     expect($saved)->toBeInstanceOf(SavedSearch::class);

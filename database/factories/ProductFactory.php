@@ -25,7 +25,7 @@ final class ProductFactory extends Factory
         return [
             'team_id' => Team::factory(),
             'name' => $name,
-            'slug' => \Illuminate\Support\Str::slug($name).'-'.fake()->unique()->numberBetween(1000, 9999),
+            'slug' => \Illuminate\Support\Str::slug($name) . '-' . fake()->unique()->numberBetween(1000, 9999),
             'sku' => fake()->unique()->regexify('[A-Z]{3}-[0-9]{4}'),
             'part_number' => fake()->unique()->bothify('PART-####'),
             'manufacturer' => fake()->company(),

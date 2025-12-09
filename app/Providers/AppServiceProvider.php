@@ -85,7 +85,7 @@ final class AppServiceProvider extends ServiceProvider
 
         // Register World Data Service
         $this->app->singleton(fn ($app): \App\Services\World\WorldDataService => new WorldDataService(
-            cacheTtl: (int) config('world.cache_ttl', 3600)
+            cacheTtl: (int) config('world.cache_ttl', 3600),
         ));
 
         // Register Unsplash Service
@@ -99,7 +99,7 @@ final class AppServiceProvider extends ServiceProvider
 
         // Register Translation Checker Service
         $this->app->singleton(\App\Services\Translation\TranslationCheckerService::class, fn ($app): \App\Services\Translation\TranslationCheckerService => new \App\Services\Translation\TranslationCheckerService(
-            cacheTtl: (int) config('translations.cache.ttl', 3600)
+            cacheTtl: (int) config('translations.cache.ttl', 3600),
         ));
 
         // Register Config Checker Service
@@ -118,8 +118,18 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\Testing\CodeCoverageService::class, fn (): \App\Services\Testing\CodeCoverageService => new \App\Services\Testing\CodeCoverageService(
             coverageDir: config('testing.coverage.html_dir', 'coverage-html'),
             cloverFile: config('testing.coverage.clover_file', 'coverage.xml'),
-            cacheTtl: config('testing.coverage.cache_ttl', 300)
+            cacheTtl: config('testing.coverage.cache_ttl', 300),
         ));
+
+        // Register ShareLink Service
+        $this->app->singleton(\App\Services\ShareLink\ShareLinkService::class, fn (): \App\Services\ShareLink\ShareLinkService => new \App\Services\ShareLink\ShareLinkService(
+            defaultCacheTtl: (int) config('sharelink.cache_ttl', 3600),
+        ));
+
+        // Register Task Services
+        $this->app->singleton(\App\Services\Task\TaskReminderService::class);
+        $this->app->singleton(\App\Services\Task\TaskRecurrenceService::class);
+        $this->app->singleton(\App\Services\Task\TaskDelegationService::class);
     }
 
     /**
@@ -130,12 +140,12 @@ final class AppServiceProvider extends ServiceProvider
         // Register Activity Feed Service
         $this->app->singleton(fn ($app): \App\Services\Activity\ActivityFeedService => new \App\Services\Activity\ActivityFeedService(
             defaultPerPage: config('app.pagination.default', 25),
-            cacheTtl: config('cache.ttl.activity_feed', 300)
+            cacheTtl: config('cache.ttl.activity_feed', 300),
         ));
 
         // Register Unified Search Service
         $this->app->singleton(fn ($app): \App\Services\Search\UnifiedSearchService => new \App\Services\Search\UnifiedSearchService(
-            defaultPerPage: config('app.pagination.search', 20)
+            defaultPerPage: config('app.pagination.search', 20),
         ));
     }
 
@@ -152,8 +162,8 @@ final class AppServiceProvider extends ServiceProvider
                 'space_ocr' => new \App\Services\OCR\Drivers\SpaceOCRDriver(
                     new \OcrSpace\OcrSpace(
                         config('ocr.drivers.space_ocr.key'),
-                        config('ocr.drivers.space_ocr.endpoint')
-                    )
+                        config('ocr.drivers.space_ocr.endpoint'),
+                    ),
                 ),
                 'tesseract' => new \App\Services\OCR\Drivers\TesseractDriver(
                     tesseractPath: config('ocr.drivers.tesseract.path'),
@@ -290,19 +300,19 @@ final class AppServiceProvider extends ServiceProvider
         $classDirnameSegments = explode('\\', $classDirname);
 
         $guesses = collect(range(1, count($classDirnameSegments)))
-            ->map(fn (int $index): string => implode('\\', array_slice($classDirnameSegments, 0, $index)).'\\Policies\\'.class_basename($modelClass).'Policy');
+            ->map(fn (int $index): string => implode('\\', array_slice($classDirnameSegments, 0, $index)) . '\\Policies\\' . class_basename($modelClass) . 'Policy');
 
         // Add Models-specific paths if the model is in a Models directory
         if (str_contains($classDirname, '\\Models\\')) {
             $guesses = $guesses
-                ->concat([str_replace('\\Models\\', '\\Policies\\', $classDirname).'\\'.class_basename($modelClass).'Policy'])
-                ->concat([str_replace('\\Models\\', '\\Models\\Policies\\', $classDirname).'\\'.class_basename($modelClass).'Policy']);
+                ->concat([str_replace('\\Models\\', '\\Policies\\', $classDirname) . '\\' . class_basename($modelClass) . 'Policy'])
+                ->concat([str_replace('\\Models\\', '\\Models\\Policies\\', $classDirname) . '\\' . class_basename($modelClass) . 'Policy']);
         }
 
         // Return the first existing class, or fallback
         $existingPolicy = $guesses->reverse()->first(fn (string $class): bool => class_exists($class));
 
-        return [$existingPolicy ?: $classDirname.'\\Policies\\'.class_basename($modelClass).'Policy'];
+        return [$existingPolicy ?: $classDirname . '\\Policies\\' . class_basename($modelClass) . 'Policy'];
     }
 
     private function configureAuthorization(): void

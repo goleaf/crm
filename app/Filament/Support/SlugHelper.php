@@ -14,9 +14,9 @@ final class SlugHelper
     /**
      * Returns a reusable handler for syncing a slug field from a base text input.
      *
-     * @param  string  $slugField  The field name to update (defaults to `slug`).
-     * @param  bool  $allowReslugOnEdit  Whether edits are allowed to update the slug when it still matches the previous base value.
-     * @param  callable|null  $lockCondition  Optional callback receiving (?string $operation, ?Model $record): bool to block updates when true.
+     * @param string        $slugField         The field name to update (defaults to `slug`).
+     * @param bool          $allowReslugOnEdit Whether edits are allowed to update the slug when it still matches the previous base value.
+     * @param callable|null $lockCondition     Optional callback receiving (?string $operation, ?Model $record): bool to block updates when true.
      */
     public static function updateSlug(
         string $slugField = 'slug',

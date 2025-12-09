@@ -98,7 +98,7 @@ final class HttpClientServiceProvider extends ServiceProvider
         $brand = brand_name();
         $appUrl = config('app.url');
 
-        return trim($brand.' HTTP Client'.($appUrl ? " ({$appUrl})" : ''));
+        return trim($brand . ' HTTP Client' . ($appUrl ? " ({$appUrl})" : ''));
     }
 
     private function retryDecider(): Closure

@@ -65,7 +65,7 @@ final class AccountResource extends Resource
             ->with(['owner', 'assignedTo', 'parent'])
             ->when(
                 $tenant,
-                fn (Builder $query): Builder => $query->whereBelongsTo($tenant, 'team')
+                fn (Builder $query): Builder => $query->whereBelongsTo($tenant, 'team'),
             );
     }
 }

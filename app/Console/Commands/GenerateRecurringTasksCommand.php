@@ -15,7 +15,7 @@ final class GenerateRecurringTasksCommand extends Command
     protected $description = 'Generate recurring task occurrences';
 
     public function __construct(
-        private readonly TaskRecurrenceService $recurrenceService
+        private readonly TaskRecurrenceService $recurrenceService,
     ) {
         parent::__construct();
     }

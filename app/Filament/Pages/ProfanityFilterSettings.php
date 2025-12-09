@@ -15,7 +15,6 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
 
 final class ProfanityFilterSettings extends Page implements HasForms
 {
@@ -23,12 +22,12 @@ final class ProfanityFilterSettings extends Page implements HasForms
 
     protected string $view = 'filament.pages.profanity-filter-settings';
 
-    public static function getNavigationIcon(): ?string
+    public static function getNavigationIcon(): string
     {
         return 'heroicon-o-shield-check';
     }
 
-    public static function getNavigationGroup(): ?string
+    public static function getNavigationGroup(): string
     {
         return 'Settings';
     }

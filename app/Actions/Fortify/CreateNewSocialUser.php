@@ -17,7 +17,7 @@ final readonly class CreateNewSocialUser implements CreatesNewSocialUsers
     /**
      * Create a newly registered user.
      *
-     * @param  array<string, string>  $input
+     * @param array<string, string> $input
      *
      * @throws Throwable
      */

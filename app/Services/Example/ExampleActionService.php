@@ -38,7 +38,7 @@ final readonly class ExampleActionService
             $this->activityService->log(
                 model: $contact,
                 description: 'Contact updated via complex operation',
-                properties: ['metrics' => $metrics]
+                properties: ['metrics' => $metrics],
             );
 
             Log::info('Complex operation completed', [

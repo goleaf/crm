@@ -19,7 +19,8 @@ trait HasTaxonomies
     }
 
     /**
-     * @param  int|string|array<int, int|string|BaseTaxonomy>|BaseTaxonomy|\Illuminate\Support\Collection<int, BaseTaxonomy>|null  $taxonomies
+     * @param int|string|array<int, int|string|BaseTaxonomy>|BaseTaxonomy|\Illuminate\Support\Collection<int, BaseTaxonomy>|null $taxonomies
+     *
      * @return array<int, int|string>
      */
     protected function getTaxonomyIds($taxonomies): array

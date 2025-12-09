@@ -12,10 +12,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * @property ProcessExecutionStatus $status
- * @property Carbon|null $started_at
- * @property Carbon|null $completed_at
- * @property Carbon|null $sla_due_at
+ * @property ProcessExecutionStatus    $status
+ * @property Carbon|null               $started_at
+ * @property Carbon|null               $completed_at
+ * @property Carbon|null               $sla_due_at
  * @property array<string, mixed>|null $context_data
  * @property array<string, mixed>|null $execution_state
  * @property array<string, mixed>|null $rollback_data

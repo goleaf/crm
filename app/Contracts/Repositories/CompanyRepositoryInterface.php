@@ -18,12 +18,12 @@ interface CompanyRepositoryInterface extends RepositoryInterface
     public function search(string $term, int $perPage = 15): LengthAwarePaginator;
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
      */
     public function create(array $data): Company;
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
      */
     public function update(Company $company, array $data): Company;
 

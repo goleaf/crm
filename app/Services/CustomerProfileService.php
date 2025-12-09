@@ -20,7 +20,7 @@ final readonly class CustomerProfileService
     public function __construct(
         private OpportunityMetricsService $opportunityMetrics,
         private PeopleRepositoryInterface $peopleRepository,
-        private CompanyRepositoryInterface $companyRepository
+        private CompanyRepositoryInterface $companyRepository,
     ) {}
 
     /**
@@ -74,7 +74,8 @@ final readonly class CustomerProfileService
     }
 
     /**
-     * @param  Company|People  $entity
+     * @param Company|People $entity
+     *
      * @return EloquentCollection<int, Opportunity>
      */
     private function opportunitiesFor(Model $entity): EloquentCollection
@@ -83,18 +84,18 @@ final readonly class CustomerProfileService
 
         if ($entity instanceof Company) {
             $opportunities = $opportunities->merge(
-                $entity->opportunities()->with('customFieldValues.customField')->get()
+                $entity->opportunities()->with('customFieldValues.customField')->get(),
             );
         }
 
         if ($entity instanceof People) {
             $opportunities = $opportunities->merge(
-                $entity->opportunities()->with('customFieldValues.customField')->get()
+                $entity->opportunities()->with('customFieldValues.customField')->get(),
             );
 
             if ($entity->company instanceof Company) {
                 $opportunities = $opportunities->merge(
-                    $entity->company->opportunities()->with('customFieldValues.customField')->get()
+                    $entity->company->opportunities()->with('customFieldValues.customField')->get(),
                 );
             }
         }
@@ -106,7 +107,8 @@ final readonly class CustomerProfileService
     }
 
     /**
-     * @param  EloquentCollection<int, Opportunity>  $opportunities
+     * @param EloquentCollection<int, Opportunity> $opportunities
+     *
      * @return array<string, float|int>
      */
     private function calculateMetrics(EloquentCollection $opportunities): array
@@ -142,7 +144,8 @@ final readonly class CustomerProfileService
     }
 
     /**
-     * @param  Company|People  $entity
+     * @param Company|People $entity
+     *
      * @return Collection<int, array<string, mixed>>
      */
     private function timelineFor(Model $entity): Collection
@@ -158,7 +161,8 @@ final readonly class CustomerProfileService
     }
 
     /**
-     * @param  Company|People  $entity
+     * @param Company|People $entity
+     *
      * @return list<string>
      */
     private function segmentFor(Model $entity): array
@@ -180,7 +184,7 @@ final readonly class CustomerProfileService
     }
 
     /**
-     * @param  array<string, float|int>  $metrics
+     * @param array<string, float|int> $metrics
      */
     private function lifecycleFor(array $metrics): string
     {

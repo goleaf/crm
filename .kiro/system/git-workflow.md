@@ -18,6 +18,8 @@ type(scope): description
 
 Types: feat, fix, docs, style, refactor, test, chore
 
+- Enforcement: a `commit-msg` hook from `mubbi/laravel-commit-lint` blocks non-Conventional Commit messages (merge/WIP/revert commits are skipped). Reinstall after cloning or when hooks are reset with `php artisan commitlint:install`.
+
 ## Pull Request Guidelines
 - Create PR from feature branch to main/develop
 - Include clear description of changes

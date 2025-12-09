@@ -26,10 +26,10 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 /**
- * @property Carbon|null $published_at
- * @property Carbon|null $archived_at
- * @property Carbon|null $review_due_at
- * @property ArticleStatus $status
+ * @property Carbon|null       $published_at
+ * @property Carbon|null       $archived_at
+ * @property Carbon|null       $review_due_at
+ * @property ArticleStatus     $status
  * @property ArticleVisibility $visibility
  */
 #[ObservedBy(KnowledgeArticleObserver::class)]
@@ -220,7 +220,7 @@ final class KnowledgeArticle extends Model implements HasMedia, HasReaction
             self::class,
             'knowledge_article_relations',
             'article_id',
-            'related_article_id'
+            'related_article_id',
         )->withPivot(['relation_type', 'team_id'])->withTimestamps();
     }
 
@@ -233,7 +233,7 @@ final class KnowledgeArticle extends Model implements HasMedia, HasReaction
             self::class,
             'knowledge_article_relations',
             'related_article_id',
-            'article_id'
+            'article_id',
         )->withPivot(['relation_type', 'team_id'])->withTimestamps();
     }
 

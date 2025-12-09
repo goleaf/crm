@@ -29,10 +29,10 @@ use Relaticle\CustomFields\Services\TenantContextService;
 use Spatie\EloquentSortable\SortableTrait;
 
 /**
- * @property int $id
- * @property Carbon|null $deleted_at
+ * @property int            $id
+ * @property Carbon|null    $deleted_at
  * @property CreationSource $creation_source
- * @property string $createdBy
+ * @property string         $createdBy
  *
  * @method void saveCustomFieldValue(CustomField $field, mixed $value, ?Model $tenant = null)
  */
@@ -144,7 +144,7 @@ final class Task extends Model implements HasCustomFields
             self::class,
             'task_dependencies',
             'task_id',
-            'depends_on_task_id'
+            'depends_on_task_id',
         )->withTimestamps();
     }
 
@@ -157,7 +157,7 @@ final class Task extends Model implements HasCustomFields
             self::class,
             'task_dependencies',
             'depends_on_task_id',
-            'task_id'
+            'task_id',
         )->withTimestamps();
     }
 
@@ -303,33 +303,54 @@ final class Task extends Model implements HasCustomFields
     /**
      * Calculate percent complete based on subtasks.
      * If no subtasks exist, returns the task's own percent_complete value.
+     * Handles edge cases like null values and ensures proper rounding.
      */
     public function calculatePercentComplete(): float
     {
+        // If task is completed, always return 100
+        if ($this->isCompleted()) {
+            return 100.0;
+        }
+
         $subtasks = $this->subtasks()->get();
 
         if ($subtasks->isEmpty()) {
-            return (float) $this->percent_complete;
+            // Return own percent_complete, defaulting to 0 if null
+            return (float) ($this->percent_complete ?? 0);
         }
 
         $totalSubtasks = $subtasks->count();
+
+        // Handle edge case of no subtasks (shouldn't happen but be safe)
+        if ($totalSubtasks === 0) {
+            return (float) ($this->percent_complete ?? 0);
+        }
+
         $totalProgress = $subtasks->sum(fn (Task $task): float => $task->calculatePercentComplete());
 
-        return round($totalProgress / $totalSubtasks, 2);
+        // Ensure result is between 0 and 100
+        $calculated = round($totalProgress / $totalSubtasks, 2);
+
+        return min(100.0, max(0.0, $calculated));
     }
 
     /**
      * Update the percent_complete field based on subtasks or completion status.
+     * Automatically propagates changes to parent task.
      */
     public function updatePercentComplete(): void
     {
-        $this->percent_complete = $this->isCompleted() ? 100 : $this->calculatePercentComplete();
+        $newPercentComplete = $this->calculatePercentComplete();
 
-        $this->save();
+        // Only update if value has changed to avoid unnecessary saves
+        if ($this->percent_complete !== $newPercentComplete) {
+            $this->percent_complete = $newPercentComplete;
+            $this->save();
+        }
 
         // Update parent task if exists
-        if ($this->parent_id !== null) {
-            $this->parent?->updatePercentComplete();
+        if ($this->parent_id !== null && $this->parent !== null) {
+            $this->parent->updatePercentComplete();
         }
     }
 
@@ -458,7 +479,8 @@ final class Task extends Model implements HasCustomFields
     /**
      * Apply common task filters for list views.
      *
-     * @param  array{assignees?: array<int>, categories?: array<int>, status?: array<int|string>, priority?: array<int|string>, blocked?: bool}  $filters
+     * @param array{assignees?: array<int>, categories?: array<int>, status?: array<int|string>, priority?: array<int|string>, blocked?: bool} $filters
+     *
      * @return \Illuminate\Database\Eloquent\Builder<Task>
      */
     #[\Illuminate\Database\Eloquent\Attributes\Scope]
@@ -525,6 +547,201 @@ final class Task extends Model implements HasCustomFields
         return ! ($statusLabel === 'Completed' && $this->isBlocked());
     }
 
+    /**
+     * Schedule a reminder for this task.
+     */
+    public function scheduleReminder(Carbon $remindAt, User $user, string $channel = 'database'): TaskReminder
+    {
+        return TaskReminder::create([
+            'task_id' => $this->id,
+            'user_id' => $user->id,
+            'remind_at' => $remindAt,
+            'channel' => $channel,
+            'status' => 'pending',
+        ]);
+    }
+
+    /**
+     * Cancel all pending reminders for this task.
+     */
+    public function cancelReminders(): int
+    {
+        return TaskReminder::query()
+            ->where('task_id', $this->id)
+            ->whereNull('sent_at')
+            ->whereNull('canceled_at')
+            ->update([
+                'canceled_at' => now(),
+                'status' => 'canceled',
+            ]);
+    }
+
+    /**
+     * Get pending reminders for this task.
+     *
+     * @return \Illuminate\Support\Collection<int, TaskReminder>
+     */
+    public function getPendingReminders(): \Illuminate\Support\Collection
+    {
+        return $this->reminders()
+            ->where('status', 'pending')
+            ->whereNull('sent_at')
+            ->whereNull('canceled_at')
+            ->orderBy('remind_at')
+            ->get();
+    }
+
+    /**
+     * Check if this task has any pending reminders.
+     */
+    public function hasPendingReminders(): bool
+    {
+        return $this->reminders()
+            ->where('status', 'pending')
+            ->whereNull('sent_at')
+            ->whereNull('canceled_at')
+            ->exists();
+    }
+
+    /**
+     * Create a recurrence pattern for this task.
+     *
+     * @param array{frequency: string, interval: int, days_of_week?: array<int>, starts_on?: Carbon, ends_on?: Carbon, max_occurrences?: int, timezone?: string} $pattern
+     */
+    public function createRecurrence(array $pattern): TaskRecurrence
+    {
+        return TaskRecurrence::create([
+            'task_id' => $this->id,
+            'frequency' => $pattern['frequency'],
+            'interval' => $pattern['interval'],
+            'days_of_week' => $pattern['days_of_week'] ?? null,
+            'starts_on' => $pattern['starts_on'] ?? now(),
+            'ends_on' => $pattern['ends_on'] ?? null,
+            'max_occurrences' => $pattern['max_occurrences'] ?? null,
+            'timezone' => $pattern['timezone'] ?? config('app.timezone'),
+            'is_active' => true,
+        ]);
+    }
+
+    /**
+     * Update the recurrence pattern for this task.
+     *
+     * @param array<string, mixed> $pattern
+     */
+    public function updateRecurrence(array $pattern): bool
+    {
+        if ($this->recurrence === null) {
+            return false;
+        }
+
+        return $this->recurrence->update($pattern);
+    }
+
+    /**
+     * Check if this task is recurring.
+     */
+    public function isRecurring(): bool
+    {
+        return $this->recurrence !== null && $this->recurrence->is_active;
+    }
+
+    /**
+     * Get the next occurrence date for this recurring task.
+     */
+    public function getNextOccurrenceDate(): ?Carbon
+    {
+        if (! $this->isRecurring()) {
+            return null;
+        }
+
+        $recurrence = $this->recurrence;
+        $lastDate = $this->start_date ?? now();
+
+        // Get the most recent subtask (instance) if any
+        $lastInstance = $this->subtasks()
+            ->orderBy('start_date', 'desc')
+            ->first();
+
+        if ($lastInstance !== null && $lastInstance->start_date !== null) {
+            $lastDate = $lastInstance->start_date;
+        }
+
+        return match ($recurrence->frequency) {
+            'daily' => $lastDate->copy()->addDays($recurrence->interval),
+            'weekly' => $lastDate->copy()->addWeeks($recurrence->interval),
+            'monthly' => $lastDate->copy()->addMonths($recurrence->interval),
+            'yearly' => $lastDate->copy()->addYears($recurrence->interval),
+            default => null,
+        };
+    }
+
+    /**
+     * Deactivate the recurrence pattern for this task.
+     */
+    public function deactivateRecurrence(): bool
+    {
+        if ($this->recurrence === null) {
+            return false;
+        }
+
+        return $this->recurrence->update(['is_active' => false]);
+    }
+
+    /**
+     * Delegate this task to another user.
+     */
+    public function delegateTo(User $to, User $from, ?string $note = null): TaskDelegation
+    {
+        $delegation = TaskDelegation::create([
+            'task_id' => $this->id,
+            'from_user_id' => $from->id,
+            'to_user_id' => $to->id,
+            'status' => 'pending',
+            'delegated_at' => now(),
+            'note' => $note,
+        ]);
+
+        // Add the delegatee as an assignee if not already assigned
+        if (! $this->assignees->contains($to->id)) {
+            $this->assignees()->attach($to->id);
+        }
+
+        return $delegation;
+    }
+
+    /**
+     * Get delegation history for this task.
+     *
+     * @return \Illuminate\Support\Collection<int, TaskDelegation>
+     */
+    public function getDelegationHistory(): \Illuminate\Support\Collection
+    {
+        return $this->delegations()
+            ->with(['from', 'to'])
+            ->orderBy('delegated_at', 'desc')
+            ->get();
+    }
+
+    /**
+     * Check if this task has pending delegations.
+     */
+    public function hasPendingDelegations(): bool
+    {
+        return $this->delegations()
+            ->where('status', 'pending')
+            ->exists();
+    }
+
+    /**
+     * Get the latest delegation for this task.
+     */
+    public function getLatestDelegation(): ?TaskDelegation
+    {
+        return $this->delegations()
+            ->orderBy('delegated_at', 'desc')
+            ->first();
+    }
+
     private function optionLabelForField(string $code): ?string
     {
         $field = $this->resolveCustomField($code);
@@ -539,8 +756,8 @@ final class Task extends Model implements HasCustomFields
     }
 
     /**
-     * @param  Model|\Illuminate\Database\Eloquent\Builder<Task>  $query
-     * @param  array<int|string>  $values
+     * @param Model|\Illuminate\Database\Eloquent\Builder<Task> $query
+     * @param array<int|string>                                 $values
      */
     private function applyCustomFieldFilter(Builder $query, string $code, array $values): void
     {

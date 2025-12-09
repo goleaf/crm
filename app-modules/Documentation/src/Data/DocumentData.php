@@ -93,7 +93,7 @@ final class DocumentData extends Data
      */
     private static function getMarkdownPath(string $file, string $basePath): string
     {
-        return rtrim($basePath, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$file;
+        return rtrim($basePath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $file;
     }
 
     /**
@@ -109,7 +109,7 @@ final class DocumentData extends Data
      */
     private static function pathWithinBasePath(string $realPath, string $basePath): bool
     {
-        $normalizedBasePath = rtrim($basePath, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+        $normalizedBasePath = rtrim($basePath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 
         return str_starts_with($realPath, $normalizedBasePath);
     }

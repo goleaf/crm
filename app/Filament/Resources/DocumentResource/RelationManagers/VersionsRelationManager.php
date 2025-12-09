@@ -34,8 +34,8 @@ final class VersionsRelationManager extends RelationManager
                     ->directory(fn (): string => StoragePaths::documentsDirectory($this->ownerRecord?->team_id))
                     ->getUploadedFileNameForStorageUsing(
                         fn (TemporaryUploadedFile $file): string => StoragePaths::documentFileName(
-                            $file->getClientOriginalName()
-                        )
+                            $file->getClientOriginalName(),
+                        ),
                     )
                     ->required(),
                 \Filament\Forms\Components\Textarea::make('notes')

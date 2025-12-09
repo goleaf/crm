@@ -18,7 +18,8 @@ use Relaticle\CustomFields\Facades\CustomFields;
 final class NoteForm
 {
     /**
-     * @param  array<string>  $excludeFields  Fields to exclude from the form.
+     * @param array<string> $excludeFields Fields to exclude from the form.
+     *
      * @return Schema The modified form instance with the schema applied.
      *
      * @throws \Exception
@@ -45,7 +46,7 @@ final class NoteForm
                     $set('category', $template['category'] ?? NoteCategory::GENERAL->value);
                     $set('visibility', $template['visibility'] ?? NoteVisibility::INTERNAL->value);
                     if (isset($template['body'])) {
-                        $set('custom_fields.'.NoteField::BODY->value, $template['body']);
+                        $set('custom_fields.' . NoteField::BODY->value, $template['body']);
                     }
                 })
                 ->columnSpanFull(),

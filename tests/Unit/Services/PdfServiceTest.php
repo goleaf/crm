@@ -188,14 +188,14 @@ test('property: generated PDFs match template specifications with merge field fi
         $hasEncryption = fake()->boolean();
 
         $mergeFields = [
-            'field_'.fake()->word() => fake()->word(),
-            'field_'.fake()->word() => fake()->word(),
-            'field_'.fake()->word() => fake()->numberBetween(1, 1000),
+            'field_' . fake()->word() => fake()->word(),
+            'field_' . fake()->word() => fake()->word(),
+            'field_' . fake()->word() => fake()->numberBetween(1, 1000),
         ];
 
         $layout = '<html><body>';
         foreach (array_keys($mergeFields) as $field) {
-            $layout .= '<p>{{'.$field.'}}</p>';
+            $layout .= '<p>{{' . $field . '}}</p>';
         }
         $layout .= '</body></html>';
 

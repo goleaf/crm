@@ -62,7 +62,7 @@ final class OrderInvoiceService
                 ]);
             });
 
-            $invoice->syncFinancials('Invoice generated from order '.$order->number);
+            $invoice->syncFinancials('Invoice generated from order ' . $order->number);
             $order->markInvoiced($invoice);
 
             return $invoice;

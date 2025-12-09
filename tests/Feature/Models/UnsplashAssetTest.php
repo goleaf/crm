@@ -235,7 +235,7 @@ it('stores metadata in pivot table', function (): void {
         $asset,
         collection: 'featured',
         order: 0,
-        metadata: ['caption' => 'Company headquarters', 'alt' => 'Building exterior']
+        metadata: ['caption' => 'Company headquarters', 'alt' => 'Building exterior'],
     );
 
     $pivot = $company->unsplashAssets()->first()->pivot;

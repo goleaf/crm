@@ -65,7 +65,7 @@ final class ReceiptPanel extends BaseLivewireComponent
         $this->lineOptions = $purchaseOrder->lineItems
             ->mapWithKeys(function (PurchaseOrderLineItem $line): array {
                 $openQty = max((float) $line->quantity - (float) $line->received_quantity, 0);
-                $label = $line->name.' ('.number_format($line->quantity, 2).' ordered, '.number_format($line->received_quantity, 2).' received)';
+                $label = $line->name . ' (' . number_format($line->quantity, 2) . ' ordered, ' . number_format($line->received_quantity, 2) . ' received)';
 
                 return [$line->id => $label];
             })

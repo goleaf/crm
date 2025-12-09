@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property InvoiceStatus|null $from_status
- * @property InvoiceStatus $to_status
+ * @property InvoiceStatus      $to_status
  */
 final class InvoiceStatusHistory extends Model
 {

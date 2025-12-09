@@ -15,15 +15,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * @property string $name
- * @property string $scope
+ * @property string            $name
+ * @property string            $scope
  * @property QuoteDiscountType $discount_type
- * @property float $discount_value
- * @property int $min_quantity
- * @property int|null $max_quantity
- * @property Carbon|null $starts_at
- * @property Carbon|null $ends_at
- * @property bool $is_active
+ * @property float             $discount_value
+ * @property int               $min_quantity
+ * @property int|null          $max_quantity
+ * @property Carbon|null       $starts_at
+ * @property Carbon|null       $ends_at
+ * @property bool              $is_active
  */
 final class ProductDiscountRule extends Model
 {

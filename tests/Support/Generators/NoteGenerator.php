@@ -19,7 +19,7 @@ final class NoteGenerator
     /**
      * Generate a random note with all fields populated.
      *
-     * @param  array<string, mixed>  $overrides
+     * @param array<string, mixed> $overrides
      */
     public static function generate(Team $team, ?User $creator = null, array $overrides = []): Note
     {

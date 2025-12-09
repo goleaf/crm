@@ -42,9 +42,10 @@ final class NoteSeeder extends BaseModelSeeder
     /**
      * Create note entities from fixtures
      *
-     * @param  Team  $team  The team to create data for
-     * @param  Authenticatable  $user  The user creating the data
-     * @param  array<string, mixed>  $context  Context data from previous seeders
+     * @param Team                 $team    The team to create data for
+     * @param Authenticatable      $user    The user creating the data
+     * @param array<string, mixed> $context Context data from previous seeders
+     *
      * @return array<string, mixed> Seeded data for use by subsequent seeders
      */
     protected function createEntitiesFromFixtures(Team $team, Authenticatable $user, array $context = []): array
@@ -92,16 +93,16 @@ final class NoteSeeder extends BaseModelSeeder
     /**
      * Create a note from fixture data
      *
-     * @param  Model  $noteable  The model to attach the note to
-     * @param  Authenticatable  $user  The user creating the note
-     * @param  string  $key  The fixture key
-     * @param  array<string, mixed>  $data  The fixture data
+     * @param Model                $noteable The model to attach the note to
+     * @param Authenticatable      $user     The user creating the note
+     * @param string               $key      The fixture key
+     * @param array<string, mixed> $data     The fixture data
      */
     private function createNoteFromFixture(
         Model $noteable,
         Authenticatable $user,
         string $key,
-        array $data
+        array $data,
     ): Note {
         $customFields = $data['custom_fields'] ?? [];
 

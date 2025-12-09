@@ -31,7 +31,7 @@ final class EmployeeFactory extends Factory
             'email' => $this->faker->unique()->safeEmail(),
             'phone' => $this->faker->phoneNumber(),
             'mobile' => $this->faker->phoneNumber(),
-            'employee_number' => 'EMP-'.$this->faker->unique()->numberBetween(1000, 9999),
+            'employee_number' => 'EMP-' . $this->faker->unique()->numberBetween(1000, 9999),
             'department' => $this->faker->randomElement([
                 'Engineering',
                 'Sales',
@@ -94,7 +94,7 @@ final class EmployeeFactory extends Factory
             'sick_days_total' => 10,
             'sick_days_used' => $this->faker->numberBetween(0, 5),
             'has_portal_access' => $this->faker->boolean(80),
-            'payroll_id' => $this->faker->boolean(70) ? 'PAY-'.$this->faker->unique()->numberBetween(1000, 9999) : null,
+            'payroll_id' => $this->faker->boolean(70) ? 'PAY-' . $this->faker->unique()->numberBetween(1000, 9999) : null,
             'payroll_metadata' => null,
             'capacity_hours_per_week' => 40,
         ];

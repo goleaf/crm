@@ -140,7 +140,7 @@ final class PurchaseOrderResource extends Resource
         return parent::getEloquentQuery()
             ->when(
                 $tenant,
-                fn (Builder $query): Builder => $query->whereBelongsTo($tenant, 'team')
+                fn (Builder $query): Builder => $query->whereBelongsTo($tenant, 'team'),
             );
     }
 }

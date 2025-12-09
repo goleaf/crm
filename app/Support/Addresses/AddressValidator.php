@@ -13,7 +13,7 @@ use Intervention\Validation\Rules\Postalcode;
 final class AddressValidator
 {
     /**
-     * @param  array<string, mixed>  $address
+     * @param array<string, mixed> $address
      */
     public function validate(array $address): AddressData
     {
@@ -36,7 +36,8 @@ final class AddressValidator
     }
 
     /**
-     * @param  array<int, array<string, mixed>>  $addresses
+     * @param array<int, array<string, mixed>> $addresses
+     *
      * @return list<AddressData>
      */
     public function validateMany(array $addresses): array
@@ -69,7 +70,8 @@ final class AddressValidator
     }
 
     /**
-     * @param  array<string, mixed>  $address
+     * @param array<string, mixed> $address
+     *
      * @return array<string, mixed>
      */
     private function normalizeInput(array $address): array

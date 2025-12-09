@@ -61,11 +61,11 @@ abstract class PropertyTestCase extends TestCase
      * that a property holds across different random inputs. If any
      * iteration fails, the exception is wrapped with iteration context.
      *
-     * @param  callable(int): void  $test  The test function to run, receives iteration number
-     * @param  int  $iterations  Number of iterations (default: 100)
+     * @param callable(int): void $test       The test function to run, receives iteration number
+     * @param int                 $iterations Number of iterations (default: 100)
      *
      * @throws \InvalidArgumentException If iterations is less than 1
-     * @throws \RuntimeException If any iteration fails, wraps the original exception
+     * @throws \RuntimeException         If any iteration fails, wraps the original exception
      */
     protected function runPropertyTest(callable $test, int $iterations = 100): void
     {
@@ -80,7 +80,7 @@ abstract class PropertyTestCase extends TestCase
                 throw new \RuntimeException(
                     sprintf('Property test failed on iteration %d: %s', $i, $e->getMessage()),
                     0,
-                    $e
+                    $e,
                 );
             }
         }
@@ -94,7 +94,8 @@ abstract class PropertyTestCase extends TestCase
      *
      * @template T
      *
-     * @param  array<T>  $items  The array to select from
+     * @param array<T> $items The array to select from
+     *
      * @return array<T> A random subset of the input array
      */
     protected function randomSubset(array $items): array
@@ -119,8 +120,9 @@ abstract class PropertyTestCase extends TestCase
      * start and end dates. Dates can be specified in any format accepted
      * by strtotime().
      *
-     * @param  string|null  $startDate  Start date in strtotime format (default: '-1 year')
-     * @param  string|null  $endDate  End date in strtotime format (default: '+1 year')
+     * @param string|null $startDate Start date in strtotime format (default: '-1 year')
+     * @param string|null $endDate   End date in strtotime format (default: '+1 year')
+     *
      * @return Carbon A random date within the specified range
      *
      * @throws \Exception If date parsing fails
@@ -128,14 +130,14 @@ abstract class PropertyTestCase extends TestCase
     protected function randomDate(?string $startDate = '-1 year', ?string $endDate = '+1 year'): Carbon
     {
         return \Illuminate\Support\Facades\Date::parse(
-            fake()->dateTimeBetween($startDate, $endDate)
+            fake()->dateTimeBetween($startDate, $endDate),
         );
     }
 
     /**
      * Generate a random boolean with optional bias.
      *
-     * @param  float  $trueProbability  Probability of returning true (0.0 to 1.0)
+     * @param float $trueProbability Probability of returning true (0.0 to 1.0)
      *
      * @throws \InvalidArgumentException
      */
@@ -151,8 +153,8 @@ abstract class PropertyTestCase extends TestCase
     /**
      * Generate a random integer within a range.
      *
-     * @param  int  $min  Minimum value (inclusive)
-     * @param  int  $max  Maximum value (inclusive)
+     * @param int $min Minimum value (inclusive)
+     * @param int $max Maximum value (inclusive)
      *
      * @throws \InvalidArgumentException
      */
@@ -168,7 +170,7 @@ abstract class PropertyTestCase extends TestCase
     /**
      * Generate a random string of specified length.
      *
-     * @param  int  $length  Length of the string (default: 10)
+     * @param int $length Length of the string (default: 10)
      *
      * @throws \InvalidArgumentException
      */
@@ -192,7 +194,8 @@ abstract class PropertyTestCase extends TestCase
     /**
      * Create additional users for the current team.
      *
-     * @param  int  $count  Number of users to create
+     * @param int $count Number of users to create
+     *
      * @return array<User>
      */
     protected function createTeamUsers(int $count = 1): array

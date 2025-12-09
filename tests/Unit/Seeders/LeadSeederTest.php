@@ -11,6 +11,7 @@ use App\Models\Team;
 use App\Models\User;
 use Database\Seeders\LeadSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
 
 uses(RefreshDatabase::class);
 
@@ -231,9 +232,11 @@ describe('LeadSeeder', function (): void {
         $activities = Activity::where('subject_type', Lead::class)->get();
 
         $activities->each(function ($activity): void {
-            expect($activity->changes)->toBeArray()
-                ->and($activity->changes)->toHaveKey('old')
-                ->and($activity->changes)->toHaveKey('new');
+            $changes = $activity->changes instanceof Collection ? $activity->changes : collect($activity->changes);
+
+            expect($changes)->toBeInstanceOf(Collection::class)
+                ->and($changes->toArray())->toHaveKey('old')
+                ->and($changes->toArray())->toHaveKey('new');
         });
     });
 

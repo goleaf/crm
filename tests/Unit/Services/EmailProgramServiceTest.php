@@ -41,7 +41,7 @@ test('handles bounce correctly', function (): void {
         BounceType::HARD->value,
         'Mailbox does not exist',
         '550 5.1.1',
-        ['raw' => 'message']
+        ['raw' => 'message'],
     );
 
     $recipient->refresh();
@@ -71,7 +71,7 @@ test('handles unsubscribe correctly', function (): void {
         'not_interested',
         'Too many emails',
         '127.0.0.1',
-        'Mozilla/5.0'
+        'Mozilla/5.0',
     );
 
     expect('email_program_unsubscribes')->toHaveRecord([

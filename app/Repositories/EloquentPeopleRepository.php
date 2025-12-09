@@ -35,7 +35,7 @@ final class EloquentPeopleRepository implements PeopleRepositoryInterface
     }
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
      */
     public function create(array $data): People
     {
@@ -43,7 +43,7 @@ final class EloquentPeopleRepository implements PeopleRepositoryInterface
     }
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
      */
     public function update(People $people, array $data): People
     {

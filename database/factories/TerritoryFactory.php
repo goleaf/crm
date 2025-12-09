@@ -17,7 +17,7 @@ final class TerritoryFactory extends Factory
     {
         return [
             'team_id' => Team::factory(),
-            'name' => $this->faker->city().' Territory',
+            'name' => $this->faker->city() . ' Territory',
             'code' => strtoupper($this->faker->unique()->lexify('???-###')),
             'type' => $this->faker->randomElement(TerritoryType::cases()),
             'description' => $this->faker->sentence(),
@@ -71,7 +71,7 @@ final class TerritoryFactory extends Factory
         return $this->state(fn (array $attributes): array => [
             'parent_id' => $parent->id,
             'level' => $parent->level + 1,
-            'path' => $parent->path.'/'.($attributes['id'] ?? 'new'),
+            'path' => $parent->path . '/' . ($attributes['id'] ?? 'new'),
         ]);
     }
 }

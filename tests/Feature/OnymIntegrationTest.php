@@ -37,7 +37,7 @@ final class OnymIntegrationTest extends TestCase
                 'format' => 'Y-m-d',
                 'prefix' => 'test_',
                 'suffix' => '_end',
-            ]
+            ],
         );
 
         $date = now()->format('Y-m-d');

@@ -17,42 +17,42 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 /**
- * @property int $id
- * @property int $team_id
- * @property int|null $user_id
- * @property int|null $manager_id
- * @property string $first_name
- * @property string $last_name
- * @property string|null $email
- * @property string|null $phone
- * @property string|null $mobile
- * @property string|null $employee_number
- * @property string|null $department
- * @property string|null $role
- * @property string|null $title
- * @property EmployeeStatus $status
+ * @property int                             $id
+ * @property int                             $team_id
+ * @property int|null                        $user_id
+ * @property int|null                        $manager_id
+ * @property string                          $first_name
+ * @property string                          $last_name
+ * @property string|null                     $email
+ * @property string|null                     $phone
+ * @property string|null                     $mobile
+ * @property string|null                     $employee_number
+ * @property string|null                     $department
+ * @property string|null                     $role
+ * @property string|null                     $title
+ * @property EmployeeStatus                  $status
  * @property \Illuminate\Support\Carbon|null $start_date
  * @property \Illuminate\Support\Carbon|null $end_date
- * @property string|null $address
- * @property string|null $city
- * @property string|null $state
- * @property string|null $postal_code
- * @property string|null $country
- * @property string|null $emergency_contact_name
- * @property string|null $emergency_contact_phone
- * @property string|null $emergency_contact_relationship
- * @property array|null $skills
- * @property array|null $certifications
- * @property string|null $performance_notes
- * @property float|null $performance_rating
- * @property float $vacation_days_total
- * @property float $vacation_days_used
- * @property float $sick_days_total
- * @property float $sick_days_used
- * @property bool $has_portal_access
- * @property string|null $payroll_id
- * @property array|null $payroll_metadata
- * @property float $capacity_hours_per_week
+ * @property string|null                     $address
+ * @property string|null                     $city
+ * @property string|null                     $state
+ * @property string|null                     $postal_code
+ * @property string|null                     $country
+ * @property string|null                     $emergency_contact_name
+ * @property string|null                     $emergency_contact_phone
+ * @property string|null                     $emergency_contact_relationship
+ * @property array|null                      $skills
+ * @property array|null                      $certifications
+ * @property string|null                     $performance_notes
+ * @property float|null                      $performance_rating
+ * @property float                           $vacation_days_total
+ * @property float                           $vacation_days_used
+ * @property float                           $sick_days_total
+ * @property float                           $sick_days_used
+ * @property bool                            $has_portal_access
+ * @property string|null                     $payroll_id
+ * @property array|null                      $payroll_metadata
+ * @property float                           $capacity_hours_per_week
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -311,7 +311,7 @@ final class Employee extends Model implements HasMedia
     /**
      * Allocate employee to a project or task.
      *
-     * @param  Project|Task  $allocatable
+     * @param Project|Task $allocatable
      */
     public function allocateTo(Model $allocatable, float $percentage, ?\Illuminate\Support\Carbon $startDate = null, ?\Illuminate\Support\Carbon $endDate = null): EmployeeAllocation
     {
@@ -320,7 +320,7 @@ final class Employee extends Model implements HasMedia
 
         if ($currentAllocation + $percentage > 100) {
             throw new \DomainException(
-                "Cannot allocate {$percentage}% - would exceed capacity. Current allocation: {$currentAllocation}%, Available: ".(100 - $currentAllocation).'%'
+                "Cannot allocate {$percentage}% - would exceed capacity. Current allocation: {$currentAllocation}%, Available: " . (100 - $currentAllocation) . '%',
             );
         }
 

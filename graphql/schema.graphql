@@ -1,0 +1,28 @@
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+# Root query type for GraphQL requests
+type Query {
+    """
+    Lightweight health/status endpoint for verifying GraphQL connectivity.
+    """
+    health: HealthPayload! @field(resolver: "App\\GraphQL\\Queries\\Health")
+
+    """
+    Return the currently authenticated user (requires Sanctum auth).
+    """
+    me: User! @guard(with: ["sanctum"]) @field(resolver: "App\\GraphQL\\Queries\\Me")
+}
+
+type HealthPayload {
+    name: String!
+    environment: String!
+    frameworkVersion: String!
+    phpVersion: String!
+    timestamp: DateTime!
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+}

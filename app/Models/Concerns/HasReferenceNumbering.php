@@ -21,7 +21,7 @@ trait HasReferenceNumbering
         $table = $config['counter_table'] ?? config('referenceable.sequential.counter_table', 'model_reference_counters');
         $resetFrequency = $config['reset_frequency'] ?? 'never';
         $resetKey = $this->buildReferenceResetKey($resetFrequency);
-        $counterKey = static::class.($resetKey !== null ? ':'.$resetKey : '');
+        $counterKey = static::class . ($resetKey !== null ? ':' . $resetKey : '');
 
         if (DB::table($table)->where('key', $counterKey)->exists()) {
             return;

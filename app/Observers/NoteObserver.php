@@ -32,7 +32,7 @@ final class NoteObserver
 
         resolve(NoteHistoryService::class)->record(
             $freshNote,
-            $note->wasRecentlyCreated ? NoteHistoryEvent::CREATED : NoteHistoryEvent::UPDATED
+            $note->wasRecentlyCreated ? NoteHistoryEvent::CREATED : NoteHistoryEvent::UPDATED,
         );
 
         // Log activity
@@ -43,7 +43,7 @@ final class NoteObserver
                 'title' => $freshNote->title,
                 'category' => $freshNote->category,
                 'visibility' => $freshNote->visibility->value,
-            ]
+            ],
         );
     }
 
@@ -55,7 +55,7 @@ final class NoteObserver
         resolve(ActivityService::class)->log(
             $note,
             'deleted',
-            ['title' => $note->title]
+            ['title' => $note->title],
         );
     }
 }

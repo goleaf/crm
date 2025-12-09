@@ -57,7 +57,8 @@ final readonly class AddressGeocoder
     }
 
     /**
-     * @param  array<string, mixed>|array<int, array<string, mixed>>  $payload
+     * @param array<string, mixed>|array<int, array<string, mixed>> $payload
+     *
      * @return array{lat: float, lng: float}|null
      */
     private function extractCoordinates(array $payload): ?array

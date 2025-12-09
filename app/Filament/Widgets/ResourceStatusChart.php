@@ -33,7 +33,7 @@ final class ResourceStatusChart extends ApexChartWidget
 
     protected function getChartId(): string
     {
-        return 'resource_status_'.Str::slug($this->getResourceLabel().'_'.$this->statusColumn);
+        return 'resource_status_' . Str::slug($this->getResourceLabel() . '_' . $this->statusColumn);
     }
 
     protected function getOptions(): array
@@ -101,7 +101,7 @@ final class ResourceStatusChart extends ApexChartWidget
                 ksort($labels);
 
                 return $labels;
-            }
+            },
         );
     }
 
@@ -118,7 +118,7 @@ final class ResourceStatusChart extends ApexChartWidget
 
         return array_map(
             static fn (BackedEnum $case): string|int => $case->value,
-            $enumClass::cases()
+            $enumClass::cases(),
         );
     }
 

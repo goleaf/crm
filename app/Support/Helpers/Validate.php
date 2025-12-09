@@ -12,9 +12,10 @@ final class Validate
     /**
      * Run a quick validator and return the validated data or throw.
      *
-     * @param  array<string, mixed>  $data
-     * @param  array<string, mixed>  $rules
-     * @param  array<string, string>  $messages
+     * @param array<string, mixed>  $data
+     * @param array<string, mixed>  $rules
+     * @param array<string, string> $messages
+     *
      * @return array<string, mixed>
      *
      * @throws ValidationException

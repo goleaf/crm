@@ -13,7 +13,7 @@ use Laravel\Jetstream\Events\TeamMemberUpdated;
 final readonly class SyncTeamMemberRole
 {
     public function __construct(
-        private PermissionService $permissions
+        private PermissionService $permissions,
     ) {}
 
     public function handle(TeamMemberAdded|TeamMemberUpdated $event): void

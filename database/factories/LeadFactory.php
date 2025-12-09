@@ -9,6 +9,7 @@ use App\Enums\LeadGrade;
 use App\Enums\LeadNurtureStatus;
 use App\Enums\LeadSource;
 use App\Enums\LeadStatus;
+use App\Enums\LeadType;
 use App\Models\Lead;
 use App\Models\Team;
 use App\Models\User;
@@ -34,6 +35,10 @@ final class LeadFactory extends Factory
             'phone' => $this->faker->e164PhoneNumber(),
             'mobile' => $this->faker->e164PhoneNumber(),
             'website' => $this->faker->url(),
+            'description' => $this->faker->optional(0.7)->paragraph(),
+            'lead_value' => $this->faker->optional(0.6)->randomFloat(2, 500, 25000),
+            'lead_type' => $this->faker->randomElement(LeadType::cases())->value,
+            'expected_close_date' => $this->faker->optional(0.5)->dateTimeBetween('+1 week', '+3 months'),
             'source' => $this->faker->randomElement(LeadSource::cases())->value,
             'status' => $this->faker->randomElement(LeadStatus::cases())->value,
             'score' => $this->faker->numberBetween(0, 100),

@@ -16,9 +16,9 @@ final readonly class GitHubService
     /**
      * Get the stargazers to count for a GitHub repository
      *
-     * @param  string  $owner  The repository owner
-     * @param  string  $repo  The repository name
-     * @param  int  $cacheMinutes  Minutes to cache the result (default: 15)
+     * @param string $owner        The repository owner
+     * @param string $repo         The repository name
+     * @param int    $cacheMinutes Minutes to cache the result (default: 15)
      */
     public function getStarsCount(?string $owner = null, ?string $repo = null, int $cacheMinutes = 15): int
     {
@@ -73,9 +73,9 @@ final readonly class GitHubService
     /**
      * Get the formatted stargazers to count for a GitHub repository
      *
-     * @param  string  $owner  The repository owner
-     * @param  string  $repo  The repository name
-     * @param  int  $cacheMinutes  Minutes to cache the result (default: 15)
+     * @param string $owner        The repository owner
+     * @param string $repo         The repository name
+     * @param int    $cacheMinutes Minutes to cache the result (default: 15)
      */
     public function getFormattedStarsCount(?string $owner = null, ?string $repo = null, int $cacheMinutes = 15): string
     {

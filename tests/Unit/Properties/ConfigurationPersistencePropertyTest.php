@@ -23,13 +23,13 @@ it('persists configuration settings across cache clears', function (): void {
 
     // Generate random settings with different types
     $testCases = [
-        ['key' => 'test.string.'.uniqid(), 'value' => fake()->sentence(), 'type' => 'string', 'group' => 'general'],
-        ['key' => 'test.integer.'.uniqid(), 'value' => fake()->numberBetween(1, 1000), 'type' => 'integer', 'group' => 'general'],
-        ['key' => 'test.boolean.'.uniqid(), 'value' => fake()->boolean(), 'type' => 'boolean', 'group' => 'general'],
-        ['key' => 'test.array.'.uniqid(), 'value' => ['key1' => fake()->word(), 'key2' => fake()->word()], 'type' => 'array', 'group' => 'general'],
-        ['key' => 'company.name.'.uniqid(), 'value' => fake()->company(), 'type' => 'string', 'group' => 'company'],
-        ['key' => 'locale.timezone.'.uniqid(), 'value' => fake()->timezone(), 'type' => 'string', 'group' => 'locale'],
-        ['key' => 'currency.rate.'.uniqid(), 'value' => fake()->randomFloat(4, 0.5, 2.0), 'type' => 'float', 'group' => 'currency'],
+        ['key' => 'test.string.' . uniqid(), 'value' => fake()->sentence(), 'type' => 'string', 'group' => 'general'],
+        ['key' => 'test.integer.' . uniqid(), 'value' => fake()->numberBetween(1, 1000), 'type' => 'integer', 'group' => 'general'],
+        ['key' => 'test.boolean.' . uniqid(), 'value' => fake()->boolean(), 'type' => 'boolean', 'group' => 'general'],
+        ['key' => 'test.array.' . uniqid(), 'value' => ['key1' => fake()->word(), 'key2' => fake()->word()], 'type' => 'array', 'group' => 'general'],
+        ['key' => 'company.name.' . uniqid(), 'value' => fake()->company(), 'type' => 'string', 'group' => 'company'],
+        ['key' => 'locale.timezone.' . uniqid(), 'value' => fake()->timezone(), 'type' => 'string', 'group' => 'locale'],
+        ['key' => 'currency.rate.' . uniqid(), 'value' => fake()->randomFloat(4, 0.5, 2.0), 'type' => 'float', 'group' => 'currency'],
     ];
 
     foreach ($testCases as $testCase) {
@@ -38,7 +38,7 @@ it('persists configuration settings across cache clears', function (): void {
             $testCase['key'],
             $testCase['value'],
             $testCase['type'],
-            $testCase['group']
+            $testCase['group'],
         );
 
         // Verify it's cached
@@ -65,7 +65,7 @@ it('persists team-specific settings independently from global settings', functio
     $service = resolve(SettingsService::class);
     $team = \App\Models\Team::factory()->create();
 
-    $key = 'test.team.setting.'.uniqid();
+    $key = 'test.team.setting.' . uniqid();
     $globalValue = fake()->sentence();
     $teamValue = fake()->sentence();
 
@@ -88,7 +88,7 @@ it('persists team-specific settings independently from global settings', functio
 it('persists encrypted settings securely', function (): void {
     $service = resolve(SettingsService::class);
 
-    $key = 'secret.key.'.uniqid();
+    $key = 'secret.key.' . uniqid();
     $secretValue = fake()->password(20);
 
     // Store encrypted setting
@@ -117,7 +117,7 @@ it('persists settings by group independently', function (): void {
     $settingsByGroup = [];
 
     foreach ($groups as $group) {
-        $key = "{$group}.test.".uniqid();
+        $key = "{$group}.test." . uniqid();
         $value = fake()->word();
         $service->set($key, $value, 'string', $group);
         $settingsByGroup[$group] = ['key' => $key, 'value' => $value];
@@ -143,7 +143,7 @@ it('persists settings by group independently', function (): void {
 it('persists setting updates without creating duplicates', function (): void {
     $service = resolve(SettingsService::class);
 
-    $key = 'test.update.'.uniqid();
+    $key = 'test.update.' . uniqid();
     $initialValue = fake()->word();
     $updatedValue = fake()->word();
 
@@ -167,7 +167,7 @@ it('persists setting updates without creating duplicates', function (): void {
 it('persists complex nested array settings correctly', function (): void {
     $service = resolve(SettingsService::class);
 
-    $key = 'test.complex.'.uniqid();
+    $key = 'test.complex.' . uniqid();
     $complexValue = [
         'level1' => [
             'level2' => [

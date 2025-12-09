@@ -27,7 +27,7 @@ final class SupportCaseFactory extends Factory
     public function definition(): array
     {
         return [
-            'case_number' => 'CASE-'.Str::upper(Str::random(8)),
+            'case_number' => 'CASE-' . Str::upper(Str::random(8)),
             'subject' => $this->faker->sentence(),
             'description' => $this->faker->paragraph(),
             'status' => $this->faker->randomElement(CaseStatus::cases()),

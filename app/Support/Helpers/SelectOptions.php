@@ -12,7 +12,8 @@ final class SelectOptions
     /**
      * Add a placeholder as the first option.
      *
-     * @param  array<int|string, string>  $options
+     * @param array<int|string, string> $options
+     *
      * @return array<int|string, string>
      */
     public static function withPlaceholder(array $options, string $label = 'Select...'): array
@@ -23,7 +24,8 @@ final class SelectOptions
     /**
      * Build options from a backed enum. Uses getLabel() when available.
      *
-     * @param  class-string<BackedEnum>  $enum
+     * @param class-string<BackedEnum> $enum
+     *
      * @return array<int|string, string>
      */
     public static function fromEnum(string $enum): array
@@ -38,7 +40,8 @@ final class SelectOptions
     /**
      * Build options from a collection or array of items.
      *
-     * @param  Collection<array-key, mixed>|array<int, mixed>  $items
+     * @param Collection<array-key, mixed>|array<int, mixed> $items
+     *
      * @return array<int|string, string>
      */
     public static function fromCollection(Collection|array $items, string $valueKey = 'id', callable|string $label = 'name'): array
@@ -57,7 +60,8 @@ final class SelectOptions
     /**
      * Transform a simple list into value => label pairs, keeping order.
      *
-     * @param  array<int|string, string>  $values
+     * @param array<int|string, string> $values
+     *
      * @return array<int|string, string>
      */
     public static function fromArray(array $values): array

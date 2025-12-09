@@ -19,9 +19,10 @@ final class CalendarSyncService
      * Sync events from external provider to local database.
      * Implements idempotent sync to prevent duplicates.
      *
-     * @param  string  $provider  The external provider (google, outlook)
-     * @param  string  $externalCalendarId  The external calendar identifier
-     * @param  array<int, array{id: string, title: string, start: string, end: string, updated: string}>  $externalEvents  Events from external provider
+     * @param string                                                                                    $provider           The external provider (google, outlook)
+     * @param string                                                                                    $externalCalendarId The external calendar identifier
+     * @param array<int, array{id: string, title: string, start: string, end: string, updated: string}> $externalEvents     Events from external provider
+     *
      * @return array{synced: int, skipped: int, errors: int}
      */
     public function syncFromExternal(string $provider, string $externalCalendarId, array $externalEvents, int $teamId): array
@@ -88,7 +89,8 @@ final class CalendarSyncService
     /**
      * Sync local events to external provider.
      *
-     * @param  Collection<int, CalendarEvent>  $localEvents
+     * @param Collection<int, CalendarEvent> $localEvents
+     *
      * @return array{synced: int, errors: int}
      */
     public function syncToExternal(string $provider, Collection $localEvents): array

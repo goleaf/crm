@@ -56,7 +56,7 @@ final class UpdateProfileInformationForm extends Component
             Auth::guard('web')->user(),
             $this->photo
                 ? array_merge($this->state, ['photo' => $this->photo])
-                : $this->state
+                : $this->state,
         );
 
         $this->dispatch('saved');

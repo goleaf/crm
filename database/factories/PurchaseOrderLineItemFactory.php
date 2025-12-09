@@ -41,7 +41,7 @@ final class PurchaseOrderLineItemFactory extends Factory
             'purchase_order_id' => PurchaseOrder::factory(),
             'team_id' => null,
             'order_line_item_id' => null,
-            'name' => $this->faker->word().' component',
+            'name' => $this->faker->word() . ' component',
             'description' => $this->faker->sentence(),
             'quantity' => $quantity,
             'unit_cost' => $unitCost,

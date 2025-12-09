@@ -4,7 +4,8 @@
   "description": "Analyzes staged Git changes and generates meaningful commit messages following Conventional Commits specification. Runs when user triggers commit, examines git diff --cached output, identifies change types (feat/fix/docs/etc), and produces structured messages with type, scope, description, and optional body/footer.",
   "version": "1",
   "when": {
-    "type": "userTriggered"
+    "type": "fileEdited",
+    "patterns": []
   },
   "then": {
     "type": "askAgent",

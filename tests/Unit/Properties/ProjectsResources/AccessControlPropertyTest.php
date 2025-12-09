@@ -37,14 +37,14 @@ final class AccessControlPropertyTest extends PropertyTestCase
             $this->assertEquals(
                 $this->team->id,
                 $project->team_id,
-                'Project should belong to the correct team'
+                'Project should belong to the correct team',
             );
 
             // Property: Project should not be accessible from other team
             $otherTeamProjects = Project::where('team_id')->get();
             $this->assertFalse(
                 $otherTeamProjects->contains('id', $project->id),
-                'Project should not be accessible from other team'
+                'Project should not be accessible from other team',
             );
         }, 100);
     }
@@ -65,14 +65,14 @@ final class AccessControlPropertyTest extends PropertyTestCase
             $this->assertEquals(
                 $this->team->id,
                 $task->team_id,
-                'Task should belong to the correct team'
+                'Task should belong to the correct team',
             );
 
             // Property: Task should not be accessible from other team
             $otherTeamTasks = \App\Models\Task::where('team_id', $otherTeam->id)->get();
             $this->assertFalse(
                 $otherTeamTasks->contains('id', $task->id),
-                'Task should not be accessible from other team'
+                'Task should not be accessible from other team',
             );
         }, 100);
     }
@@ -93,14 +93,14 @@ final class AccessControlPropertyTest extends PropertyTestCase
             $this->assertEquals(
                 $this->team->id,
                 $employee->team_id,
-                'Employee should belong to the correct team'
+                'Employee should belong to the correct team',
             );
 
             // Property: Employee should not be accessible from other team
             $otherTeamEmployees = Employee::where('team_id', $otherTeam->id)->get();
             $this->assertFalse(
                 $otherTeamEmployees->contains('id', $employee->id),
-                'Employee should not be accessible from other team'
+                'Employee should not be accessible from other team',
             );
         }, 100);
     }
@@ -125,14 +125,14 @@ final class AccessControlPropertyTest extends PropertyTestCase
             // Property: Inactive employee should not be marked as active
             $this->assertFalse(
                 $employee->isActive(),
-                'Inactive employee should not be marked as active'
+                'Inactive employee should not be marked as active',
             );
 
             // Property: Only ACTIVE status should return true for isActive()
             $this->assertNotEquals(
                 EmployeeStatus::ACTIVE,
                 $employee->status,
-                'Inactive employee should not have ACTIVE status'
+                'Inactive employee should not have ACTIVE status',
             );
         }, 100);
     }
@@ -149,14 +149,14 @@ final class AccessControlPropertyTest extends PropertyTestCase
             // Property: Active employee should be marked as active
             $this->assertTrue(
                 $employee->isActive(),
-                'Active employee should be marked as active'
+                'Active employee should be marked as active',
             );
 
             // Property: Active employee should have ACTIVE status
             $this->assertEquals(
                 EmployeeStatus::ACTIVE,
                 $employee->status,
-                'Active employee should have ACTIVE status'
+                'Active employee should have ACTIVE status',
             );
         }, 100);
     }
@@ -189,7 +189,7 @@ final class AccessControlPropertyTest extends PropertyTestCase
                 $this->assertContains(
                     $memberId,
                     $projectMemberIds,
-                    "Team member {$memberId} should be associated with project"
+                    "Team member {$memberId} should be associated with project",
                 );
             }
 
@@ -197,7 +197,7 @@ final class AccessControlPropertyTest extends PropertyTestCase
             $this->assertCount(
                 $memberCount,
                 $project->teamMembers,
-                'Project should have correct number of team members'
+                'Project should have correct number of team members',
             );
         }, 100);
     }
@@ -227,7 +227,7 @@ final class AccessControlPropertyTest extends PropertyTestCase
                 $this->assertContains(
                     $assigneeId,
                     $taskAssigneeIds,
-                    "Assignee {$assigneeId} should be associated with task"
+                    "Assignee {$assigneeId} should be associated with task",
                 );
             }
 
@@ -235,7 +235,7 @@ final class AccessControlPropertyTest extends PropertyTestCase
             $this->assertCount(
                 $assigneeCount,
                 $task->assignees,
-                'Task should have correct number of assignees'
+                'Task should have correct number of assignees',
             );
         }, 100);
     }

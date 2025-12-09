@@ -10,6 +10,16 @@ inclusion: always
 - All methods return cached results (1-hour TTL by default); cache keys follow `world.{entity}.{column}.{identifier}` pattern.
 - Call `$worldData->clearCache()` after bulk data updates or when cache invalidation is needed.
 
+## Enhanced Features
+- **Regional Filtering**: `getCountriesByRegion()`, `getCountriesBySubregion()`, `getRegions()` for geographic grouping.
+- **EU Countries**: `getEUCountries()` returns all European Union member states.
+- **Phone Codes**: `getCountriesByPhoneCode()` for international dialing lookups.
+- **Full Details**: `getCountryWithDetails()` eager loads currencies, languages, and timezones.
+- **Address Formatting**: `formatAddress()` creates display-ready address strings.
+- **Country Flags**: `getCountryFlag()` returns emoji flags from ISO2 codes.
+- **Postal Validation**: `validatePostalCode()` validates formats for 50+ countries.
+- **Distance Calculation**: `getDistanceBetweenCities()` uses Haversine formula for km distances.
+
 ## Filament Form Patterns
 - Use dependent selects for country → state → city hierarchies with `->live()` and `->afterStateUpdated()` to clear child fields.
 - Always include `->searchable()` and `->preload()` on world data selects for better UX.

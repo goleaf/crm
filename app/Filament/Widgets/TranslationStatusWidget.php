@@ -23,7 +23,7 @@ final class TranslationStatusWidget extends BaseWidget
 
             $stats[] = Stat::make(
                 $language->name,
-                "{$completion}%"
+                "{$completion}%",
             )
                 ->description(__('app.labels.translations_count', ['count' => $count]))
                 ->color($completion >= 90 ? 'success' : ($completion >= 50 ? 'warning' : 'danger'));

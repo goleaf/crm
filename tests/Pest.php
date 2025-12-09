@@ -56,5 +56,5 @@ function something(): void
     // ..
 }
 
-require_once __DIR__.'/Support/custom_field_helpers.php';
-require_once __DIR__.'/Support/property_test_helpers.php';
+require_once __DIR__ . '/Support/custom_field_helpers.php';
+require_once __DIR__ . '/Support/property_test_helpers.php';

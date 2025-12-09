@@ -20,7 +20,7 @@ afterEach(function (): void {
 
 it('completes installation without demo data and system admin', function (): void {
     $brand = brand_name();
-    $command = brand_command_prefix().':install';
+    $command = brand_command_prefix() . ':install';
 
     $this->artisan($command, ['--force' => true])
         ->expectsChoice('Which database would you like to use?', 'sqlite', [
@@ -42,7 +42,7 @@ it('completes installation with demo data but no system admin', function (): voi
     $this->markTestSkipped('Demo data seeding test needs investigation');
 
     $brand = brand_name();
-    $command = brand_command_prefix().':install';
+    $command = brand_command_prefix() . ':install';
 
     $this->artisan($command, ['--force' => true])
         ->expectsChoice('Which database would you like to use?', 'sqlite', [
@@ -63,7 +63,7 @@ it('creates system administrator when requested', function (): void {
     \Relaticle\SystemAdmin\Models\SystemAdministrator::query()->delete();
 
     $brand = brand_name();
-    $command = brand_command_prefix().':install';
+    $command = brand_command_prefix() . ':install';
 
     $this->artisan($command, ['--force' => true])
         ->expectsChoice('Which database would you like to use?', 'sqlite', [
@@ -94,11 +94,11 @@ it('skips system admin creation if one already exists', function (): void {
             'password' => bcrypt('password'),
             'role' => \Relaticle\SystemAdmin\Enums\SystemAdministratorRole::SuperAdministrator,
             'email_verified_at' => now(),
-        ]
+        ],
     );
 
     $brand = brand_name();
-    $command = brand_command_prefix().':install';
+    $command = brand_command_prefix() . ':install';
 
     $this->artisan($command, ['--force' => true])
         ->expectsChoice('Which database would you like to use?', 'sqlite', [

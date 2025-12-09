@@ -67,10 +67,10 @@ final class NoteResource extends Resource
                     fn (Builder $builder): Builder => $builder->withExists([
                         'reactions as reacted_by_me' => fn (Builder $reactionQuery): Builder => $reactionQuery->where(
                             config('laravel-reactions.user.foreign_key', 'user_id'),
-                            auth()->id()
+                            auth()->id(),
                         ),
-                    ])
-                )
+                    ]),
+                ),
             )
             ->columns([
                 TextColumn::make('title')
@@ -131,14 +131,14 @@ final class NoteResource extends Resource
                                     function (Builder $cfv) use ($search): void {
                                         $cfv->whereHas(
                                             'customField',
-                                            fn (Builder $cf): Builder => $cf->where('code', NoteField::BODY->value)
+                                            fn (Builder $cf): Builder => $cf->where('code', NoteField::BODY->value),
                                         )->where(function (Builder $cfvQuery) use ($search): void {
                                             $cfvQuery->where('string_value', 'like', "%{$search}%")
                                                 ->orWhere('text_value', 'like', "%{$search}%");
                                         });
-                                    }
+                                    },
                                 );
-                        })
+                        }),
                     ),
                 TextColumn::make('creator.name')
                     ->label(__('app.labels.created_by'))

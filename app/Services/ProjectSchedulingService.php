@@ -51,7 +51,8 @@ final class ProjectSchedulingService
     /**
      * Calculate earliest start and finish times for all tasks (forward pass).
      *
-     * @param  Collection<int, Task>  $tasks
+     * @param Collection<int, Task> $tasks
+     *
      * @return array<int, array{start: int, finish: int}>
      */
     private function calculateEarliestTimes(Collection $tasks): array
@@ -82,7 +83,7 @@ final class ProjectSchedulingService
                 // Check if all dependencies are processed
                 $dependencies = $task->dependencies;
                 $allDependenciesProcessed = $dependencies->every(
-                    fn (Task $dep): bool => in_array($dep->id, $processed, true)
+                    fn (Task $dep): bool => in_array($dep->id, $processed, true),
                 );
 
                 if (! $allDependenciesProcessed && $dependencies->isNotEmpty()) {
@@ -121,8 +122,9 @@ final class ProjectSchedulingService
     /**
      * Calculate latest start and finish times for all tasks (backward pass).
      *
-     * @param  Collection<int, Task>  $tasks
-     * @param  array<int, array{start: int, finish: int}>  $earliestTimes
+     * @param Collection<int, Task>                      $tasks
+     * @param array<int, array{start: int, finish: int}> $earliestTimes
+     *
      * @return array<int, array{start: int, finish: int}>
      */
     private function calculateLatestTimes(Collection $tasks, array $earliestTimes): array
@@ -159,7 +161,7 @@ final class ProjectSchedulingService
                 // Check if all dependents are processed
                 $dependents = $task->dependents;
                 $allDependentsProcessed = $dependents->every(
-                    fn (Task $dep): bool => in_array($dep->id, $processed, true)
+                    fn (Task $dep): bool => in_array($dep->id, $processed, true),
                 );
 
                 if (! $allDependentsProcessed && $dependents->isNotEmpty()) {

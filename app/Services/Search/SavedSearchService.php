@@ -14,7 +14,7 @@ final class SavedSearchService
     /**
      * Persist or update a saved search for the current team.
      *
-     * @param  array<string, mixed>  $filters
+     * @param array<string, mixed> $filters
      */
     public function save(User $user, string $name, string $resource, ?string $query, array $filters = []): SavedSearch
     {
@@ -30,7 +30,7 @@ final class SavedSearchService
             [
                 'query' => $query,
                 'filters' => $filters,
-            ]
+            ],
         );
     }
 

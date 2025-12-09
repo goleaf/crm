@@ -18,7 +18,7 @@ final readonly class ActivityFeedService
 {
     public function __construct(
         private int $defaultPerPage = 25,
-        private int $cacheTtl = 300
+        private int $cacheTtl = 300,
     ) {}
 
     /**
@@ -61,7 +61,7 @@ final readonly class ActivityFeedService
                     ->union($notes)
                     ->union($opportunities)
                     ->union($cases),
-                'activities'
+                'activities',
             );
     }
 
@@ -279,7 +279,7 @@ final readonly class ActivityFeedService
      */
     private function buildRecordTasksQuery(string $recordType, int $recordId): Builder
     {
-        $foreignKey = strtolower($recordType).'_id';
+        $foreignKey = strtolower($recordType) . '_id';
 
         return Task::query()
             ->select([

@@ -12,7 +12,7 @@ use Laravel\Jetstream\Events\TeamMemberRemoved;
 final readonly class RemoveTeamRole
 {
     public function __construct(
-        private PermissionService $permissions
+        private PermissionService $permissions,
     ) {}
 
     public function handle(TeamMemberRemoved $event): void

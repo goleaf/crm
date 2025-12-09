@@ -88,7 +88,9 @@ final class PurchaseOrderLineItem extends Model
             }
         });
 
-        $refresh = static fn (self $lineItem): void => $lineItem->purchaseOrder()->withoutTrashed()->first()?->syncFinancials();
+        $refresh = static function (self $lineItem): void {
+            $lineItem->purchaseOrder()->withoutTrashed()->first()?->syncFinancials();
+        };
 
         self::saved($refresh);
         self::deleted($refresh);

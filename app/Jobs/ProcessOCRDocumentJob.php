@@ -56,7 +56,7 @@ final class ProcessOCRDocumentJob implements ShouldQueue
             if ($document->template_id) {
                 $extractedData = $ocrService->processWithTemplate(
                     Storage::path($document->file_path),
-                    $document->template_id
+                    $document->template_id,
                 );
 
                 $document->update([

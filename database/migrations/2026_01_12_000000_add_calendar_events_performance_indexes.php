@@ -24,7 +24,7 @@ return new class extends Migration
             // Covers: team_id + type + status + start_at (most common query pattern)
             $table->index(
                 ['team_id', 'type', 'status', 'start_at'],
-                'calendar_events_team_type_status_start_index'
+                'calendar_events_team_type_status_start_index',
             );
 
             // Index for recurrence queries

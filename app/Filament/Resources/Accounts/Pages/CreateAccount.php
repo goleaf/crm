@@ -43,7 +43,7 @@ final class CreateAccount extends CreateRecord
     }
 
     /**
-     * @param  \Illuminate\Support\Collection<int, array{account: Account, score: float}>  $duplicates
+     * @param \Illuminate\Support\Collection<int, array{account: Account, score: float}> $duplicates
      */
     private function formatDuplicatesMessage(\Illuminate\Support\Collection $duplicates): string
     {
@@ -58,7 +58,7 @@ final class CreateAccount extends CreateRecord
                 '• %s (%s) - %d%% match',
                 $account->name,
                 $account->website ?? 'no website',
-                (int) $score
+                (int) $score,
             );
         }
 

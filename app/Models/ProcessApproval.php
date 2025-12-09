@@ -12,9 +12,9 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property ProcessApprovalStatus $status
- * @property Carbon|null $due_at
- * @property Carbon|null $decided_at
- * @property Carbon|null $escalated_at
+ * @property Carbon|null           $due_at
+ * @property Carbon|null           $decided_at
+ * @property Carbon|null           $escalated_at
  */
 final class ProcessApproval extends Model
 {

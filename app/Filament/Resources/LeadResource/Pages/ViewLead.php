@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\LeadResource\Pages;
 
+use App\Enums\LeadType;
 use App\Filament\Resources\CompanyResource;
 use App\Filament\Resources\LeadResource;
 use App\Filament\Resources\OpportunityResource;
 use App\Models\Lead;
 use App\Services\LeadConversionService;
+use App\Support\Helpers\NumberHelper;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
@@ -188,6 +190,16 @@ final class ViewLead extends ViewRecord
                             ->badge()
                             ->color(fn (Lead $record): string => $record->grade?->color() ?? 'secondary')
                             ->formatStateUsing(fn (Lead $record): string => $record->grade?->getLabel() ?? ''),
+                        TextEntry::make('lead_type')
+                            ->label(__('app.labels.lead_type'))
+                            ->badge()
+                            ->formatStateUsing(fn (Lead $record): string => $record->lead_type instanceof LeadType ? $record->lead_type->getLabel() : (string) $record->lead_type),
+                        TextEntry::make('lead_value')
+                            ->label(__('app.labels.lead_value'))
+                            ->formatStateUsing(fn (Lead $record): string => NumberHelper::currency($record->lead_value)),
+                        TextEntry::make('expected_close_date')
+                            ->label(__('app.labels.expected_close_date'))
+                            ->date(),
                         TextEntry::make('territory')
                             ->label(__('app.labels.territory')),
                         TextEntry::make('nurture_status')

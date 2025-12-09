@@ -23,7 +23,7 @@ final class RecentKnowledgeTemplateResponses extends TableWidget
             ->query(
                 KnowledgeTemplateResponse::query()
                     ->with(['category', 'creator'])
-                    ->latest('updated_at')
+                    ->latest('updated_at'),
             )
             ->defaultPaginationPageOption(10)
             ->paginationPageOptions([5, 10, 25])
@@ -48,11 +48,11 @@ final class RecentKnowledgeTemplateResponses extends TableWidget
                     ->badge()
                     ->formatStateUsing(fn (ArticleVisibility|string|null $state): string => $state instanceof ArticleVisibility
                             ? $state->getLabel()
-                            : (ArticleVisibility::tryFrom((string) $state)?->getLabel() ?? Str::headline((string) $state))
+                            : (ArticleVisibility::tryFrom((string) $state)?->getLabel() ?? Str::headline((string) $state)),
                     )
                     ->color(fn (ArticleVisibility|string|null $state): string => $state instanceof ArticleVisibility
                             ? $state->getColor()
-                            : (ArticleVisibility::tryFrom((string) $state)?->getColor() ?? 'gray')
+                            : (ArticleVisibility::tryFrom((string) $state)?->getColor() ?? 'gray'),
                     ),
 
                 IconColumn::make('is_active')

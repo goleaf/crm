@@ -67,7 +67,7 @@ test('queries recurring instances without N+1', function (): void {
     if ($instances->isNotEmpty()) {
         $data = $instances->map(fn ($instance): array => array_merge(
             $instance->getAttributes(),
-            ['created_at' => now(), 'updated_at' => now()]
+            ['created_at' => now(), 'updated_at' => now()],
         ))->all();
         CalendarEvent::insert($data);
     }

@@ -30,7 +30,7 @@ final class DocumentSearchRequest extends Data
         $documentTypes = array_keys(config('documentation.documents', []));
 
         return [
-            'query' => ['required', 'string', 'min:'.$minLength],
+            'query' => ['required', 'string', 'min:' . $minLength],
             'type' => ['nullable', 'string', Rule::in($documentTypes)],
         ];
     }

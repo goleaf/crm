@@ -1,7 +1,58 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
+@import '../../../../vendor/pxlrbt/filament-activity-log/resources/css/styles.css';
+@import '../../../../vendor/awcodes/filament-curator/resources/css/plugin.css';
+@import '../../../../node_modules/cropperjs/dist/cropper.css';
 
 @source '../../../../app/Filament';
 @source '../../../../resources/views/filament';
 @source '../../../../vendor/relaticle/custom-fields';
 @source '../../../../vendor/awcodes/overlook/resources/**/*.blade.php';
+@source '../../../../vendor/awcodes/filament-badgeable-column/resources/**/*.blade.php';
+@source '../../../../vendor/awcodes/filament-curator/resources/**/*.blade.php';
 @source '../../../../vendor/livewire-filemanager/filemanager/resources/views/**/*.blade.php';
+
+/* Minimal Tabs Styling */
+.minimal-tabs {
+    @apply space-y-0;
+}
+
+.minimal-tabs-list {
+    @apply mb-0 pb-0;
+}
+
+.minimal-tabs-tab {
+    @apply rounded-t-lg;
+    @apply -mb-px;
+}
+
+.minimal-tabs-tab:hover {
+    @apply bg-gray-50 dark:bg-white/5;
+}
+
+.minimal-tabs-content {
+    @apply pt-4;
+}
+
+.minimal-tabs-panel {
+    @apply focus:outline-none;
+}
+
+/* Compact variant */
+.minimal-tabs-compact .minimal-tabs-tab {
+    @apply px-2 py-1.5 text-xs;
+}
+
+.minimal-tabs-compact .minimal-tabs-content {
+    @apply pt-2;
+}
+
+/* Vertical minimal tabs */
+.minimal-tabs.fi-fo-tabs-vertical .minimal-tabs-list {
+    @apply border-b-0 border-r border-gray-200 dark:border-white/10;
+    @apply flex-col gap-y-1;
+}
+
+.minimal-tabs.fi-fo-tabs-vertical .minimal-tabs-tab {
+    @apply border-b-0 border-r-2;
+    @apply rounded-l-lg rounded-r-none;
+}

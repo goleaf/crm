@@ -29,7 +29,7 @@ final class FixtureLoader
     public static function getBasePath(): string
     {
         if (! isset(self::$basePath)) {
-            self::$basePath = dirname(__DIR__, 2).'/resources/fixtures';
+            self::$basePath = dirname(__DIR__, 2) . '/resources/fixtures';
         }
 
         return self::$basePath;
@@ -38,14 +38,15 @@ final class FixtureLoader
     /**
      * Load fixtures for a specific entity type
      *
-     * @param  string  $type  The entity type (e.g., 'companies', 'people')
+     * @param string $type The entity type (e.g., 'companies', 'people')
+     *
      * @return array<string, array<string, mixed>> The loaded fixtures
      *
      * @throws FileNotFoundException
      */
     public static function load(string $type): array
     {
-        $path = self::getBasePath().'/'.$type;
+        $path = self::getBasePath() . '/' . $type;
 
         if (! File::isDirectory($path)) {
             return [];

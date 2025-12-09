@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property int $id
- * @property int $employee_id
- * @property string $name
- * @property string|null $type
- * @property string|null $description
- * @property string $file_path
+ * @property int                             $id
+ * @property int                             $employee_id
+ * @property string                          $name
+ * @property string|null                     $type
+ * @property string|null                     $description
+ * @property string                          $file_path
  * @property \Illuminate\Support\Carbon|null $expiry_date
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at

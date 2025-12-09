@@ -15,7 +15,7 @@ use Illuminate\Support\Str;
 final readonly class TranslationCheckerService
 {
     public function __construct(
-        private int $cacheTtl = 3600
+        private int $cacheTtl = 3600,
     ) {}
 
     /**
@@ -26,7 +26,7 @@ final readonly class TranslationCheckerService
         return Cache::remember(
             'translations.languages',
             $this->cacheTtl,
-            fn () => DB::table('ltu_languages')->get()
+            fn () => DB::table('ltu_languages')->get(),
         );
     }
 
@@ -218,7 +218,7 @@ final readonly class TranslationCheckerService
                 [
                     'value' => $value,
                     'updated_at' => now(),
-                ]
+                ],
             );
         }
     }
@@ -247,7 +247,7 @@ final readonly class TranslationCheckerService
             $this->cacheTtl,
             fn () => DB::table('ltu_languages')
                 ->where('code', $locale)
-                ->value('id')
+                ->value('id'),
         );
 
         // If not found, try to find 'en' or the configured source language

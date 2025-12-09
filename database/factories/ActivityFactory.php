@@ -25,7 +25,7 @@ final class ActivityFactory extends Factory
             'event' => $this->faker->randomElement(['created', 'updated', 'deleted', 'commented']),
             'changes' => [
                 'before' => ['name' => $this->faker->company()],
-                'after' => ['name' => $this->faker->company().' Updated'],
+                'after' => ['name' => $this->faker->company() . ' Updated'],
             ],
         ];
     }

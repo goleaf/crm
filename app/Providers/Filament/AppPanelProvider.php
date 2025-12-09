@@ -21,8 +21,10 @@ use App\Http\Middleware\SetLocale;
 use App\Listeners\SwitchTeam;
 use App\Models\Team;
 use App\Rules\CleanContent;
+use Awcodes\Curator\CuratorPlugin;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Exception;
+use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Events\TenantSet;
@@ -40,6 +42,7 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Schemas\Components\Section;
 use Filament\Support\Enums\Size;
+use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Filament\View\PanelsRenderHook;
@@ -58,6 +61,9 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Laravel\Jetstream\Features;
 use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
+use MWGuerra\FileManager\FileManagerPlugin;
+use MWGuerra\FileManager\Filament\Pages\FileManager as PluginFileManager;
+use MWGuerra\FileManager\Filament\Pages\FileSystem;
 use Relaticle\CustomFields\CustomFieldsPlugin;
 use Stephenjude\FilamentFeatureFlag\FeatureFlagPlugin;
 
@@ -229,7 +235,7 @@ final class AppPanelProvider extends PanelProvider
                 [
                     ApplyTenantScopes::class,
                 ],
-                isPersistent: true
+                isPersistent: true,
             )
             ->plugins([
                 FilamentShieldPlugin::make(),
@@ -250,34 +256,60 @@ final class AppPanelProvider extends PanelProvider
 
                     return $this->shouldRegisterMenuItem() && $user->hasTeamRole($tenant, 'admin');
                 }),
+                FileManagerPlugin::make()
+                    ->only([
+                        PluginFileManager::class,
+                        FileSystem::class,
+                    ]),
+                GlobalSearchModalPlugin::make()
+                    ->modal(width: Width::ThreeExtraLarge)
+                    ->localStorageMaxItemsAllowed(15)
+                    ->associateItemsWithTheirGroups()
+                    ->showGroupSearchCounts()
+                    ->placeholder('ui.placeholders.global_search'),
+                CuratorPlugin::make()
+                    ->label((string) config('curator.resources.label'))
+                    ->pluralLabel((string) config('curator.resources.plural_label'))
+                    ->navigationLabel((string) config('curator.resources.navigation_label'))
+                    ->navigationGroup((string) config('curator.resources.navigation_group'))
+                    ->navigationIcon((string) config('curator.resources.navigation_icon'))
+                    ->navigationSort((int) config('curator.resources.navigation_sort'))
+                    ->navigationCountBadge((bool) config('curator.resources.navigation_count_badge'))
+                    ->registerNavigation((bool) config('curator.should_register_navigation'))
+                    ->defaultListView((string) config('curator.table.layout'))
+                    ->resource((string) config('curator.resources.resource')),
             ])
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
-                fn (): string => Blade::render('@env(\'local\')<x-login-link email="manuk.minasyan1@gmail.com" redirect-url="'.url('/').'" />@endenv'),
+                fn (): string => Blade::render('@env(\'local\')<x-login-link email="manuk.minasyan1@gmail.com" redirect-url="' . url('/') . '" />@endenv'),
             )
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
-                fn (): View|Factory => view('filament.auth.social_login_buttons')
+                fn (): View|Factory => view('filament.auth.social_login_buttons'),
             )
             ->renderHook(
                 PanelsRenderHook::AUTH_REGISTER_FORM_BEFORE,
-                fn (): View|Factory => view('filament.auth.social_login_buttons')
+                fn (): View|Factory => view('filament.auth.social_login_buttons'),
             )
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn (): View|Factory => view('filament.app.analytics')
+                fn (): View|Factory => view('filament.app.analytics'),
             )
             ->renderHook(
                 PanelsRenderHook::USER_MENU_BEFORE,
-                fn (): string => Blade::render('<livewire:language-switcher />')
+                fn (): string => Blade::render('<livewire:language-switcher />'),
             )
             ->renderHook(
                 PanelsRenderHook::STYLES_AFTER,
-                fn (): View|Factory => view('toastmagic.styles')
+                fn (): View|Factory => view('toastmagic.styles'),
             )
             ->renderHook(
                 PanelsRenderHook::SCRIPTS_AFTER,
-                fn (): View|Factory => view('toastmagic.scripts')
+                fn (): View|Factory => view('toastmagic.scripts'),
+            )
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn (): string => Blade::render('<x-curator::modals.modal />'),
             );
 
         if (Features::hasApiFeatures()) {

@@ -50,7 +50,7 @@ final class AccountsTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->formatStateUsing(fn (Account $record): string => $record->annual_revenue !== null
-                        ? ($record->currency ?? 'USD').' '.number_format((float) $record->annual_revenue, 2)
+                        ? ($record->currency ?? 'USD') . ' ' . number_format((float) $record->annual_revenue, 2)
                         : '—'),
                 TextColumn::make('employee_count')
                     ->label('Employees')

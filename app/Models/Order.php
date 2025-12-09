@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Date;
 use MohamedSaid\Referenceable\Traits\HasReference;
 
 /**
- * @property OrderStatus $status
+ * @property OrderStatus            $status
  * @property OrderFulfillmentStatus $fulfillment_status
  */
 #[ObservedBy(OrderObserver::class)]

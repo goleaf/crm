@@ -48,7 +48,7 @@ final class ProgressAccuracyPropertyTest extends PropertyTestCase
             $this->assertEquals(
                 $expectedPercentage,
                 $project->percent_complete,
-                'Project completion should equal ratio of completed tasks'
+                'Project completion should equal ratio of completed tasks',
             );
         }, 100);
     }
@@ -67,7 +67,7 @@ final class ProgressAccuracyPropertyTest extends PropertyTestCase
             $this->assertEquals(
                 0,
                 $calculatedCompletion,
-                'Project with no tasks should have 0% completion'
+                'Project with no tasks should have 0% completion',
             );
         }, 100);
     }
@@ -97,7 +97,7 @@ final class ProgressAccuracyPropertyTest extends PropertyTestCase
             $this->assertEquals(
                 100,
                 $project->percent_complete,
-                'Project should be 100% complete when all tasks are complete'
+                'Project should be 100% complete when all tasks are complete',
             );
         }, 100);
     }
@@ -139,7 +139,7 @@ final class ProgressAccuracyPropertyTest extends PropertyTestCase
             $this->assertEquals(
                 $expectedPercentage,
                 $project->percent_complete,
-                'Project completion should update when task completion changes'
+                'Project completion should update when task completion changes',
             );
         }, 100);
     }

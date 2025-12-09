@@ -16,7 +16,7 @@ final readonly class AvatarService
     private const float MINIMUM_CONTRAST_RATIO = 4.5;
 
     /**
-     * @param  array<int, string>  $backgroundColors
+     * @param array<int, string> $backgroundColors
      */
     public function __construct(
         private Cache $cache,
@@ -29,11 +29,12 @@ final readonly class AvatarService
     /**
      * Generate an SVG avatar for a user with manual color selection.
      *
-     * @param  string  $name  The user's name
-     * @param  int  $size  The size of the avatar in pixels
-     * @param  string|null  $bgColor  Optional custom background color (hex format)
-     * @param  string|null  $textColor  Optional custom text color (hex format)
-     * @param  int  $initialCount  Number of initials to show (1 or 2)
+     * @param string      $name         The user's name
+     * @param int         $size         The size of the avatar in pixels
+     * @param string|null $bgColor      Optional custom background color (hex format)
+     * @param string|null $textColor    Optional custom text color (hex format)
+     * @param int         $initialCount Number of initials to show (1 or 2)
+     *
      * @return string The URL to the SVG avatar
      */
     public function generate(
@@ -41,7 +42,7 @@ final readonly class AvatarService
         int $size = 64,
         ?string $bgColor = null,
         ?string $textColor = null,
-        int $initialCount = 2
+        int $initialCount = 2,
     ): string {
         $bgColor = $this->validateColor($bgColor) ? $bgColor : null;
         $textColor = $this->validateColor($textColor) ? $textColor : null;
@@ -49,26 +50,27 @@ final readonly class AvatarService
         // Add custom colors to cache key if provided
         $bgColorKey = in_array($bgColor, [null, '', '0'], true) ? '' : "_bg{$bgColor}";
         $textColorKey = in_array($textColor, [null, '', '0'], true) ? '' : "_txt{$textColor}";
-        $cacheKey = 'avatar_'.hash('sha256', "{$name}_{$size}{$bgColorKey}{$textColorKey}_initials{$initialCount}");
+        $cacheKey = 'avatar_' . hash('sha256', "{$name}_{$size}{$bgColorKey}{$textColorKey}_initials{$initialCount}");
 
         return $this->cache->remember(
             $cacheKey,
             $this->cacheTtl,
-            fn (): string => $this->createSvgDataUrl($name, $size, $bgColor, $textColor, $initialCount)
+            fn (): string => $this->createSvgDataUrl($name, $size, $bgColor, $textColor, $initialCount),
         );
     }
 
     /**
      * Generate an SVG avatar with automatically selected colors.
      *
-     * @param  string  $name  The user's name
-     * @param  int  $size  The size of the avatar in pixels
-     * @param  int  $initialCount  Number of initials to show (1 or 2)
+     * @param string $name         The user's name
+     * @param int    $size         The size of the avatar in pixels
+     * @param int    $initialCount Number of initials to show (1 or 2)
+     *
      * @return string The URL to the SVG avatar
      */
     public function generateAuto(string $name, int $size = 64, int $initialCount = 2): string
     {
-        $cacheKey = 'avatar_auto_'.hash('sha256', "{$name}_{$size}_initials{$initialCount}");
+        $cacheKey = 'avatar_auto_' . hash('sha256', "{$name}_{$size}_initials{$initialCount}");
 
         return $this->cache->remember(
             $cacheKey,
@@ -95,7 +97,7 @@ final readonly class AvatarService
                 $textColor = $this->generateContrastingTextColor($bgColor);
 
                 return $this->createSvgDataUrl($name, $size, $bgColor, $textColor, $initialCount);
-            }
+            },
         );
     }
 
@@ -107,7 +109,7 @@ final readonly class AvatarService
         int $size,
         ?string $bgColor,
         ?string $textColor,
-        int $initialCount = 2
+        int $initialCount = 2,
     ): string {
         $initials = $this->getInitials($name, $initialCount);
         $backgroundColor = $bgColor ?? $this->getBackgroundColor($name);
@@ -120,7 +122,7 @@ final readonly class AvatarService
 
         $svg = $this->generateSvg($initials, $backgroundColor, $textFillColor, $size);
 
-        return 'data:image/svg+xml;base64,'.base64_encode($svg);
+        return 'data:image/svg+xml;base64,' . base64_encode($svg);
     }
 
     /**
@@ -145,8 +147,9 @@ final readonly class AvatarService
      * Get the initials from a name.
      * Enhanced to better handle various name formats and cultural patterns.
      *
-     * @param  string  $name  The name to extract initials from
-     * @param  int  $initialCount  The number of initials to return (1 or 2)
+     * @param string $name         The name to extract initials from
+     * @param int    $initialCount The number of initials to return (1 or 2)
+     *
      * @return string The extracted initials
      */
     private function getInitials(string $name, int $initialCount = 2): string
@@ -268,7 +271,7 @@ final readonly class AvatarService
         return sprintf('#%02x%02x%02x',
             (int) round($r * 255),
             (int) round($g * 255),
-            (int) round($b * 255)
+            (int) round($b * 255),
         );
     }
 
@@ -447,7 +450,8 @@ final readonly class AvatarService
     /**
      * Calculate a uniqueness score for a name.
      *
-     * @param  string  $name  The normalized name to analyze
+     * @param string $name The normalized name to analyze
+     *
      * @return float A uniqueness score from 0 to 10
      */
     private function calculateUniquenessScore(string $name): float

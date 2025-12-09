@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * @property Carbon|null $resolved_at
+ * @property Carbon|null               $resolved_at
  * @property array<string, mixed>|null $escalation_config
  */
 final class ProcessEscalation extends Model

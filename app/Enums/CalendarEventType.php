@@ -11,6 +11,7 @@ enum CalendarEventType: string implements HasColor, HasLabel
 {
     case MEETING = 'meeting';
     case CALL = 'call';
+    case LUNCH = 'lunch';
     case DEMO = 'demo';
     case FOLLOW_UP = 'follow_up';
     case OTHER = 'other';
@@ -20,6 +21,7 @@ enum CalendarEventType: string implements HasColor, HasLabel
         return match ($this) {
             self::MEETING => __('enums.calendar_event_type.meeting'),
             self::CALL => __('enums.calendar_event_type.call'),
+            self::LUNCH => __('enums.calendar_event_type.lunch'),
             self::DEMO => __('enums.calendar_event_type.demo'),
             self::FOLLOW_UP => __('enums.calendar_event_type.follow_up'),
             self::OTHER => __('enums.calendar_event_type.other'),
@@ -36,6 +38,7 @@ enum CalendarEventType: string implements HasColor, HasLabel
         return match ($this) {
             self::MEETING => '#3b82f6',
             self::CALL => '#10b981',
+            self::LUNCH => '#f59e0b',
             self::DEMO => '#f59e0b',
             self::FOLLOW_UP => '#8b5cf6',
             self::OTHER => '#6b7280',

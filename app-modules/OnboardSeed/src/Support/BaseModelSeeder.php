@@ -109,9 +109,10 @@ abstract class BaseModelSeeder implements ModelSeederInterface
     /**
      * Create entities from fixtures implementation
      *
-     * @param  Team  $team  The team to create data for
-     * @param  Authenticatable  $user  The user creating the data
-     * @param  array<string, mixed>  $context  Context data from previous seeders
+     * @param Team                 $team    The team to create data for
+     * @param Authenticatable      $user    The user creating the data
+     * @param array<string, mixed> $context Context data from previous seeders
+     *
      * @return array<string, mixed> Seeded data for use by subsequent seeders
      */
     abstract protected function createEntitiesFromFixtures(Team $team, Authenticatable $user, array $context = []): array;
@@ -119,8 +120,8 @@ abstract class BaseModelSeeder implements ModelSeederInterface
     /**
      * Apply custom fields to a model
      *
-     * @param  HasCustomFields  $model  The model to apply fields to
-     * @param  array<string, mixed>  $data  The field data
+     * @param HasCustomFields      $model The model to apply fields to
+     * @param array<string, mixed> $data  The field data
      */
     protected function applyCustomFields(HasCustomFields $model, array $data): void
     {
@@ -134,8 +135,9 @@ abstract class BaseModelSeeder implements ModelSeederInterface
     /**
      * Get option ID from a custom field by label
      *
-     * @param  string  $fieldCode  The field code
-     * @param  string  $optionLabel  The option label to find
+     * @param string $fieldCode   The field code
+     * @param string $optionLabel The option label to find
+     *
      * @return mixed The option ID or null if not found
      */
     protected function getOptionId(string $fieldCode, string $optionLabel): mixed
@@ -178,7 +180,8 @@ abstract class BaseModelSeeder implements ModelSeederInterface
      * Process dynamic template expressions in fixture data
      * Handles expressions like {{ +5d }} for dates (days, weeks, months, years)
      *
-     * @param  string  $template  The template string with {{ expression }}
+     * @param string $template The template string with {{ expression }}
+     *
      * @return mixed The evaluated result
      */
     protected function evaluateTemplateExpression(string $template): mixed
@@ -222,8 +225,9 @@ abstract class BaseModelSeeder implements ModelSeederInterface
      * Process custom field values for use with the model
      * Handles expressions, option lookups, and other transformations
      *
-     * @param  array<string, mixed>  $customFields  Custom field data from fixture
-     * @param  array<string, callable|string>  $fieldMappings  Optional mappings of field codes to processors
+     * @param array<string, mixed>           $customFields  Custom field data from fixture
+     * @param array<string, callable|string> $fieldMappings Optional mappings of field codes to processors
+     *
      * @return array<string, mixed> Processed custom field data
      */
     protected function processCustomFieldValues(array $customFields, array $fieldMappings = []): array
@@ -258,11 +262,12 @@ abstract class BaseModelSeeder implements ModelSeederInterface
     /**
      * Create and register an entity from fixture data
      *
-     * @param  string  $key  The entity key
-     * @param  array<string, mixed>  $attributes  The entity attributes
-     * @param  array<string, mixed>  $customFields  The custom field values
-     * @param  Team  $team  The team to create the entity for
-     * @param  Authenticatable  $user  The user creating the entity
+     * @param string               $key          The entity key
+     * @param array<string, mixed> $attributes   The entity attributes
+     * @param array<string, mixed> $customFields The custom field values
+     * @param Team                 $team         The team to create the entity for
+     * @param Authenticatable      $user         The user creating the entity
+     *
      * @return Model The created entity
      */
     protected function registerEntityFromFixture(string $key, array $attributes, array $customFields, Team $team, Authenticatable $user): Model

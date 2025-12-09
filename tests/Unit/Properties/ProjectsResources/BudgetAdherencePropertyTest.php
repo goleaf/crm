@@ -68,7 +68,7 @@ final class BudgetAdherencePropertyTest extends PropertyTestCase
             $this->assertEquals(
                 $expectedCost,
                 $actualCost,
-                'Project actual cost should equal sum of billable time entries'
+                'Project actual cost should equal sum of billable time entries',
             );
         }, 100);
     }
@@ -107,14 +107,14 @@ final class BudgetAdherencePropertyTest extends PropertyTestCase
 
             $this->assertTrue(
                 $project->isOverBudget(),
-                'Project should be over budget when actual cost exceeds budget'
+                'Project should be over budget when actual cost exceeds budget',
             );
 
             // Property: Budget variance should be negative
             $this->assertLessThan(
                 0,
                 $project->budgetVariance(),
-                'Budget variance should be negative when over budget'
+                'Budget variance should be negative when over budget',
             );
         }, 100);
     }
@@ -157,7 +157,7 @@ final class BudgetAdherencePropertyTest extends PropertyTestCase
             $this->assertEquals(
                 $expectedVariance,
                 $actualVariance,
-                'Budget variance should equal budget minus actual cost'
+                'Budget variance should equal budget minus actual cost',
             );
         }, 100);
     }
@@ -200,7 +200,7 @@ final class BudgetAdherencePropertyTest extends PropertyTestCase
             $this->assertEquals(
                 $expectedUtilization,
                 $actualUtilization,
-                'Budget utilization should equal (actual cost / budget) * 100'
+                'Budget utilization should equal (actual cost / budget) * 100',
             );
         }, 100);
     }
@@ -240,7 +240,7 @@ final class BudgetAdherencePropertyTest extends PropertyTestCase
             $this->assertEquals(
                 0,
                 $project->actual_cost,
-                'Non-billable time should not contribute to actual cost'
+                'Non-billable time should not contribute to actual cost',
             );
         }, 100);
     }

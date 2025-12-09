@@ -31,7 +31,7 @@ test('note returns body content and records history snapshot', function (): void
         NoteField::BODY->value,
         CustomFieldType::RICH_EDITOR->value,
         [],
-        $team
+        $team,
     );
 
     $note = Note::factory()

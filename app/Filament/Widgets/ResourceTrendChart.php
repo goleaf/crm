@@ -35,7 +35,7 @@ final class ResourceTrendChart extends ApexChartWidget
 
     protected function getChartId(): string
     {
-        return 'resource_trend_'.Str::slug($this->getResourceLabel().'_'.$this->dateColumn);
+        return 'resource_trend_' . Str::slug($this->getResourceLabel() . '_' . $this->dateColumn);
     }
 
     protected function getOptions(): array

@@ -34,8 +34,8 @@ final class CalendarController extends Controller
         $nextSlot = null;
 
         if ($user) {
-            $bookableSlots = $zapScheduleService->bookableSlotsForDate($user, now()->toDateString(), 60, 15);
-            $nextSlot = $zapScheduleService->nextBookableSlot($user, now()->toDateString(), 60, 15);
+            $bookableSlots = $zapScheduleService->bookableSlotsForDate($user, now()->toDateString());
+            $nextSlot = $zapScheduleService->nextBookableSlot($user, now()->toDateString());
         }
 
         return view('calendar.index', [
@@ -54,7 +54,7 @@ final class CalendarController extends Controller
 
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'type' => ['required', 'in:'.collect(CalendarEventType::cases())->pluck('value')->implode(',')],
+            'type' => ['required', 'in:' . collect(CalendarEventType::cases())->pluck('value')->implode(',')],
             'start_at' => ['required', 'date'],
             'end_at' => ['nullable', 'date', 'after_or_equal:start_at'],
             'location' => ['nullable', 'string', 'max:255'],
@@ -109,30 +109,30 @@ final class CalendarController extends Controller
 
         foreach ($events as $event) {
             $ical .= "BEGIN:VEVENT\r\n";
-            $ical .= 'UID:'.md5($event->id.'@'.$host)."\r\n";
-            $ical .= 'DTSTAMP:'.$event->created_at->format('Ymd\THis\Z')."\r\n";
-            $ical .= 'DTSTART:'.$event->start_at->format('Ymd\THis\Z')."\r\n";
+            $ical .= 'UID:' . md5($event->id . '@' . $host) . "\r\n";
+            $ical .= 'DTSTAMP:' . $event->created_at->format('Ymd\THis\Z') . "\r\n";
+            $ical .= 'DTSTART:' . $event->start_at->format('Ymd\THis\Z') . "\r\n";
 
             if ($event->end_at) {
-                $ical .= 'DTEND:'.$event->end_at->format('Ymd\THis\Z')."\r\n";
+                $ical .= 'DTEND:' . $event->end_at->format('Ymd\THis\Z') . "\r\n";
             }
 
-            $ical .= 'SUMMARY:'.str_replace(["\r", "\n"], ' ', $event->title)."\r\n";
+            $ical .= 'SUMMARY:' . str_replace(["\r", "\n"], ' ', $event->title) . "\r\n";
 
             if ($event->location) {
-                $ical .= 'LOCATION:'.str_replace(["\r", "\n"], ' ', $event->location)."\r\n";
+                $ical .= 'LOCATION:' . str_replace(["\r", "\n"], ' ', $event->location) . "\r\n";
             }
 
             if ($event->notes) {
-                $ical .= 'DESCRIPTION:'.str_replace(["\r", "\n"], ' ', $event->notes)."\r\n";
+                $ical .= 'DESCRIPTION:' . str_replace(["\r", "\n"], ' ', $event->notes) . "\r\n";
             }
 
-            $ical .= 'STATUS:'.match ($event->status->value) {
+            $ical .= 'STATUS:' . match ($event->status->value) {
                 'scheduled' => 'TENTATIVE',
                 'confirmed' => 'CONFIRMED',
                 'cancelled' => 'CANCELLED',
                 default => 'TENTATIVE',
-            }."\r\n";
+            } . "\r\n";
 
             $ical .= "END:VEVENT\r\n";
         }

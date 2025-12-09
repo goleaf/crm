@@ -21,7 +21,7 @@ final readonly class SupportCaseObserver
         }
 
         if (blank($case->case_number)) {
-            $case->case_number = 'CASE-'.Str::upper(Str::ulid());
+            $case->case_number = 'CASE-' . Str::upper(Str::ulid());
         }
     }
 }

@@ -224,7 +224,7 @@ test('unsubscribes and bounces are honored in future sends', function (): void {
         'not_interested',
         'Too many emails',
         '127.0.0.1',
-        'Mozilla/5.0'
+        'Mozilla/5.0',
     );
 
     // Verify unsubscribe record
@@ -258,7 +258,7 @@ test('unsubscribes and bounces are honored in future sends', function (): void {
         BounceType::HARD->value,
         'Mailbox does not exist',
         '550 5.1.1',
-        ['raw' => 'SMTP error']
+        ['raw' => 'SMTP error'],
     );
 
     // Verify bounce record

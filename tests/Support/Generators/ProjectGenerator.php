@@ -17,12 +17,12 @@ final class ProjectGenerator
     /**
      * Generate a random project.
      *
-     * @param  array<string, mixed>  $overrides
+     * @param array<string, mixed> $overrides
      */
     public static function generate(
         Team $team,
         ?User $creator = null,
-        array $overrides = []
+        array $overrides = [],
     ): Project {
         $creator ??= User::factory()->create();
 
@@ -48,12 +48,12 @@ final class ProjectGenerator
     /**
      * Generate a project template.
      *
-     * @param  array<string, mixed>  $overrides
+     * @param array<string, mixed> $overrides
      */
     public static function generateTemplate(
         Team $team,
         ?User $creator = null,
-        array $overrides = []
+        array $overrides = [],
     ): Project {
         return self::generate($team, $creator, array_merge([
             'is_template' => true,
@@ -64,13 +64,13 @@ final class ProjectGenerator
     /**
      * Generate a project with tasks.
      *
-     * @param  array<string, mixed>  $overrides
+     * @param array<string, mixed> $overrides
      */
     public static function generateWithTasks(
         Team $team,
         ?User $creator = null,
         int $taskCount = 5,
-        array $overrides = []
+        array $overrides = [],
     ): Project {
         $project = self::generate($team, $creator, $overrides);
 

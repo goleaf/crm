@@ -39,7 +39,7 @@ final class NotificationService
             title: $title,
             message: $message,
             url: $url,
-            channels: $channels
+            channels: $channels,
         ));
     }
 }

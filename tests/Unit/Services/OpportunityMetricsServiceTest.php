@@ -18,7 +18,7 @@ test('probability prefers explicit field then stage defaults', function (): void
         OpportunityField::STAGE->value,
         CustomFieldType::SELECT->value,
         OpportunityField::STAGE->getOptions() ?? [],
-        $team
+        $team,
     );
 
     $probabilityField = createCustomFieldFor(
@@ -26,7 +26,7 @@ test('probability prefers explicit field then stage defaults', function (): void
         OpportunityField::PROBABILITY->value,
         CustomFieldType::NUMBER->value,
         [],
-        $team
+        $team,
     );
 
     $opportunity = Opportunity::factory()->for($team, 'team')->create();
@@ -53,7 +53,7 @@ test('weighted amount and sales cycle are derived from amount, probability, and 
         OpportunityField::AMOUNT->value,
         CustomFieldType::CURRENCY->value,
         [],
-        $team
+        $team,
     );
 
     $probabilityField = createCustomFieldFor(
@@ -61,7 +61,7 @@ test('weighted amount and sales cycle are derived from amount, probability, and 
         OpportunityField::PROBABILITY->value,
         CustomFieldType::NUMBER->value,
         [],
-        $team
+        $team,
     );
 
     $closeDateField = createCustomFieldFor(
@@ -69,7 +69,7 @@ test('weighted amount and sales cycle are derived from amount, probability, and 
         OpportunityField::CLOSE_DATE->value,
         CustomFieldType::DATE->value,
         [],
-        $team
+        $team,
     );
 
     $forecastField = createCustomFieldFor(
@@ -77,7 +77,7 @@ test('weighted amount and sales cycle are derived from amount, probability, and 
         OpportunityField::FORECAST_CATEGORY->value,
         CustomFieldType::SELECT->value,
         OpportunityField::FORECAST_CATEGORY->getOptions() ?? [],
-        $team
+        $team,
     );
 
     $opportunity = Opportunity::factory()

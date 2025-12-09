@@ -1,0 +1,5 @@
+tables:
+    users:
+        columns:
+            id: { type: integer, nullable: false, default: null, primary: true, unique: false, comment: '' }
+        relations: {  }

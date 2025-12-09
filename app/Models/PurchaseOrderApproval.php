@@ -80,7 +80,9 @@ final class PurchaseOrderApproval extends Model
             }
         });
 
-        $refresh = static fn (self $approval): void => $approval->purchaseOrder()->withoutTrashed()->first()?->syncApprovalState();
+        $refresh = static function (self $approval): void {
+            $approval->purchaseOrder()->withoutTrashed()->first()?->syncApprovalState();
+        };
 
         self::saved($refresh);
         self::deleted($refresh);

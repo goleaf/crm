@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Tasks & Activities Enhancement builds upon the existing foundational models (Task, Note, Activity) to provide a comprehensive task management, note-taking, and activity tracking system. The design leverages Laravel's Eloquent ORM, Filament v4.3+ for the UI layer, and the existing custom fields system for flexible data storage. The architecture emphasizes data integrity, performance, and user experience through proper relationship management, validation, and real-time updates.
+The Tasks & Activities Enhancement builds upon the existing foundational models (Task, Note, Activity) to provide a comprehensive task management, note-taking, and activity tracking system with advanced features including timeline visualization, workload management, workflow automation, and smart suggestions. The design leverages Laravel's Eloquent ORM, Filament v4.3+ for the UI layer, and the existing custom fields system for flexible data storage. The architecture emphasizes data integrity, performance, and user experience through proper relationship management, validation, real-time updates, and intelligent automation.
 
 ## Architecture
 
@@ -105,6 +105,30 @@ User Action → Filament Resource/Page → Service/Observer → Model → Databa
 - Fields: `note_id`, `user_id`, `event`, `old_values`, `new_values`
 - Relationships: `note()`, `user()`
 
+**SavedFilter**
+- Fields: `user_id`, `team_id`, `name`, `criteria`, `is_shared`, `shared_with`
+- Relationships: `user()`, `team()`, `sharedUsers()`
+- Methods: `applyCriteria(Builder $query)`, `share(array $userIds)`
+
+**WorkflowDefinition**
+- Fields: `team_id`, `name`, `trigger_type`, `trigger_conditions`, `actions`, `is_active`
+- Relationships: `team()`, `executions()`
+- Methods: `evaluateTrigger(Model $subject, string $event)`, `execute(Model $subject)`
+
+**WorkflowExecution**
+- Fields: `workflow_id`, `subject_type`, `subject_id`, `executed_at`, `status`, `created_tasks`, `error_message`
+- Relationships: `workflow()`, `subject()`, `tasks()`
+
+**EmployeeCapacity**
+- Fields: `user_id`, `team_id`, `hours_per_day`, `hours_per_week`, `effective_from`, `effective_to`
+- Relationships: `user()`, `team()`
+- Methods: `getAvailableHours(Carbon $startDate, Carbon $endDate)`
+
+**TaskPattern**
+- Fields: `user_id`, `team_id`, `pattern_type`, `pattern_data`, `confidence_score`, `last_updated`
+- Relationships: `user()`, `team()`
+- Methods: `updatePattern(Task $task)`, `getSuggestions(Task $task)`
+
 ### Services
 
 #### TaskReminderService
@@ -138,6 +162,61 @@ User Action → Filament Resource/Page → Service/Observer → Model → Databa
   - `getActivityFeed(Model $subject, array $filters)`: Retrieve filtered activities
   - `searchActivities(string $keyword, array $filters)`: Search activity content
 
+#### TimelineService
+- **Responsibilities**: Generate timeline/Gantt chart data for task visualization
+- **Methods**:
+  - `getTimelineData(array $filters, string $scale)`: Generate timeline data for specified time scale
+  - `calculateTaskPosition(Task $task, string $scale)`: Calculate task bar position and width
+  - `getDependencyConnections(Collection $tasks)`: Generate dependency connector coordinates
+  - `updateTaskDates(Task $task, Carbon $newStart, Carbon $newEnd)`: Update task dates from drag-and-drop
+  - `validateDateChange(Task $task, Carbon $newStart, Carbon $newEnd)`: Validate date changes against dependencies
+
+#### FilterService
+- **Responsibilities**: Manage saved filters and complex filter combinations
+- **Methods**:
+  - `createSavedFilter(string $name, array $criteria, User $user)`: Create and store a saved filter
+  - `applySavedFilter(SavedFilter $filter)`: Apply saved filter criteria to query
+  - `shareSavedFilter(SavedFilter $filter, array $userIds)`: Share filter with team members
+  - `combineCriteria(array $filters)`: Combine multiple filter criteria with AND logic
+  - `getFilterResultCount(array $criteria)`: Calculate matching task count without executing full query
+
+#### WorkloadService
+- **Responsibilities**: Calculate and manage employee workload and capacity
+- **Methods**:
+  - `calculateEmployeeWorkload(User $employee, Carbon $startDate, Carbon $endDate)`: Calculate total assigned hours
+  - `getWorkloadDistribution(User $employee, string $period)`: Get workload by time period (day/week/month)
+  - `identifyOverloadedEmployees(Team $team, float $capacityThreshold)`: Find employees exceeding capacity
+  - `getEmployeeAvailability(User $employee, Carbon $startDate, Carbon $endDate)`: Calculate available hours
+  - `suggestReassignment(Task $task)`: Suggest employees with available capacity for task reassignment
+
+#### WorkflowAutomationService
+- **Responsibilities**: Handle workflow triggers and automated task creation
+- **Methods**:
+  - `evaluateTriggers(Model $subject, string $event)`: Check if any workflow triggers match the event
+  - `executeWorkflow(Workflow $workflow, Model $subject)`: Execute workflow actions
+  - `createTasksFromWorkflow(Workflow $workflow, Model $subject)`: Create tasks defined in workflow
+  - `establishWorkflowDependencies(Collection $tasks, array $dependencyMap)`: Set up task dependencies from workflow
+  - `trackWorkflowExecution(Workflow $workflow, Model $subject)`: Log workflow execution for audit trail
+
+#### TaskExportService
+- **Responsibilities**: Export tasks to various external formats
+- **Methods**:
+  - `exportToCSV(Collection $tasks)`: Generate CSV file with task data
+  - `exportToExcel(Collection $tasks)`: Generate Excel file with formatted columns
+  - `exportToICalendar(Collection $tasks)`: Generate ICS file with tasks as calendar events
+  - `includeSubtaskHierarchy(Collection $tasks)`: Add subtask relationships to export
+  - `applyExportFilters(array $filters)`: Filter tasks before export
+
+#### SmartSuggestionService
+- **Responsibilities**: Provide AI-powered task suggestions based on patterns
+- **Methods**:
+  - `suggestSimilarTasks(Task $task)`: Analyze patterns and suggest similar tasks
+  - `suggestAssignees(Task $task)`: Recommend assignees based on historical assignments
+  - `suggestDuration(Task $task)`: Estimate realistic duration from historical data
+  - `suggestPriorityAdjustment(Task $task)`: Recommend priority changes for overdue tasks
+  - `suggestDependencies(Task $task)`: Identify potential dependency relationships
+  - `analyzeTaskPatterns(User $user)`: Build pattern model from user's task history
+
 ### Observers
 
 #### TaskObserver (Enhanced)
@@ -170,6 +249,26 @@ User Action → Filament Resource/Page → Service/Observer → Model → Databa
 - **Purpose**: Handle delegation notifications and state changes
 - **Payload**: `TaskDelegation $delegation`
 - **Process**: Send notifications, update assignees, log activity
+
+#### EvaluateWorkflowTriggersJob
+- **Purpose**: Check and execute workflow triggers for events
+- **Payload**: `Model $subject`, `string $event`
+- **Process**: Evaluate trigger conditions, execute matching workflows, create tasks
+
+#### CalculateWorkloadMetricsJob
+- **Purpose**: Update employee workload calculations periodically
+- **Payload**: `Team $team`
+- **Process**: Calculate workload for all employees, identify overloaded employees, cache results
+
+#### UpdateTaskPatternsJob
+- **Purpose**: Analyze completed tasks and update pattern models
+- **Payload**: `User $user`
+- **Process**: Analyze task history, update pattern data, calculate confidence scores
+
+#### GenerateSmartSuggestionsJob
+- **Purpose**: Generate task suggestions based on patterns
+- **Payload**: `User $user`
+- **Process**: Analyze patterns, generate suggestions, cache for quick retrieval
 
 ## Data Models
 
@@ -228,17 +327,34 @@ Activity
 **Indexes for Performance**:
 - `tasks.team_id, tasks.deleted_at` (team scoping with soft deletes)
 - `tasks.parent_id` (subtask queries)
+- `tasks.start_date, tasks.end_date` (timeline queries)
+- `tasks.project_id, tasks.status` (project task filtering)
 - `task_user.task_id, task_user.user_id` (assignee lookups)
+- `task_user.user_id, task_user.created_at` (workload calculations)
 - `task_dependencies.task_id, task_dependencies.depends_on_task_id` (dependency checks)
 - `task_reminders.remind_at, task_reminders.sent_at` (reminder processing)
-- `task_time_entries.user_id, task_time_entries.started_at` (overlap validation)
+- `task_time_entries.user_id, task_time_entries.started_at` (overlap validation and workload)
 - `notes.team_id, notes.visibility, notes.deleted_at` (visibility filtering)
 - `activities.subject_type, activities.subject_id, activities.created_at` (activity feeds)
 - `activities.team_id, activities.event` (filtered activity queries)
+- `saved_filters.user_id, saved_filters.team_id` (filter lookups)
+- `saved_filters.is_shared` (shared filter queries)
+- `workflow_definitions.team_id, workflow_definitions.is_active` (workflow evaluation)
+- `workflow_definitions.trigger_type` (trigger matching)
+- `workflow_executions.workflow_id, workflow_executions.executed_at` (execution history)
+- `employee_capacity.user_id, employee_capacity.effective_from, employee_capacity.effective_to` (capacity lookups)
+- `task_patterns.user_id, task_patterns.pattern_type` (pattern-based suggestions)
 
 **Polymorphic Pivot Tables**:
 - `noteables` (note_id, noteable_type, noteable_id)
 - `taskables` (task_id, taskable_type, taskable_id)
+
+**New Tables**:
+- `saved_filters` (user_id, team_id, name, criteria, is_shared, shared_with, created_at, updated_at)
+- `workflow_definitions` (team_id, name, trigger_type, trigger_conditions, actions, is_active, created_at, updated_at)
+- `workflow_executions` (workflow_id, subject_type, subject_id, executed_at, status, created_tasks, error_message)
+- `employee_capacity` (user_id, team_id, hours_per_day, hours_per_week, effective_from, effective_to)
+- `task_patterns` (user_id, team_id, pattern_type, pattern_data, confidence_score, last_updated)
 
 ## Correctness Properties
 
@@ -396,6 +512,70 @@ Property 31: Milestone task management
 Property 32: Soft delete and restore
 *For any* task or note, deleting should set deleted_at timestamp, default queries should exclude soft deleted records, querying deleted items should return them, and restoring should clear deleted_at and restore functionality
 **Validates: Requirements 24.1, 24.2, 24.3, 24.4, 24.5**
+
+Property 33: Timeline data generation
+*For any* set of tasks with start and end dates, generating timeline data should correctly calculate task bar positions, widths, and dependency connector coordinates for the specified time scale
+**Validates: Requirements 26.1, 26.2, 26.4**
+
+Property 34: Timeline date updates
+*For any* task, dragging its timeline bar should update the task's start and end dates, and the update should be validated against dependency constraints
+**Validates: Requirements 26.3**
+
+Property 35: Saved filter management
+*For any* filter criteria combination, saving the filter should store all criteria, applying the saved filter should restore and execute the criteria, and sharing should make the filter available to specified users
+**Validates: Requirements 27.1, 27.2, 27.3, 27.4**
+
+Property 36: Filter result counting
+*For any* filter criteria, calculating the result count should return the exact number of matching tasks without executing the full query
+**Validates: Requirements 27.5**
+
+Property 37: Workload calculation
+*For any* employee and time period, calculating workload should sum all assigned task hours, and the calculation should update in real-time when tasks are assigned or reassigned
+**Validates: Requirements 28.1, 28.2, 28.5**
+
+Property 38: Capacity threshold detection
+*For any* team and capacity threshold, identifying overloaded employees should return all employees whose assigned hours exceed the threshold
+**Validates: Requirements 28.3**
+
+Property 39: Project timeline updates
+*For any* project with linked tasks, when a task's dates change, the project's start and end dates should be recalculated as the minimum start date and maximum end date of all linked tasks
+**Validates: Requirements 29.1, 29.2**
+
+Property 40: Workflow trigger evaluation
+*For any* workflow with trigger conditions and subject event, evaluating triggers should correctly match conditions and execute the workflow, creating all defined tasks with proper dependencies
+**Validates: Requirements 30.1, 30.2, 30.3**
+
+Property 41: Workflow task attribution
+*For any* task created by a workflow, the task should store the originating workflow reference and display it when viewed
+**Validates: Requirements 30.5**
+
+Property 42: Bulk task updates
+*For any* set of selected tasks and update operation (status, assignee, dates), the bulk update should apply changes to all selected tasks and send appropriate notifications
+**Validates: Requirements 31.1, 31.2, 31.3, 31.4**
+
+Property 43: Task export with filtering
+*For any* export format (CSV, Excel, iCalendar) and filter criteria, exporting should generate a file containing only tasks matching the filter criteria with all specified fields
+**Validates: Requirements 32.1, 32.2, 32.3, 32.4**
+
+Property 44: Subtask hierarchy in exports
+*For any* task export including subtasks, the export should preserve and represent the parent-child hierarchy structure
+**Validates: Requirements 32.5**
+
+Property 45: Pattern-based assignee suggestions
+*For any* task, analyzing historical assignment patterns should suggest assignees who have been assigned to similar tasks in the past
+**Validates: Requirements 33.2**
+
+Property 46: Duration estimation from history
+*For any* task, analyzing historical duration data for similar tasks should suggest a realistic duration estimate based on the average completion time of comparable tasks duration estimate
+**Validates: Requirements 33.3**
+
+Property 47: Dependency relationship suggestions
+*For any* task, analyzing historical task patterns should suggest potential dependency relationships based on task sequences that have occurred together
+**Validates: Requirements 33.5**
+
+Property 48: User mention notification
+*For any* task description or comment containing @mentions, the system should create mention records for all mentioned users, send notifications to those users, and allow users to query all tasks where they are mentioned
+**Validates: Requirements 25.1, 25.2, 25.3, 25.5**
 
 ## Error Handling
 
@@ -574,6 +754,69 @@ it('validates Property 1: Task creation with all fields', function () {
 - Development seeder with representative data
 - Test seeder with edge cases
 - Performance test seeder with large datasets
+
+## Deployment & Migration Strategy
+
+### Phased Rollout
+
+**Phase 1: Foundation (Weeks 1-2)**
+- Deploy enhanced Task and Note models
+- Deploy core services (Reminder, Recurrence, Delegation)
+- Deploy observers and jobs
+- Enable for internal testing team only
+
+**Phase 2: Core Features (Weeks 3-4)**
+- Deploy Filament resources and relation managers
+- Deploy notification system
+- Deploy activity logging enhancements
+- Enable for pilot user group (20% of users)
+
+**Phase 3: Advanced Features (Weeks 5-6)**
+- Deploy timeline/Gantt view
+- Deploy workload management
+- Deploy workflow automation
+- Enable for 50% of users
+
+**Phase 4: Smart Features (Week 7)**
+- Deploy smart suggestions
+- Deploy bulk operations
+- Deploy export functionality
+- Enable for all users
+
+### Data Migration
+
+**Existing Tasks**:
+- No migration needed (backward compatible)
+- Custom fields already in place
+- Relationships preserved
+
+**Existing Notes**:
+- No migration needed (backward compatible)
+- Visibility defaults to "internal"
+- Categories default to "General"
+
+**New Tables**:
+- All new tables created via migrations
+- No data backfill required
+- Indexes added without downtime
+
+### Rollback Plan
+
+**Database Rollback**:
+- All migrations reversible
+- Rollback scripts tested in staging
+- Data preserved during rollback
+
+**Feature Flags**:
+- Each major feature behind feature flag
+- Can disable features without code deployment
+- Gradual rollout with instant rollback capability
+
+**Monitoring**:
+- Error rate monitoring per feature
+- Performance monitoring for new queries
+- User feedback collection
+- Automatic rollback triggers if error rate > 5%
 
 ## Implementation Notes
 

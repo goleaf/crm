@@ -1,0 +1,355 @@
+diff --git a/src/Services/SchemaExtractor.php b/src/Services/SchemaExtractor.php
+index f700b08..a30e86e 100644
+--- a/src/Services/SchemaExtractor.php
++++ b/src/Services/SchemaExtractor.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Dipesh79\LaravelSchemaDocs\Services;
+ 
++use Illuminate\Database\ConnectionInterface;
+ use Illuminate\Support\Facades\DB;
+ 
+ class SchemaExtractor
+@@ -9,68 +10,293 @@ class SchemaExtractor
+     public function getSchema(): array
+     {
+         $connection = DB::connection();
++
++        return match ($connection->getDriverName()) {
++            'mysql', 'mariadb' => $this->extractFromMySql($connection),
++            'pgsql' => $this->extractFromPostgres($connection),
++            'sqlite' => $this->extractFromSqlite($connection),
++            default => ['tables' => []],
++        };
++    }
++
++    private function extractFromMySql(ConnectionInterface $connection): array
++    {
+         $database = $connection->getDatabaseName();
+ 
+-        // Get all tables
+-        $tables = $connection->select("
+-            SELECT table_name
+-            FROM information_schema.tables
+-            WHERE table_schema = ?
+-        ", [$database]);
++        $tables = $connection->select(
++            'SELECT table_name AS table_name FROM information_schema.tables WHERE table_schema = ?',
++            [$database],
++        );
++
++        $result = [];
++
++        foreach ($tables as $tableData) {
++            $table = $tableData->table_name ?? $tableData->TABLE_NAME ?? null;
++
++            if (! is_string($table)) {
++                continue;
++            }
++
++            $columns = $connection->select(
++                'SELECT column_name AS column_name, data_type AS data_type, is_nullable AS is_nullable, column_default AS column_default, column_key AS column_key, column_comment AS column_comment FROM information_schema.columns WHERE table_schema = ? AND table_name = ? ORDER BY ordinal_position',
++                [$database, $table],
++            );
++
++            $relations = $connection->select(
++                'SELECT kcu.column_name AS local_column, kcu.referenced_table_name AS referenced_table, kcu.referenced_column_name AS referenced_column FROM information_schema.key_column_usage AS kcu WHERE kcu.table_schema = ? AND kcu.table_name = ? AND kcu.referenced_table_name IS NOT NULL',
++                [$database, $table],
++            );
++
++            $result[$table] = [
++                'columns' => $this->mapColumns($columns),
++                'relations' => $this->mapRelations($relations),
++            ];
++        }
++
++        return ['tables' => $result];
++    }
++
++    private function extractFromPostgres(ConnectionInterface $connection): array
++    {
++        $schema = $this->resolvePostgresSchema($connection);
++
++        $tables = $connection->select(
++            'SELECT table_name AS table_name FROM information_schema.tables WHERE table_schema = ?',
++            [$schema],
++        );
+ 
+         $result = [];
+ 
+-        foreach ($tables as $t) {
+-            $table = $t->TABLE_NAME;
+-
+-            // Get columns
+-            $columns = $connection->select("
+-                SELECT column_name, data_type, is_nullable, column_default, column_key, column_comment
+-                FROM information_schema.columns
+-                WHERE table_schema = ? AND table_name = ?
+-                ORDER BY ordinal_position
+-            ", [$database, $table]);
+-
+-            $columnsData = [];
+-            foreach ($columns as $col) {
+-                $columnsData[$col->COLUMN_NAME] = [
+-                    'type' => $col->DATA_TYPE,
+-                    'nullable' => $col->IS_NULLABLE === 'YES',
+-                    'default' => $col->COLUMN_DEFAULT,
+-                    'primary' => $col->COLUMN_KEY === 'PRI',
+-                    'unique' => $col->COLUMN_KEY === 'UNI',
+-                    'comment' => $col->COLUMN_COMMENT ?: '',
+-                ];
++        foreach ($tables as $tableData) {
++            $table = $tableData->table_name ?? $tableData->TABLE_NAME ?? null;
++
++            if (! is_string($table)) {
++                continue;
+             }
+ 
+-            // Get relations (foreign keys)
+-            $relations = $connection->select("
+-                SELECT
+-                    kcu.column_name AS local_column,
+-                    kcu.referenced_table_name AS referenced_table,
+-                    kcu.referenced_column_name AS referenced_column
+-                FROM information_schema.key_column_usage AS kcu
+-                WHERE
+-                    kcu.table_schema = ?
+-                    AND kcu.table_name = ?
+-                    AND kcu.referenced_table_name IS NOT NULL
+-            ", [$database, $table]);
+-
+-            $relationsData = [];
+-            foreach ($relations as $r) {
+-                $relationsData[] = [
+-                    'column' => $r->local_column,
+-                    'references' => $r->referenced_table,
+-                    'on' => $r->referenced_column,
+-                ];
++            $columns = $connection->select(
++                'SELECT c.column_name, c.data_type, c.is_nullable, c.column_default, pgd.description AS column_comment FROM information_schema.columns c LEFT JOIN pg_catalog.pg_statio_all_tables AS st ON st.relname = c.table_name AND st.schemaname = c.table_schema LEFT JOIN pg_catalog.pg_description AS pgd ON pgd.objoid = st.relid AND pgd.objsubid = c.ordinal_position WHERE c.table_schema = ? AND c.table_name = ? ORDER BY c.ordinal_position',
++                [$schema, $table],
++            );
++
++            $primaryColumns = $this->pluckConstraintColumns($connection, $schema, $table, 'PRIMARY KEY');
++            $uniqueColumns = $this->pluckConstraintColumns($connection, $schema, $table, 'UNIQUE');
++
++            $relations = $connection->select(
++                "SELECT kcu.column_name AS local_column, ccu.table_name AS referenced_table, ccu.column_name AS referenced_column\n                 FROM information_schema.table_constraints tc\n                 JOIN information_schema.key_column_usage kcu\n                   ON tc.constraint_name = kcu.constraint_name\n                   AND tc.table_schema = kcu.table_schema\n                 JOIN information_schema.constraint_column_usage ccu\n                   ON ccu.constraint_name = tc.constraint_name\n                   AND ccu.table_schema = tc.table_schema\n                 WHERE tc.constraint_type = 'FOREIGN KEY'\n                   AND tc.table_schema = ?\n                   AND tc.table_name = ?",
++                [$schema, $table],
++            );
++
++            $result[$table] = [
++                'columns' => $this->mapColumns($columns, $primaryColumns, $uniqueColumns),
++                'relations' => $this->mapRelations($relations),
++            ];
++        }
++
++        return ['tables' => $result];
++    }
++
++    private function extractFromSqlite(ConnectionInterface $connection): array
++    {
++        $tables = $connection->select(
++            "\n            SELECT name\n            FROM sqlite_master\n            WHERE type = 'table'\n              AND name NOT LIKE 'sqlite_%'\n            ORDER BY name\n        "
++        );
++
++        $result = [];
++
++        foreach ($tables as $tableData) {
++            $table = $tableData->name ?? null;
++
++            if (! is_string($table)) {
++                continue;
+             }
+ 
++            $columns = $connection->select("PRAGMA table_info('{$table}')");
++
++            $primaryColumns = $this->sqlitePrimaryColumns($columns);
++            $uniqueColumns = $this->sqliteUniqueColumns($connection, $table);
++
++            $relations = $connection->select("PRAGMA foreign_key_list('{$table}')");
++
+             $result[$table] = [
+-                'columns' => $columnsData,
+-                'relations' => $relationsData,
++                'columns' => $this->mapColumns($columns, $primaryColumns, $uniqueColumns),
++                'relations' => $this->mapSqliteRelations($relations),
+             ];
+         }
+ 
+         return ['tables' => $result];
+     }
++
++    private function resolvePostgresSchema(ConnectionInterface $connection): string
++    {
++        $schema = $connection->getConfig('search_path')
++            ?? $connection->getConfig('schema')
++            ?? 'public';
++
++        if (is_array($schema)) {
++            $schema = $schema[0] ?? 'public';
++        }
++
++        if (is_string($schema) && str_contains($schema, ',')) {
++            $schema = explode(',', $schema)[0];
++        }
++
++        $schema = is_string($schema) ? trim($schema) : 'public';
++
++        return $schema !== '' ? $schema : 'public';
++    }
++
++    private function pluckConstraintColumns(
++        ConnectionInterface $connection,
++        string $schema,
++        string $table,
++        string $constraintType,
++    ): array {
++        $rows = $connection->select(
++            "SELECT kcu.column_name\n             FROM information_schema.table_constraints tc\n             JOIN information_schema.key_column_usage kcu\n               ON tc.constraint_name = kcu.constraint_name\n               AND tc.table_schema = kcu.table_schema\n             WHERE tc.constraint_type = ?\n               AND tc.table_schema = ?\n               AND tc.table_name = ?",
++            [$constraintType, $schema, $table],
++        );
++
++        return array_values(array_unique(array_filter(array_map(
++            fn ($row): ?string => $row->column_name ?? $row->COLUMN_NAME ?? null,
++            $rows,
++        ))));
++    }
++
++    private function sqlitePrimaryColumns(array $columns): array
++    {
++        return array_values(array_filter(array_map(
++            fn (object $column): ?string => ((int) ($column->pk ?? 0) === 1) ? ($column->name ?? null) : null,
++            $columns,
++        )));
++    }
++
++    private function sqliteUniqueColumns(ConnectionInterface $connection, string $table): array
++    {
++        $uniqueColumns = [];
++        $indexes = $connection->select("PRAGMA index_list('{$table}')");
++
++        foreach ($indexes as $index) {
++            if (! isset($index->unique) || (int) $index->unique !== 1) {
++                continue;
++            }
++
++            $indexInfo = $connection->select("PRAGMA index_info('{$index->name}')");
++
++            foreach ($indexInfo as $detail) {
++                if (isset($detail->name)) {
++                    $uniqueColumns[] = $detail->name;
++                }
++            }
++        }
++
++        return array_values(array_unique($uniqueColumns));
++    }
++
++    private function mapColumns(
++        array $columns,
++        array $primaryColumns = [],
++        array $uniqueColumns = [],
++    ): array {
++        $columnsData = [];
++
++        foreach ($columns as $column) {
++            $name = $column->column_name ?? $column->COLUMN_NAME ?? $column->name ?? null;
++
++            if (! is_string($name)) {
++                continue;
++            }
++
++            $isPrimary = in_array($name, $primaryColumns, true);
++            $isUnique = in_array($name, $uniqueColumns, true);
++
++            $columnKey = $column->column_key ?? $column->COLUMN_KEY ?? null;
++
++            if ($columnKey === 'PRI') {
++                $isPrimary = true;
++            }
++
++            if ($columnKey === 'UNI') {
++                $isUnique = true;
++            }
++
++            if (isset($column->pk) && (int) $column->pk === 1) {
++                $isPrimary = true;
++            }
++
++            $columnsData[$name] = [
++                'type' => $column->data_type ?? $column->DATA_TYPE ?? $column->type ?? 'unknown',
++                'nullable' => $this->isNullable($column),
++                'default' => $column->column_default ?? $column->COLUMN_DEFAULT ?? $column->dflt_value ?? null,
++                'primary' => $isPrimary,
++                'unique' => $isUnique,
++                'comment' => $column->column_comment ?? $column->COLUMN_COMMENT ?? $column->comment ?? '',
++            ];
++        }
++
++        return $columnsData;
++    }
++
++    private function isNullable(object $column): bool
++    {
++        if (isset($column->is_nullable)) {
++            return strtoupper((string) $column->is_nullable) === 'YES';
++        }
++
++        if (isset($column->IS_NULLABLE)) {
++            return strtoupper((string) $column->IS_NULLABLE) === 'YES';
++        }
++
++        if (isset($column->notnull)) {
++            return (int) $column->notnull === 0;
++        }
++
++        if (isset($column->nullable)) {
++            return (bool) $column->nullable;
++        }
++
++        return true;
++    }
++
++    private function mapRelations(array $relations): array
++    {
++        $relationsData = [];
++
++        foreach ($relations as $relation) {
++            $column = $relation->local_column ?? $relation->column_name ?? null;
++            $references = $relation->referenced_table ?? $relation->referenced_table_name ?? null;
++            $on = $relation->referenced_column ?? $relation->referenced_column_name ?? null;
++
++            if (! $column || ! $references || ! $on) {
++                continue;
++            }
++
++            $relationsData[] = [
++                'column' => $column,
++                'references' => $references,
++                'on' => $on,
++            ];
++        }
++
++        return $relationsData;
++    }
++
++    private function mapSqliteRelations(array $relations): array
++    {
++        $relationsData = [];
++
++        foreach ($relations as $relation) {
++            if (! isset($relation->from, $relation->table, $relation->to)) {
++                continue;
++            }
++
++            $relationsData[] = [
++                'column' => $relation->from,
++                'references' => $relation->table,
++                'on' => $relation->to,
++            ];
++        }
++
++        return $relationsData;
++    }
+ }

@@ -45,7 +45,7 @@ test('employee allocation cannot exceed capacity threshold', function (): void {
                     $allocatable,
                     $allocationPercentage,
                     now(),
-                    now()->addDays(30)
+                    now()->addDays(30),
                 );
                 $totalAllocation += $allocationPercentage;
             } catch (\DomainException $e) {
@@ -105,7 +105,7 @@ test('overlapping allocations are correctly summed', function (): void {
                     $allocatable,
                     $percentage,
                     $startDate,
-                    $endDate
+                    $endDate,
                 );
                 $allocations[] = [
                     'allocation' => $allocation,
@@ -176,7 +176,7 @@ test('over-allocation attempts are rejected', function (): void {
             $project2,
             $overAllocation,
             now(),
-            now()->addDays(30)
+            now()->addDays(30),
         ))->toThrow(\DomainException::class);
 
         // Property: Total allocation should remain at first allocation
@@ -211,7 +211,7 @@ test('allocation calculation respects time boundaries', function (): void {
             $pastProject,
             50,
             now()->subDays(60),
-            now()->subDays(30)
+            now()->subDays(30),
         );
 
         // Create allocation in the future
@@ -220,7 +220,7 @@ test('allocation calculation respects time boundaries', function (): void {
             $futureProject,
             50,
             now()->addDays(60),
-            now()->addDays(90)
+            now()->addDays(90),
         );
 
         // Create allocation in the present
@@ -230,7 +230,7 @@ test('allocation calculation respects time boundaries', function (): void {
             $presentProject,
             $presentAllocation,
             now(),
-            now()->addDays(30)
+            now()->addDays(30),
         );
 
         // Property: Current period allocation should only include present allocation
@@ -240,14 +240,14 @@ test('allocation calculation respects time boundaries', function (): void {
         // Property: Past period should only include past allocation
         $pastAllocation = $employee->getTotalAllocation(
             now()->subDays(60),
-            now()->subDays(30)
+            now()->subDays(30),
         );
         expect($pastAllocation)->toBe(50.0);
 
         // Property: Future period should only include future allocation
         $futureAllocation = $employee->getTotalAllocation(
             now()->addDays(60),
-            now()->addDays(90)
+            now()->addDays(90),
         );
         expect($futureAllocation)->toBe(50.0);
     }

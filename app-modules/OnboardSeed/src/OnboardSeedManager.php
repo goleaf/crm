@@ -39,7 +39,8 @@ final class OnboardSeedManager
     /**
      * Generate demo data for a user's team
      *
-     * @param  Authenticatable  $user  The user to create demo data for
+     * @param Authenticatable $user The user to create demo data for
+     *
      * @return bool Whether the seeding was successful
      */
     public function generateFor(Authenticatable $user): bool

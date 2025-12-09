@@ -216,9 +216,9 @@ final class Calendar extends Page
         }
 
         return array_slice(
-            $this->getZapScheduleService()->bookableSlotsForDate($user, $this->current_date, 60, 15),
+            $this->getZapScheduleService()->bookableSlotsForDate($user, $this->current_date),
             0,
-            8
+            8,
         );
     }
 
@@ -230,7 +230,7 @@ final class Calendar extends Page
             return null;
         }
 
-        return $this->getZapScheduleService()->nextBookableSlot($user, $this->current_date, 60, 15);
+        return $this->getZapScheduleService()->nextBookableSlot($user, $this->current_date);
     }
 
     public function updateEvent(int $eventId, string $newStart, ?string $newEnd = null): void

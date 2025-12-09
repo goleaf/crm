@@ -11,6 +11,7 @@ use App\Filament\Exports\PeopleExporter;
 use App\Filament\RelationManagers\ActivitiesRelationManager as SharedActivitiesRelationManager;
 use App\Filament\Resources\PeopleResource\Pages\CreatePeople;
 use App\Filament\Resources\PeopleResource\Pages\EditPeople;
+use App\Filament\Resources\PeopleResource\Pages\ListPeopleActivities;
 use App\Filament\Resources\PeopleResource\Pages\ListPeople;
 use App\Filament\Resources\PeopleResource\Pages\ViewPeople;
 use App\Filament\Resources\PeopleResource\RelationManagers\CasesRelationManager;
@@ -39,11 +40,11 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\ImageColumn;
@@ -92,7 +93,7 @@ final class PeopleResource extends Resource
                                     ->suffixAction(
                                         Action::make('Create Company')
                                             ->model(Company::class)
-                                            ->schema(fn(Schema $schema): \Filament\Schemas\Schema => $schema->components([
+                                            ->schema(fn (Schema $schema): \Filament\Schemas\Schema => $schema->components([
                                                 TextInput::make('name')
                                                     ->required(),
                                                 TextInput::make('website')
@@ -128,7 +129,7 @@ final class PeopleResource extends Resource
                                             ->action(function (array $data, Set $set): void {
                                                 $company = Company::create($data);
                                                 $set('company_id', $company->id);
-                                            })
+                                            }),
                                     )
                                     ->searchable()
                                     ->preload()
@@ -143,8 +144,8 @@ final class PeopleResource extends Resource
                                     ->label('Role')
                                     ->options(
                                         collect(config('contacts.roles', []))
-                                            ->mapWithKeys(fn(string $role): array => [$role => $role])
-                                            ->all()
+                                            ->mapWithKeys(fn (string $role): array => [$role => $role])
+                                            ->all(),
                                     )
                                     ->native(false)
                                     ->searchable()
@@ -158,9 +159,9 @@ final class PeopleResource extends Resource
                                     ->relationship(
                                         'reportsTo',
                                         'name',
-                                        fn(Builder $query, ?People $record): Builder => $record instanceof \App\Models\People
+                                        fn (Builder $query, ?People $record): Builder => $record instanceof \App\Models\People
                                         ? $query->whereKeyNot($record->getKey())
-                                        : $query
+                                        : $query,
                                     )
                                     ->label('Reports To')
                                     ->searchable()
@@ -183,7 +184,7 @@ final class PeopleResource extends Resource
                                 Select::make('type')
                                     ->label('Type')
                                     ->options(collect(ContactEmailType::cases())->mapWithKeys(
-                                        fn(ContactEmailType $type): array => [$type->value => $type->label()]
+                                        fn (ContactEmailType $type): array => [$type->value => $type->label()],
                                     ))
                                     ->default(ContactEmailType::Work)
                                     ->required()
@@ -246,24 +247,24 @@ final class PeopleResource extends Resource
                                     ->columnSpanFull(),
                                 Select::make('address_country_id')
                                     ->label('Country')
-                                    ->options(fn(WorldDataService $world) => $world->getCountries()->pluck('name', 'id'))
+                                    ->options(fn (WorldDataService $world) => $world->getCountries()->pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
                                     ->live()
-                                    ->afterStateUpdated(function (Set $set) {
+                                    ->afterStateUpdated(function (Set $set): void {
                                         $set('address_state_id', null);
                                         $set('address_city_id', null);
                                     }),
                                 Select::make('address_state_id')
                                     ->label('State/Province')
-                                    ->options(fn(Get $get, WorldDataService $world) => $get('address_country_id') ? $world->getStates($get('address_country_id'))->pluck('name', 'id') : [])
+                                    ->options(fn (Get $get, WorldDataService $world) => $get('address_country_id') ? $world->getStates($get('address_country_id'))->pluck('name', 'id') : [])
                                     ->searchable()
                                     ->preload()
                                     ->live()
-                                    ->afterStateUpdated(fn(Set $set) => $set('address_city_id', null)),
+                                    ->afterStateUpdated(fn (Set $set) => $set('address_city_id', null)),
                                 Select::make('address_city_id')
                                     ->label('City')
-                                    ->options(fn(Get $get, WorldDataService $world) => $get('address_state_id') ? $world->getCities($get('address_state_id'))->pluck('name', 'id') : [])
+                                    ->options(fn (Get $get, WorldDataService $world) => $get('address_state_id') ? $world->getCities($get('address_state_id'))->pluck('name', 'id') : [])
                                     ->searchable()
                                     ->preload(),
                                 TextInput::make('address_postal_code')
@@ -295,6 +296,13 @@ final class PeopleResource extends Resource
                                     ->placeholder('Add segment')
                                     ->suggestions(config('contacts.segment_suggestions', []))
                                     ->columnSpanFull(),
+                                Select::make('groups')
+                                    ->label(__('app.labels.groups'))
+                                    ->relationship('groups', 'name')
+                                    ->multiple()
+                                    ->preload()
+                                    ->searchable()
+                                    ->columnSpanFull(),
                                 Toggle::make('is_portal_user')
                                     ->label('Portal User')
                                     ->inline(false),
@@ -314,10 +322,10 @@ final class PeopleResource extends Resource
                                     ->relationship(
                                         'tags',
                                         'name',
-                                        modifyQueryUsing: fn(Builder $query): Builder => $query->when(
+                                        modifyQueryUsing: fn (Builder $query): Builder => $query->when(
                                             Auth::user()?->currentTeam,
-                                            fn(Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey())
-                                        )
+                                            fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey()),
+                                        ),
                                     )
                                     ->multiple()
                                     ->searchable()
@@ -326,11 +334,11 @@ final class PeopleResource extends Resource
                                         TextInput::make('name')->required()->maxLength(120),
                                         ColorPicker::make('color')->label('Color')->nullable(),
                                     ])
-                                    ->createOptionAction(fn(Action $action): Action => $action->mutateFormDataUsing(
-                                        fn(array $data): array => [
+                                    ->createOptionAction(fn (Action $action): Action => $action->mutateFormDataUsing(
+                                        fn (array $data): array => [
                                             ...$data,
                                             'team_id' => Auth::user()?->currentTeam?->getKey(),
-                                        ]
+                                        ],
                                     ))
                                     ->columnSpanFull(),
                             ]),
@@ -348,7 +356,7 @@ final class PeopleResource extends Resource
                     ->searchable(),
                 TextColumn::make('company.name')
                     ->label(__('app.labels.company'))
-                    ->url(fn(People $record): ?string => $record->company_id ? CompanyResource::getUrl('view', [$record->company_id]) : null)
+                    ->url(fn (People $record): ?string => $record->company_id ? CompanyResource::getUrl('view', [$record->company_id]) : null)
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('job_title')
@@ -363,7 +371,7 @@ final class PeopleResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('primary_email')
                     ->label(__('app.labels.email'))
-                    ->state(fn(People $record): ?string => $record->primary_email)
+                    ->state(fn (People $record): ?string => $record->primary_email)
                     ->searchable()
                     ->toggleable(),
                 TextColumn::make('phone_mobile')
@@ -377,16 +385,21 @@ final class PeopleResource extends Resource
                     ->toggleable(),
                 TextColumn::make('is_portal_user')
                     ->label('Portal User')
-                    ->formatStateUsing(fn(mixed $state): string => $state ? 'Yes' : 'No')
+                    ->formatStateUsing(fn (mixed $state): string => $state ? 'Yes' : 'No')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('segments')
                     ->label('Segments')
-                    ->formatStateUsing(fn(mixed $state): string => ArrayHelper::joinList($state) ?? '—')
+                    ->formatStateUsing(fn (mixed $state): string => ArrayHelper::joinList($state) ?? '—')
+                    ->wrap()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('groups')
+                    ->label(__('app.labels.groups'))
+                    ->getStateUsing(fn (People $record): string => ArrayHelper::joinList($record->groups->pluck('name')) ?? '—')
                     ->wrap()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('tags')
                     ->label('Tags')
-                    ->getStateUsing(fn(People $record): string => ArrayHelper::joinList($record->tags->pluck('name')) ?? '—')
+                    ->getStateUsing(fn (People $record): string => ArrayHelper::joinList($record->tags->pluck('name')) ?? '—')
                     ->wrap()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('creator.name')
@@ -394,8 +407,8 @@ final class PeopleResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->toggleable()
-                    ->getStateUsing(fn(People $record): string => $record->created_by)
-                    ->color(fn(People $record): string => $record->isSystemCreated() ? 'secondary' : 'primary'),
+                    ->getStateUsing(fn (People $record): string => $record->created_by)
+                    ->color(fn (People $record): string => $record->isSystemCreated() ? 'secondary' : 'primary'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -410,15 +423,15 @@ final class PeopleResource extends Resource
                     ->toggleable()
                     ->toggledHiddenByDefault(),
             ])
-            ->modifyQueryUsing(fn(Builder $query): Builder => $query->with(['tags', 'emails']))
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['tags', 'emails']))
             ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('lead_source')
                     ->label('Lead Source')
                     ->options(
                         collect(config('contacts.lead_sources', []))
-                            ->mapWithKeys(fn(string $source): array => [$source => $source])
-                            ->all()
+                            ->mapWithKeys(fn (string $source): array => [$source => $source])
+                            ->all(),
                     ),
                 SelectFilter::make('is_portal_user')
                     ->label('Portal User')
@@ -435,10 +448,10 @@ final class PeopleResource extends Resource
                     ->relationship(
                         'tags',
                         'name',
-                        modifyQueryUsing: fn(Builder $query): Builder => $query->when(
+                        modifyQueryUsing: fn (Builder $query): Builder => $query->when(
                             Auth::user()?->currentTeam,
-                            fn(Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey())
-                        )
+                            fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey()),
+                        ),
                     )
                     ->multiple()
                     ->preload(),
@@ -446,6 +459,10 @@ final class PeopleResource extends Resource
             ])
             ->recordActions([
                 ActionGroup::make([
+                    Action::make('activities')
+                        ->label(__('ui.navigation.activities'))
+                        ->icon('heroicon-o-queue-list')
+                        ->url(fn (People $record): string => static::getUrl('activities', ['record' => $record])),
                     ViewAction::make(),
                     EditAction::make(),
                     RestoreAction::make(),
@@ -481,6 +498,7 @@ final class PeopleResource extends Resource
             'create' => CreatePeople::route('/create'),
             'edit' => EditPeople::route('/{record}/edit'),
             'view' => ViewPeople::route('/{record}'),
+            'activities' => ListPeopleActivities::route('/{record}/activities'),
         ];
     }
 

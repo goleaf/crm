@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Pages;
 
+use App\Filament\Components\MinimalTabs;
 use App\Services\SettingsService;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -39,7 +40,7 @@ final class CrmSettings extends Page
     {
         return $form
             ->schema([
-                Forms\Components\Tabs::make('Settings')
+                MinimalTabs::make('Settings')
                     ->tabs([
                         $this->getCompanyTab(),
                         $this->getLocaleTab(),

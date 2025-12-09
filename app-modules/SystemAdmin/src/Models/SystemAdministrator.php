@@ -18,15 +18,15 @@ use Laravel\Sanctum\HasApiTokens;
 use Relaticle\SystemAdmin\Enums\SystemAdministratorRole;
 
 /**
- * @property int $id
- * @property string $name
- * @property string $email
- * @property string $password
+ * @property int                     $id
+ * @property string                  $name
+ * @property string                  $email
+ * @property string                  $password
  * @property SystemAdministratorRole $role
- * @property Carbon|null $email_verified_at
- * @property string|null $remember_token
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property Carbon|null             $email_verified_at
+ * @property string|null             $remember_token
+ * @property Carbon|null             $created_at
+ * @property Carbon|null             $updated_at
  */
 final class SystemAdministrator extends Authenticatable implements FilamentUser, HasAvatar, MustVerifyEmail
 {

@@ -40,14 +40,14 @@ final class ContactDuplicateDetectionService
     {
         $nameScore = $this->levenshteinSimilarity(
             $this->normalize($a->name),
-            $this->normalize($b->name)
+            $this->normalize($b->name),
         );
 
         $emailScore = $this->matchEmail($a->primary_email, $b->primary_email);
 
         $phoneScore = $this->matchPhone(
             $a->phone_mobile ?? $a->phone_office ?? $a->phone_home,
-            $b->phone_mobile ?? $b->phone_office ?? $b->phone_home
+            $b->phone_mobile ?? $b->phone_office ?? $b->phone_home,
         );
 
         return round(($nameScore * 0.4) + ($emailScore * 0.4) + ($phoneScore * 0.2), 2);

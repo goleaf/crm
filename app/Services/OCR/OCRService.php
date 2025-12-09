@@ -39,14 +39,15 @@ final readonly class OCRService
                     text: $cleanedText,
                     rawResponse: $result->rawResponse,
                     isParsed: true,
-                    confidence: $result->confidence
+                    confidence: $result->confidence,
                 );
             }
 
             return $result;
 
         } catch (Exception $e) {
-            Log::error('OCR Processing failed: '.$e->getMessage());
+            Log::error('OCR Processing failed: ' . $e->getMessage());
+
             throw $e;
         }
     }

@@ -58,7 +58,7 @@ final readonly class CalendarEventObserver
                 'title' => $event->title,
                 'type' => $event->type->value,
                 'start_at' => $event->start_at?->toIso8601String(),
-            ]
+            ],
         );
 
         if ($event->zap_schedule_id === null) {
@@ -109,7 +109,7 @@ final readonly class CalendarEventObserver
             resolve(ActivityService::class)->log(
                 $event,
                 'updated',
-                $changes
+                $changes,
             );
         }
     }
@@ -121,6 +121,8 @@ final readonly class CalendarEventObserver
             $recurrenceService = resolve(RecurrenceService::class);
             $recurrenceService->deleteInstances($event);
         }
+
+        $this->zapScheduleService->deleteCalendarEventSchedule($event);
     }
 
     public function deleted(CalendarEvent $event): void
@@ -129,7 +131,7 @@ final readonly class CalendarEventObserver
         resolve(ActivityService::class)->log(
             $event,
             'deleted',
-            ['title' => $event->title]
+            ['title' => $event->title],
         );
 
         $this->zapScheduleService->deleteCalendarEventSchedule($event);

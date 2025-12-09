@@ -16,7 +16,7 @@ test('can create address data', function (): void {
         country_code: 'US',
         latitude: 40.7128,
         longitude: -74.0060,
-        label: 'Home'
+        label: 'Home',
     );
 
     expect($address->type)->toBe(AddressType::BILLING)
@@ -87,7 +87,7 @@ test('converts to legacy array format', function (): void {
         city: 'New York',
         state: 'NY',
         postal_code: '10001',
-        country_code: 'US'
+        country_code: 'US',
     );
 
     $legacy = $address->toLegacyArray();
@@ -104,7 +104,7 @@ test('filters null values in legacy array', function (): void {
     $address = new AddressData(
         type: AddressType::BILLING,
         line1: '123 Main St',
-        country_code: 'US'
+        country_code: 'US',
     );
 
     $legacy = $address->toLegacyArray();
@@ -118,7 +118,7 @@ test('can add coordinates to address', function (): void {
     $address = new AddressData(
         type: AddressType::BILLING,
         line1: '123 Main St',
-        country_code: 'US'
+        country_code: 'US',
     );
 
     $withCoords = $address->withCoordinates(40.7128, -74.0060);
@@ -132,7 +132,7 @@ test('detects empty address', function (): void {
     $address = new AddressData(
         type: AddressType::BILLING,
         line1: '',
-        country_code: ''
+        country_code: '',
     );
 
     expect($address->isEmpty())->toBeTrue();
@@ -142,7 +142,7 @@ test('detects non-empty address', function (): void {
     $address = new AddressData(
         type: AddressType::BILLING,
         line1: '123 Main St',
-        country_code: 'US'
+        country_code: 'US',
     );
 
     expect($address->isEmpty())->toBeFalse();

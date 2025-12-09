@@ -24,25 +24,25 @@ final readonly class SecurityTxtController
         $lines = [];
 
         foreach ($contacts as $contact) {
-            $lines[] = 'Contact: '.trim((string) $contact);
+            $lines[] = 'Contact: ' . trim((string) $contact);
         }
 
         if ($expires = config('security.security_txt.expires')) {
-            $lines[] = 'Expires: '.trim((string) $expires);
+            $lines[] = 'Expires: ' . trim((string) $expires);
         }
 
         foreach (['acknowledgments' => 'Acknowledgments', 'policy' => 'Policy', 'hiring' => 'Hiring'] as $key => $label) {
             $value = config("security.security_txt.{$key}");
 
             if ($value) {
-                $lines[] = "{$label}: ".trim((string) $value);
+                $lines[] = "{$label}: " . trim((string) $value);
             }
         }
 
         $languages = trim((string) config('security.security_txt.preferred_languages', ''));
 
         if ($languages !== '') {
-            $lines[] = 'Preferred-Languages: '.$languages;
+            $lines[] = 'Preferred-Languages: ' . $languages;
         }
 
         $body = implode(PHP_EOL, Arr::where($lines, fn (string $line): bool => $line !== ''));

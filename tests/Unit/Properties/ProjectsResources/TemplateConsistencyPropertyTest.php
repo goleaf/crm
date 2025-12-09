@@ -45,55 +45,55 @@ final class TemplateConsistencyPropertyTest extends PropertyTestCase
             $this->assertEquals(
                 $template->description,
                 $project->description,
-                'Project should copy template description'
+                'Project should copy template description',
             );
 
             // Property: Project should copy template budget
             $this->assertEquals(
                 $template->budget,
                 $project->budget,
-                'Project should copy template budget'
+                'Project should copy template budget',
             );
 
             // Property: Project should copy template currency
             $this->assertEquals(
                 $template->currency,
                 $project->currency,
-                'Project should copy template currency'
+                'Project should copy template currency',
             );
 
             // Property: Project should copy template phases
             $this->assertEquals(
                 $template->phases,
                 $project->phases,
-                'Project should copy template phases'
+                'Project should copy template phases',
             );
 
             // Property: Project should copy template milestones
             $this->assertEquals(
                 $template->milestones,
                 $project->milestones,
-                'Project should copy template milestones'
+                'Project should copy template milestones',
             );
 
             // Property: Project should copy template deliverables
             $this->assertEquals(
                 $template->deliverables,
                 $project->deliverables,
-                'Project should copy template deliverables'
+                'Project should copy template deliverables',
             );
 
             // Property: Project should reference the template
             $this->assertEquals(
                 $template->id,
                 $project->template_id,
-                'Project should reference the template'
+                'Project should reference the template',
             );
 
             // Property: Project should not be a template itself
             $this->assertFalse(
                 $project->is_template,
-                'Project created from template should not be a template'
+                'Project created from template should not be a template',
             );
         }, 100);
     }
@@ -129,7 +129,7 @@ final class TemplateConsistencyPropertyTest extends PropertyTestCase
             $this->assertEquals(
                 $templateMemberIds,
                 $projectMemberIds,
-                'Project should copy all team members from template'
+                'Project should copy all team members from template',
             );
 
             // Property: Team member roles and allocations should be copied
@@ -140,12 +140,12 @@ final class TemplateConsistencyPropertyTest extends PropertyTestCase
                 $this->assertEquals(
                     $templateMember->pivot->role,
                     $projectMember->pivot->role,
-                    'Team member role should be copied'
+                    'Team member role should be copied',
                 );
                 $this->assertEquals(
                     $templateMember->pivot->allocation_percentage,
                     $projectMember->pivot->allocation_percentage,
-                    'Team member allocation should be copied'
+                    'Team member allocation should be copied',
                 );
             }
         }, 100);
@@ -179,7 +179,7 @@ final class TemplateConsistencyPropertyTest extends PropertyTestCase
             $this->assertEquals(
                 $templateTaskIds,
                 $projectTaskIds,
-                'Project should copy all tasks from template'
+                'Project should copy all tasks from template',
             );
         }, 100);
     }
@@ -223,20 +223,20 @@ final class TemplateConsistencyPropertyTest extends PropertyTestCase
                 [
                     'budget' => $overrideBudget,
                     'currency' => $overrideCurrency,
-                ]
+                ],
             );
 
             // Property: Overrides should take precedence over template values
             $this->assertEquals(
                 $overrideBudget,
                 $project->budget,
-                'Override budget should take precedence'
+                'Override budget should take precedence',
             );
 
             $this->assertEquals(
                 $overrideCurrency,
                 $project->currency,
-                'Override currency should take precedence'
+                'Override currency should take precedence',
             );
         }, 100);
     }

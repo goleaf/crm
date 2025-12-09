@@ -32,7 +32,7 @@ final class AccountFactory extends Factory
 
         return [
             'name' => $name,
-            'slug' => Str::slug($name).'-'.Str::lower(Str::random(6)),
+            'slug' => Str::slug($name) . '-' . Str::lower(Str::random(6)),
             'team_id' => Team::factory(),
             'type' => fake()->randomElement($accountTypes)?->value ?? AccountType::CUSTOMER->value,
             'industry' => fake()->randomElement($industries)?->value ?? Industry::OTHER->value,
@@ -41,9 +41,9 @@ final class AccountFactory extends Factory
             'currency' => fake()->randomElement($currencies) ?: config('company.default_currency', 'USD'),
             'website' => fake()->url(),
             'social_links' => [
-                'twitter' => 'https://twitter.com/'.fake()->userName(),
-                'facebook' => 'https://facebook.com/'.fake()->userName(),
-                'linkedin' => 'https://linkedin.com/company/'.Str::slug($name),
+                'twitter' => 'https://twitter.com/' . fake()->userName(),
+                'facebook' => 'https://facebook.com/' . fake()->userName(),
+                'linkedin' => 'https://linkedin.com/company/' . Str::slug($name),
             ],
             'billing_address' => [
                 'street' => fake()->streetAddress(),

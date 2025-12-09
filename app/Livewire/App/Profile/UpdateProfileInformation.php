@@ -45,12 +45,12 @@ final class UpdateProfileInformation extends BaseLivewireComponent
                             ->disk(config('jetstream.profile_photo_disk'))
                             ->directory(fn (): string => StoragePaths::profilePhotoDirectory(
                                 $this->authUser()->getKey(),
-                                Filament::getTenant()?->getKey() ?? $this->authUser()->currentTeam?->getKey()
+                                Filament::getTenant()?->getKey() ?? $this->authUser()->currentTeam?->getKey(),
                             ))
                             ->getUploadedFileNameForStorageUsing(
                                 fn (TemporaryUploadedFile $file): string => StoragePaths::profilePhotoFileName(
-                                    $file->getClientOriginalName()
-                                )
+                                    $file->getClientOriginalName(),
+                                ),
                             )
                             ->visibility('public')
                             ->formatStateUsing(fn () => auth('web')->user()?->profile_photo_path),

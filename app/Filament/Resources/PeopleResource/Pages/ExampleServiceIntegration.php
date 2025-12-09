@@ -100,7 +100,7 @@ final class ExampleServiceIntegration extends ViewRecord
                         primary: $this->record,
                         duplicate: $duplicate,
                         userId: auth()->id(),
-                        fieldSelections: []
+                        fieldSelections: [],
                     );
 
                     Notification::make()

@@ -30,8 +30,8 @@ final class PdfGenerationFactory extends Factory
             'user_id' => User::factory(),
             'entity_type' => Invoice::class,
             'entity_id' => Invoice::factory(),
-            'file_path' => 'pdfs/team-1/'.fake()->uuid().'.pdf',
-            'file_name' => fake()->uuid().'.pdf',
+            'file_path' => 'pdfs/team-1/' . fake()->uuid() . '.pdf',
+            'file_name' => fake()->uuid() . '.pdf',
             'file_size' => fake()->numberBetween(10000, 500000),
             'page_count' => fake()->numberBetween(1, 10),
             'merge_data' => [
@@ -67,7 +67,7 @@ final class PdfGenerationFactory extends Factory
     {
         return $this->state(fn (array $attributes): array => [
             'status' => PdfGenerationStatus::FAILED,
-            'error_message' => 'PDF generation failed: '.fake()->sentence(),
+            'error_message' => 'PDF generation failed: ' . fake()->sentence(),
         ]);
     }
 

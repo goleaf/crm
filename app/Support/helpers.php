@@ -100,3 +100,8 @@ if (! function_exists('brand_command_prefix')) {
         return (string) $prefix;
     }
 }
+
+// Compat: older Filament packages expecting Filament\Forms\Form.
+if (! class_exists(\Filament\Forms\Form::class) && class_exists(\Filament\Schemas\Schema::class)) {
+    class_alias(\Filament\Schemas\Schema::class, \Filament\Forms\Form::class);
+}

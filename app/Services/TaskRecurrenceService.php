@@ -113,7 +113,7 @@ final class TaskRecurrenceService
     /**
      * Find the next matching weekday from the given date.
      *
-     * @param  array<int>  $daysOfWeek  Array of day numbers (0 = Sunday, 6 = Saturday)
+     * @param array<int> $daysOfWeek Array of day numbers (0 = Sunday, 6 = Saturday)
      */
     private function findNextMatchingWeekday(Carbon $date, array $daysOfWeek): Carbon
     {

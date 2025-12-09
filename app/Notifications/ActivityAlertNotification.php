@@ -16,7 +16,7 @@ final class ActivityAlertNotification extends Notification implements ShouldQueu
     use Queueable;
 
     /**
-     * @param  list<string>  $channels
+     * @param list<string> $channels
      */
     public function __construct(
         public string $title,
@@ -66,7 +66,7 @@ final class ActivityAlertNotification extends Notification implements ShouldQueu
 
     public function broadcastOn(?object $notifiable = null): array
     {
-        return [new PrivateChannel('App.Models.User.'.$notifiable->getKey())];
+        return [new PrivateChannel('App.Models.User.' . $notifiable->getKey())];
     }
 
     public function broadcastType(): string

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Support\Env;
 use Illuminate\Support\Str;
 
 return [
@@ -18,7 +19,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    'default' => Env::make()->dbConnection(),
 
     /*
     |--------------------------------------------------------------------------
@@ -35,10 +36,10 @@ return [
 
         'sqlite' => [
             'driver' => 'sqlite',
-            'url' => env('DB_URL'),
-            'database' => env('DB_DATABASE', database_path('database.sqlite')),
+            'url' => Env::make()->dbUrl(),
+            'database' => Env::make()->dbDatabase(),
             'prefix' => '',
-            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
+            'foreign_key_constraints' => Env::make()->dbForeignKeys(),
             'busy_timeout' => null,
             'journal_mode' => null,
             'synchronous' => null,
@@ -46,53 +47,53 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'url' => env('DB_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'laravel'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', ''),
-            'unix_socket' => env('DB_SOCKET', ''),
-            'charset' => env('DB_CHARSET', 'utf8mb4'),
-            'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'url' => Env::make()->dbUrl(),
+            'host' => Env::make()->dbHost(),
+            'port' => Env::make()->dbPort(),
+            'database' => Env::make()->dbDatabase(),
+            'username' => Env::make()->dbUsername(),
+            'password' => Env::make()->dbPassword(),
+            'unix_socket' => Env::make()->dbSocket(),
+            'charset' => Env::make()->dbCharset(),
+            'collation' => Env::make()->dbCollation(),
             'prefix' => '',
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                PDO::MYSQL_ATTR_SSL_CA => Env::make()->mysqlAttrSslCa(),
             ]) : [],
         ],
 
         'mariadb' => [
             'driver' => 'mariadb',
-            'url' => env('DB_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'laravel'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', ''),
-            'unix_socket' => env('DB_SOCKET', ''),
-            'charset' => env('DB_CHARSET', 'utf8mb4'),
-            'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'url' => Env::make()->dbUrl(),
+            'host' => Env::make()->dbHost(),
+            'port' => Env::make()->dbPort(),
+            'database' => Env::make()->dbDatabase(),
+            'username' => Env::make()->dbUsername(),
+            'password' => Env::make()->dbPassword(),
+            'unix_socket' => Env::make()->dbSocket(),
+            'charset' => Env::make()->dbCharset(),
+            'collation' => Env::make()->dbCollation(),
             'prefix' => '',
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                PDO::MYSQL_ATTR_SSL_CA => Env::make()->mysqlAttrSslCa(),
             ]) : [],
         ],
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'url' => env('DB_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '5432'),
-            'database' => env('DB_DATABASE', 'laravel'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', ''),
-            'charset' => env('DB_CHARSET', 'utf8'),
+            'url' => Env::make()->dbUrl(),
+            'host' => Env::make()->dbHost(),
+            'port' => Env::make()->dbPort(),
+            'database' => Env::make()->dbDatabase(),
+            'username' => Env::make()->dbUsername(),
+            'password' => Env::make()->dbPassword(),
+            'charset' => Env::make()->dbCharset(),
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
@@ -101,13 +102,13 @@ return [
 
         'sqlsrv' => [
             'driver' => 'sqlsrv',
-            'url' => env('DB_URL'),
-            'host' => env('DB_HOST', 'localhost'),
-            'port' => env('DB_PORT', '1433'),
-            'database' => env('DB_DATABASE', 'laravel'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', ''),
-            'charset' => env('DB_CHARSET', 'utf8'),
+            'url' => Env::make()->dbUrl(),
+            'host' => Env::make()->dbHost(),
+            'port' => Env::make()->dbPort(),
+            'database' => Env::make()->dbDatabase(),
+            'username' => Env::make()->dbUsername(),
+            'password' => Env::make()->dbPassword(),
+            'charset' => Env::make()->dbCharset(),
             'prefix' => '',
             'prefix_indexes' => true,
             // 'encrypt' => env('DB_ENCRYPT', 'yes'),
@@ -145,29 +146,29 @@ return [
 
     'redis' => [
 
-        'client' => env('REDIS_CLIENT', 'phpredis'),
+        'client' => Env::make()->redisClient(),
 
         'options' => [
-            'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug((string) env('APP_NAME', 'laravel'), '_').'_database_'),
+            'cluster' => Env::make()->redisCluster(),
+            'prefix' => Env::make()->redisPrefix(),
         ],
 
         'default' => [
-            'url' => env('REDIS_URL'),
-            'host' => env('REDIS_HOST', '127.0.0.1'),
-            'username' => env('REDIS_USERNAME'),
-            'password' => env('REDIS_PASSWORD'),
-            'port' => env('REDIS_PORT', '6379'),
-            'database' => env('REDIS_DB', '0'),
+            'url' => Env::make()->redisUrl(),
+            'host' => Env::make()->redisHost(),
+            'username' => Env::make()->redisUsername(),
+            'password' => Env::make()->redisPassword(),
+            'port' => Env::make()->redisPort(),
+            'database' => Env::make()->redisDb(),
         ],
 
         'cache' => [
-            'url' => env('REDIS_URL'),
-            'host' => env('REDIS_HOST', '127.0.0.1'),
-            'username' => env('REDIS_USERNAME'),
-            'password' => env('REDIS_PASSWORD'),
-            'port' => env('REDIS_PORT', '6379'),
-            'database' => env('REDIS_CACHE_DB', '1'),
+            'url' => Env::make()->redisUrl(),
+            'host' => Env::make()->redisHost(),
+            'username' => Env::make()->redisUsername(),
+            'password' => Env::make()->redisPassword(),
+            'port' => Env::make()->redisPort(),
+            'database' => Env::make()->redisCacheDb(),
         ],
 
     ],

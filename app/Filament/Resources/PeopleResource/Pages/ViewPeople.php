@@ -114,7 +114,7 @@ final class ViewPeople extends ViewRecord
                         ->label('Email Addresses')
                         ->icon('heroicon-o-envelope')
                         ->state(fn (People $record) => $record->emails->map(
-                            fn ($email): string => $email->email.' '.($email->is_primary ? '★' : '('.($email->type?->label() ?? $email->type).')')
+                            fn ($email): string => $email->email . ' ' . ($email->is_primary ? '★' : '(' . ($email->type?->label() ?? $email->type) . ')'),
                         ))
                         ->listWithLineBreaks()
                         ->copyable()

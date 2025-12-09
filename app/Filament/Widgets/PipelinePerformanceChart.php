@@ -108,7 +108,7 @@ final class PipelinePerformanceChart extends ApexChartWidget
                     'leads' => $leadTrend['data'],
                     'opportunities' => $opportunityTrend['data'],
                 ];
-            }
+            },
         );
     }
 

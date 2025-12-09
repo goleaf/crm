@@ -16,11 +16,11 @@ final class EmployeeGenerator
     /**
      * Generate a random employee.
      *
-     * @param  array<string, mixed>  $overrides
+     * @param array<string, mixed> $overrides
      */
     public static function generate(
         Team $team,
-        array $overrides = []
+        array $overrides = [],
     ): Employee {
         $startDate = fake()->optional(0.9)->dateTimeBetween('-5 years', 'now');
 
@@ -44,11 +44,11 @@ final class EmployeeGenerator
     /**
      * Generate an active employee.
      *
-     * @param  array<string, mixed>  $overrides
+     * @param array<string, mixed> $overrides
      */
     public static function generateActive(
         Team $team,
-        array $overrides = []
+        array $overrides = [],
     ): Employee {
         return self::generate($team, array_merge([
             'status' => EmployeeStatus::ACTIVE,

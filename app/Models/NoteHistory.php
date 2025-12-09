@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property NoteVisibility $visibility
+ * @property NoteVisibility   $visibility
  * @property NoteHistoryEvent $event
  */
 final class NoteHistory extends Model
@@ -69,7 +69,7 @@ final class NoteHistory extends Model
     /**
      * Compare history snapshot with provided data to avoid duplicates.
      *
-     * @param  array<string, mixed>  $snapshot
+     * @param array<string, mixed> $snapshot
      */
     public function matchesSnapshot(array $snapshot): bool
     {

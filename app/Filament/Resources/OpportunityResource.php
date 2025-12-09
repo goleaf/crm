@@ -115,8 +115,8 @@ final class OpportunityResource extends Resource
                         'name',
                         modifyQueryUsing: fn (Builder $query): Builder => $query->when(
                             Auth::user()?->currentTeam,
-                            fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey())
-                        )
+                            fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey()),
+                        ),
                     )
                     ->multiple()
                     ->preload(),

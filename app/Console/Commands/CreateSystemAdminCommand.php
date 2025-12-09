@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Relaticle\SystemAdmin\Enums\SystemAdministratorRole;
-use Relaticle\SystemAdmin\Models\SystemAdministrator;
-use Throwable;
 
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\password;
 use function Laravel\Prompts\text;
+
+use Relaticle\SystemAdmin\Enums\SystemAdministratorRole;
+use Relaticle\SystemAdmin\Models\SystemAdministrator;
+use Throwable;
 
 final class CreateSystemAdminCommand extends Command
 {
@@ -50,7 +51,7 @@ final class CreateSystemAdminCommand extends Command
                 if (! $this->option('no-interaction')) {
                     $continue = confirm(
                         label: 'Do you want to create another system administrator?',
-                        default: true
+                        default: true,
                     );
 
                     if (! $continue) {
@@ -66,7 +67,7 @@ final class CreateSystemAdminCommand extends Command
                 label: 'Name',
                 placeholder: 'John Doe',
                 required: true,
-                validate: fn (string $value): ?string => strlen($value) < 2 ? 'Name must be at least 2 characters' : null
+                validate: fn (string $value): ?string => strlen($value) < 2 ? 'Name must be at least 2 characters' : null,
             );
 
             $email = $this->option('email') ?? text(
@@ -83,7 +84,7 @@ final class CreateSystemAdminCommand extends Command
                     }
 
                     return null;
-                }
+                },
             );
 
             // Validate email from command option
@@ -105,7 +106,7 @@ final class CreateSystemAdminCommand extends Command
                 label: 'Password',
                 placeholder: 'Minimum 8 characters',
                 required: true,
-                validate: fn (string $value): ?string => strlen($value) < 8 ? 'Password must be at least 8 characters' : null
+                validate: fn (string $value): ?string => strlen($value) < 8 ? 'Password must be at least 8 characters' : null,
             );
 
             // Validate password from command option
@@ -126,7 +127,7 @@ final class CreateSystemAdminCommand extends Command
 
                 $confirmed = confirm(
                     label: 'Create this system administrator?',
-                    default: true
+                    default: true,
                 );
 
                 if (! $confirmed) {
@@ -154,7 +155,7 @@ final class CreateSystemAdminCommand extends Command
             $this->line('  ├─ Role:  Super Administrator');
             $this->line('  └─ Panel: /sysadmin');
             $this->newLine();
-            $this->line('  You can now log in at: '.url('/sysadmin'));
+            $this->line('  You can now log in at: ' . url('/sysadmin'));
             $this->newLine();
 
             return self::SUCCESS;

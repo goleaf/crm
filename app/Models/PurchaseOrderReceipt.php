@@ -14,10 +14,10 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 
 /**
  * @property PurchaseOrderReceiptType $receipt_type
- * @property float $quantity
- * @property float $unit_cost
- * @property float $line_total
- * @property Carbon|null $received_at
+ * @property float                    $quantity
+ * @property float                    $unit_cost
+ * @property float                    $line_total
+ * @property Carbon|null              $received_at
  */
 final class PurchaseOrderReceipt extends Model
 {
@@ -150,7 +150,9 @@ final class PurchaseOrderReceipt extends Model
             $receipt->line_total ??= round(((float) $receipt->quantity) * ((float) $receipt->unit_cost), 2);
         });
 
-        $refresh = static fn (self $receipt): void => $receipt->purchaseOrder()->withoutTrashed()->first()?->syncFinancials();
+        $refresh = static function (self $receipt): void {
+            $receipt->purchaseOrder()->withoutTrashed()->first()?->syncFinancials();
+        };
 
         self::saved($refresh);
         self::deleted($refresh);

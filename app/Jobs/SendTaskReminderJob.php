@@ -22,7 +22,7 @@ final class SendTaskReminderJob implements ShouldBeUnique, ShouldQueue
     use SerializesModels;
 
     public function __construct(
-        public TaskReminder $reminder
+        public TaskReminder $reminder,
     ) {}
 
     /**

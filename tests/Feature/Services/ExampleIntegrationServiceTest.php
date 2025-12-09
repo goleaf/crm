@@ -20,7 +20,7 @@ it('fetches data from external API successfully', function (): void {
 
     $service = new ExampleIntegrationService(
         apiKey: 'test-key',
-        timeout: 10
+        timeout: 10,
     );
 
     $result = $service->fetchData('https://api.example.com/data');
@@ -40,7 +40,7 @@ it('handles API failures gracefully', function (): void {
 
     $service = new ExampleIntegrationService(
         apiKey: 'test-key',
-        timeout: 10
+        timeout: 10,
     );
 
     $result = $service->fetchData('https://api.example.com/data');
@@ -59,7 +59,7 @@ it('retries failed requests', function (): void {
     $service = new ExampleIntegrationService(
         apiKey: 'test-key',
         timeout: 10,
-        retries: 3
+        retries: 3,
     );
 
     $result = $service->fetchData('https://api.example.com/data');
@@ -78,7 +78,7 @@ it('posts data to external API', function (): void {
 
     $service = new ExampleIntegrationService(
         apiKey: 'test-key',
-        timeout: 10
+        timeout: 10,
     );
 
     $result = $service->postData('https://api.example.com/submit', [

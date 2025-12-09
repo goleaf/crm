@@ -10,6 +10,7 @@ use Devrabiul\LaravelGeoGenius\LaravelGeoGenius;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
@@ -22,11 +23,12 @@ final readonly class SetLocale
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $availableLocales = config('app.available_locales', ['en']);
+        $availableLocales = $this->availableLocales();
         $defaultLocale = config('app.locale', 'en');
         $locale = $this->resolveLocale($request, $availableLocales, $defaultLocale);
         $timezone = $this->resolveTimezone();
 
+        LaravelLocalization::setLocale($locale);
         App::setLocale($locale);
         Session::put('locale', $locale);
 
@@ -41,6 +43,12 @@ final readonly class SetLocale
 
     private function resolveLocale(Request $request, array $availableLocales, string $defaultLocale): string
     {
+        $localizedRouteLocale = LaravelLocalization::getCurrentLocale();
+
+        if ($this->isSupportedLocale($localizedRouteLocale, $availableLocales)) {
+            return $this->normalizeLocale($localizedRouteLocale);
+        }
+
         $sessionLocale = Session::get('locale');
 
         if ($this->isSupportedLocale($sessionLocale, $availableLocales)) {
@@ -63,6 +71,21 @@ final readonly class SetLocale
         }
 
         return $defaultLocale;
+    }
+
+    private function availableLocales(): array
+    {
+        $appLocales = config('app.available_locales', []);
+
+        if ($appLocales === []) {
+            $appLocales = array_keys(config('laravellocalization.supportedLocales', []));
+        }
+
+        if ($appLocales === []) {
+            return ['en'];
+        }
+
+        return array_values(array_unique($appLocales));
     }
 
     private function isSupportedLocale(mixed $locale, array $availableLocales): bool

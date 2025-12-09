@@ -60,9 +60,9 @@ return [
                 ',',
                 (string) env(
                     'GEO_PHONE_ONLY_COUNTRIES',
-                    env('GEO_PHONE_DEFAULT_COUNTRY', env('ADDRESS_DEFAULT_COUNTRY', 'US'))
-                )
-            )
+                    env('GEO_PHONE_DEFAULT_COUNTRY', env('ADDRESS_DEFAULT_COUNTRY', 'US')),
+                ),
+            ),
         ))),
         'auto_insert_dial_code' => (bool) env('GEO_PHONE_AUTO_INSERT_DIAL_CODE', false),
         'national_mode' => (bool) env('GEO_PHONE_NATIONAL_MODE', false),

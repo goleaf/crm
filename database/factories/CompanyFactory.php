@@ -39,7 +39,7 @@ final class CompanyFactory extends Factory
             'account_type' => $this->faker->randomElement($accountTypes)->value,
             'ownership' => $this->faker->randomElement($ownershipTypes),
             'phone' => $this->faker->e164PhoneNumber(),
-            'primary_email' => $this->faker->companyEmail(),
+            'primary_email' => $this->faker->unique()->safeEmail(),
             'website' => $this->faker->url(),
             'industry' => $this->faker->randomElement($industries)->value,
             'revenue' => $this->faker->randomFloat(2, 100000, 100000000),

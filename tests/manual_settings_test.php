@@ -7,7 +7,7 @@ declare(strict_types=1);
  * Run with: php tests/manual_settings_test.php
  */
 
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 echo "Settings Implementation Verification\n";
 echo "====================================\n\n";
@@ -19,7 +19,7 @@ echo "✓ Setting model exists\n";
 echo "✓ SettingsService exists\n";
 
 // Test 3: Check migration file exists
-$migrationFile = __DIR__.'/../database/migrations/2026_01_10_000000_create_settings_table.php';
+$migrationFile = __DIR__ . '/../database/migrations/2026_01_10_000000_create_settings_table.php';
 if (file_exists($migrationFile)) {
     echo "✓ Migration file exists\n";
 } else {
@@ -27,7 +27,7 @@ if (file_exists($migrationFile)) {
 }
 
 // Test 4: Check seeder exists
-$seederFile = __DIR__.'/../database/seeders/SystemSettingsSeeder.php';
+$seederFile = __DIR__ . '/../database/seeders/SystemSettingsSeeder.php';
 if (file_exists($seederFile)) {
     echo "✓ Seeder file exists\n";
 } else {
@@ -35,7 +35,7 @@ if (file_exists($seederFile)) {
 }
 
 // Test 5: Check Filament resource exists
-$resourceFile = __DIR__.'/../app/Filament/Resources/SettingResource.php';
+$resourceFile = __DIR__ . '/../app/Filament/Resources/SettingResource.php';
 if (file_exists($resourceFile)) {
     echo "✓ Filament resource exists\n";
 } else {
@@ -43,8 +43,8 @@ if (file_exists($resourceFile)) {
 }
 
 // Test 6: Check test files exist
-$unitTestFile = __DIR__.'/Unit/Services/SettingsServiceTest.php';
-$propertyTestFile = __DIR__.'/Unit/Properties/ConfigurationPersistencePropertyTest.php';
+$unitTestFile = __DIR__ . '/Unit/Services/SettingsServiceTest.php';
+$propertyTestFile = __DIR__ . '/Unit/Properties/ConfigurationPersistencePropertyTest.php';
 
 if (file_exists($unitTestFile)) {
     echo "✓ Unit tests exist\n";

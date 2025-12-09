@@ -14,9 +14,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * @property ExtensionType $type
- * @property ExtensionStatus $status
- * @property HookEvent|null $target_event
+ * @property ExtensionType             $type
+ * @property ExtensionStatus           $status
+ * @property HookEvent|null            $target_event
  * @property array<string, mixed>|null $configuration
  * @property array<string, mixed>|null $permissions
  * @property array<string, mixed>|null $metadata

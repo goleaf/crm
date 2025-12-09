@@ -56,8 +56,8 @@ final class OpportunityForm
                         'name',
                         modifyQueryUsing: fn (Builder $query): Builder => $query->when(
                             Auth::user()?->currentTeam,
-                            fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey())
-                        )
+                            fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey()),
+                        ),
                     )
                     ->multiple()
                     ->searchable()
@@ -70,7 +70,7 @@ final class OpportunityForm
                         fn (array $data): array => [
                             ...$data,
                             'team_id' => Auth::user()?->currentTeam?->getKey(),
-                        ]
+                        ],
                     ))
                     ->columnSpan(2),
                 CustomFields::form()->forSchema($schema)->build()->columnSpanFull(),

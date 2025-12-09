@@ -58,7 +58,7 @@ final class PermissionService
             $resolvedPermissions = $this->resolveRolePermissions(
                 $roleConfig,
                 $definitions,
-                $permissionNames
+                $permissionNames,
             );
 
             $role->syncPermissions($resolvedPermissions);
@@ -96,7 +96,7 @@ final class PermissionService
     private function resolveRolePermissions(
         array $roleConfig,
         array $definitions,
-        array $availablePermissions
+        array $availablePermissions,
     ): array {
         $resources = $definitions['resources'] ?? [];
         $permissionSets = $definitions['permission_sets'] ?? [];
@@ -119,7 +119,8 @@ final class PermissionService
     }
 
     /**
-     * @param  list<string>  $permissionSets
+     * @param list<string> $permissionSets
+     *
      * @return Collection<int, string>
      */
     private function expandPermissionSets(array $permissionSets, array $definitions): Collection
@@ -131,7 +132,7 @@ final class PermissionService
     private function expandInheritedRoles(
         array $roles,
         array $definitions,
-        array $availablePermissions
+        array $availablePermissions,
     ): Collection {
         return collect($roles)
             ->flatMap(function (string $role) use ($definitions, $availablePermissions): array {
@@ -144,14 +145,15 @@ final class PermissionService
     /**
      * Expand tokens like resource.* or * into concrete permission names.
      *
-     * @param  array<string, array<int, string>>  $resources
-     * @param  list<string>  $availablePermissions
+     * @param array<string, array<int, string>> $resources
+     * @param list<string>                      $availablePermissions
+     *
      * @return list<string>
      */
     private function expandPermissionToken(
         string $permission,
         array $resources,
-        array $availablePermissions
+        array $availablePermissions,
     ): array {
         if ($permission === '*') {
             return ['*'];

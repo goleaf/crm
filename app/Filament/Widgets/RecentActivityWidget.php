@@ -37,7 +37,7 @@ final class RecentActivityWidget extends BaseWidget
                 Tables\Columns\TextColumn::make('activity_type')
                     ->label(__('app.labels.type'))
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => __("app.activity_types.{$state}")
+                    ->formatStateUsing(fn (string $state): string => __("app.activity_types.{$state}"),
                     ),
 
                 Tables\Columns\TextColumn::make('created_at')
@@ -90,7 +90,7 @@ final class RecentActivityWidget extends BaseWidget
         return DB::query()
             ->fromSub(
                 $tasks->union($notes),
-                'activities'
+                'activities',
             );
     }
 

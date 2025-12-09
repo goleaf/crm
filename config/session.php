@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Str;
+use App\Support\Env;
 
 return [
 
@@ -20,7 +20,7 @@ return [
     |
     */
 
-    'driver' => env('SESSION_DRIVER', 'database'),
+    'driver' => Env::make()->sessionDriver(),
 
     /*
     |--------------------------------------------------------------------------
@@ -34,9 +34,9 @@ return [
     |
     */
 
-    'lifetime' => env('SESSION_LIFETIME', 120),
+    'lifetime' => Env::make()->sessionLifetime(),
 
-    'expire_on_close' => env('SESSION_EXPIRE_ON_CLOSE', false),
+    'expire_on_close' => Env::make()->sessionExpireOnClose(),
 
     /*
     |--------------------------------------------------------------------------
@@ -49,7 +49,7 @@ return [
     |
     */
 
-    'encrypt' => env('SESSION_ENCRYPT', false),
+    'encrypt' => Env::make()->sessionEncrypt(),
 
     /*
     |--------------------------------------------------------------------------
@@ -75,7 +75,7 @@ return [
     |
     */
 
-    'connection' => env('SESSION_CONNECTION'),
+    'connection' => Env::make()->sessionConnection(),
 
     /*
     |--------------------------------------------------------------------------
@@ -88,7 +88,7 @@ return [
     |
     */
 
-    'table' => env('SESSION_TABLE', 'sessions'),
+    'table' => Env::make()->sessionTable(),
 
     /*
     |--------------------------------------------------------------------------
@@ -103,7 +103,7 @@ return [
     |
     */
 
-    'store' => env('SESSION_STORE'),
+    'store' => Env::make()->sessionStore(),
 
     /*
     |--------------------------------------------------------------------------
@@ -129,10 +129,7 @@ return [
     |
     */
 
-    'cookie' => env(
-        'SESSION_COOKIE',
-        Str::slug((string) env('APP_NAME', 'laravel'), '_').'_session'
-    ),
+    'cookie' => Env::make()->sessionCookie(),
 
     /*
     |--------------------------------------------------------------------------
@@ -145,7 +142,7 @@ return [
     |
     */
 
-    'path' => env('SESSION_PATH', '/'),
+    'path' => Env::make()->sessionPath(),
 
     /*
     |--------------------------------------------------------------------------
@@ -158,7 +155,7 @@ return [
     |
     */
 
-    'domain' => env('SESSION_DOMAIN'),
+    'domain' => Env::make()->sessionDomain(),
 
     /*
     |--------------------------------------------------------------------------
@@ -171,7 +168,7 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE'),
+    'secure' => Env::make()->sessionSecureCookie(),
 
     /*
     |--------------------------------------------------------------------------
@@ -184,7 +181,7 @@ return [
     |
     */
 
-    'http_only' => env('SESSION_HTTP_ONLY', true),
+    'http_only' => Env::make()->sessionHttpOnly(),
 
     /*
     |--------------------------------------------------------------------------
@@ -201,7 +198,7 @@ return [
     |
     */
 
-    'same_site' => env('SESSION_SAME_SITE', 'lax'),
+    'same_site' => Env::make()->sessionSameSite(),
 
     /*
     |--------------------------------------------------------------------------
@@ -214,6 +211,6 @@ return [
     |
     */
 
-    'partitioned' => env('SESSION_PARTITIONED_COOKIE', false),
+    'partitioned' => Env::make()->sessionPartitionedCookie(),
 
 ];

@@ -14,8 +14,8 @@ use Illuminate\Support\Facades\Auth;
 abstract class BaseExporter extends Exporter
 {
     /**
-     * @param  array<string, string>  $columnMap
-     * @param  array<string, mixed>  $options
+     * @param array<string, string> $columnMap
+     * @param array<string, mixed>  $options
      */
     public function __construct(
         Export $export,
@@ -35,7 +35,8 @@ abstract class BaseExporter extends Exporter
     /**
      * Make exports tenant-aware by scoping to the current team
      *
-     * @param  Builder<Model>  $query
+     * @param Builder<Model> $query
+     *
      * @return Builder<Model>
      */
     public static function modifyQuery(Builder $query): Builder

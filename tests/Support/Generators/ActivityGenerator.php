@@ -17,13 +17,13 @@ final class ActivityGenerator
     /**
      * Generate a random activity event.
      *
-     * @param  array<string, mixed>  $overrides
+     * @param array<string, mixed> $overrides
      */
     public static function generate(
         Team $team,
         Model $subject,
         ?User $causer = null,
-        array $overrides = []
+        array $overrides = [],
     ): Activity {
         $causer ??= User::factory()->create();
 
@@ -89,14 +89,15 @@ final class ActivityGenerator
     /**
      * Generate multiple activities for a subject.
      *
-     * @param  int  $count  Number of activities to generate
+     * @param int $count Number of activities to generate
+     *
      * @return array<Activity>
      */
     public static function generateMultiple(
         Team $team,
         Model $subject,
         int $count = 5,
-        ?User $causer = null
+        ?User $causer = null,
     ): array {
         $activities = [];
 

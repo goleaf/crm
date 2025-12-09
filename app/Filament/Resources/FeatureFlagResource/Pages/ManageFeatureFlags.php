@@ -73,7 +73,7 @@ final class ManageFeatureFlags extends ManageRecords
                         ->selectablePlaceholder(false)
                         ->options(
                             [null => __('app.labels.all_features')]
-                            + FeatureFlagSegment::featureOptionsList()
+                            + FeatureFlagSegment::featureOptionsList(),
                         )
                         ->columnSpanFull(),
                 ])

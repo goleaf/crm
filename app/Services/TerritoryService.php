@@ -48,7 +48,7 @@ final class TerritoryService
                 'is_primary' => $isPrimary,
                 'assigned_at' => now(),
                 'assignment_reason' => $reason ?? 'Auto-assigned by rules',
-            ]
+            ],
         );
     }
 
@@ -126,7 +126,7 @@ final class TerritoryService
         Territory $fromTerritory,
         Territory $toTerritory,
         User $initiator,
-        ?string $reason = null
+        ?string $reason = null,
     ): TerritoryTransfer {
         return DB::transaction(function () use ($record, $fromTerritory, $toTerritory, $initiator, $reason) {
             // Update the territory record
@@ -260,7 +260,7 @@ final class TerritoryService
         TerritoryRole $role = TerritoryRole::MEMBER,
         bool $isPrimary = false,
         ?\DateTime $startDate = null,
-        ?\DateTime $endDate = null
+        ?\DateTime $endDate = null,
     ): TerritoryAssignment {
         return TerritoryAssignment::create([
             'territory_id' => $territory->id,

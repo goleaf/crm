@@ -52,7 +52,7 @@ final class CreateLead extends CreateRecord
     }
 
     /**
-     * @param  \Illuminate\Support\Collection<int, array{lead: Lead, score: float}>  $duplicates
+     * @param \Illuminate\Support\Collection<int, array{lead: Lead, score: float}> $duplicates
      */
     private function formatDuplicatesMessage(\Illuminate\Support\Collection $duplicates): string
     {
@@ -67,7 +67,7 @@ final class CreateLead extends CreateRecord
                 '• %s (%s) - %d%% match',
                 $lead->name,
                 $lead->email ?? 'no email',
-                (int) $score
+                (int) $score,
             );
         }
 

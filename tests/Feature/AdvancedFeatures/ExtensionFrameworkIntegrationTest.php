@@ -42,7 +42,7 @@ test('complete extension deployment and execution workflow', function (): void {
         targetModel: Company::class,
         targetEvent: HookEvent::AFTER_SAVE,
         priority: 100,
-        handlerMethod: 'handle'
+        handlerMethod: 'handle',
     );
 
     expect($extension->status)->toBe(ExtensionStatus::INACTIVE)
@@ -105,7 +105,7 @@ test('extension cannot bypass team permissions', function (): void {
         name: 'Team 1 Extension',
         slug: 'team-1-extension',
         type: ExtensionType::LOGIC_HOOK,
-        handlerClass: TestHandler::class
+        handlerClass: TestHandler::class,
     );
 
     $registry->activate($extension);

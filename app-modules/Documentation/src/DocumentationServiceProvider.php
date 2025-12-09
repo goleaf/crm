@@ -16,7 +16,7 @@ final class DocumentationServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/documentation.php', 'documentation');
+        $this->mergeConfigFrom(__DIR__ . '/../config/documentation.php', 'documentation');
 
         $this->app->singleton(DocumentationService::class);
     }
@@ -39,7 +39,7 @@ final class DocumentationServiceProvider extends ServiceProvider
     {
         Route::middleware('web')
             ->group(function (): void {
-                $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+                $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
             });
     }
 
@@ -48,7 +48,7 @@ final class DocumentationServiceProvider extends ServiceProvider
      */
     private function registerViews(): void
     {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'documentation');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'documentation');
     }
 
     /**
@@ -71,17 +71,17 @@ final class DocumentationServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             // Config
             $this->publishes([
-                __DIR__.'/../config/documentation.php' => config_path('documentation.php'),
+                __DIR__ . '/../config/documentation.php' => config_path('documentation.php'),
             ], 'documentation-config');
 
             // Views
             $this->publishes([
-                __DIR__.'/../resources/views' => resource_path('views/vendor/documentation'),
+                __DIR__ . '/../resources/views' => resource_path('views/vendor/documentation'),
             ], 'documentation-views');
 
             // Markdown
             $this->publishes([
-                __DIR__.'/../resources/markdown' => resource_path('markdown/documentation'),
+                __DIR__ . '/../resources/markdown' => resource_path('markdown/documentation'),
             ], 'documentation-markdown');
         }
     }

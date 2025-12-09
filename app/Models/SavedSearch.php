@@ -10,9 +10,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property string $name
- * @property string $resource
- * @property string|null $query
+ * @property string                    $name
+ * @property string                    $resource
+ * @property string|null               $query
  * @property array<string, mixed>|null $filters
  */
 final class SavedSearch extends Model

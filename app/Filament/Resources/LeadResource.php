@@ -10,18 +10,24 @@ use App\Enums\LeadGrade;
 use App\Enums\LeadNurtureStatus;
 use App\Enums\LeadSource;
 use App\Enums\LeadStatus;
+use App\Enums\LeadType;
+use App\Filament\Resources\LeadResource\Pages\ListLeadActivities;
 use App\Filament\Exports\LeadExporter;
 use App\Filament\RelationManagers\ActivitiesRelationManager;
 use App\Filament\Resources\LeadResource\Forms\LeadForm;
 use App\Filament\Resources\LeadResource\Pages\CreateLead;
 use App\Filament\Resources\LeadResource\Pages\ListLeads;
 use App\Filament\Resources\LeadResource\Pages\ViewLead;
+use App\Filament\Resources\LeadResource\RelationManagers\CalendarEventsRelationManager;
 use App\Filament\Resources\LeadResource\RelationManagers\NotesRelationManager;
 use App\Filament\Resources\LeadResource\RelationManagers\TasksRelationManager;
 use App\Filament\Support\Filters\DateScopeFilter;
+use App\Support\Helpers\NumberHelper;
 use App\Models\Lead;
 use App\Models\Tag;
 use App\Models\Team;
+use Filament\Forms;
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -39,6 +45,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Colors\Color;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
@@ -89,6 +96,20 @@ final class LeadResource extends Resource
                     ->badge()
                     ->color('gray')
                     ->formatStateUsing(fn (LeadSource|string|null $state): string => $state instanceof LeadSource ? $state->getLabel() : (string) $state),
+                TextColumn::make('lead_type')
+                    ->label(__('app.labels.lead_type'))
+                    ->badge()
+                    ->color('gray')
+                    ->formatStateUsing(fn (LeadType|string|null $state): string => $state instanceof LeadType ? $state->getLabel() : (string) $state)
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('lead_value')
+                    ->label(__('app.labels.lead_value'))
+                    ->formatStateUsing(fn (mixed $state): string => NumberHelper::currency($state))
+                    ->toggleable(),
+                TextColumn::make('expected_close_date')
+                    ->label(__('app.labels.expected_close_date'))
+                    ->date()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('grade')
                     ->label(__('app.labels.grade'))
                     ->badge()
@@ -153,6 +174,10 @@ final class LeadResource extends Resource
                     ->label(__('app.labels.source'))
                     ->options(LeadSource::options())
                     ->multiple(),
+                SelectFilter::make('lead_type')
+                    ->label(__('app.labels.lead_type'))
+                    ->options(LeadType::options())
+                    ->multiple(),
                 SelectFilter::make('grade')
                     ->label(__('app.labels.grade'))
                     ->options(LeadGrade::options())
@@ -169,6 +194,56 @@ final class LeadResource extends Resource
                     ->label(__('app.labels.creation_source'))
                     ->options(CreationSource::class)
                     ->multiple(),
+                SelectFilter::make('assigned_to_id')
+                    ->label(__('app.labels.assignee'))
+                    ->relationship('assignedTo', 'name')
+                    ->multiple()
+                    ->preload()
+                    ->searchable(),
+                Filter::make('lead_value')
+                    ->label(__('app.labels.lead_value'))
+                    ->form([
+                        Forms\Components\TextInput::make('min')
+                            ->label('Min')
+                            ->numeric()
+                            ->minValue(0),
+                        Forms\Components\TextInput::make('max')
+                            ->label('Max')
+                            ->numeric()
+                            ->minValue(0),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['min'] ?? null,
+                                fn (Builder $builder, mixed $min): Builder => $builder->where('lead_value', '>=', $min),
+                            )
+                            ->when(
+                                $data['max'] ?? null,
+                                fn (Builder $builder, mixed $max): Builder => $builder->where('lead_value', '<=', $max),
+                            );
+                    }),
+                Filter::make('expected_close_date')
+                    ->label(__('app.labels.expected_close_date'))
+                    ->form([
+                        Forms\Components\DatePicker::make('from')
+                            ->label('From')
+                            ->native(false),
+                        Forms\Components\DatePicker::make('until')
+                            ->label('Until')
+                            ->native(false),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['from'] ?? null,
+                                fn (Builder $builder, string $date): Builder => $builder->whereDate('expected_close_date', '>=', $date),
+                            )
+                            ->when(
+                                $data['until'] ?? null,
+                                fn (Builder $builder, string $date): Builder => $builder->whereDate('expected_close_date', '<=', $date),
+                            );
+                    }),
                 SelectFilter::make('tags')
                     ->label(__('app.labels.tags'))
                     ->relationship(
@@ -176,8 +251,8 @@ final class LeadResource extends Resource
                         'name',
                         modifyQueryUsing: fn (Builder $query): Builder => $query->when(
                             Auth::user()?->currentTeam,
-                            fn (Builder $builder, ?Team $team): Builder => $builder->where('team_id', $team?->getKey())
-                        )
+                            fn (Builder $builder, ?Team $team): Builder => $builder->where('team_id', $team?->getKey()),
+                        ),
                     )
                     ->multiple()
                     ->preload(),
@@ -185,6 +260,10 @@ final class LeadResource extends Resource
             ])
             ->recordActions([
                 ActionGroup::make([
+                    Action::make('activities')
+                        ->label(__('app.labels.activity'))
+                        ->icon('heroicon-o-queue-list')
+                        ->url(fn (Lead $record): string => self::getUrl('activities', [$record])),
                     ViewAction::make(),
                     EditAction::make(),
                     RestoreAction::make(),
@@ -238,6 +317,7 @@ final class LeadResource extends Resource
     public static function getRelations(): array
     {
         return [
+            CalendarEventsRelationManager::class,
             TasksRelationManager::class,
             NotesRelationManager::class,
             ActivitiesRelationManager::class,
@@ -250,6 +330,7 @@ final class LeadResource extends Resource
             'index' => ListLeads::route('/'),
             'create' => CreateLead::route('/create'),
             'view' => ViewLead::route('/{record}'),
+            'activities' => ListLeadActivities::route('/{record}/activities'),
         ];
     }
 

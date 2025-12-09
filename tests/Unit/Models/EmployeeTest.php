@@ -123,7 +123,7 @@ test('employee can request time off', function (): void {
         'vacation',
         now(),
         now()->addDays(5),
-        'Family vacation'
+        'Family vacation',
     );
 
     expect($timeOff->employee_id)->toBe($employee->id)
@@ -143,7 +143,7 @@ test('employee time off detection works correctly', function (): void {
         'vacation',
         now()->addDays(10),
         now()->addDays(15),
-        'Vacation'
+        'Vacation',
     );
 
     // Not on time off yet (pending)

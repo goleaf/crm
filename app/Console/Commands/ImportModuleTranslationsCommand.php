@@ -36,7 +36,7 @@ final class ImportModuleTranslationsCommand extends Command
 
             return self::SUCCESS;
         } catch (\Throwable $e) {
-            $this->error('Failed to import translations: '.$e->getMessage());
+            $this->error('Failed to import translations: ' . $e->getMessage());
 
             return self::FAILURE;
         }

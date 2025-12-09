@@ -41,7 +41,7 @@ trait LogsActivity
     }
 
     /**
-     * @param  array<string, mixed>  $changes
+     * @param array<string, mixed> $changes
      */
     protected function recordActivity(string $event, array $changes = []): void
     {

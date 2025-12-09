@@ -14,7 +14,7 @@ final readonly class GitHubIssuesService
     public function __construct(
         private string $repo,
         private string $token,
-        private int $cacheTtl = 300
+        private int $cacheTtl = 300,
     ) {}
 
     public static function fromConfig(): self

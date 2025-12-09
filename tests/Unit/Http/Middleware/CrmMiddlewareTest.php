@@ -74,14 +74,14 @@ it('denies missing permissions and allows granted permissions', function (): voi
     $denyResponse = (new EnsurePermission)->handle(
         $request,
         fn (): \Symfony\Component\HttpFoundation\Response => response('ok'),
-        'orders.update'
+        'orders.update',
     );
     expect($denyResponse->getStatusCode())->toBe(403);
 
     $allowResponse = (new EnsurePermission)->handle(
         $request,
         fn (): \Symfony\Component\HttpFoundation\Response => response('ok'),
-        'orders.view'
+        'orders.view',
     );
     expect($allowResponse->getContent())->toBe('ok');
 });
@@ -104,7 +104,7 @@ it('runs custom middleware callbacks', function (): void {
 
     (new ApplyCustomMiddleware)->handle(
         Request::create('/crm', 'GET'),
-        fn (): \Symfony\Component\HttpFoundation\Response => response('ok')
+        fn (): \Symfony\Component\HttpFoundation\Response => response('ok'),
     );
 
     expect($ran)->toBeTrue();

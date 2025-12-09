@@ -26,9 +26,9 @@ use Relaticle\CustomFields\Models\Contracts\HasCustomFields;
 use Spatie\EloquentSortable\SortableTrait;
 
 /**
- * @property Carbon|null $deleted_at
+ * @property Carbon|null    $deleted_at
  * @property CreationSource $creation_source
- * @property Carbon|null $closed_at
+ * @property Carbon|null    $closed_at
  */
 #[ObservedBy(OpportunityObserver::class)]
 final class Opportunity extends Model implements HasCustomFields

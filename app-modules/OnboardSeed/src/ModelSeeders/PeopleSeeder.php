@@ -30,9 +30,10 @@ final class PeopleSeeder extends BaseModelSeeder
     /**
      * Create people entities from fixtures
      *
-     * @param  Team  $team  The team to create data for
-     * @param  User  $user  The user creating the data
-     * @param  array<string, mixed>  $context  Context data from previous seeders
+     * @param Team                 $team    The team to create data for
+     * @param User                 $user    The user creating the data
+     * @param array<string, mixed> $context Context data from previous seeders
+     *
      * @return array<string, mixed> Seeded data for use by subsequent seeders
      */
     protected function createEntitiesFromFixtures(Team $team, Authenticatable $user, array $context = []): array
@@ -69,7 +70,7 @@ final class PeopleSeeder extends BaseModelSeeder
     /**
      * Create a person from fixture data
      *
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
      */
     private function createPersonFromFixture(Company $company, Authenticatable $user, string $key, array $data): People
     {

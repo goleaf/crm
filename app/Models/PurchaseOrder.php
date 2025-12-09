@@ -254,7 +254,7 @@ final class PurchaseOrder extends Model
 
         $receipts = $this->receipts()->get(['line_total', 'receipt_type', 'received_at']);
         $receivedCost = max(round($receipts->sum(
-            fn (PurchaseOrderReceipt $receipt): float => $receipt->signedTotal()
+            fn (PurchaseOrderReceipt $receipt): float => $receipt->signedTotal(),
         ), 2), 0);
 
         $outstanding = max(round($committedTotal - $receivedCost, 2), 0);

@@ -21,6 +21,7 @@ use App\Models\AccountTeamMember;
 use App\Models\Company;
 use App\Support\Addresses\AddressFormatter;
 use App\Support\Helpers\StringHelper;
+use App\Support\Helpers\UrlHelper;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\RepeatableEntry\TableColumn;
 use Filament\Infolists\Components\TextEntry;
@@ -31,6 +32,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Alignment;
 use Illuminate\Support\HtmlString;
+use pxlrbt\FilamentFavicon\Filament\FaviconEntry;
 use Relaticle\CustomFields\Facades\CustomFields;
 
 /**
@@ -126,11 +128,16 @@ final class ViewCompany extends ViewRecord
                                     ->label(__('app.labels.currency'))
                                     ->columnSpan(3)
                                     ->formatStateUsing(fn (?string $state): string => $state ?? '—'),
+                                FaviconEntry::make('website_favicon')
+                                    ->label('')
+                                    ->columnSpan(1)
+                                    ->state(fn (Company $record): ?string => UrlHelper::domain($record->website ?? ''))
+                                    ->visible(fn (Company $record): bool => filled($record->website)),
                                 TextEntry::make('website')
                                     ->label(__('app.labels.website'))
                                     ->icon('heroicon-o-globe-alt')
                                     ->url(fn (Company $record): ?string => $record->website ?: null)
-                                    ->columnSpan(3)
+                                    ->columnSpan(2)
                                     ->formatStateUsing(fn (?string $state): string => $state ?: '—'),
                                 TextEntry::make('industry')
                                     ->label(__('app.labels.industry'))
@@ -145,7 +152,7 @@ final class ViewCompany extends ViewRecord
                                 TextEntry::make('primary_email')
                                     ->label(__('app.labels.email'))
                                     ->icon('heroicon-o-envelope')
-                                    ->url(fn (?string $state): ?string => $state !== null ? 'mailto:'.$state : null)
+                                    ->url(fn (?string $state): ?string => $state !== null ? 'mailto:' . $state : null)
                                     ->columnSpan(3)
                                     ->formatStateUsing(fn (?string $state): string => $state ?? '—'),
                                 TextEntry::make('social_links.linkedin')
@@ -173,11 +180,11 @@ final class ViewCompany extends ViewRecord
                                         $latest = $record->latestAnnualRevenue;
 
                                         if ($latest !== null) {
-                                            return ($latest->currency_code ?? $record->currency_code ?? 'USD').' '.number_format((float) $latest->amount, 2).' ('.$latest->year.')';
+                                            return ($latest->currency_code ?? $record->currency_code ?? 'USD') . ' ' . number_format((float) $latest->amount, 2) . ' (' . $latest->year . ')';
                                         }
 
                                         if ($record->revenue !== null) {
-                                            return ($record->currency_code ?? 'USD').' '.number_format((float) $record->revenue, 2);
+                                            return ($record->currency_code ?? 'USD') . ' ' . number_format((float) $record->revenue, 2);
                                         }
 
                                         return '—';
@@ -269,7 +276,7 @@ final class ViewCompany extends ViewRecord
                                     ->label(__('app.labels.member')),
                                 TextEntry::make('email')
                                     ->label(__('app.labels.email'))
-                                    ->url(fn (?string $state): ?string => $state !== null ? 'mailto:'.$state : null)
+                                    ->url(fn (?string $state): ?string => $state !== null ? 'mailto:' . $state : null)
                                     ->formatStateUsing(fn (?string $state): string => $state ?? '—'),
                                 TextEntry::make('role')
                                     ->label(__('app.labels.role'))

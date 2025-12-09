@@ -39,7 +39,7 @@ final class CleanContent extends Clean
                 is_string($locale) => $locale,
                 default => null,
             },
-            $configured
+            $configured,
         ))));
 
         if ($resolved === []) {

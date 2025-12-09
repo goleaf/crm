@@ -1,191 +1,193 @@
 # Documentation Index
 
-## Quick Start Guides
+> **Start Here**: This index provides quick access to all comprehensive guides. Always consult these before implementing features to minimize errors and ensure consistency.
 
-### Code Quality & Refactoring
-- **[Rector v2 Quick Start](RECTOR_V2_QUICK_START.md)** - Fast guide to automated refactoring
-- **[Rector v2 Integration](rector-v2-integration.md)** - Comprehensive Rector v2 setup and usage
-- **[Rector Laravel](rector-laravel.md)** - Laravel-specific refactoring rules
-- **[PHPCS Standard](phpcs-standard.md)** - PHP CodeSniffer configuration
-- **[PHP Insights](phpinsights.md)** - Code quality analysis
+## 🚀 New to the Project?
 
-### Testing
-- **[Testing Infrastructure](testing-infrastructure.md)** - Complete testing setup
-- **[Pest Laravel Expectations](pest-laravel-expectations.md)** - HTTP/model/storage assertions
-- **[Pest Stressless](pest-stressless.md)** - Performance and stress testing
+**Start with the [Quick Start Guide](QUICK_START.md)** - Get up and running in 1 hour with essential documentation, common tasks, and code examples.
 
-### Laravel Core
-- **[Laravel Container Services](laravel-container-services.md)** - Service container patterns
-- **[Laravel Container Implementation](laravel-container-implementation-guide.md)** - Implementation guide
-- **[Container Services Integration](CONTAINER_SERVICES_INTEGRATION.md)** - Integration summary
-- **[Laravel Service Container](laravel-service-container-integration.md)** - Service integration
-- **[Laravel Date Scopes](laravel-date-scopes.md)** - Date filtering with scopes
-- **[Laravel HTTP Client](laravel-http-client.md)** - HTTP client configuration
-- **[Laravel Pail](laravel-pail.md)** - Real-time log tailing
+## Quick Navigation
+
+### 🎯 Most Used Guides
+1. **[Laravel Validation Enhancements](laravel-validation-enhancements.md)** - Modern validation patterns, Form Requests, custom rules
+2. **[Controller Refactoring Guide](controller-refactoring-guide.md)** - Action classes, Single Action Controllers
+3. **[Laravel Container Services](laravel-container-services.md)** - Service patterns, dependency injection
+4. **[Test Profiling](test-profiling.md)** - Test performance optimization
+
+### 📦 Core Integrations
+
+#### Service Layer & Architecture
+- **[Laravel Container Services](laravel-container-services.md)** - Service container patterns, dependency injection, singleton vs bind
+- **[Laravel Container Implementation Guide](laravel-container-implementation-guide.md)** - Detailed implementation examples
+- **[Controller Refactoring Guide](controller-refactoring-guide.md)** - Thin controllers, Action classes, Form Requests
+- **[Laravel Pipeline Integration](laravel-pipeline-integration.md)** - Multi-step operation patterns
+- **[Krayin Packages Overview](krayin-packages.md)** - Summary of Krayin CRM’s default packages and modular architecture
+
+#### Validation & Forms
+- **[Laravel Validation Enhancements](laravel-validation-enhancements.md)** - Modern validation patterns, Precognition
 - **[Laravel Precognition](laravel-precognition.md)** - Real-time form validation
-- **[Laravel Unique](laravel-unique.md)** - Unique validation rules
-- **[Laravel Introspect](laravel-introspect.md)** - Code introspection
 
-## Filament v4.3+
+#### Testing & Quality
+- **[Test Profiling](test-profiling.md)** - Identify and optimize slow tests
+- **[Testing Infrastructure](testing-infrastructure.md)** - Testing setup and patterns
+- **[Testing Ecosystem Overview](testing-ecosystem-overview.md)** - Complete testing stack
+- **[PCOV Code Coverage Integration](pcov-code-coverage-integration.md)** - Fast code coverage with PCOV
+- **[Pest Route Testing Complete Guide](pest-route-testing-complete-guide.md)** - Comprehensive route testing
+- **[Route Testing Quick Reference](route-testing-quick-reference.md)** - Quick route testing patterns
+- **[Laravel Commit Lint Integration](laravel-commit-lint.md)** - Conventional Commit enforcement via commit-msg hook
 
-### Resources & UI
-- **[Filament Resources](filament-resources.md)** - Resource patterns
-- **[Filament Slug Generation](filament-slug-generation.md)** - Automatic slug generation
-- **[Filament Underrated Features](filament-underrated-features.md)** - Hidden gems
-- **[Empty States Integration](empty-states-integration.md)** - Empty state patterns
+### 🔐 Security & Access Control
 
-### Data & Visualization
-- **[Apex Charts Integration](apex-charts-integration.md)** - Chart integration
-- **[Easy Metrics Integration](easy-metrics-integration.md)** - Metrics and KPIs
+- **[Filament Shield Integration](filament-shield-integration.md)** - Role-based access control (RBAC)
+- **[Warden Security Audit](warden-security-audit.md)** - Security auditing and vulnerability scanning
+- **[Blasp Profanity Filter Integration](blasp-profanity-filter-integration.md)** - Multi-language profanity filtering
+- Filament stack pinned to `>=4.3.1` (fixes CVE-2025-67507: recovery codes reuse).
 
-## Packages & Integrations
+### 🌍 Data & Localization
 
-### Data Management
-- **[Array Helpers](array-helpers.md)** - Array/JSON formatting utilities
-- **[String Word Wrap](string-word-wrap.md)** - Text wrapping for tables
-- **[Taxonomy Integration](taxonomy-integration.md)** - Category/tag system
-- **[Referenceable](referenceable.md)** - Reference tracking
-- **[Notable Package](notable-package-integration.md)** - Lightweight notes
-- **[Model Notes Integration](model-notes-integration.md)** - Rich notes system
-- **[Notes Quick Reference](notes-quick-reference.md)** - Notes API reference
-- **[Has Notes Trait Analysis](has-notes-trait-analysis.md)** - Notes trait details
+- **[World Data Enhanced Features](world-data-enhanced-features.md)** - Country/state/city data with utilities
+- **[World Data Integration](world-data-integration.md)** - World data service patterns
+- **[Laravel Translation Checker Integration](laravel-translation-checker-integration.md)** - Database-backed translations
+- **[Laravel Localization Integration](laravel-localization-integration.md)** - Localized routes, slug translation, Accept-Language redirects
+- **[Localazy GitHub Actions Integration](localazy-github-actions-integration.md)** - Automated translation management
+- **[Laravel Auto Translations](laravel-auto-translations.md)** - AI-assisted JSON export/import workflow for translations
 
-### Enums
-- **[Enums](enums.md)** - Enum patterns and conventions
-- **[Enum Integration Summary](enum-integration-summary.md)** - Integration guide
-- **[Enum Quick Reference](enum-quick-reference.md)** - Quick API reference
-- **[Enum Usage Examples](enum-usage-examples.md)** - Practical examples
+### 🔗 Sharing & Links
 
-### User Management
-- **[Userstamps](userstamps.md)** - Creator/editor tracking
-- **[Name of Person](name-of-person.md)** - Name formatting
+- **[Laravel ShareLink Integration](laravel-sharelink-integration.md)** - Secure shareable links with expiration/passwords
+- **[Laravel ShareLink Quick Start](laravel-sharelink-quick-start.md)** - Quick reference for ShareLink
 
-### Validation & Security
-- **[Intervention Validation](intervention-validation.md)** - Image validation
-- **[Password Strength](password-strength.md)** - Password validation
-- **[Security Headers](security-headers.md)** - HTTP security headers
-- **[Squeaky Profanity Filter](squeaky-profanity-filter.md)** - Content filtering
+### 📊 Data Management
 
-### Utilities
-- **[Cache Eviction](cache-eviction.md)** - Cache management
-- **[Geo Genius](geo-genius.md)** - Geolocation utilities
-- **[Larapath Integration](larapath-integration.md)** - Path utilities
-- **[Reactions](reactions.md)** - Like/reaction system
-- **[Toast Magic Integration](toastmagic-integration.md)** - Toast notifications
-- **[Zap Integration](zap-integration.md)** - Quick actions
+- **[Laravel Union Paginator](laravel-union-paginator.md)** - Multi-model pagination patterns
+- **[Laravel Metadata Integration](laravel-metadata-integration.md)** - Flexible JSON metadata storage
+- **[Laravel Metrics Integration](laravel-metrics-integration.md)** - Aggregated counts/sums and trend helpers for dashboards
+- **[Contact Groups](groups.md)** - Team-scoped grouping for contacts with Filament management
+- **[Laravel Schema Docs Integration](laravel-schema-docs-integration.md)** - Schema dashboard with YAML exports
+- **[Truffle In-Memory Models](truffle-integration.md)** - Eloquent-friendly static datasets on in-memory SQLite
 
-### System Features
-- **[Extension Framework](extension-framework.md)** - Plugin system
-- **[Feature Flags](feature-flags.md)** - Feature toggles
-- **[System Settings](system-settings.md)** - Application settings
-- **[System Settings Quick Reference](system-settings-quick-reference.md)** - Settings API
-- **[Settings Usage Guide](settings-usage-guide.md)** - Settings patterns
+### 🎨 UI & Components
 
-## Internationalization
+- **[Filament Minimal Tabs](filament-minimal-tabs.md)** - Minimal tabs component usage
+- **[Minimal Tabs Quick Reference](minimal-tabs-quick-reference.md)** - Quick reference for tabs
+- **[Filament Activity Log Integration](filament-activity-log-integration.md)** - Record-level activity pages via pxlrbt/filament-activity-log
+- **[Blade Hot Refresh](blade-hot-refresh.md)** - Vite hot refresh for Blade templates
 
-- **[Internationalization](internationalization.md)** - i18n setup
-- **[i18n Implementation Summary](i18n-implementation-summary.md)** - Implementation guide
-- **[Translation Example](translation-example.md)** - Translation patterns
+### 🛠️ Utilities & Helpers
 
-## Performance Optimization
+- **[Helper Functions Guide](helper-functions-guide.md)** - Comprehensive utility helper classes
+- **[Helper Functions Examples](helper-functions-examples.md)** - Practical usage examples
+- **[Helper Functions Quick Reference](helper-functions-quick-reference.md)** - Quick lookup
+- **[Laravel Onym Integration](laravel-onym-integration.md)** - Filename generation and sanitization
+- **[Bag Value Objects](bag-value-objects.md)** - Immutable, validated DTOs with Bag
 
-- **[Performance Calendar Events](performance-calendar-events.md)** - Calendar optimization
-- **[Performance Calendar Events Implementation](performance-calendar-events-implementation-notes.md)** - Implementation notes
-- **[Performance Calendar Page](performance-calendar-page.md)** - Calendar page optimization
-- **[Performance Lead Seeder](performance-lead-seeder.md)** - Seeder optimization
-- **[Performance Project Schedule](performance-project-schedule.md)** - Schedule optimization
-- **[Performance Settings Optimization](performance-settings-optimization.md)** - Settings optimization
-- **[Performance ViewCompany](performance-viewcompany.md)** - Company view optimization
+### 🔍 Other Integrations
 
-## UI/UX
+- **[Inspector MCP Server Integration](inspector-mcp-server-integration.md)** - MCP server for Inspector.dev telemetry access by coding agents
+- **[Filament Badgeable Column](https://github.com/awcodes/filament-badgeable-column)** - Badge prefixes/suffixes for Filament table columns
+- **[GraphQL (Lighthouse) Integration](graphql-lighthouse-integration.md)** - Secure GraphQL layer with Lighthouse + Sanctum
+- **[Facade Maker Integration](facade-maker-integration.md)** - Scaffold facades and services with `app:facade-maker`
+- **[PHP 8.5 Highlights](php-85-whats-new.md)** - Upcoming language features (pipe operator, final property promotion, CLI diff flag, more)
+- **[Zap Scheduling Integration](zap-integration.md)** - Zap-powered availability, bookable slots, and calendar syncing defaults
+- **[OCR Complete Implementation](ocr-complete-implementation.md)** - OCR service patterns
+- **[Laravel Config Checker Integration](laravel-config-checker-integration.md)** - Config health monitoring
+- **[Filament DB Config Integration](filament-db-config-integration.md)** - DB-backed Filament settings/content with caching
+- **[Livewire FileManager Integration](livewire-filemanager-integration.md)** - File management UI
+- **[Playwright Integration](playwright-integration.md)** - E2E testing with Playwright
+- **[Laravel Pail](laravel-pail.md)** - Real-time log tailing
 
-- **[Tailwind 3.4 Integration](tailwind-3-4-integration.md)** - Tailwind utilities
-- **[UI/UX Documentation](ui-ux/)** - UI/UX patterns and guidelines
+### 🌐 External CRM References
+- **[Krayin CRM Packages](krayin-packages.md)** - Overview of Krayin's modular packages from the developer docs
+- **[Krayin Contact Person](krayin-contact-person.md)** - Person creation flow, grid filters, and management actions from Krayin contacts docs
+- **[Krayin Lead Creation](krayin-lead-creation.md)** - Manual lead creation, Magic AI upload, and filters from Krayin user docs
+- **[Krayin Activities](krayin-activities.md)** - Activity scheduling (calls, lunches, meetings), filters, and calendar view
+- **[Krayin Lead Parity Map](krayin-lead-parity.md)** - Our LeadResource vs Krayin creation steps with gaps and backlog items
+- **[Krayin Roles](krayin-roles.md)** - Role creation, permission types, filters, and project parity notes
+- **[Krayin Events](krayin-events.md)** - Event creation (name/description/date), filters, and parity notes
 
-## API Documentation
+## 📋 Summary Documents
 
-- **[API Documentation](api/)** - API reference and examples
+- **[INTEGRATION_ENHANCEMENTS_COMPLETE](../INTEGRATION_ENHANCEMENTS_COMPLETE.md)** - Complete summary of all recent integrations
+- **[PCOV Integration Summary](PCOV_INTEGRATION_SUMMARY.md)** - PCOV code coverage summary
+- **[README PCOV Coverage](README-PCOV-COVERAGE.md)** - PCOV setup and usage
 
-## Database
+## 🎯 Workflow Guide
 
-- **[Seeders Documentation](seeders/)** - Database seeding patterns
-- **[Calendar Event Meeting Fields](calendar-event-meeting-fields.md)** - Calendar schema
+### For New Features
+1. **Check this index** - Find the relevant guide
+2. **Read the comprehensive guide** - Understand patterns and best practices
+3. **Review steering rules** - Check `.kiro/steering/` for conventions
+4. **Implement** - Follow documented patterns
+5. **Test** - Use testing guides
+6. **Update docs** - If behavior changes
 
-## Migrations & Changes
+### For Bug Fixes
+1. **Identify the component** - Find relevant guide
+2. **Review patterns** - Ensure fix follows conventions
+3. **Add tests** - Prevent regression
+4. **Update docs** - If behavior changes
 
-- **[Changes](changes.md)** - Changelog and breaking changes
-- **[Migration 2026-01-11 Calendar Events](MIGRATION_2026_01_11_CALENDAR_EVENTS.md)** - Calendar migration
-- **[Documentation Update Summary](DOCUMENTATION_UPDATE_SUMMARY.md)** - Documentation changes
+### For Refactoring
+1. **Read refactoring guides** - Controller, service, validation patterns
+2. **Profile tests** - Identify performance issues
+3. **Extract logic** - Follow Action class patterns
+4. **Test thoroughly** - Ensure no regressions
+5. **Update docs** - Document new patterns
 
-## Feature Comparisons
+## 🔗 Related Resources
 
-- **[SuiteCRM Features](suitecrm-features.md)** - Feature comparison with SuiteCRM
-- **[Knowledge Template Responses Filters Widgets](knowledge-template-responses-filters-widgets.md)** - Knowledge base features
+### Steering Rules (`.kiro/steering/`)
+Concise rules that reference these comprehensive guides:
+- `laravel-conventions.md` - Laravel coding standards
+- `filament-conventions.md` - Filament v4.3+ patterns
+- `testing-standards.md` - Testing requirements
+- `translations.md` - Translation conventions
+- `controller-refactoring.md` → `docs/controller-refactoring-guide.md`
+- `test-profiling.md` → `docs/test-profiling.md`
+- `laravel-sharelink.md` → `docs/laravel-sharelink-integration.md`
+- `localazy-integration.md` → `docs/localazy-github-actions-integration.md`
 
-## Video Resources
+### Main Documentation
+- **[AGENTS.md](../AGENTS.md)** - Repository guidelines and expectations
+- **[README.md](../README.md)** - Project overview and setup
 
-- **[WireLive Playlist](wirelive-playlist.md)** - Video tutorials and demos
+## 💡 Tips for Success
 
-## Documentation Standards
+### DO:
+- ✅ Always check `docs/` before implementing
+- ✅ Follow documented patterns exactly
+- ✅ Read comprehensive guides, not just steering rules
+- ✅ Update docs when behavior changes
+- ✅ Test using documented testing patterns
+- ✅ Reference docs in code comments when using complex patterns
 
-### Writing Guidelines
-- Use clear, concise language
-- Include code examples for all features
-- Provide both quick start and comprehensive guides
-- Link related documentation
-- Keep examples up-to-date with Laravel 12 and Filament v4.3+
+### DON'T:
+- ❌ Skip documentation and guess patterns
+- ❌ Implement without checking existing guides
+- ❌ Mix patterns from different guides inconsistently
+- ❌ Forget to update docs after changes
+- ❌ Ignore steering rules that reference docs
 
-### Code Examples
-- Use PHP 8.4 syntax
-- Follow PSR-12 standards
-- Include type declarations
-- Show both "before" and "after" for refactoring examples
-- Test all code examples
+## 🔄 Keeping Documentation Updated
 
-### Organization
-- Quick start guides for common tasks
-- Comprehensive guides for complex features
-- API references for packages
-- Performance guides for optimization
-- Migration guides for breaking changes
+When you change behavior:
+1. Update the comprehensive guide in `docs/`
+2. Update the steering rule in `.kiro/steering/` if needed
+3. Update `AGENTS.md` if it affects repository expectations
+4. Update this index if adding new guides
+5. Cross-reference related documents
 
-## Contributing to Documentation
+## 📞 Getting Help
 
-1. **Create new documentation** in `docs/` directory
-2. **Update this index** with new entries
-3. **Follow naming conventions**: kebab-case for filenames
-4. **Include frontmatter** if using special formatting
-5. **Cross-reference** related documentation
-6. **Test code examples** before committing
-7. **Run Rector** on code examples: `composer lint`
+If you can't find what you need:
+1. Check this index first
+2. Search `docs/` folder for keywords
+3. Check `.kiro/steering/` for conventions
+4. Review `AGENTS.md` for repository expectations
+5. Look at existing code for patterns
 
-## Getting Help
+---
 
-- Check relevant documentation first
-- Review `.kiro/steering/` for coding standards
-- See `AGENTS.md` for repository guidelines
-- Run `composer test` to verify changes
-- Use `composer lint` before committing
-
-## Quick Command Reference
-
-```bash
-# Code Quality
-composer lint                    # Run Rector + Pint
-composer test:refactor          # Check pending refactors
-composer test:types             # Run PHPStan
-
-# Testing
-composer test                   # Full test suite
-composer test:pest              # Run Pest tests
-composer test:coverage          # Coverage report
-
-# Development
-composer dev                    # Start dev environment
-composer install                # Install dependencies
-php artisan optimize:clear      # Clear caches
-```
-
-## Documentation Maintenance
-
-This index is automatically updated when new documentation is added. Last updated: 2025-01-11.
+**Last Updated**: December 2024  
+**Maintained By**: Development Team  
+**Purpose**: Minimize errors, ensure consistency, improve developer experience

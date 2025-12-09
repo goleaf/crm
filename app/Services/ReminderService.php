@@ -19,7 +19,7 @@ final class ReminderService
         Task $task,
         User $user,
         Carbon $remindAt,
-        string $channel = 'database'
+        string $channel = 'database',
     ): TaskReminder {
         // Check if a pending reminder already exists for this task/user/time
         $existing = TaskReminder::query()
@@ -106,12 +106,12 @@ final class ReminderService
     /**
      * Schedule reminders for a calendar event.
      *
-     * @param  array<int>  $userIds
+     * @param array<int> $userIds
      */
     public function scheduleCalendarEventReminders(
         CalendarEvent $event,
         array $userIds,
-        ?int $minutesBefore = null
+        ?int $minutesBefore = null,
     ): int {
         if ($event->start_at === null) {
             return 0;

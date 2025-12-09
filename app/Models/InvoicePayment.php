@@ -14,9 +14,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * @property float $amount
+ * @property float                $amount
  * @property InvoicePaymentStatus $status
- * @property Carbon|null $paid_at
+ * @property Carbon|null          $paid_at
  */
 #[ObservedBy(InvoicePaymentObserver::class)]
 final class InvoicePayment extends Model

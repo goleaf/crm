@@ -9,6 +9,10 @@
 .env
 .env.backup
 .env.production
+/lang/*.json
+/resources/lang/*.json
+/resources/lang/*.i18n.json
+/storage/app/auto-translations
 .phpactor.json
 .phpunit.result.cache
 /coverage-html/

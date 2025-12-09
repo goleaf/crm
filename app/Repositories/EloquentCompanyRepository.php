@@ -35,7 +35,7 @@ final class EloquentCompanyRepository implements CompanyRepositoryInterface
     }
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
      */
     public function create(array $data): Company
     {
@@ -43,7 +43,7 @@ final class EloquentCompanyRepository implements CompanyRepositoryInterface
     }
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
      */
     public function update(Company $company, array $data): Company
     {

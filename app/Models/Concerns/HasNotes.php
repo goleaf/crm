@@ -56,7 +56,7 @@ trait HasNotes
     /**
      * Sync notes for this model.
      *
-     * @param  array<int>|Note[]  $notes
+     * @param array<int>|Note[] $notes
      */
     public function syncNotes(array $notes): void
     {

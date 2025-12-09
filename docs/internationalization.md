@@ -222,7 +222,14 @@ php artisan vendor:publish --tag=filament-translations
 
 ## Middleware
 
-The `SetLocale` middleware automatically sets the application locale based on the user's session preference. It's registered in the Filament panel provider.
+The `SetLocale` middleware prefers the locale from the localized URL, falls back to the user's session, Accept-Language, then GeoGenius detection, and updates timezone config. It is used by the localization route group and Filament panel provider.
+
+## Localized Routes
+
+- Public routes are wrapped in `LaravelLocalization::setLocale()` with the `localeSessionRedirect`, `localizationRedirect`, and `localeViewPath` middleware in `routes/web.php`.
+- Slugs live in `lang/en|ru|lt|uk/routes.php` and are referenced with `LaravelLocalization::transRoute('routes.key')` so route names stay stable while paths can change per locale.
+- Configuration: `config/laravellocalization.php` (`hideDefaultLocaleInURL=true`, Accept-Language enabled, ignored system paths). See `docs/laravel-localization-integration.md` for the full setup.
+- Signed routes and OAuth callbacks stay outside the localization group to keep canonical URLs unchanged.
 
 ## Configuration
 

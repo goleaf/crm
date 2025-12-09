@@ -84,7 +84,7 @@ trait HasCustomFieldQueries
         string $tableName,
         string $entityType,
         string $fieldCode,
-        string $optionName
+        string $optionName,
     ) {
         return DB::table($tableName)
             ->leftJoin('custom_field_values as cfv', function ($join) use ($entityType, $tableName): void {
@@ -108,7 +108,7 @@ trait HasCustomFieldQueries
         string $tableName,
         string $entityType,
         string $fieldCode,
-        string $optionName
+        string $optionName,
     ): int {
         return $this->queryEntitiesByCustomFieldOption($tableName, $entityType, $fieldCode, $optionName)
             ->count();
@@ -120,7 +120,7 @@ trait HasCustomFieldQueries
     protected function countCompletedEntities(
         string $tableName,
         string $entityType,
-        string $fieldCode
+        string $fieldCode,
     ): int {
         $completionOptionIds = $this->getCompletionStatusOptionIds($entityType, $fieldCode);
 
@@ -135,7 +135,7 @@ trait HasCustomFieldQueries
     protected function countHighPriorityEntities(
         string $tableName,
         string $entityType,
-        string $fieldCode
+        string $fieldCode,
     ): int {
         $highPriorityOptionIds = $this->getHighPriorityOptionIds($entityType, $fieldCode);
 
@@ -145,7 +145,8 @@ trait HasCustomFieldQueries
     }
 
     /**
-     * @param  array<int, string>  $patterns
+     * @param array<int, string> $patterns
+     *
      * @return array<int, int>
      */
     private function getOptionIdsByPatterns(string $entityType, string $fieldCode, array $patterns): array
@@ -154,8 +155,8 @@ trait HasCustomFieldQueries
             ->join('custom_fields as cf', 'cfo.custom_field_id', '=', 'cf.id')
             ->where('cf.entity_type', $entityType)
             ->where('cf.code', $fieldCode)
-            ->where(fn (\Illuminate\Contracts\Database\Query\Builder $query) => collect($patterns)->each(fn ($pattern) => $query->orWhereRaw('LOWER(cfo.name) = ?', [strtolower($pattern)])
-            )
+            ->where(fn (\Illuminate\Contracts\Database\Query\Builder $query) => collect($patterns)->each(fn ($pattern) => $query->orWhereRaw('LOWER(cfo.name) = ?', [strtolower($pattern)]),
+            ),
             )
             ->pluck('cfo.id')
             ->toArray();
@@ -176,23 +177,23 @@ trait HasCustomFieldQueries
                 ->whereRaw('cf2.entity_type = cf.entity_type')
                 ->whereRaw('cf2.code = cf.code')
                 ->whereRaw('cf2.tenant_id = cf.tenant_id')
-                ->groupBy('cf2.tenant_id')
+                ->groupBy('cf2.tenant_id'),
             )
             ->pluck('cfo.id')
             ->toArray();
     }
 
     /**
-     * @param  array<int, int>  $optionIds
+     * @param array<int, int> $optionIds
      */
     private function countEntitiesWithOptionIds(string $tableName, string $entityType, string $fieldCode, array $optionIds): int
     {
         return DB::table($tableName)
             ->leftJoin('custom_field_values as cfv', fn ($join) => $join->on("{$tableName}.id", '=', 'cfv.entity_id')
-                ->where('cfv.entity_type', $entityType)
+                ->where('cfv.entity_type', $entityType),
             )
             ->leftJoin('custom_fields as cf', fn ($join) => $join->on('cfv.custom_field_id', '=', 'cf.id')
-                ->where('cf.code', $fieldCode)
+                ->where('cf.code', $fieldCode),
             )
             ->whereIn('cfv.integer_value', $optionIds)
             ->whereNull("{$tableName}.deleted_at")

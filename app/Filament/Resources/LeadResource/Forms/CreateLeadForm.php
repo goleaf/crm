@@ -9,8 +9,10 @@ use App\Enums\LeadGrade;
 use App\Enums\LeadNurtureStatus;
 use App\Enums\LeadSource;
 use App\Enums\LeadStatus;
+use App\Enums\LeadType;
 use Filament\Actions\Action;
 use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -61,6 +63,10 @@ final class CreateLeadForm
                             ->label(__('app.labels.website'))
                             ->url()
                             ->maxLength(255),
+                        Textarea::make('description')
+                            ->label(__('app.labels.description'))
+                            ->rows(4)
+                            ->columnSpanFull(),
                     ])
                     ->columns(4)
                     ->columnSpanFull(),
@@ -78,6 +84,19 @@ final class CreateLeadForm
                             ->default(LeadSource::WEBSITE)
                             ->native(false)
                             ->required(),
+                        Select::make('lead_type')
+                            ->label(__('app.labels.lead_type'))
+                            ->options(LeadType::options())
+                            ->native(false),
+                        TextInput::make('lead_value')
+                            ->label(__('app.labels.lead_value'))
+                            ->numeric()
+                            ->minValue(0)
+                            ->step(0.01)
+                            ->prefix('$'),
+                        DatePicker::make('expected_close_date')
+                            ->label(__('app.labels.expected_close_date'))
+                            ->native(false),
                         TextInput::make('score')
                             ->numeric()
                             ->default(0)
@@ -201,8 +220,8 @@ final class CreateLeadForm
                                 'name',
                                 modifyQueryUsing: fn (Builder $query): Builder => $query->when(
                                     Auth::user()?->currentTeam,
-                                    fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey())
-                                )
+                                    fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey()),
+                                ),
                             )
                             ->multiple()
                             ->searchable()
@@ -215,7 +234,7 @@ final class CreateLeadForm
                                 fn (array $data): array => [
                                     ...$data,
                                     'team_id' => Auth::user()?->currentTeam?->getKey(),
-                                ]
+                                ],
                             )),
                     ])
                     ->columnSpanFull()

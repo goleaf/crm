@@ -52,9 +52,9 @@ return new class extends Migration
                             'name' => $targetName,
                             'sort_order' => $sortOrder + 1,
                             'settings' => new CustomFieldOptionSettingsData(
-                                color: $colors[$targetName] ?? null
+                                color: $colors[$targetName] ?? null,
                             ),
-                        ])
+                        ]),
                     );
 
                     continue;
@@ -64,7 +64,7 @@ return new class extends Migration
                     'name' => $targetName,
                     'sort_order' => $sortOrder + 1,
                     'settings' => new CustomFieldOptionSettingsData(
-                        color: $colors[$targetName] ?? $option->settings->color
+                        color: $colors[$targetName] ?? $option->settings->color,
                     ),
                 ]);
             }
@@ -95,7 +95,7 @@ return new class extends Migration
     }
 
     /**
-     * @param  Collection<int, CustomFieldOption>  $options
+     * @param Collection<int, CustomFieldOption> $options
      */
     private function findMatchingOption(Collection $options, string $targetName): ?CustomFieldOption
     {

@@ -23,7 +23,7 @@ final class LeadConversionService
     /**
      * Convert a lead into downstream records inside a transaction.
      *
-     * @param  array<string, mixed>  $payload
+     * @param array<string, mixed> $payload
      */
     public function convert(Lead $lead, array $payload): LeadConversionResult
     {
@@ -54,7 +54,7 @@ final class LeadConversionService
             return new LeadConversionResult(
                 company: $company,
                 contact: $contact,
-                opportunity: $opportunity
+                opportunity: $opportunity,
             );
         });
     }
@@ -67,7 +67,7 @@ final class LeadConversionService
         ?Company $company,
         ?People $contact,
         ?Opportunity $opportunity,
-        ?User $user
+        ?User $user,
     ): void {
         Log::info('Lead converted', [
             'lead_id' => $lead->id,

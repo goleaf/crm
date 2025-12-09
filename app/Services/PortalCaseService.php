@@ -25,7 +25,7 @@ final readonly class PortalCaseService
     /**
      * Create a case from portal submission.
      *
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data
      */
     public function createFromPortal(array $data, People $contact, Team $team): SupportCase
     {

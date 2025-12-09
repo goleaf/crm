@@ -22,15 +22,16 @@ This project now ships with [laraveljutsu/zap](https://github.com/ludoguenet/lar
 - Controllers/Livewire actions wrap event create/update in DB transactions and surface `ScheduleConflictException`/`InvalidScheduleException` messages back to the user.
 
 ## Booking APIs
-- Bookable slots: `$service->bookableSlotsForDate($user, $date, $durationMinutes, $bufferMinutes)` and `$service->nextBookableSlot(...)` hydrate availability first, then defer to Zap’s slot engine.
+- Bookable slots: `$service->bookableSlotsForDate($user, $date, $durationMinutes = null, $bufferMinutes = null)` and `$service->nextBookableSlot(...)` hydrate availability first, then defer to Zap’s slot engine. When omitted, defaults resolve to `config('zap.time_slots.default_slot_duration_minutes')` and `config('zap.time_slots.buffer_minutes')`.
 - UI examples:
   - `resources/views/filament/pages/calendar.blade.php` renders Zap slots and the next available window.
   - `resources/views/calendar/index.blade.php` shows today’s slots and the next open time.
+  - Both UIs now rely on the config-driven defaults, so adjust `time_slots` values to change global slot length/buffer behavior.
 
 ## Testing
 - `tests/Unit/Services/ZapScheduleServiceTest.php` covers availability generation, event schedule syncing, and cleanup.
 - Feature tests assert calendar actions persist `zap_schedule_id` for created/updated events.
 
 ## Configuration notes
-- Tunables live in `config/zap.php` (no-overlap rules, buffers, validation guards). Adjust `default_rules`, `time_slots.buffer_minutes`, or `validation` thresholds if business hours or lead times change.
+- Tunables live in `config/zap.php` (no-overlap rules, buffers, validation guards). Adjust `default_rules`, `time_slots.default_slot_duration_minutes`, `time_slots.buffer_minutes`, or `validation` thresholds if business hours or lead times change.
 - Zap migrations are published under `database/migrations/2024_01_01_*`; keep them aligned with app migrations during upgrades.
