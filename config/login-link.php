@@ -45,11 +45,7 @@ return [
             '127.0.0.1',
         ],
         // Add app URL host if configured
-<<<<<<< HEAD
-        ($appUrl = config('app.url')) && ($host = parse_url((string) $appUrl, PHP_URL_HOST)) ? [$host] : [],
-=======
         ($appUrl = config('app.url')) && ($host = parse_url((string) $appUrl, PHP_URL_HOST)) ? [$host, 'app.'.$host] : [],
->>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
         // Add CRM domain if configured
         ($crmDomain = config('laravel-crm.routes.domain')) ? [$crmDomain, 'app.' . $crmDomain] : [],
         // Add custom hosts from env

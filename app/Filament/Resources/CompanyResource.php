@@ -448,11 +448,7 @@ final class CompanyResource extends Resource
                                     ->numeric()
                                     ->step(0.01)
                                     ->minValue(0)
-<<<<<<< HEAD
                                     ->prefix(fn (Get $get): string => ($get('currency_code') ?? config('company.default_currency', 'USD')) . ' '),
-=======
-                                    ->prefix(fn (Get $get): string => ($get('currency_code') ?? config('company.default_currency', 'USD')).' '),
->>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
                                 TextInput::make('employee_count')
                                     ->label('Employees')
                                     ->integer()
@@ -502,13 +498,8 @@ final class CompanyResource extends Resource
                                         'name',
                                         modifyQueryUsing: fn (Builder $query): Builder => $query->when(
                                             Auth::user()?->currentTeam,
-<<<<<<< HEAD
                                             fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey()),
                                         ),
-=======
-                                            fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey())
-                                        )
->>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
                                     )
                                     ->multiple()
                                     ->searchable()
@@ -561,11 +552,7 @@ final class CompanyResource extends Resource
                     ->counts('accountTeamMembers')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
-<<<<<<< HEAD
                     ->formatStateUsing(fn (int $state): string => $state . ' member' . ($state === 1 ? '' : 's')),
-=======
-                    ->formatStateUsing(fn (int $state): string => $state.' member'.($state === 1 ? '' : 's')),
->>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
                 TextColumn::make('ownership')
                     ->label('Ownership')
                     ->sortable()

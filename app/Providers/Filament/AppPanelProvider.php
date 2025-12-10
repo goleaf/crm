@@ -295,11 +295,7 @@ final class AppPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
-<<<<<<< HEAD
-                fn (): string => Blade::render('@env(\'local\')<x-login-link email="manuk.minasyan1@gmail.com" redirect-url="' . url('/') . '" />@endenv'),
-=======
                 fn (): string => Blade::render('@env(\'local\')<x-login-link email="manuk.minasyan1@gmail.com" :label="__(\'app.actions.developer_login\')" />@endenv'),
->>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
             )
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,

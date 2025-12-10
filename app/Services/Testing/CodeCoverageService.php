@@ -21,11 +21,7 @@ final readonly class CodeCoverageService
     public function __construct(
         private string $coverageDir = 'coverage-html',
         private string $cloverFile = 'coverage.xml',
-<<<<<<< HEAD
         private int $cacheTtl = 300,
-=======
-        private int $cacheTtl = 300
->>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
     ) {}
 
     /**

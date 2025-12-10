@@ -70,11 +70,7 @@ final class OCRDocumentResource extends Resource
                     }),
                 Tables\Columns\TextColumn::make('confidence_score')
                     ->label('Confidence')
-<<<<<<< HEAD
                     ->formatStateUsing(fn ($state): string => $state ? number_format($state * 100, 1) . '%' : '-')
-=======
-                    ->formatStateUsing(fn ($state): string => $state ? number_format($state * 100, 1).'%' : '-')
->>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
                     ->color(fn (OCRDocument $record) => $record->confidence_color),
             ])
             ->filters([

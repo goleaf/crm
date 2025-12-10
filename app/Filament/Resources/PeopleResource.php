@@ -145,11 +145,7 @@ final class PeopleResource extends Resource
                                     ->options(
                                         collect(config('contacts.roles', []))
                                             ->mapWithKeys(fn (string $role): array => [$role => $role])
-<<<<<<< HEAD
-                                            ->all(),
-=======
                                             ->all()
->>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
                                     )
                                     ->native(false)
                                     ->searchable()
@@ -188,11 +184,7 @@ final class PeopleResource extends Resource
                                 Select::make('type')
                                     ->label('Type')
                                     ->options(collect(ContactEmailType::cases())->mapWithKeys(
-<<<<<<< HEAD
-                                        fn (ContactEmailType $type): array => [$type->value => $type->label()],
-=======
                                         fn (ContactEmailType $type): array => [$type->value => $type->label()]
->>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
                                     ))
                                     ->default(ContactEmailType::Work)
                                     ->required()
