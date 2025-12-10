@@ -8,5 +8,5 @@ use Awcodes\Curator\Models\Media;
 
 final class CuratorMedia extends Media
 {
-    // Custom implementation if needed
+    protected $table = 'media';
 }

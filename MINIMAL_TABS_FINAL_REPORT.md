@@ -344,7 +344,7 @@ MinimalTabs::make('Settings')
 **Step 1**: Update Import
 ```php
 // Before
-use Filament\Forms\Components\Tabs;
+use Filament\Schemas\Components\Tabs;
 
 // After
 use App\Filament\Components\MinimalTabs;

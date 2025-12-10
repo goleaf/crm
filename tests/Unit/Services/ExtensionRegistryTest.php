@@ -293,4 +293,74 @@ final class ContextInspectorHandler
 
         return $context;
     }
+
+    public function test_register(): void
+    {
+        $this->markTestIncomplete('Test for register needs implementation');
+    }
+
+    public function test_activate(): void
+    {
+        $this->markTestIncomplete('Test for activate needs implementation');
+    }
+
+    public function test_deactivate(): void
+    {
+        $this->markTestIncomplete('Test for deactivate needs implementation');
+    }
+
+    public function test_disable(): void
+    {
+        $this->markTestIncomplete('Test for disable needs implementation');
+    }
+
+    public function test_get_hooks_for(): void
+    {
+        $this->markTestIncomplete('Test for getHooksFor needs implementation');
+    }
+
+    public function test_get_by_type(): void
+    {
+        $this->markTestIncomplete('Test for getByType needs implementation');
+    }
+
+    public function test_execute_hook(): void
+    {
+        $this->markTestIncomplete('Test for executeHook needs implementation');
+    }
+
+    public function test_execute_extension(): void
+    {
+        $this->markTestIncomplete('Test for executeExtension needs implementation');
+    }
+
+    public function test_check_permissions(): void
+    {
+        $this->markTestIncomplete('Test for checkPermissions needs implementation');
+    }
+
+    public function test_create_scoped_context(): void
+    {
+        $this->markTestIncomplete('Test for createScopedContext needs implementation');
+    }
+
+    public function test_execute_with_timeout(): void
+    {
+        $this->markTestIncomplete('Test for executeWithTimeout needs implementation');
+    }
+
+    public function test_validate_result(): void
+    {
+        $this->markTestIncomplete('Test for validateResult needs implementation');
+    }
+
+    public function test_log_execution(): void
+    {
+        $this->markTestIncomplete('Test for logExecution needs implementation');
+    }
+
+    public function test_get_statistics(): void
+    {
+        $this->markTestIncomplete('Test for getStatistics needs implementation');
+    }
 }

@@ -603,7 +603,6 @@ return [
         'download_html_report' => 'Download HTML Report',
         'download_xml_report' => 'Download XML Report',
         'run' => 'Run',
-<<<<<<< HEAD
         'copy_url' => 'Copy URL',
         'extend' => 'Extend',
         'revoke' => 'Revoke',
@@ -611,10 +610,8 @@ return [
         'view_statistics' => 'View Statistics',
         'close' => 'Close',
         'add_metadata' => 'Add Metadata',
-=======
         'login' => 'Login',
         'back_to_login' => 'Back to Login',
->>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
     ],
 
     'notifications' => [
@@ -700,12 +697,9 @@ return [
         'recurrence_end_date' => 'When should the recurring events stop?',
         'room_booking' => 'Conference room or meeting space',
         'video_conference_link' => 'Zoom, Teams, or other video meeting link',
-<<<<<<< HEAD
         'max_clicks' => 'Maximum number of times this link can be accessed. Leave empty for unlimited.',
         'sharelink_password' => 'Optional password to protect this link. Leave empty for no password protection.',
-=======
         'developer_login_select_user' => 'Select a user from the database to log in as.',
->>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
     ],
 
     'pail' => [

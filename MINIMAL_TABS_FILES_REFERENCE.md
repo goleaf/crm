@@ -370,7 +370,7 @@ public/build/manifest.json
 ### Component Dependencies
 ```
 MinimalTabs.php
-├── Extends: Filament\Forms\Components\Tabs
+├── Extends: Filament\Schemas\Components\Tabs
 ├── View: minimal-tabs.blade.php
 └── Styles: theme.css
 

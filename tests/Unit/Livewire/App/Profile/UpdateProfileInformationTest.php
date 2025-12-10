@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Livewire\\Profile;
+namespace Tests\Unit\Livewire\App\Profile;
 
 use App\Livewire\App\Profile\UpdateProfileInformation;
 use Tests\TestCase;

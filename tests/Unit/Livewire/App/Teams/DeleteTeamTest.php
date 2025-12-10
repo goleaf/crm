@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Livewire\\Teams;
+namespace Tests\Unit\Livewire\App\Teams;
 
 use App\Livewire\App\Teams\DeleteTeam;
 use Tests\TestCase;

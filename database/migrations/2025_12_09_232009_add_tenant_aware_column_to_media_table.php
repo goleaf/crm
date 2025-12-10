@@ -9,8 +9,10 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if(config('curator.is_tenant_aware')) {
-            Schema::table(app(config('curator.model'))->getTable(), function (Blueprint $table) {
+        $tableName = app(config('curator.model'))->getTable();
+        
+        if (config('curator.is_tenant_aware') && Schema::hasTable($tableName)) {
+            Schema::table($tableName, function (Blueprint $table) {
                 $table->integer(config('curator.tenant_ownership_relationship_name') . '_id')->nullable();
             });
         }

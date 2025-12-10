@@ -8,7 +8,6 @@ use App\Models\User;
 use App\Services\Task\TaskReminderService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
-use InvalidArgumentException;
 
 uses(RefreshDatabase::class);
 
@@ -499,7 +498,7 @@ describe('channel validation', function () {
         $remindAt = Carbon::now()->addDay();
 
         expect(fn () => $this->service->scheduleReminder($task, $remindAt, $user, 'invalid'))
-            ->toThrow(InvalidArgumentException::class, "Invalid channel 'invalid'");
+            ->toThrow(\InvalidArgumentException::class, "Invalid channel 'invalid'");
     });
 
     it('accepts all valid channels', function () {

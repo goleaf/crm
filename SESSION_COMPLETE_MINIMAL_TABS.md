@@ -185,7 +185,7 @@ Added keys:
 
 ### Architecture
 ```
-MinimalTabs (extends Filament\Forms\Components\Tabs)
+MinimalTabs (extends Filament\Schemas\Components\Tabs)
 ├── View: minimal-tabs.blade.php
 ├── State: Alpine.js
 ├── Styling: Tailwind CSS

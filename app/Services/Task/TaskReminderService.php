@@ -12,10 +12,22 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
+/**
+ * Service for managing task reminders and notifications.
+ *
+ * This service handles the creation, scheduling, and management of task reminders.
+ * It supports multiple notification channels and provides methods for canceling,
+ * rescheduling, and sending reminders.
+ *
+ * @package App\Services\Task
+ * @author Relaticle CRM Team
+ */
 final class TaskReminderService
 {
     /**
      * Valid notification channels for reminders.
+     *
+     * @var array<string>
      */
     private const VALID_CHANNELS = ['database', 'email', 'sms', 'slack'];
 
@@ -55,7 +67,10 @@ final class TaskReminderService
     /**
      * Send due reminders that are ready to be sent.
      *
-     * @return Collection<int, TaskReminder>
+     * Processes all pending reminders that have reached their scheduled time.
+     * Each reminder is sent via its configured notification channel and marked as sent.
+     *
+     * @return Collection<int, TaskReminder> Collection of reminders that were processed
      */
     public function sendDueReminders(): Collection
     {
@@ -120,7 +135,12 @@ final class TaskReminderService
     /**
      * Get pending reminders for a task.
      *
-     * @return Collection<int, TaskReminder>
+     * Returns all reminders that are scheduled but not yet sent or canceled,
+     * ordered by reminder time (earliest first).
+     *
+     * @param Task $task The task to get pending reminders for
+     *
+     * @return Collection<int, TaskReminder> Collection of pending reminders
      */
     public function getPendingReminders(Task $task): Collection
     {
@@ -136,7 +156,12 @@ final class TaskReminderService
     /**
      * Get all reminders for a task.
      *
-     * @return Collection<int, TaskReminder>
+     * Returns all reminders associated with a task regardless of status,
+     * ordered by reminder time (most recent first).
+     *
+     * @param Task $task The task to get reminders for
+     *
+     * @return Collection<int, TaskReminder> Collection of all reminders for the task
      */
     public function getTaskReminders(Task $task): Collection
     {

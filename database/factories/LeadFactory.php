@@ -9,11 +9,8 @@ use App\Enums\LeadGrade;
 use App\Enums\LeadNurtureStatus;
 use App\Enums\LeadSource;
 use App\Enums\LeadStatus;
-<<<<<<< HEAD
 use App\Enums\LeadType;
-=======
 use App\Models\Company;
->>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
 use App\Models\Lead;
 use App\Models\Team;
 use App\Models\User;

@@ -286,7 +286,7 @@ To migrate from standard Filament tabs to minimal tabs:
 1. Replace the import:
    ```php
    // Before
-   use Filament\Forms\Components\Tabs;
+   use Filament\Schemas\Components\Tabs;
    
    // After
    use App\Filament\Components\MinimalTabs;

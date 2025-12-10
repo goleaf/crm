@@ -203,7 +203,7 @@ Replace standard tabs with minimal tabs:
 
 ```php
 // Before
-use Filament\Forms\Components\Tabs;
+use Filament\Schemas\Components\Tabs;
 Tabs::make('Settings')
 
 // After

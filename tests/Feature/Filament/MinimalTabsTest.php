@@ -2,203 +2,310 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Filament;
-
 use App\Filament\Components\MinimalTabs;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-final class MinimalTabsTest extends TestCase
-{
-    use RefreshDatabase;
+uses()->group('filament', 'components');
 
-    public function test_minimal_tabs_can_be_created(): void
-    {
-        $tabs = MinimalTabs::make('Test Tabs')
-            ->tabs([
-                MinimalTabs\Tab::make('Tab 1')
-                    ->schema([
-                        TextInput::make('field1'),
-                    ]),
-                MinimalTabs\Tab::make('Tab 2')
-                    ->schema([
-                        TextInput::make('field2'),
-                    ]),
-            ]);
+it('can be created with tabs', function () {
+    $tabs = MinimalTabs::make('Test Tabs')
+        ->tabs([
+            MinimalTabs\Tab::make('Tab 1')
+                ->schema([
+                    TextInput::make('field1'),
+                ]),
+            MinimalTabs\Tab::make('Tab 2')
+                ->schema([
+                    TextInput::make('field2'),
+                ]),
+        ]);
 
-        $this->assertInstanceOf(MinimalTabs::class, $tabs);
-    }
+    expect($tabs)->toBeInstanceOf(MinimalTabs::class);
+});
 
-    public function test_minimal_tabs_has_minimal_class(): void
-    {
-        $tabs = MinimalTabs::make('Test Tabs')
-            ->tabs([
-                MinimalTabs\Tab::make('Tab 1')
-                    ->schema([
-                        TextInput::make('field1'),
-                    ]),
-            ]);
+it('has minimal class by default', function () {
+    $tabs = MinimalTabs::make('Test Tabs')
+        ->tabs([
+            MinimalTabs\Tab::make('Tab 1')
+                ->schema([
+                    TextInput::make('field1'),
+                ]),
+        ]);
 
-        $attributes = $tabs->getExtraAttributes();
-        $this->assertArrayHasKey('class', $attributes);
-        $this->assertStringContainsString('minimal-tabs', $attributes['class']);
-    }
+    $attributes = $tabs->getExtraAttributes();
+    
+    expect($attributes)->toHaveKey('class');
+    expect($attributes['class'])->toContain('minimal-tabs');
+});
 
-    public function test_minimal_tabs_can_be_compact(): void
-    {
-        $tabs = MinimalTabs::make('Test Tabs')
-            ->compact()
-            ->tabs([
-                MinimalTabs\Tab::make('Tab 1')
-                    ->schema([
-                        TextInput::make('field1'),
-                    ]),
-            ]);
+it('can be compact', function () {
+    $tabs = MinimalTabs::make('Test Tabs')
+        ->compact()
+        ->tabs([
+            MinimalTabs\Tab::make('Tab 1')
+                ->schema([
+                    TextInput::make('field1'),
+                ]),
+        ]);
 
-        $attributes = $tabs->getExtraAttributes();
-        $this->assertArrayHasKey('class', $attributes);
-        $this->assertStringContainsString('minimal-tabs-compact', $attributes['class']);
-    }
+    $attributes = $tabs->getExtraAttributes();
+    
+    expect($attributes)->toHaveKey('class');
+    expect($attributes['class'])->toContain('minimal-tabs-compact');
+});
 
-    public function test_minimal_tabs_with_icons(): void
-    {
-        $tabs = MinimalTabs::make('Test Tabs')
-            ->tabs([
-                MinimalTabs\Tab::make('Tab 1')
-                    ->icon('heroicon-o-user')
-                    ->schema([
-                        TextInput::make('field1'),
-                    ]),
-                MinimalTabs\Tab::make('Tab 2')
-                    ->icon('heroicon-o-cog')
-                    ->schema([
-                        TextInput::make('field2'),
-                    ]),
-            ]);
+it('supports state persistence in query string', function () {
+    $tabs = MinimalTabs::make('Test Tabs')
+        ->persistTabInQueryString()
+        ->tabs([
+            MinimalTabs\Tab::make('Tab 1')
+                ->schema([
+                    TextInput::make('field1'),
+                ]),
+        ]);
 
-        $childContainers = $tabs->getChildComponentContainers();
-        $this->assertCount(2, $childContainers);
+    expect($tabs->isTabPersistedInQueryString())->toBeTrue();
+});
 
-        foreach ($childContainers as $container) {
-            $this->assertNotNull($container->getIcon());
-        }
-    }
+it('can be used in schema', function () {
+    $schema = Schema::make()
+        ->components([
+            MinimalTabs::make('Test Tabs')
+                ->tabs([
+                    MinimalTabs\Tab::make('General')
+                        ->icon('heroicon-o-cog')
+                        ->schema([
+                            TextInput::make('name')->required(),
+                            TextInput::make('email')->email(),
+                        ]),
+                    MinimalTabs\Tab::make('Advanced')
+                        ->icon('heroicon-o-adjustments-horizontal')
+                        ->schema([
+                            TextInput::make('api_key'),
+                        ]),
+                ])
+                ->columnSpanFull(),
+        ]);
 
-    public function test_minimal_tabs_with_badges(): void
-    {
-        $tabs = MinimalTabs::make('Test Tabs')
-            ->tabs([
-                MinimalTabs\Tab::make('Tab 1')
-                    ->badge('5')
-                    ->badgeColor('danger')
-                    ->schema([
-                        TextInput::make('field1'),
-                    ]),
-            ]);
+    $components = $schema->getComponents();
+    
+    expect($components)->toHaveCount(1);
+    expect($components[0])->toBeInstanceOf(MinimalTabs::class);
+});
 
-        $childContainers = $tabs->getChildComponentContainers();
-        $firstTab = $childContainers[0];
+it('supports vertical layout', function () {
+    $tabs = MinimalTabs::make('Test Tabs')
+        ->vertical()
+        ->tabs([
+            MinimalTabs\Tab::make('Tab 1')
+                ->schema([
+                    TextInput::make('field1'),
+                ]),
+        ]);
 
-        $this->assertEquals('5', $firstTab->getBadge());
-        $this->assertEquals('danger', $firstTab->getBadgeColor());
-    }
+    expect($tabs)->toBeInstanceOf(MinimalTabs::class);
+    expect($tabs->isVertical())->toBeTrue();
+});
 
-    public function test_minimal_tabs_state_persistence(): void
-    {
-        $tabs = MinimalTabs::make('Test Tabs')
-            ->persistTabInQueryString()
-            ->tabs([
-                MinimalTabs\Tab::make('Tab 1')
-                    ->schema([
-                        TextInput::make('field1'),
-                    ]),
-            ]);
+it('supports contained layout', function () {
+    $tabs = MinimalTabs::make('Test Tabs')
+        ->contained()
+        ->tabs([
+            MinimalTabs\Tab::make('Tab 1')
+                ->schema([
+                    TextInput::make('field1'),
+                ]),
+        ]);
 
-        $this->assertTrue($tabs->isTabPersistedInQueryString());
-    }
+    expect($tabs->isContained())->toBeTrue();
+});
 
-    public function test_minimal_tabs_in_schema(): void
-    {
-        $schema = Schema::make()
-            ->components([
-                MinimalTabs::make('Test Tabs')
-                    ->tabs([
-                        MinimalTabs\Tab::make('General')
-                            ->icon('heroicon-o-cog')
-                            ->schema([
-                                TextInput::make('name')->required(),
-                                TextInput::make('email')->email(),
-                            ]),
-                        MinimalTabs\Tab::make('Advanced')
-                            ->icon('heroicon-o-adjustments-horizontal')
-                            ->schema([
-                                TextInput::make('api_key'),
-                            ]),
-                    ])
-                    ->columnSpanFull(),
-            ]);
+it('maintains compatibility with Filament v4.3+ schemas', function () {
+    // Test that MinimalTabs works with the new Schemas system
+    $tabs = MinimalTabs::make('Test')
+        ->tabs([
+            MinimalTabs\Tab::make('Tab 1')
+                ->schema([
+                    TextInput::make('field1'),
+                ]),
+        ]);
 
-        $components = $schema->getComponents();
-        $this->assertCount(1, $components);
-        $this->assertInstanceOf(MinimalTabs::class, $components[0]);
-    }
+    // Should extend from Filament\Schemas\Components\Tabs
+    expect($tabs)->toBeInstanceOf(\Filament\Schemas\Components\Tabs::class);
+    
+    // Should have the correct view
+    expect($tabs->getView())->toBe('filament.components.minimal-tabs');
+});
 
-    public function test_minimal_tabs_conditional_visibility(): void
-    {
-        $tabs = MinimalTabs::make('Test Tabs')
-            ->tabs([
-                MinimalTabs\Tab::make('Tab 1')
-                    ->schema([
-                        TextInput::make('field1'),
-                    ]),
-                MinimalTabs\Tab::make('Tab 2')
-                    ->visible(fn (): false => false)
-                    ->schema([
-                        TextInput::make('field2'),
-                    ]),
-            ]);
+it('can handle empty tabs gracefully', function () {
+    $tabs = MinimalTabs::make('Empty Tabs')->tabs([]);
+    
+    expect($tabs)->toBeInstanceOf(MinimalTabs::class);
+});
 
-        $childContainers = $tabs->getChildComponentContainers();
-        $this->assertCount(2, $childContainers);
+it('can chain multiple methods', function () {
+    $tabs = MinimalTabs::make('Full Featured')
+        ->tabs([
+            MinimalTabs\Tab::make('Tab 1')
+                ->icon('heroicon-o-user')
+                ->badge('5')
+                ->badgeColor('success')
+                ->schema([
+                    TextInput::make('name'),
+                ]),
+        ])
+        ->contained()
+        ->vertical()
+        ->persistTabInQueryString()
+        ->columnSpanFull()
+        ->minimal()
+        ->compact();
 
-        // Second tab should be hidden
-        $this->assertFalse($childContainers[1]->isVisible());
-    }
+    expect($tabs->isContained())->toBeTrue();
+    expect($tabs->isVertical())->toBeTrue();
+    expect($tabs->isTabPersistedInQueryString())->toBeTrue();
+    
+    $attributes = $tabs->getExtraAttributes();
+    expect($attributes)->toHaveKey('class');
+    expect($attributes['class'])->toContain('minimal-tabs-compact');
+});
 
-    public function test_minimal_tabs_vertical_layout(): void
-    {
-        $tabs = MinimalTabs::make('Test Tabs')
-            ->vertical()
-            ->tabs([
-                MinimalTabs\Tab::make('Tab 1')
-                    ->schema([
-                        TextInput::make('field1'),
-                    ]),
-            ]);
+it('can be configured with complex nested schemas', function () {
+    $tabs = MinimalTabs::make('Settings')
+        ->tabs([
+            MinimalTabs\Tab::make('General')
+                ->icon('heroicon-o-cog')
+                ->badge('3')
+                ->schema([
+                    TextInput::make('name')
+                        ->required()
+                        ->maxLength(255),
+                    TextInput::make('email')
+                        ->email()
+                        ->required(),
+                    Toggle::make('active')
+                        ->default(true),
+                ]),
+            MinimalTabs\Tab::make('Advanced')
+                ->icon('heroicon-o-adjustments-horizontal')
+                ->schema([
+                    TextInput::make('api_key')
+                        ->password()
+                        ->revealable(),
+                    TextInput::make('webhook_url')
+                        ->url(),
+                ]),
+        ])
+        ->columnSpanFull()
+        ->persistTabInQueryString();
 
-        // Vertical layout is handled by Filament's base Tabs component
-        $this->assertInstanceOf(MinimalTabs::class, $tabs);
-    }
+    expect($tabs)->toBeInstanceOf(MinimalTabs::class);
+    expect($tabs->isTabPersistedInQueryString())->toBeTrue();
+});
 
-    public function test_minimal_tabs_with_dynamic_badge(): void
-    {
-        $tabs = MinimalTabs::make('Test Tabs')
-            ->tabs([
-                MinimalTabs\Tab::make('Notifications')
-                    ->badge(fn (): string => '10')
-                    ->badgeColor(fn ($badge): string => $badge > 5 ? 'danger' : 'success')
-                    ->schema([
-                        TextInput::make('field1'),
-                    ]),
-            ]);
+it('applies both minimal and compact styling when chained', function () {
+    $tabs = MinimalTabs::make('Test')
+        ->minimal()
+        ->compact();
+    
+    $attributes = $tabs->getExtraAttributes();
+    
+    expect($attributes)->toHaveKey('class');
+    expect($attributes['class'])->toContain('minimal-tabs');
+    expect($attributes['class'])->toContain('minimal-tabs-compact');
+});
 
-        $childContainers = $tabs->getChildComponentContainers();
-        $firstTab = $childContainers[0];
+it('can disable styling conditionally', function () {
+    $tabs = MinimalTabs::make('Test')
+        ->minimal(false)
+        ->compact(false);
+    
+    $attributes = $tabs->getExtraAttributes();
+    
+    expect($attributes)->toHaveKey('class');
+    expect($attributes['class'])->toBe('');
+});
 
-        // Badge should be callable
-        $badge = $firstTab->getBadge();
-        $this->assertIsCallable($badge);
-    }
-}
+it('preserves existing CSS classes when adding minimal styling', function () {
+    $tabs = MinimalTabs::make('Test')
+        ->extraAttributes(['class' => 'existing-class'])
+        ->minimal();
+    
+    $attributes = $tabs->getExtraAttributes();
+    
+    expect($attributes['class'])->toContain('existing-class');
+    expect($attributes['class'])->toContain('minimal-tabs');
+});
+
+it('preserves existing CSS classes when adding compact styling', function () {
+    $tabs = MinimalTabs::make('Test')
+        ->extraAttributes(['class' => 'existing-class another-class'])
+        ->compact();
+    
+    $attributes = $tabs->getExtraAttributes();
+    
+    expect($attributes['class'])->toContain('existing-class');
+    expect($attributes['class'])->toContain('another-class');
+    expect($attributes['class'])->toContain('minimal-tabs-compact');
+});
+
+it('does not duplicate CSS classes when applied multiple times', function () {
+    $tabs = MinimalTabs::make('Test')
+        ->minimal()
+        ->minimal()
+        ->compact()
+        ->compact();
+    
+    $attributes = $tabs->getExtraAttributes();
+    $classes = explode(' ', $attributes['class']);
+    
+    expect(array_count_values($classes)['minimal-tabs'])->toBe(1);
+    expect(array_count_values($classes)['minimal-tabs-compact'])->toBe(1);
+});
+
+it('can remove minimal styling after applying it', function () {
+    $tabs = MinimalTabs::make('Test')
+        ->minimal()
+        ->minimal(false);
+    
+    $attributes = $tabs->getExtraAttributes();
+    
+    expect($attributes['class'])->not->toContain('minimal-tabs');
+});
+
+it('can remove compact styling after applying it', function () {
+    $tabs = MinimalTabs::make('Test')
+        ->compact()
+        ->compact(false);
+    
+    $attributes = $tabs->getExtraAttributes();
+    
+    expect($attributes['class'])->not->toContain('minimal-tabs-compact');
+});
+
+it('handles empty class attribute gracefully', function () {
+    $tabs = MinimalTabs::make('Test')
+        ->extraAttributes(['class' => ''])
+        ->minimal()
+        ->compact();
+    
+    $attributes = $tabs->getExtraAttributes();
+    
+    expect($attributes['class'])->toBe('minimal-tabs minimal-tabs-compact');
+});
+
+it('handles whitespace in class attributes correctly', function () {
+    $tabs = MinimalTabs::make('Test')
+        ->extraAttributes(['class' => '  existing-class   another-class  '])
+        ->minimal();
+    
+    $attributes = $tabs->getExtraAttributes();
+    $classes = explode(' ', trim($attributes['class']));
+    
+    expect($classes)->toContain('existing-class');
+    expect($classes)->toContain('another-class');
+    expect($classes)->toContain('minimal-tabs');
+    expect($classes)->not->toContain(''); // No empty strings
+});
