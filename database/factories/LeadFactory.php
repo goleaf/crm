@@ -9,7 +9,11 @@ use App\Enums\LeadGrade;
 use App\Enums\LeadNurtureStatus;
 use App\Enums\LeadSource;
 use App\Enums\LeadStatus;
+<<<<<<< HEAD
 use App\Enums\LeadType;
+=======
+use App\Models\Company;
+>>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
 use App\Models\Lead;
 use App\Models\Team;
 use App\Models\User;
@@ -26,8 +30,11 @@ final class LeadFactory extends Factory
     public function definition(): array
     {
         return [
-            'team_id' => Team::factory(),
-            'creator_id' => User::factory(),
+            // Use null defaults - caller should provide these to avoid cascading factory creation
+            'team_id' => null,
+            'creator_id' => null,
+            'company_id' => null,
+            'assigned_to_id' => null,
             'name' => $this->faker->name(),
             'job_title' => $this->faker->jobTitle(),
             'company_name' => $this->faker->company(),
@@ -48,6 +55,20 @@ final class LeadFactory extends Factory
             'territory' => $this->faker->state(),
             'last_activity_at' => now(),
         ];
+    }
+
+    /**
+     * Create with all related factories (for standalone tests).
+     * Use this when you need a fully populated Lead without providing relations.
+     */
+    public function withRelations(): static
+    {
+        return $this->state(fn (): array => [
+            'team_id' => Team::factory(),
+            'creator_id' => User::factory(),
+            'company_id' => Company::factory(),
+            'assigned_to_id' => User::factory(),
+        ]);
     }
 
     public function configure(): Factory

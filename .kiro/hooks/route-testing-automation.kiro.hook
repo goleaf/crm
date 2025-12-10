@@ -13,8 +13,13 @@
     ]
   },
   "then": {
+<<<<<<< HEAD
     "type": "askAgent",
     "prompt": "Route files have been modified. Please execute the route testing workflow:\n\n## 1. Analyze Changes\n- Review the modified files to identify:\n  - New routes added\n  - Existing routes modified\n  - Controllers or resources changed\n  - Middleware or authentication changes\n\n## 2. Run Route Tests\nExecute: `composer test:routes`\n\nThis verifies:\n- ✅ All public routes are accessible\n- ✅ Authenticated routes require proper authentication\n- ✅ API routes work with Sanctum tokens\n- ✅ Parametric routes handle model binding correctly\n- ✅ Redirect routes redirect as expected\n- ✅ No routes are broken by recent changes\n\n## 3. Test Coverage Check\nVerify coverage for:\n- Public Routes (home, terms, policy, security.txt)\n- Authenticated Routes (dashboard, calendar, notes)\n- API Routes (contacts, resources)\n- Filament Admin Routes\n- Calendar Routes\n- Guest Routes (login, register)\n\n## 4. Identify Issues\nCheck for:\n1. Missing tests for new routes ⚠️\n2. Broken route parameters 🔗\n3. Incorrect middleware configuration 🛡️\n4. Tenant scoping problems 🏢\n5. Authentication failures 🔐\n\n## 5. Update Configuration\nIf new routes detected:\n- Add to `RouteTestingConfig` in appropriate category\n- Create test cases in relevant test files\n- Update parametric route bindings if needed\n- Add to excluded routes if complex\n\n## 6. Provide Recommendations\nSuggest:\n- Which routes need new tests\n- Configuration updates required\n- Factory adjustments needed\n- Documentation updates\n\n## 7. Execute Tests\nRun the test suite and report:\n- Pass/fail status\n- Specific failures with details\n- Coverage gaps\n- Next steps for fixes\n\nProvide a comprehensive report with actionable recommendations."
+=======
+    "type": "runCommand",
+    "command": "composer test:routes"
+>>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
   },
   "workspaceFolderName": "crm",
   "shortName": "route-testing-automation"

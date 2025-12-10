@@ -32,6 +32,31 @@ Route::middleware('guest')->group(function (): void {
         ->middleware('throttle:10,1');
 });
 
+/*
+|--------------------------------------------------------------------------
+| Developer Login Routes (Local/Testing Only)
+|--------------------------------------------------------------------------
+|
+| These routes provide password-less authentication for development and
+| testing environments. They are conditionally registered and protected
+| by environment checks in both the route registration and controllers.
+|
+| Routes:
+| - GET /dev-login       - URL-based login (DeveloperLoginController)
+| - GET /dev-login-form  - Form-based login (Filament DeveloperLogin page)
+|
+| @see App\Http\Controllers\Auth\DeveloperLoginController
+| @see App\Filament\Pages\Auth\DeveloperLogin
+| @see docs/auth/developer-login.md
+|
+*/
+if (app()->environment(['local', 'testing'])) {
+    Route::get('/dev-login', \App\Http\Controllers\Auth\DeveloperLoginController::class)
+        ->name('dev.login');
+    Route::get('/dev-login-form', \App\Filament\Pages\Auth\DeveloperLogin::class)
+        ->name('dev.login.form');
+}
+
 Route::get('/.well-known/security.txt', SecurityTxtController::class)->name('security.txt');
 Route::get('/site.webmanifest', WebManifestController::class)->name('manifest');
 

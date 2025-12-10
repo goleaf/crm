@@ -562,6 +562,9 @@ return [
         'create' => 'Create',
         'save' => 'Save',
         'cancel' => 'Cancel',
+        'developer_login' => 'Developer Login',
+        'use_url_login' => 'Use URL-based login instead',
+        'login' => 'Login',
         'create_company' => 'Create Company',
         'add_condition' => 'Add Condition',
         'add_action' => 'Add Action',
@@ -600,6 +603,7 @@ return [
         'download_html_report' => 'Download HTML Report',
         'download_xml_report' => 'Download XML Report',
         'run' => 'Run',
+<<<<<<< HEAD
         'copy_url' => 'Copy URL',
         'extend' => 'Extend',
         'revoke' => 'Revoke',
@@ -607,6 +611,10 @@ return [
         'view_statistics' => 'View Statistics',
         'close' => 'Close',
         'add_metadata' => 'Add Metadata',
+=======
+        'login' => 'Login',
+        'back_to_login' => 'Back to Login',
+>>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
     ],
 
     'notifications' => [
@@ -692,8 +700,12 @@ return [
         'recurrence_end_date' => 'When should the recurring events stop?',
         'room_booking' => 'Conference room or meeting space',
         'video_conference_link' => 'Zoom, Teams, or other video meeting link',
+<<<<<<< HEAD
         'max_clicks' => 'Maximum number of times this link can be accessed. Leave empty for unlimited.',
         'sharelink_password' => 'Optional password to protect this link. Leave empty for no password protection.',
+=======
+        'developer_login_select_user' => 'Select a user from the database to log in as.',
+>>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
     ],
 
     'pail' => [
@@ -780,6 +792,11 @@ return [
         'run_coverage_to_generate' => 'Run coverage analysis to generate reports',
         'run_coverage_description' => 'Generate code coverage reports using PCOV',
         'view_html_report_description' => 'Open the HTML coverage report in your browser',
+        'developer_login_email_required' => 'Email parameter is required for developer login',
+        'developer_login_user_not_found' => 'User with email :email not found',
+        'developer_login_success' => 'Logged in as :name',
+        'developer_login_hint' => 'Local environment only - Quick login for development',
+        'developer_login_description' => 'Select a user to log in as for development purposes.',
     ],
 
     'placeholders' => [
@@ -788,6 +805,7 @@ return [
         'enter_text_to_test' => 'Enter text to test for profanity...',
         'search_photos' => 'Search for photos...',
         'search_unsplash' => 'Search Unsplash...',
+        'select_user' => 'Select a user...',
     ],
 
     'modals' => [
@@ -821,6 +839,7 @@ return [
         ],
         'code_coverage' => 'Code Coverage',
         'config_checker' => 'Config Checker',
+        'developer_login' => 'Developer Login',
     ],
 
     // Translation Management

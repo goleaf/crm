@@ -39,6 +39,11 @@ $app = Application::configure(basePath: dirname(__DIR__))
             SecurityHeaders::class,
         ]);
 
+        // Exclude login link route from CSRF verification
+        $middleware->validateCsrfTokens(except: [
+            'laravel-login-link-login',
+        ]);
+
         // Enable Laravel Precognition for API routes
         $middleware->api(prepend: [
             \Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class,

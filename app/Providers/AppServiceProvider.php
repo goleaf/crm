@@ -72,6 +72,9 @@ final class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Set the correct lang path (root lang/ directory instead of resources/lang/)
+        $this->app->useLangPath(base_path('lang'));
+
         $this->app->bind(\Filament\Auth\Http\Responses\Contracts\LoginResponse::class, LoginResponse::class);
         $this->app->bind(PeopleRepositoryInterface::class, EloquentPeopleRepository::class);
         $this->app->bind(CompanyRepositoryInterface::class, EloquentCompanyRepository::class);

@@ -60,7 +60,7 @@ test('property: private notes are only visible to creator', function (): void {
         $visibleToOther = Note::query()
             ->where('team_id', $this->team->id)
             ->where('id', $privateNote->id)
-            ->where(function ($query): void {
+            ->where(function (\Illuminate\Contracts\Database\Query\Builder $query): void {
                 $query->where('visibility', '!=', NoteVisibility::PRIVATE->value)
                     ->orWhere('creator_id', auth()->id());
             })
@@ -161,7 +161,7 @@ test('property: search results respect privacy for private notes', function (): 
         $creatorResults = Note::query()
             ->where('team_id', $this->team->id)
             ->where('title', 'like', "%{$searchTerm}%")
-            ->where(function ($query): void {
+            ->where(function (\Illuminate\Contracts\Database\Query\Builder $query): void {
                 $query->where('visibility', '!=', NoteVisibility::PRIVATE->value)
                     ->orWhere('creator_id', auth()->id());
             })
@@ -176,7 +176,7 @@ test('property: search results respect privacy for private notes', function (): 
         $otherResults = Note::query()
             ->where('team_id', $this->team->id)
             ->where('title', 'like', "%{$searchTerm}%")
-            ->where(function ($query): void {
+            ->where(function (\Illuminate\Contracts\Database\Query\Builder $query): void {
                 $query->where('visibility', '!=', NoteVisibility::PRIVATE->value)
                     ->orWhere('creator_id', auth()->id());
             })
@@ -291,7 +291,7 @@ test('property: visibility changes are immediately enforced', function (): void 
         $canSeeAfter = Note::query()
             ->where('team_id', $this->team->id)
             ->where('id', $note->id)
-            ->where(function ($query): void {
+            ->where(function (\Illuminate\Contracts\Database\Query\Builder $query): void {
                 $query->where('visibility', '!=', NoteVisibility::PRIVATE->value)
                     ->orWhere('creator_id', auth()->id());
             })
@@ -336,7 +336,7 @@ test('property: soft-deleted private notes respect privacy', function (): void {
         $otherCanSeeInTrash = Note::onlyTrashed()
             ->where('team_id', $this->team->id)
             ->where('id', $privateNote->id)
-            ->where(function ($query): void {
+            ->where(function (\Illuminate\Contracts\Database\Query\Builder $query): void {
                 $query->where('visibility', '!=', NoteVisibility::PRIVATE->value)
                     ->orWhere('creator_id', auth()->id());
             })

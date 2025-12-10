@@ -99,6 +99,7 @@
         "ziming/laravel-zxcvbn": "*"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.16",
         "chrisdicarlo/laravel-config-checker": "*",
         "cweagans/composer-patches": "*",
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",

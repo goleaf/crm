@@ -145,7 +145,11 @@ final class PeopleResource extends Resource
                                     ->options(
                                         collect(config('contacts.roles', []))
                                             ->mapWithKeys(fn (string $role): array => [$role => $role])
+<<<<<<< HEAD
                                             ->all(),
+=======
+                                            ->all()
+>>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
                                     )
                                     ->native(false)
                                     ->searchable()
@@ -184,7 +188,11 @@ final class PeopleResource extends Resource
                                 Select::make('type')
                                     ->label('Type')
                                     ->options(collect(ContactEmailType::cases())->mapWithKeys(
+<<<<<<< HEAD
                                         fn (ContactEmailType $type): array => [$type->value => $type->label()],
+=======
+                                        fn (ContactEmailType $type): array => [$type->value => $type->label()]
+>>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
                                     ))
                                     ->default(ContactEmailType::Work)
                                     ->required()
@@ -324,8 +332,13 @@ final class PeopleResource extends Resource
                                         'name',
                                         modifyQueryUsing: fn (Builder $query): Builder => $query->when(
                                             Auth::user()?->currentTeam,
+<<<<<<< HEAD
                                             fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey()),
                                         ),
+=======
+                                            fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey())
+                                        )
+>>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
                                     )
                                     ->multiple()
                                     ->searchable()
@@ -390,11 +403,14 @@ final class PeopleResource extends Resource
                 TextColumn::make('segments')
                     ->label('Segments')
                     ->formatStateUsing(fn (mixed $state): string => ArrayHelper::joinList($state) ?? '—')
+<<<<<<< HEAD
                     ->wrap()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('groups')
                     ->label(__('app.labels.groups'))
                     ->getStateUsing(fn (People $record): string => ArrayHelper::joinList($record->groups->pluck('name')) ?? '—')
+=======
+>>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
                     ->wrap()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('tags')
@@ -431,7 +447,11 @@ final class PeopleResource extends Resource
                     ->options(
                         collect(config('contacts.lead_sources', []))
                             ->mapWithKeys(fn (string $source): array => [$source => $source])
+<<<<<<< HEAD
                             ->all(),
+=======
+                            ->all()
+>>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
                     ),
                 SelectFilter::make('is_portal_user')
                     ->label('Portal User')
@@ -450,8 +470,13 @@ final class PeopleResource extends Resource
                         'name',
                         modifyQueryUsing: fn (Builder $query): Builder => $query->when(
                             Auth::user()?->currentTeam,
+<<<<<<< HEAD
                             fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey()),
                         ),
+=======
+                            fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey())
+                        )
+>>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
                     )
                     ->multiple()
                     ->preload(),

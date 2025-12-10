@@ -14,14 +14,32 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
+ * Factory for creating Account model instances.
+ *
+ * Generates realistic account data including company information,
+ * addresses (billing/shipping), social links, and custom fields.
+ * Automatically creates associated Team and User (owner) relationships.
+ *
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Account>
+ *
+ * @see \App\Models\Account
+ * @see \Tests\Unit\Factories\AccountFactoryTest
  */
 final class AccountFactory extends Factory
 {
     /**
      * Define the model's default state.
      *
-     * @return array<string, mixed>
+     * Generates a complete account with:
+     * - Company name and unique slug
+     * - Random account type and industry from enums
+     * - Financial data (annual revenue, employee count, currency)
+     * - Website and social media links
+     * - Billing and shipping addresses with US postal codes
+     * - Custom fields with rating
+     * - Associated team and owner relationships
+     *
+     * @return array<string, mixed> The default attribute values for the Account model
      */
     public function definition(): array
     {
@@ -49,14 +67,14 @@ final class AccountFactory extends Factory
                 'street' => fake()->streetAddress(),
                 'city' => fake()->city(),
                 'state' => fake()->stateAbbr(),
-                'postal_code' => fake()->numerify('#####'),
+                'postal_code' => (string) fake()->numberBetween(10000, 99999),
                 'country' => 'US',
             ],
             'shipping_address' => [
                 'street' => fake()->streetAddress(),
                 'city' => fake()->city(),
                 'state' => fake()->stateAbbr(),
-                'postal_code' => fake()->numerify('#####'),
+                'postal_code' => (string) fake()->numberBetween(10000, 99999),
                 'country' => 'US',
             ],
             'addresses' => [
@@ -65,7 +83,7 @@ final class AccountFactory extends Factory
                     'line1' => fake()->streetAddress(),
                     'city' => fake()->city(),
                     'state' => fake()->stateAbbr(),
-                    'postal_code' => fake()->numerify('#####'),
+                    'postal_code' => (string) fake()->numberBetween(10000, 99999),
                     'country_code' => 'US',
                 ],
                 [
@@ -73,7 +91,7 @@ final class AccountFactory extends Factory
                     'line1' => fake()->streetAddress(),
                     'city' => fake()->city(),
                     'state' => fake()->stateAbbr(),
-                    'postal_code' => fake()->numerify('#####'),
+                    'postal_code' => (string) fake()->numberBetween(10000, 99999),
                     'country_code' => 'US',
                 ],
             ],
@@ -84,6 +102,14 @@ final class AccountFactory extends Factory
         ];
     }
 
+    /**
+     * Configure the factory with after-creating callbacks.
+     *
+     * Ensures the account owner is properly attached to the account's team
+     * and sets the owner's current team if not already set.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Account>
+     */
     public function configure(): Factory
     {
         return $this->afterCreating(function (Account $account): void {

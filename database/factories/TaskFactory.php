@@ -23,9 +23,22 @@ final class TaskFactory extends Factory
             'title' => $this->faker->sentence(3),
             'created_at' => \Illuminate\Support\Facades\Date::now(),
             'updated_at' => \Illuminate\Support\Facades\Date::now(),
+            // Use null defaults - caller should provide these to avoid cascading factory creation
+            'team_id' => null,
+            'creator_id' => null,
+        ];
+    }
+
+    /**
+     * Create with all related factories (for standalone tests).
+     * Use this when you need a fully populated Task without providing relations.
+     */
+    public function withRelations(): static
+    {
+        return $this->state(fn (): array => [
             'team_id' => Team::factory(),
             'creator_id' => User::factory(),
-        ];
+        ]);
     }
 
     public function configure(): Factory

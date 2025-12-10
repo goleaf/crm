@@ -742,6 +742,99 @@ final class Task extends Model implements HasCustomFields
             ->first();
     }
 
+    /**
+     * Mark this task as a milestone.
+     */
+    public function markAsMilestone(): bool
+    {
+        return $this->update(['is_milestone' => true]);
+    }
+
+    /**
+     * Remove milestone status from this task.
+     */
+    public function unmarkAsMilestone(): bool
+    {
+        return $this->update(['is_milestone' => false]);
+    }
+
+    /**
+     * Check if this task is a milestone.
+     */
+    public function isMilestone(): bool
+    {
+        return $this->is_milestone === true;
+    }
+
+    /**
+     * Scope a query to only include milestone tasks.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<Task> $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder<Task>
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function milestones(Builder $query): Builder
+    {
+        return $query->where('is_milestone', true);
+    }
+
+    /**
+     * Scope a query to only include completed milestones.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<Task> $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder<Task>
+     */
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function completedMilestones(Builder $query): Builder
+    {
+        return $query->where('is_milestone', true)
+            ->whereHas('customFieldValues', function (Builder $builder): void {
+                $builder->where('custom_field_id', function (Builder $subQuery): void {
+                    $subQuery->select('id')
+                        ->from('custom_fields')
+                        ->where('code', \App\Enums\CustomFields\TaskField::STATUS->value)
+                        ->where('entity_type', self::class)
+                        ->limit(1);
+                })
+                    ->whereIn('integer_value', function (Builder $subQuery): void {
+                        $subQuery->select('id')
+                            ->from('custom_field_options')
+                            ->where('name', 'Completed');
+                    });
+            });
+    }
+
+    /**
+     * Get milestone completion status for a collection of tasks.
+     *
+     * @param \Illuminate\Support\Collection<int, Task> $tasks
+     *
+     * @return array{total: int, completed: int, percentage: float}
+     */
+    public static function getMilestoneCompletionStatus(\Illuminate\Support\Collection $tasks): array
+    {
+        $milestones = $tasks->filter(fn (Task $task): bool => $task->isMilestone());
+        $total = $milestones->count();
+
+        if ($total === 0) {
+            return [
+                'total' => 0,
+                'completed' => 0,
+                'percentage' => 0.0,
+            ];
+        }
+
+        $completed = $milestones->filter(fn (Task $task): bool => $task->isCompleted())->count();
+
+        return [
+            'total' => $total,
+            'completed' => $completed,
+            'percentage' => round(($completed / $total) * 100, 2),
+        ];
+    }
+
     private function optionLabelForField(string $code): ?string
     {
         $field = $this->resolveCustomField($code);

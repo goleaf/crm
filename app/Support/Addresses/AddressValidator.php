@@ -55,13 +55,21 @@ final class AddressValidator
     {
         $country = strtolower($countryCode ?? config('address.default_country', 'US'));
 
+        // Build postal code rules - only apply Postalcode validation for supported countries
+        $postalCodeRules = ['nullable', 'string', 'max:20'];
+        $supportedCountries = ['us', 'ca', 'gb', 'de', 'fr', 'au', 'nl', 'be', 'at', 'ch'];
+
+        if (in_array($country, $supportedCountries, true)) {
+            $postalCodeRules[] = new Postalcode([$country]);
+        }
+
         return [
             'type' => ['required', Rule::enum(AddressType::class)],
             'line1' => ['required', 'string', 'max:255', new CleanContent],
             'line2' => ['nullable', 'string', 'max:255', new CleanContent],
             'city' => ['nullable', 'string', 'max:255', new CleanContent],
             'state' => ['nullable', 'string', 'max:255', new CleanContent],
-            'postal_code' => ['nullable', 'string', 'max:20', new Postalcode([$country])],
+            'postal_code' => $postalCodeRules,
             'country_code' => ['required', 'string', 'size:2'],
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
