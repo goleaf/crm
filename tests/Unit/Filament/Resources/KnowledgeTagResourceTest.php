@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources;
 
-use App\Filament\Resources\KnowledgeTagResource;
 use Tests\TestCase;
 
-class KnowledgeTagResourceTest extends TestCase
-{
-}
+final class KnowledgeTagResourceTest extends TestCase {}

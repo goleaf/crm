@@ -12,7 +12,7 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 final class LanguageSwitcher extends Component
 {
-    private const LOCALE_FLAGS = [
+    private const array LOCALE_FLAGS = [
         'en' => '🇬🇧',
         'ru' => '🇷🇺',
         'lt' => '🇱🇹',

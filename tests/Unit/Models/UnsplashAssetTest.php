@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\UnsplashAsset;
 use Tests\TestCase;
 
-class UnsplashAssetTest extends TestCase
+final class UnsplashAssetTest extends TestCase
 {
-
     public function test_get_table(): void
     {
         $this->markTestIncomplete('Test for getTable needs implementation');

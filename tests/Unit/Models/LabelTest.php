@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\Label;
 use Tests\TestCase;
 
-class LabelTest extends TestCase
-{
-}
+final class LabelTest extends TestCase {}

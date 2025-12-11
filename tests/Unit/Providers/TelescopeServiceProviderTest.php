@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Providers;
 
-use App\Providers\TelescopeServiceProvider;
 use Tests\TestCase;
 
-class TelescopeServiceProviderTest extends TestCase
+final class TelescopeServiceProviderTest extends TestCase
 {
-
     public function test_register(): void
     {
         $this->markTestIncomplete('Test for register needs implementation');

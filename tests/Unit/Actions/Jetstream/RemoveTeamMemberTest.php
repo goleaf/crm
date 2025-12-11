@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Actions\Jetstream;
 
-use App\Actions\Jetstream\RemoveTeamMember;
 use Tests\TestCase;
 
-class RemoveTeamMemberTest extends TestCase
+final class RemoveTeamMemberTest extends TestCase
 {
-
     public function test_remove(): void
     {
         $this->markTestIncomplete('Test for remove needs implementation');

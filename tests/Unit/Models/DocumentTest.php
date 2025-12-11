@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\Document;
 use Tests\TestCase;
 
-class DocumentTest extends TestCase
+final class DocumentTest extends TestCase
 {
-
     public function test_template(): void
     {
         $this->markTestIncomplete('Test for template needs implementation');

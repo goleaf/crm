@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums;
 
-use App\Enums\AccountTeamAccessLevel;
 use Tests\TestCase;
 
-class AccountTeamAccessLevelTest extends TestCase
+final class AccountTeamAccessLevelTest extends TestCase
 {
-
     public function test_label(): void
     {
         $this->markTestIncomplete('Test for label needs implementation');

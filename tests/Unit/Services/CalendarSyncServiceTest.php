@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use App\Services\CalendarSyncService;
 use Tests\TestCase;
 
-class CalendarSyncServiceTest extends TestCase
+final class CalendarSyncServiceTest extends TestCase
 {
-
     public function test_sync_from_external(): void
     {
         $this->markTestIncomplete('Test for syncFromExternal needs implementation');

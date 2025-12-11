@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Livewire\App\Teams;
 
-use App\Livewire\App\Teams\TeamMembers;
 use Tests\TestCase;
 
-class TeamMembersTest extends TestCase
+final class TeamMembersTest extends TestCase
 {
-
     public function test_mount(): void
     {
         $this->markTestIncomplete('Test for mount needs implementation');

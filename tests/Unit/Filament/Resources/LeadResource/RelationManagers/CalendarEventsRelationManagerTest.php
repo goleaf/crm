@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\LeadResource\RelationManagers;
 
-use App\Filament\Resources\LeadResource\RelationManagers\CalendarEventsRelationManager;
 use Tests\TestCase;
 
-class CalendarEventsRelationManagerTest extends TestCase
+final class CalendarEventsRelationManagerTest extends TestCase
 {
-
     public function test_form(): void
     {
         $this->markTestIncomplete('Test for form needs implementation');

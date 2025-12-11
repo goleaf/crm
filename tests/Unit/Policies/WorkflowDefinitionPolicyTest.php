@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Policies;
 
-use App\Policies\WorkflowDefinitionPolicy;
 use Tests\TestCase;
 
-class WorkflowDefinitionPolicyTest extends TestCase
+final class WorkflowDefinitionPolicyTest extends TestCase
 {
-
     public function test_view_any(): void
     {
         $this->markTestIncomplete('Test for viewAny needs implementation');

@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\TaskResource\Forms;
 
-use App\Filament\Resources\TaskResource\Forms\TaskForm;
 use Tests\TestCase;
 
-class TaskFormTest extends TestCase
-{
-}
+final class TaskFormTest extends TestCase {}

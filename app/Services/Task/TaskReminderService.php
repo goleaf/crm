@@ -19,7 +19,6 @@ use InvalidArgumentException;
  * It supports multiple notification channels and provides methods for canceling,
  * rescheduling, and sending reminders.
  *
- * @package App\Services\Task
  * @author Relaticle CRM Team
  */
 final class TaskReminderService
@@ -29,15 +28,15 @@ final class TaskReminderService
      *
      * @var array<string>
      */
-    private const VALID_CHANNELS = ['database', 'email', 'sms', 'slack'];
+    private const array VALID_CHANNELS = ['database', 'email', 'sms', 'slack'];
 
     /**
      * Schedule a reminder for a task.
      *
-     * @param Task $task The task to set a reminder for
+     * @param Task   $task     The task to set a reminder for
      * @param Carbon $remindAt When to send the reminder
-     * @param User $user The user to remind
-     * @param string $channel The notification channel (database, email, sms, slack)
+     * @param User   $user     The user to remind
+     * @param string $channel  The notification channel (database, email, sms, slack)
      *
      * @return TaskReminder The created reminder
      *
@@ -47,11 +46,11 @@ final class TaskReminderService
         Task $task,
         Carbon $remindAt,
         User $user,
-        string $channel = 'database'
+        string $channel = 'database',
     ): TaskReminder {
         if (! in_array($channel, self::VALID_CHANNELS, true)) {
             throw new InvalidArgumentException(
-                "Invalid channel '{$channel}'. Must be one of: " . implode(', ', self::VALID_CHANNELS)
+                "Invalid channel '{$channel}'. Must be one of: " . implode(', ', self::VALID_CHANNELS),
             );
         }
 
@@ -100,16 +99,14 @@ final class TaskReminderService
      */
     public function cancelTaskReminders(Task $task): int
     {
-        return DB::transaction(function () use ($task) {
-            return TaskReminder::query()
-                ->where('task_id', $task->id)
-                ->whereNull('sent_at')
-                ->whereNull('canceled_at')
-                ->update([
-                    'canceled_at' => now(),
-                    'status' => 'canceled',
-                ]);
-        });
+        return DB::transaction(fn () => TaskReminder::query()
+            ->where('task_id', $task->id)
+            ->whereNull('sent_at')
+            ->whereNull('canceled_at')
+            ->update([
+                'canceled_at' => now(),
+                'status' => 'canceled',
+            ]));
     }
 
     /**
@@ -149,7 +146,7 @@ final class TaskReminderService
             ->where('status', 'pending')
             ->whereNull('sent_at')
             ->whereNull('canceled_at')
-            ->orderBy('remind_at')
+            ->oldest('remind_at')
             ->get();
     }
 
@@ -167,7 +164,7 @@ final class TaskReminderService
     {
         return TaskReminder::query()
             ->where('task_id', $task->id)
-            ->orderBy('remind_at', 'desc')
+            ->latest('remind_at')
             ->get();
     }
 
@@ -193,8 +190,8 @@ final class TaskReminderService
     /**
      * Reschedule a reminder to a new time.
      *
-     * @param TaskReminder $reminder The reminder to reschedule
-     * @param Carbon $newRemindAt The new reminder time
+     * @param TaskReminder $reminder    The reminder to reschedule
+     * @param Carbon       $newRemindAt The new reminder time
      *
      * @return bool True if rescheduled successfully, false if already sent/canceled
      */
@@ -232,4 +229,3 @@ final class TaskReminderService
         return in_array($channel, self::VALID_CHANNELS, true);
     }
 }
-

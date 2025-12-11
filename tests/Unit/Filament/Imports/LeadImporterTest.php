@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Imports;
 
-use App\Filament\Imports\LeadImporter;
 use Tests\TestCase;
 
-class LeadImporterTest extends TestCase
+final class LeadImporterTest extends TestCase
 {
-
     public function test_resolve_record(): void
     {
         $this->markTestIncomplete('Test for resolveRecord needs implementation');

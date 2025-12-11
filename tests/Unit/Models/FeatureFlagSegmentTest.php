@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\FeatureFlagSegment;
 use Tests\TestCase;
 
-class FeatureFlagSegmentTest extends TestCase
-{
-}
+final class FeatureFlagSegmentTest extends TestCase {}

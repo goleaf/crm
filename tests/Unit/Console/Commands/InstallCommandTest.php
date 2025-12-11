@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Console\Commands;
 
-use App\Console\Commands\InstallCommand;
 use Tests\TestCase;
 
-class InstallCommandTest extends TestCase
+final class InstallCommandTest extends TestCase
 {
-
     public function test_get_name(): void
     {
         $this->markTestIncomplete('Test for getName needs implementation');

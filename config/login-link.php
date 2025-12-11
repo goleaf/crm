@@ -16,11 +16,10 @@
  *
  * For signed URL authentication, use the custom dev.login route instead.
  *
- * @package    Relaticle\Config
  * @see        https://github.com/spatie/laravel-login-link
  * @see        docs/auth/developer-login.md
- *
  * @since      2025-12-08 Initial configuration
+ *
  * @updated    2025-12-08 Corrected middleware (removed 'signed' - not applicable to POST forms)
  */
 
@@ -45,7 +44,7 @@ return [
             '127.0.0.1',
         ],
         // Add app URL host if configured
-        ($appUrl = config('app.url')) && ($host = parse_url((string) $appUrl, PHP_URL_HOST)) ? [$host, 'app.'.$host] : [],
+        ($appUrl = config('app.url')) && ($host = parse_url((string) $appUrl, PHP_URL_HOST)) ? [$host, 'app.' . $host] : [],
         // Add CRM domain if configured
         ($crmDomain = config('laravel-crm.routes.domain')) ? [$crmDomain, 'app.' . $crmDomain] : [],
         // Add custom hosts from env

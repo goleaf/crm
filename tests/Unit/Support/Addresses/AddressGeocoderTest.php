@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Support\Addresses;
 
-use App\Support\Addresses\AddressGeocoder;
 use Tests\TestCase;
 
-class AddressGeocoderTest extends TestCase
+final class AddressGeocoderTest extends TestCase
 {
-
     public function test_geocode(): void
     {
         $this->markTestIncomplete('Test for geocode needs implementation');

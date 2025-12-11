@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Pages;
 
-use App\Filament\Pages\SecurityAudit;
 use Tests\TestCase;
 
-class SecurityAuditTest extends TestCase
+final class SecurityAuditTest extends TestCase
 {
-
     public function test_get_title(): void
     {
         $this->markTestIncomplete('Test for getTitle needs implementation');

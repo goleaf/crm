@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Support\Helpers;
 
-use App\Support\Helpers\FileHelper;
 use Tests\TestCase;
 
-class FileHelperTest extends TestCase
-{
-}
+final class FileHelperTest extends TestCase {}

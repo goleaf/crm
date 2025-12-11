@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Http\Controllers;
 
-use App\Http\Controllers\ContactController;
 use Tests\TestCase;
 
-class ContactControllerTest extends TestCase
+final class ContactControllerTest extends TestCase
 {
-
     public function test_index(): void
     {
         $this->markTestIncomplete('Test for index needs implementation');

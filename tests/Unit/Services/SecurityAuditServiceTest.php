@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use App\Services\SecurityAuditService;
 use Tests\TestCase;
 
-class SecurityAuditServiceTest extends TestCase
+final class SecurityAuditServiceTest extends TestCase
 {
-
     public function test_checks(): void
     {
         $this->markTestIncomplete('Test for checks needs implementation');

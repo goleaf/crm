@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Policies;
 
-use App\Policies\SettingPolicy;
 use Tests\TestCase;
 
-class SettingPolicyTest extends TestCase
+final class SettingPolicyTest extends TestCase
 {
-
     public function test_view_any(): void
     {
         $this->markTestIncomplete('Test for viewAny needs implementation');

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\Config;
 
-use App\Services\Config\ConfigCheckerService;
 use Tests\TestCase;
 
-class ConfigCheckerServiceTest extends TestCase
+final class ConfigCheckerServiceTest extends TestCase
 {
-
     public function test_check(): void
     {
         $this->markTestIncomplete('Test for check needs implementation');

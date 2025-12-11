@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Pages;
 
-use App\Filament\Pages\ProfanityFilterSettings;
 use Tests\TestCase;
 
-class ProfanityFilterSettingsTest extends TestCase
+final class ProfanityFilterSettingsTest extends TestCase
 {
-
     public function test_get_title(): void
     {
         $this->markTestIncomplete('Test for getTitle needs implementation');

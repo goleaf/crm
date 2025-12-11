@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\Example;
 
-use App\Services\Example\ExampleQueryService;
 use Tests\TestCase;
 
-class ExampleQueryServiceTest extends TestCase
+final class ExampleQueryServiceTest extends TestCase
 {
-
     public function test_get_contact_metrics(): void
     {
         $this->markTestIncomplete('Test for getContactMetrics needs implementation');

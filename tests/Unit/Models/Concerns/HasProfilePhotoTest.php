@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models\Concerns;
 
-use App\Models\Concerns\HasProfilePhoto;
 use Tests\TestCase;
 
-class HasProfilePhotoTest extends TestCase
+final class HasProfilePhotoTest extends TestCase
 {
-
     public function test_update_profile_photo(): void
     {
         $this->markTestIncomplete('Test for updateProfilePhoto needs implementation');

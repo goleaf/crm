@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Imports;
 
-use App\Filament\Imports\BaseImporter;
 use Tests\TestCase;
 
-class BaseImporterTest extends TestCase
-{
-}
+final class BaseImporterTest extends TestCase {}

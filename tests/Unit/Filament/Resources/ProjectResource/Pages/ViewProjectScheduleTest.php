@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\ProjectResource\Pages;
 
-use App\Filament\Resources\ProjectResource\Pages\ViewProjectSchedule;
 use Tests\TestCase;
 
-class ViewProjectScheduleTest extends TestCase
+final class ViewProjectScheduleTest extends TestCase
 {
-
     public function test_get_title(): void
     {
         $this->markTestIncomplete('Test for getTitle needs implementation');

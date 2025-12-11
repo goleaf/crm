@@ -428,9 +428,9 @@ return [
     */
     'ai' => [
         'enabled' => env('CRM_AI_ENABLED', false),
-        'provider' => env('CRM_AI_PROVIDER', 'openai'), // openai, anthropic
+        'provider' => env('CRM_AI_PROVIDER', 'anthropic'), // anthropic
         'api_key' => env('CRM_AI_API_KEY'),
-        'model' => env('CRM_AI_MODEL', 'gpt-4'),
+        'model' => env('CRM_AI_MODEL', 'claude-3-haiku-20240307'),
         'max_tokens' => env('CRM_AI_MAX_TOKENS', 500),
         'temperature' => env('CRM_AI_TEMPERATURE', 0.7),
     ],

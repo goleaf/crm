@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Support\ToastMagic;
 
-use App\Support\ToastMagic\ToastMagicNotifier;
 use Tests\TestCase;
 
-class ToastMagicNotifierTest extends TestCase
-{
-}
+final class ToastMagicNotifierTest extends TestCase {}

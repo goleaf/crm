@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use App\Services\DatabaseOptimizationService;
 use Tests\TestCase;
 
-class DatabaseOptimizationServiceTest extends TestCase
+final class DatabaseOptimizationServiceTest extends TestCase
 {
-
     public function test_status(): void
     {
         $this->markTestIncomplete('Test for status needs implementation');

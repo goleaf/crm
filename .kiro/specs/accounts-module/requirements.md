@@ -2,26 +2,45 @@
 
 ## Introduction
 
-The Accounts Module provides comprehensive management of company-specific information for organizations that the business interacts with. It serves as a central repository for organizational data, enabling relationship tracking, activity history, opportunity management, and custom data capture. The module ensures data integrity through duplicate detection and merging capabilities while providing a 360-degree view through integration with other system modules.
+The Accounts Module provides comprehensive management of both customer relationship accounts and financial accounting systems. It encompasses two primary areas: (1) Company Account Management for organizations that the business interacts with, serving as a central repository for relationship tracking, activity history, and opportunity management; and (2) Financial Account Management including chart of accounts, general ledger, journal entries, and multi-currency transaction processing. The module ensures data integrity through duplicate detection and merging capabilities while providing integrated financial reporting and audit trails across all accounting activities.
 
 ## Glossary
 
-- **Account**: An organization or company entity that the business interacts with
-- **System**: The CRM application (Relaticle)
-- **Contact**: A person (People entity) associated with an Account
-- **Activity History**: A chronological record of interactions, notes, and tasks related to an Account
-- **Opportunity**: A potential sales deal associated with an Account
-- **Custom Field**: A user-defined data field that extends the standard Account attributes
-- **Duplicate Detection**: The process of identifying potentially duplicate Account records
-- **Merging**: The process of combining two or more duplicate Account records into a single record
+### Customer Relationship Management Terms
+- **Company Account**: An organization or company entity that the business interacts with for relationship management
+- **Contact**: A person (People entity) associated with a Company Account
+- **Activity History**: A chronological record of interactions, notes, and tasks related to a Company Account
+- **Opportunity**: A potential sales deal associated with a Company Account
 - **Account Type**: A classification of the business relationship (Customer, Prospect, Partner, Competitor, Investor, Reseller)
-- **Account Team**: A group of users assigned to collaborate on an Account with defined roles and access levels
-- **Account Owner**: The primary user responsible for managing an Account
-- **Parent Account**: An Account that has one or more child Accounts in a hierarchical relationship
-- **Child Account**: An Account that belongs to a Parent Account in a hierarchical structure
-- **Currency Code**: The ISO currency code representing the Account's operating currency
-- **Social Media Profile**: A link to the Account's presence on social media platforms
-- **Document Attachment**: A file uploaded and associated with an Account record
+- **Account Team**: A group of users assigned to collaborate on a Company Account with defined roles and access levels
+- **Account Owner**: The primary user responsible for managing a Company Account
+- **Parent Account**: A Company Account that has one or more child accounts in a hierarchical relationship
+- **Child Account**: A Company Account that belongs to a Parent Account in a hierarchical structure
+
+### Financial Accounting Terms
+- **Chart of Accounts**: A structured list of all financial accounts used by the organization for recording transactions
+- **Financial Account**: A specific account in the chart of accounts (Assets, Liabilities, Equity, Revenue, Expenses)
+- **Account Code**: A unique identifier for each financial account, typically numeric or alphanumeric
+- **Account Category**: The classification of financial accounts (Current Assets, Fixed Assets, Current Liabilities, etc.)
+- **General Ledger**: The complete record of all financial transactions organized by account
+- **Journal Entry**: A record of a financial transaction with debits and credits that must balance
+- **Debit**: An entry that increases assets or expenses, or decreases liabilities, equity, or revenue
+- **Credit**: An entry that increases liabilities, equity, or revenue, or decreases assets or expenses
+- **Transaction**: A business event that has a monetary impact and requires recording in the accounting system
+- **Multi-Currency Transaction**: A financial transaction involving currencies other than the base currency
+- **Exchange Rate**: The rate at which one currency can be exchanged for another
+- **Base Currency**: The primary currency used for financial reporting and consolidation
+- **Fiscal Year**: The 12-month period used for financial reporting and budgeting
+- **Trial Balance**: A report showing all account balances to verify that debits equal credits
+- **Audit Trail**: A chronological record of all changes made to financial data for compliance and tracking
+
+### General Terms
+- **System**: The CRM application (Relaticle)
+- **Custom Field**: A user-defined data field that extends standard attributes
+- **Duplicate Detection**: The process of identifying potentially duplicate records
+- **Merging**: The process of combining duplicate records into a single record
+- **Currency Code**: The ISO currency code (USD, EUR, GBP, etc.)
+- **Document Attachment**: A file uploaded and associated with a record
 
 ## Requirements
 
@@ -216,3 +235,125 @@ The Accounts Module provides comprehensive management of company-specific inform
 3. THE System SHALL prevent circular relationships by validating that an account cannot be its own ancestor
 4. WHEN viewing a parent account THEN the System SHALL provide an option to view aggregated data from all child accounts
 5. THE System SHALL allow filtering and searching accounts by hierarchy level or parent account
+
+## Financial Accounting Requirements
+
+### Requirement 17
+
+**User Story:** As an accountant, I want to create and manage a chart of accounts, so that I can organize all financial accounts according to accounting standards and business needs.
+
+#### Acceptance Criteria
+
+1. WHEN a user creates a financial account THEN the System SHALL require an account code, name, and account category (Assets, Liabilities, Equity, Revenue, Expenses)
+2. WHEN a user creates a financial account THEN the System SHALL validate that the account code is unique within the chart of accounts
+3. THE System SHALL support hierarchical account structures with parent-child relationships for sub-accounts
+4. WHEN a user views the chart of accounts THEN the System SHALL display accounts organized by category with proper indentation for sub-accounts
+5. THE System SHALL prevent deletion of financial accounts that have transaction history
+
+### Requirement 18
+
+**User Story:** As a bookkeeper, I want to create journal entries, so that I can record financial transactions with proper debits and credits.
+
+#### Acceptance Criteria
+
+1. WHEN a user creates a journal entry THEN the System SHALL require a transaction date, description, and at least two line items
+2. WHEN a user adds line items to a journal entry THEN the System SHALL require an account, amount, and debit/credit designation
+3. WHEN a user saves a journal entry THEN the System SHALL validate that total debits equal total credits
+4. THE System SHALL automatically assign sequential journal entry numbers for audit trail purposes
+5. WHEN a journal entry is posted THEN the System SHALL update the general ledger balances for all affected accounts
+
+### Requirement 19
+
+**User Story:** As a financial manager, I want to process multi-currency transactions, so that I can accurately record international business activities.
+
+#### Acceptance Criteria
+
+1. WHEN a user creates a transaction in a foreign currency THEN the System SHALL require the transaction currency and exchange rate
+2. WHEN a user enters a foreign currency transaction THEN the System SHALL automatically calculate the base currency equivalent
+3. THE System SHALL store both the original currency amount and the base currency amount for each transaction
+4. WHEN displaying financial reports THEN the System SHALL show amounts in the base currency with original currency details available
+5. THE System SHALL support automatic exchange rate updates from external sources or manual rate entry
+
+### Requirement 20
+
+**User Story:** As an accountant, I want to view the general ledger, so that I can see all transactions for each account and verify account balances.
+
+#### Acceptance Criteria
+
+1. WHEN a user views the general ledger THEN the System SHALL display all transactions organized by account
+2. WHEN a user selects an account THEN the System SHALL show all journal entries affecting that account with running balance
+3. THE System SHALL display transaction details including date, description, journal entry number, debit/credit amounts, and balance
+4. WHEN a user filters the general ledger THEN the System SHALL support filtering by date range, account, or transaction type
+5. THE System SHALL calculate and display opening balance, period activity, and closing balance for each account
+
+### Requirement 21
+
+**User Story:** As a financial controller, I want to generate a trial balance, so that I can verify that all debits equal credits and prepare financial statements.
+
+#### Acceptance Criteria
+
+1. WHEN a user generates a trial balance THEN the System SHALL display all accounts with their debit or credit balances
+2. WHEN displaying the trial balance THEN the System SHALL calculate and show total debits and total credits
+3. THE System SHALL validate that total debits equal total credits and highlight any imbalances
+4. WHEN a user selects a date range THEN the System SHALL generate the trial balance for that specific period
+5. THE System SHALL support exporting the trial balance to Excel or PDF formats
+
+### Requirement 22
+
+**User Story:** As an auditor, I want to view comprehensive audit trails, so that I can track all changes made to financial data for compliance purposes.
+
+#### Acceptance Criteria
+
+1. WHEN a user modifies any financial data THEN the System SHALL record the change with timestamp, user, old value, and new value
+2. WHEN a user views audit trails THEN the System SHALL display all changes in chronological order with full details
+3. THE System SHALL track creation, modification, and deletion of journal entries, accounts, and transactions
+4. WHEN filtering audit trails THEN the System SHALL support filtering by user, date range, account, or change type
+5. THE System SHALL prevent modification or deletion of audit trail records to maintain data integrity
+
+### Requirement 23
+
+**User Story:** As a financial analyst, I want to integrate financial accounts with invoices and payments, so that I can automatically record revenue and cash transactions.
+
+#### Acceptance Criteria
+
+1. WHEN an invoice is created THEN the System SHALL automatically generate journal entries for accounts receivable and revenue
+2. WHEN a payment is received THEN the System SHALL automatically create journal entries for cash and accounts receivable
+3. THE System SHALL support mapping invoice line items to specific revenue accounts based on product or service categories
+4. WHEN processing payments THEN the System SHALL handle partial payments and payment allocations across multiple invoices
+5. THE System SHALL maintain links between invoices, payments, and their corresponding journal entries for traceability
+
+### Requirement 24
+
+**User Story:** As a CFO, I want to generate financial reports, so that I can analyze business performance and make informed decisions.
+
+#### Acceptance Criteria
+
+1. WHEN a user generates financial reports THEN the System SHALL support standard reports including Balance Sheet, Income Statement, and Cash Flow Statement
+2. WHEN displaying financial reports THEN the System SHALL allow selection of reporting periods (monthly, quarterly, yearly)
+3. THE System SHALL support comparative reporting showing current period versus previous periods
+4. WHEN generating reports THEN the System SHALL include drill-down capability to view underlying transactions
+5. THE System SHALL support exporting financial reports to Excel, PDF, and CSV formats
+
+### Requirement 25
+
+**User Story:** As an accounting manager, I want to configure fiscal years and accounting periods, so that I can align financial reporting with business cycles.
+
+#### Acceptance Criteria
+
+1. WHEN an administrator sets up fiscal years THEN the System SHALL allow definition of start and end dates for each fiscal year
+2. THE System SHALL support both calendar year and non-calendar year fiscal periods
+3. WHEN a fiscal period is closed THEN the System SHALL prevent posting new transactions to that period
+4. THE System SHALL support period-end closing procedures with automatic generation of closing entries
+5. WHEN opening a new fiscal year THEN the System SHALL carry forward account balances according to account types
+
+### Requirement 26
+
+**User Story:** As a compliance officer, I want to ensure data security and access controls, so that financial data is protected and access is properly managed.
+
+#### Acceptance Criteria
+
+1. WHEN a user accesses financial data THEN the System SHALL verify appropriate permissions based on user roles
+2. THE System SHALL support role-based access control with different permission levels (View, Create, Edit, Delete, Post)
+3. WHEN sensitive financial operations are performed THEN the System SHALL require additional authentication or approval
+4. THE System SHALL encrypt sensitive financial data both in transit and at rest
+5. THE System SHALL maintain session logs for all financial system access and activities

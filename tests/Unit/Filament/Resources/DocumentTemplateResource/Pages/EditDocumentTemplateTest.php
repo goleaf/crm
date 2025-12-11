@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\DocumentTemplateResource\Pages;
 
-use App\Filament\Resources\DocumentTemplateResource\Pages\EditDocumentTemplate;
 use Tests\TestCase;
 
-class EditDocumentTemplateTest extends TestCase
-{
-}
+final class EditDocumentTemplateTest extends TestCase {}

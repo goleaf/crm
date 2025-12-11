@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\Content;
 
-use App\Services\Content\ProfanityFilterService;
 use Tests\TestCase;
 
-class ProfanityFilterServiceTest extends TestCase
+final class ProfanityFilterServiceTest extends TestCase
 {
-
     public function test_has_profanity(): void
     {
         $this->markTestIncomplete('Test for hasProfanity needs implementation');

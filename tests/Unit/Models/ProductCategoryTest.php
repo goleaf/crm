@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\ProductCategory;
 use Tests\TestCase;
 
-class ProductCategoryTest extends TestCase
+final class ProductCategoryTest extends TestCase
 {
-
     public function test_products(): void
     {
         $this->markTestIncomplete('Test for products needs implementation');

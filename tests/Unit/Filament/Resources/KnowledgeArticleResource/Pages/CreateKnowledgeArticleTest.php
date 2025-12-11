@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\KnowledgeArticleResource\Pages;
 
-use App\Filament\Resources\KnowledgeArticleResource\Pages\CreateKnowledgeArticle;
 use Tests\TestCase;
 
-class CreateKnowledgeArticleTest extends TestCase
-{
-}
+final class CreateKnowledgeArticleTest extends TestCase {}

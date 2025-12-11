@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Support\Metrics;
 
-use App\Support\Metrics\EasyMetrics;
 use Tests\TestCase;
 
-class EasyMetricsTest extends TestCase
-{
-}
+final class EasyMetricsTest extends TestCase {}

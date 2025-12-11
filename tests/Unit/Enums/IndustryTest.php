@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums;
 
-use App\Enums\Industry;
 use Tests\TestCase;
 
-class IndustryTest extends TestCase
+final class IndustryTest extends TestCase
 {
-
     public function test_get_label(): void
     {
         $this->markTestIncomplete('Test for getLabel needs implementation');

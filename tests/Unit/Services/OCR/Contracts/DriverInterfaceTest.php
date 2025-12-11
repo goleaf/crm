@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\OCR\Contracts;
 
-use App\Services\OCR\Contracts\DriverInterface;
 use Tests\TestCase;
 
-class DriverInterfaceTest extends TestCase
+final class DriverInterfaceTest extends TestCase
 {
-
     public function test_extract(): void
     {
         $this->markTestIncomplete('Test for extract needs implementation');

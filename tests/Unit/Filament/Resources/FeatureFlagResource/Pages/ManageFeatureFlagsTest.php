@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\FeatureFlagResource\Pages;
 
-use App\Filament\Resources\FeatureFlagResource\Pages\ManageFeatureFlags;
 use Tests\TestCase;
 
-class ManageFeatureFlagsTest extends TestCase
+final class ManageFeatureFlagsTest extends TestCase
 {
-
     public function test_get_header_actions(): void
     {
         $this->markTestIncomplete('Test for getHeaderActions needs implementation');

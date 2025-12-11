@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources;
 
-use App\Filament\Resources\PeopleResource;
 use Tests\TestCase;
 
-class PeopleResourceTest extends TestCase
-{
-}
+final class PeopleResourceTest extends TestCase {}

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\Tag;
 use Tests\TestCase;
 
-class TagTest extends TestCase
+final class TagTest extends TestCase
 {
-
     public function test_leads(): void
     {
         $this->markTestIncomplete('Test for leads needs implementation');

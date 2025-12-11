@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Widgets;
 
-use App\Filament\Widgets\LeadTrendChart;
 use Tests\TestCase;
 
-class LeadTrendChartTest extends TestCase
-{
-}
+final class LeadTrendChartTest extends TestCase {}

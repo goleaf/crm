@@ -14,17 +14,17 @@ use Bag\Attributes\Validation\Str;
 use Bag\Bag;
 use Illuminate\Validation\Rules\Enum as EnumRule;
 
-readonly class ContactAddressBag extends Bag
+final readonly class ContactAddressBag extends Bag
 {
     public string $country_code;
 
     public function __construct(
         #[Enum(AddressType::class)]
-        public AddressType $type = AddressType::OTHER,
+        public AddressType $type,
         #[Required, Str, Min(2)]
         public string $line1,
         #[Str]
-        public ?string $line2 = null,
+        public ?string $line2,
         #[Required, Str, Min(2)]
         public string $city,
         #[Str]

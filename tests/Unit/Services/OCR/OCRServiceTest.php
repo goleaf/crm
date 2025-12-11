@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\OCR;
 
-use App\Services\OCR\OCRService;
 use Tests\TestCase;
 
-class OCRServiceTest extends TestCase
+final class OCRServiceTest extends TestCase
 {
-
     public function test_process(): void
     {
         $this->markTestIncomplete('Test for process needs implementation');

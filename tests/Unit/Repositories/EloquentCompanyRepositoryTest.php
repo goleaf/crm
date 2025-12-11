@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Repositories;
 
-use App\Repositories\EloquentCompanyRepository;
 use Tests\TestCase;
 
-class EloquentCompanyRepositoryTest extends TestCase
+final class EloquentCompanyRepositoryTest extends TestCase
 {
-
     public function test_find(): void
     {
         $this->markTestIncomplete('Test for find needs implementation');

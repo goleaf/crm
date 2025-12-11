@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Features;
 
-use App\Features\NewCalendarExperience;
 use Tests\TestCase;
 
-class NewCalendarExperienceTest extends TestCase
-{
-}
+final class NewCalendarExperienceTest extends TestCase {}

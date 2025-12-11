@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Widgets;
 
-use App\Filament\Widgets\ResourceStatusChart;
 use Tests\TestCase;
 
-class ResourceStatusChartTest extends TestCase
+final class ResourceStatusChartTest extends TestCase
 {
-
     public function test_get_heading(): void
     {
         $this->markTestIncomplete('Test for getHeading needs implementation');

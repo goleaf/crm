@@ -16,8 +16,8 @@ return [
     ],
 
     'ai' => [
-        'enabled' => env('OCR_AI_ENABLED', true),
-        'model' => env('OCR_AI_MODEL', 'gpt-4o'),
+        'enabled' => env('OCR_AI_ENABLED', false),
+        'model' => env('OCR_AI_MODEL', 'claude-3-haiku'),
     ],
 
     'upload' => [

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\KnowledgeTemplateResponseResource\Pages;
 
-use App\Filament\Resources\KnowledgeTemplateResponseResource\Pages\EditKnowledgeTemplateResponse;
 use Tests\TestCase;
 
-class EditKnowledgeTemplateResponseTest extends TestCase
+final class EditKnowledgeTemplateResponseTest extends TestCase
 {
-
     public function test_get_header_actions(): void
     {
         $this->markTestIncomplete('Test for getHeaderActions needs implementation');

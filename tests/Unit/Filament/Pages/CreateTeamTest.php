@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Pages;
 
-use App\Filament\Pages\CreateTeam;
 use Tests\TestCase;
 
-class CreateTeamTest extends TestCase
+final class CreateTeamTest extends TestCase
 {
-
     public function test_form(): void
     {
         $this->markTestIncomplete('Test for form needs implementation');

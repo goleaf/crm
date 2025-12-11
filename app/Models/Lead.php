@@ -18,7 +18,6 @@ use App\Models\Concerns\HasNotesAndNotables;
 use App\Models\Concerns\HasTags;
 use App\Models\Concerns\HasTaxonomies;
 use App\Models\Concerns\HasTeam;
-use App\Models\CalendarEvent;
 use App\Models\Concerns\LogsActivity;
 use App\Observers\LeadObserver;
 use Database\Factories\LeadFactory;
@@ -429,7 +428,7 @@ final class Lead extends Model implements HasCustomFields
 
     private function extractCustomFieldValue(?CustomField $field, ?Model $model): mixed
     {
-        if (!$field instanceof \Relaticle\CustomFields\Models\CustomField || !$model instanceof \Illuminate\Database\Eloquent\Model) {
+        if (! $field instanceof \Relaticle\CustomFields\Models\CustomField || ! $model instanceof \Illuminate\Database\Eloquent\Model) {
             return null;
         }
 
@@ -490,7 +489,7 @@ final class Lead extends Model implements HasCustomFields
         if (array_key_exists($cacheKey, self::$customFieldCache)) {
             $cached = self::$customFieldCache[$cacheKey];
 
-            if (!$cached instanceof \Relaticle\CustomFields\Models\CustomField) {
+            if (! $cached instanceof \Relaticle\CustomFields\Models\CustomField) {
                 return null;
             }
 

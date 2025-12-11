@@ -52,12 +52,16 @@ return new class extends Migration
             $table->string('shipping_state')->nullable()->after('shipping_city');
             $table->string('shipping_postal_code')->nullable()->after('shipping_state');
             $table->string('shipping_country')->nullable()->after('shipping_postal_code');
+
+            // Add index for hierarchy queries
+            $table->index('parent_company_id');
         });
     }
 
     public function down(): void
     {
         Schema::table('companies', function (Blueprint $table): void {
+            $table->dropIndex(['parent_company_id']);
             $table->dropConstrainedForeignId('parent_company_id');
 
             $table->dropColumn([

@@ -51,7 +51,7 @@ test('invalidates related summaries on save', function (): void {
     $lead->aiSummaries()->create([
         'team_id' => $this->team->id,
         'summary' => 'Test summary',
-        'model' => 'gpt-4',
+        'model' => 'claude-3-haiku',
     ]);
 
     $task = Task::factory()->create([
@@ -77,7 +77,7 @@ test('invalidates related summaries on delete', function (): void {
     $lead->aiSummaries()->create([
         'team_id' => $this->team->id,
         'summary' => 'Test summary',
-        'model' => 'gpt-4',
+        'model' => 'claude-3-haiku',
     ]);
 
     $task->delete();

@@ -278,18 +278,16 @@ final class ConsolidatedSeeder extends Seeder
         $taskId = (Task::max('id') ?? 0) + 1;
 
         // Helper to create task data
-        $createTaskData = function (int $index) use ($userIds, $now): array {
-            return [
-                'title' => fake()->sentence(3),
-                'team_id' => $this->team->id,
-                'creator_id' => $userIds[array_rand($userIds)],
-                'created_at' => $now->copy()->subMinutes($index),
-                'updated_at' => $now->copy()->subMinutes($index),
-            ];
-        };
+        $createTaskData = (fn (int $index): array => [
+            'title' => fake()->sentence(3),
+            'team_id' => $this->team->id,
+            'creator_id' => $userIds[array_rand($userIds)],
+            'created_at' => $now->copy()->subMinutes($index),
+            'updated_at' => $now->copy()->subMinutes($index),
+        ]);
 
         // Helper to add taskable and assignees
-        $addTaskRelations = function (int $taskId, string $taskableType, int $taskableId) use (&$taskables, &$taskAssignees, $userIds, $now): void {
+        $addTaskRelations = function (int $taskId, string $taskableType, int $taskableId) use (&$taskables, &$taskAssignees, $userIds): void {
             $taskables[] = [
                 'task_id' => $taskId,
                 'taskable_type' => $taskableType,
@@ -370,7 +368,7 @@ final class ConsolidatedSeeder extends Seeder
             DB::table('task_user')->insert($chunk);
         }
 
-        $this->command?->info('✓ Created '.count($tasks).' tasks with assignees');
+        $this->command?->info('✓ Created ' . count($tasks) . ' tasks with assignees');
     }
 
     public function seedNotes(): void
@@ -390,18 +388,16 @@ final class ConsolidatedSeeder extends Seeder
         $noteId = (Note::max('id') ?? 0) + 1;
 
         // Helper to create note data
-        $createNoteData = function (int $index) use ($userIds, $now): array {
-            return [
-                'title' => fake()->sentence(),
-                'team_id' => $this->team->id,
-                'creator_id' => $userIds[array_rand($userIds)],
-                'category' => \App\Enums\NoteCategory::GENERAL->value,
-                'visibility' => \App\Enums\NoteVisibility::INTERNAL->value,
-                'is_template' => false,
-                'created_at' => $now->copy()->subMinutes($index),
-                'updated_at' => $now->copy()->subMinutes($index),
-            ];
-        };
+        $createNoteData = (fn (int $index): array => [
+            'title' => fake()->sentence(),
+            'team_id' => $this->team->id,
+            'creator_id' => $userIds[array_rand($userIds)],
+            'category' => \App\Enums\NoteCategory::GENERAL->value,
+            'visibility' => \App\Enums\NoteVisibility::INTERNAL->value,
+            'is_template' => false,
+            'created_at' => $now->copy()->subMinutes($index),
+            'updated_at' => $now->copy()->subMinutes($index),
+        ]);
 
         $index = 0;
 
@@ -483,7 +479,7 @@ final class ConsolidatedSeeder extends Seeder
             DB::table('noteables')->insert($chunk);
         }
 
-        $this->command?->info('✓ Created '.count($notes).' notes');
+        $this->command?->info('✓ Created ' . count($notes) . ' notes');
     }
 
     public function seedInvoices(): void
@@ -505,7 +501,7 @@ final class ConsolidatedSeeder extends Seeder
 
         for ($i = 0; $i < 50; $i++) {
             $issueDate = $now->copy()->subDays(random_int(0, 90));
-            $invoiceNumber = 'INV-'.str_pad((string) ($invoiceId + $i), 6, '0', STR_PAD_LEFT);
+            $invoiceNumber = 'INV-' . str_pad((string) ($invoiceId + $i), 6, '0', STR_PAD_LEFT);
 
             $invoices[] = [
                 'team_id' => $this->team->id,
@@ -579,7 +575,7 @@ final class ConsolidatedSeeder extends Seeder
         }
 
         // Bulk insert payments
-        if (! empty($payments)) {
+        if ($payments !== []) {
             foreach (array_chunk($payments, 500) as $chunk) {
                 InvoicePayment::insert($chunk);
             }
@@ -608,7 +604,7 @@ final class ConsolidatedSeeder extends Seeder
 
         for ($i = 0; $i < 50; $i++) {
             $supportCases[] = [
-                'case_number' => 'CASE-'.strtoupper(\Illuminate\Support\Str::random(8)),
+                'case_number' => 'CASE-' . strtoupper(\Illuminate\Support\Str::random(8)),
                 'subject' => fake()->sentence(),
                 'description' => fake()->paragraph(),
                 'status' => fake()->randomElement(\App\Enums\CaseStatus::cases())->value,

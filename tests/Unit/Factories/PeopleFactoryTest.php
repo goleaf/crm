@@ -33,7 +33,7 @@ test('people factory generates valid postal code format', function (): void {
 
     // Postal code should be a 5-digit string
     expect($person->address_postal_code)->toBeString()
-        ->and(strlen($person->address_postal_code))->toBe(5)
+        ->and(strlen((string) $person->address_postal_code))->toBe(5)
         ->and((int) $person->address_postal_code)->toBeGreaterThanOrEqual(10000)
         ->and((int) $person->address_postal_code)->toBeLessThanOrEqual(99999);
 });

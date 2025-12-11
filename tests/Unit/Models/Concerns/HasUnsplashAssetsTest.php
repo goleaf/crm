@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models\Concerns;
 
-use App\Models\Concerns\HasUnsplashAssets;
 use Tests\TestCase;
 
-class HasUnsplashAssetsTest extends TestCase
+final class HasUnsplashAssetsTest extends TestCase
 {
-
     public function test_unsplash_assets(): void
     {
         $this->markTestIncomplete('Test for unsplashAssets needs implementation');

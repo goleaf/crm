@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models\Concerns;
 
-use App\Models\Concerns\LogsActivity;
 use Tests\TestCase;
 
-class LogsActivityTest extends TestCase
+final class LogsActivityTest extends TestCase
 {
-
     public function test_activities(): void
     {
         $this->markTestIncomplete('Test for activities needs implementation');

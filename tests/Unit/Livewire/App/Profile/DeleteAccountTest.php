@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Livewire\App\Profile;
 
-use App\Livewire\App\Profile\DeleteAccount;
 use Tests\TestCase;
 
-class DeleteAccountTest extends TestCase
+final class DeleteAccountTest extends TestCase
 {
-
     public function test_form(): void
     {
         $this->markTestIncomplete('Test for form needs implementation');

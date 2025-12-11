@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\ProcessExecution;
 use Tests\TestCase;
 
-class ProcessExecutionTest extends TestCase
+final class ProcessExecutionTest extends TestCase
 {
-
     public function test_casts(): void
     {
         $this->markTestIncomplete('Test for casts needs implementation');

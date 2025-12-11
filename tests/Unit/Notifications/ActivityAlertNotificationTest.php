@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Notifications;
 
-use App\Notifications\ActivityAlertNotification;
 use Tests\TestCase;
 
-class ActivityAlertNotificationTest extends TestCase
+final class ActivityAlertNotificationTest extends TestCase
 {
-
     public function test_via(): void
     {
         $this->markTestIncomplete('Test for via needs implementation');

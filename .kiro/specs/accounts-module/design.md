@@ -759,3 +759,651 @@ tests/
 3. **Audit Trail**: Log all merge operations with user ID and timestamp
 4. **Data Validation**: Sanitize all inputs to prevent injection attacks
 5. **Export Permissions**: Ensure users can only export accounts they have access to
+
+## Financial Accounting Architecture
+
+### High-Level Financial Architecture
+
+```mermaid
+graph TB
+    UI[Filament Financial UI]
+    ChartResource[Chart of Accounts Resource]
+    JournalResource[Journal Entry Resource]
+    LedgerResource[General Ledger Resource]
+    ReportResource[Financial Reports Resource]
+    
+    FinancialModels[Financial Models]
+    FinancialServices[Financial Services]
+    
+    UI --> ChartResource
+    UI --> JournalResource
+    UI --> LedgerResource
+    UI --> ReportResource
+    
+    ChartResource --> FinancialModels
+    JournalResource --> FinancialModels
+    LedgerResource --> FinancialModels
+    ReportResource --> FinancialModels
+    
+    ChartResource --> FinancialServices
+    JournalResource --> FinancialServices
+    LedgerResource --> FinancialServices
+    ReportResource --> FinancialServices
+    
+    subgraph FinancialModels
+        FinancialAccount[Financial Account]
+        JournalEntry[Journal Entry]
+        JournalEntryLine[Journal Entry Line]
+        GeneralLedger[General Ledger Entry]
+        FiscalYear[Fiscal Year]
+        ExchangeRate[Exchange Rate]
+        FinancialAuditLog[Financial Audit Log]
+    end
+    
+    subgraph FinancialServices
+        JournalService[Journal Entry Service]
+        LedgerService[General Ledger Service]
+        ReportService[Financial Report Service]
+        CurrencyService[Multi-Currency Service]
+        AuditService[Financial Audit Service]
+    end
+    
+    subgraph Integration
+        InvoiceModule[Invoice Module]
+        PaymentModule[Payment Module]
+    end
+    
+    FinancialServices --> Integration
+```
+
+### Financial Component Flow
+
+1. **Chart of Accounts Management**: Create and organize financial accounts in hierarchical structure
+2. **Journal Entry Processing**: Record transactions with automatic debit/credit validation
+3. **General Ledger Updates**: Automatically update account balances from journal entries
+4. **Multi-Currency Processing**: Handle foreign currency transactions with exchange rates
+5. **Financial Reporting**: Generate standard financial statements and custom reports
+6. **Audit Trail**: Comprehensive logging of all financial data changes
+7. **Integration**: Automatic journal entry generation from invoices and payments
+
+## Financial Components and Interfaces
+
+### 1. Financial Account Model
+
+**Purpose**: Represent accounts in the chart of accounts with hierarchical structure
+
+**Key Features**:
+- Unique account codes with validation
+- Account categories (Assets, Liabilities, Equity, Revenue, Expenses)
+- Parent-child relationships for sub-accounts
+- Balance tracking and calculation
+- Transaction history prevention for deletion
+
+**Interface**:
+```php
+class FinancialAccount extends Model
+{
+    use HasTeam, SoftDeletes, HasAuditTrail;
+    
+    // Account structure
+    public function parentAccount(): BelongsTo;
+    public function childAccounts(): HasMany;
+    public function wouldCreateCycle(?int $parentId): bool;
+    
+    // Balance and transactions
+    public function getCurrentBalance(): Money;
+    public function getBalanceAsOf(Carbon $date): Money;
+    public function hasTransactionHistory(): bool;
+    public function generalLedgerEntries(): HasMany;
+    
+    // Validation
+    public function isValidAccountCode(string $code): bool;
+    public function canBeDeleted(): bool;
+    
+    // Enums
+    public AccountCategory $category;
+    public AccountType $account_type;
+}
+```
+
+### 2. Journal Entry Model
+
+**Purpose**: Record financial transactions with double-entry bookkeeping
+
+**Key Features**:
+- Automatic sequential numbering
+- Debit/credit balance validation
+- Multi-currency support
+- Posting status management
+- Audit trail integration
+
+**Interface**:
+```php
+class JournalEntry extends Model
+{
+    use HasTeam, SoftDeletes, HasAuditTrail;
+    
+    // Relationships
+    public function journalEntryLines(): HasMany;
+    public function createdBy(): BelongsTo;
+    public function fiscalYear(): BelongsTo;
+    
+    // Validation and processing
+    public function isBalanced(): bool;
+    public function getTotalDebits(): Money;
+    public function getTotalCredits(): Money;
+    public function post(): bool;
+    public function reverse(): JournalEntry;
+    
+    // Status management
+    public function canBeEdited(): bool;
+    public function canBeDeleted(): bool;
+    
+    // Enums
+    public JournalEntryStatus $status;
+    public JournalEntryType $entry_type;
+}
+```
+
+### 3. Journal Entry Line Model
+
+**Purpose**: Individual debit/credit lines within journal entries
+
+**Interface**:
+```php
+class JournalEntryLine extends Model
+{
+    use HasTeam, HasAuditTrail;
+    
+    // Relationships
+    public function journalEntry(): BelongsTo;
+    public function financialAccount(): BelongsTo;
+    
+    // Currency handling
+    public function getAmountInBaseCurrency(): Money;
+    public function getExchangeRate(): ?float;
+    
+    // Validation
+    public function isDebit(): bool;
+    public function isCredit(): bool;
+    
+    // Enums
+    public DebitCreditType $debit_credit;
+}
+```
+
+### 4. General Ledger Entry Model
+
+**Purpose**: Maintain running balances for each financial account
+
+**Interface**:
+```php
+class GeneralLedgerEntry extends Model
+{
+    use HasTeam, HasAuditTrail;
+    
+    // Relationships
+    public function financialAccount(): BelongsTo;
+    public function journalEntry(): BelongsTo;
+    public function journalEntryLine(): BelongsTo;
+    
+    // Balance calculations
+    public function getRunningBalance(): Money;
+    public function updateRunningBalance(): void;
+    
+    // Currency handling
+    public function getAmountInBaseCurrency(): Money;
+    public function getOriginalCurrencyAmount(): Money;
+}
+```
+
+### 5. Journal Entry Service
+
+**Purpose**: Handle complex journal entry operations and validation
+
+**Responsibilities**:
+- Validate debit/credit balance
+- Generate sequential entry numbers
+- Post entries to general ledger
+- Handle multi-currency calculations
+- Create automatic entries from invoices/payments
+
+**Interface**:
+```php
+class JournalEntryService
+{
+    public function createEntry(array $data): JournalEntry;
+    public function validateBalance(array $lines): bool;
+    public function postEntry(JournalEntry $entry): bool;
+    public function reverseEntry(JournalEntry $entry): JournalEntry;
+    public function createFromInvoice(Invoice $invoice): JournalEntry;
+    public function createFromPayment(Payment $payment): JournalEntry;
+    public function getNextEntryNumber(): string;
+}
+```
+
+### 6. General Ledger Service
+
+**Purpose**: Manage general ledger operations and balance calculations
+
+**Interface**:
+```php
+class GeneralLedgerService
+{
+    public function updateAccountBalance(FinancialAccount $account, JournalEntryLine $line): void;
+    public function getAccountBalance(FinancialAccount $account, ?Carbon $asOfDate = null): Money;
+    public function getTrialBalance(?Carbon $asOfDate = null): Collection;
+    public function getAccountActivity(FinancialAccount $account, Carbon $from, Carbon $to): Collection;
+}
+```
+
+### 7. Financial Report Service
+
+**Purpose**: Generate standard financial reports and statements
+
+**Interface**:
+```php
+class FinancialReportService
+{
+    public function generateBalanceSheet(Carbon $asOfDate): array;
+    public function generateIncomeStatement(Carbon $from, Carbon $to): array;
+    public function generateCashFlowStatement(Carbon $from, Carbon $to): array;
+    public function generateTrialBalance(?Carbon $asOfDate = null): array;
+    public function generateComparativeReport(string $reportType, array $periods): array;
+}
+```
+
+### 8. Multi-Currency Service
+
+**Purpose**: Handle foreign currency transactions and conversions
+
+**Interface**:
+```php
+class MultiCurrencyService
+{
+    public function convertAmount(Money $amount, string $toCurrency, ?Carbon $date = null): Money;
+    public function getExchangeRate(string $fromCurrency, string $toCurrency, Carbon $date): float;
+    public function updateExchangeRates(): void;
+    public function getBaseCurrency(): string;
+}
+```
+
+## Financial Data Models
+
+### Financial Account Schema
+
+```php
+Schema::create('financial_accounts', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('team_id')->constrained()->cascadeOnDelete();
+    $table->string('account_code')->unique();
+    $table->string('name');
+    $table->string('category'); // Assets, Liabilities, Equity, Revenue, Expenses
+    $table->string('account_type'); // Current Assets, Fixed Assets, etc.
+    $table->text('description')->nullable();
+    $table->foreignId('parent_account_id')->nullable()->constrained('financial_accounts');
+    $table->boolean('is_active')->default(true);
+    $table->decimal('opening_balance', 15, 2)->default(0);
+    $table->string('currency_code', 3)->default('USD');
+    $table->timestamps();
+    $table->softDeletes();
+    
+    $table->index(['team_id', 'category']);
+    $table->index(['team_id', 'account_code']);
+    $table->index('parent_account_id');
+});
+```
+
+### Journal Entry Schema
+
+```php
+Schema::create('journal_entries', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('team_id')->constrained()->cascadeOnDelete();
+    $table->string('entry_number')->unique();
+    $table->date('transaction_date');
+    $table->string('description');
+    $table->string('reference')->nullable();
+    $table->string('status')->default('draft'); // draft, posted, reversed
+    $table->string('entry_type')->default('manual'); // manual, automatic, adjustment
+    $table->foreignId('created_by')->constrained('users');
+    $table->foreignId('posted_by')->nullable()->constrained('users');
+    $table->timestamp('posted_at')->nullable();
+    $table->foreignId('fiscal_year_id')->constrained();
+    $table->timestamps();
+    $table->softDeletes();
+    
+    $table->index(['team_id', 'transaction_date']);
+    $table->index(['team_id', 'status']);
+    $table->index('entry_number');
+});
+```
+
+### Journal Entry Lines Schema
+
+```php
+Schema::create('journal_entry_lines', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('team_id')->constrained()->cascadeOnDelete();
+    $table->foreignId('journal_entry_id')->constrained()->cascadeOnDelete();
+    $table->foreignId('financial_account_id')->constrained();
+    $table->string('description');
+    $table->string('debit_credit'); // debit, credit
+    $table->decimal('amount', 15, 2);
+    $table->string('currency_code', 3)->default('USD');
+    $table->decimal('exchange_rate', 10, 6)->default(1.000000);
+    $table->decimal('base_currency_amount', 15, 2);
+    $table->timestamps();
+    
+    $table->index(['journal_entry_id', 'financial_account_id']);
+    $table->index(['team_id', 'financial_account_id']);
+});
+```
+
+### General Ledger Entries Schema
+
+```php
+Schema::create('general_ledger_entries', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('team_id')->constrained()->cascadeOnDelete();
+    $table->foreignId('financial_account_id')->constrained();
+    $table->foreignId('journal_entry_id')->constrained();
+    $table->foreignId('journal_entry_line_id')->constrained();
+    $table->date('transaction_date');
+    $table->string('description');
+    $table->string('debit_credit');
+    $table->decimal('amount', 15, 2);
+    $table->string('currency_code', 3);
+    $table->decimal('base_currency_amount', 15, 2);
+    $table->decimal('running_balance', 15, 2);
+    $table->timestamps();
+    
+    $table->index(['financial_account_id', 'transaction_date']);
+    $table->index(['team_id', 'transaction_date']);
+});
+```
+
+### Exchange Rates Schema
+
+```php
+Schema::create('exchange_rates', function (Blueprint $table) {
+    $table->id();
+    $table->string('from_currency', 3);
+    $table->string('to_currency', 3);
+    $table->date('rate_date');
+    $table->decimal('rate', 10, 6);
+    $table->string('source')->default('manual'); // manual, api, bank
+    $table->timestamps();
+    
+    $table->unique(['from_currency', 'to_currency', 'rate_date']);
+    $table->index(['from_currency', 'to_currency']);
+});
+```
+
+### Fiscal Years Schema
+
+```php
+Schema::create('fiscal_years', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('team_id')->constrained()->cascadeOnDelete();
+    $table->string('name'); // "FY 2024", "2024-2025", etc.
+    $table->date('start_date');
+    $table->date('end_date');
+    $table->boolean('is_closed')->default(false);
+    $table->timestamps();
+    
+    $table->index(['team_id', 'start_date']);
+});
+```
+
+### Financial Audit Log Schema
+
+```php
+Schema::create('financial_audit_logs', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('team_id')->constrained()->cascadeOnDelete();
+    $table->string('auditable_type'); // Model class name
+    $table->unsignedBigInteger('auditable_id'); // Model ID
+    $table->string('event'); // created, updated, deleted
+    $table->json('old_values')->nullable();
+    $table->json('new_values')->nullable();
+    $table->foreignId('user_id')->constrained();
+    $table->string('ip_address')->nullable();
+    $table->string('user_agent')->nullable();
+    $table->timestamps();
+    
+    $table->index(['auditable_type', 'auditable_id']);
+    $table->index(['team_id', 'created_at']);
+    $table->index(['user_id', 'created_at']);
+});
+```
+
+## Financial Correctness Properties
+
+Based on the prework analysis, here are the correctness properties for the financial accounting functionality:
+
+**Property 39: Financial account creation with required fields**
+*For any* financial account data with account code, name, and category, creating the account should result in a persisted record with all required fields validated and stored correctly.
+**Validates: Requirements 17.1**
+
+**Property 40: Account code uniqueness**
+*For any* financial account with an account code, attempting to create another account with the same code should fail validation while unique codes should be accepted.
+**Validates: Requirements 17.2**
+
+**Property 41: Financial account hierarchy**
+*For any* parent financial account and child account, creating the parent-child relationship should result in a queryable hierarchy that prevents circular references.
+**Validates: Requirements 17.3**
+
+**Property 42: Chart of accounts organization**
+*For any* set of financial accounts with categories and parent-child relationships, retrieving the chart of accounts should return accounts organized by category with proper hierarchical structure.
+**Validates: Requirements 17.4**
+
+**Property 43: Account deletion protection**
+*For any* financial account with transaction history, attempting to delete the account should be prevented while accounts without history should be deletable.
+**Validates: Requirements 17.5**
+
+**Property 44: Journal entry validation**
+*For any* journal entry data, creating an entry should require transaction date, description, and at least two line items, failing validation when any are missing.
+**Validates: Requirements 18.1**
+
+**Property 45: Journal entry line validation**
+*For any* journal entry line, creating the line should require account, amount, and debit/credit designation, failing validation when any are missing.
+**Validates: Requirements 18.2**
+
+**Property 46: Double-entry balance validation**
+*For any* journal entry with line items, saving the entry should validate that total debits equal total credits, rejecting unbalanced entries.
+**Validates: Requirements 18.3**
+
+**Property 47: Sequential journal entry numbering**
+*For any* sequence of journal entries created, each entry should receive a unique sequential number that maintains audit trail order.
+**Validates: Requirements 18.4**
+
+**Property 48: General ledger balance updates**
+*For any* posted journal entry with line items, the general ledger balances for all affected accounts should be updated to reflect the transaction amounts.
+**Validates: Requirements 18.5**
+
+**Property 49: Multi-currency transaction validation**
+*For any* foreign currency transaction, creating the transaction should require currency code and exchange rate, failing validation when either is missing.
+**Validates: Requirements 19.1**
+
+**Property 50: Currency conversion calculation**
+*For any* foreign currency transaction with known exchange rate, the system should automatically calculate the correct base currency equivalent amount.
+**Validates: Requirements 19.2**
+
+**Property 51: Dual currency storage**
+*For any* multi-currency transaction, both the original currency amount and base currency equivalent should be stored and retrievable.
+**Validates: Requirements 19.3**
+
+**Property 52: Trial balance generation**
+*For any* set of financial accounts with balances, generating a trial balance should display all accounts with correct debit or credit balances and balanced totals.
+**Validates: Requirements 21.1, 21.2, 21.3**
+
+**Property 53: Financial audit trail creation**
+*For any* modification to financial data (accounts, journal entries, transactions), the system should create an audit log entry with timestamp, user, old value, and new value.
+**Validates: Requirements 22.1**
+
+**Property 54: Audit trail immutability**
+*For any* financial audit log entry, attempting to modify or delete the audit record should be prevented to maintain data integrity.
+**Validates: Requirements 22.5**
+
+**Property 55: Automatic invoice journal entries**
+*For any* created invoice, the system should automatically generate corresponding journal entries for accounts receivable and revenue with correct amounts.
+**Validates: Requirements 23.1**
+
+**Property 56: Automatic payment journal entries**
+*For any* received payment, the system should automatically generate corresponding journal entries for cash and accounts receivable with correct amounts.
+**Validates: Requirements 23.2**
+
+**Property 57: Financial report generation**
+*For any* request to generate standard financial reports (Balance Sheet, Income Statement, Cash Flow), the system should produce reports with accurate data for the specified period.
+**Validates: Requirements 24.1**
+
+**Property 58: Fiscal year configuration**
+*For any* fiscal year setup with start and end dates, the system should create the fiscal year and support both calendar and non-calendar year periods.
+**Validates: Requirements 25.1, 25.2**
+
+**Property 59: Closed period transaction prevention**
+*For any* fiscal period that is closed, attempting to post new transactions to that period should be prevented while open periods should accept transactions.
+**Validates: Requirements 25.3**
+
+**Property 60: Financial access control**
+*For any* user accessing financial data, the system should verify appropriate permissions based on user roles, preventing unauthorized access.
+**Validates: Requirements 26.1, 26.2**
+
+## Financial Error Handling
+
+### Journal Entry Errors
+
+**Scenarios**:
+- Unbalanced debits and credits
+- Invalid account references
+- Missing required fields (date, description, line items)
+- Posting to closed fiscal periods
+- Invalid currency codes or exchange rates
+
+**Handling**:
+- Validate balance before saving (debits must equal credits)
+- Verify all referenced accounts exist and are active
+- Check fiscal period status before posting
+- Wrap posting operations in database transactions
+- Return specific validation error messages
+
+### Multi-Currency Errors
+
+**Scenarios**:
+- Missing exchange rates for transaction date
+- Invalid currency codes
+- Exchange rate API failures
+- Currency conversion calculation errors
+
+**Handling**:
+- Validate currency codes against ISO standards
+- Require manual exchange rate entry if API unavailable
+- Cache exchange rates to handle temporary API failures
+- Log currency conversion errors for review
+
+### General Ledger Errors
+
+**Scenarios**:
+- Balance calculation errors
+- Concurrent transaction posting conflicts
+- Account balance inconsistencies
+- Missing general ledger entries
+
+**Handling**:
+- Use database transactions for balance updates
+- Implement optimistic locking for concurrent updates
+- Provide balance reconciliation tools
+- Queue balance recalculation for large volumes
+
+### Financial Reporting Errors
+
+**Scenarios**:
+- Report generation timeouts with large datasets
+- Missing data for report periods
+- Currency conversion errors in reports
+- Export format failures
+
+**Handling**:
+- Stream large reports to avoid memory limits
+- Provide partial reports with error notifications
+- Cache report data for frequently requested periods
+- Support multiple export formats with fallbacks
+
+## Financial Testing Strategy
+
+### Property-Based Testing for Financial Accounting
+
+**Property Test Coverage**:
+Each financial correctness property (39-60) will be implemented as property-based tests with 100+ iterations.
+
+**Example Financial Property Tests**:
+
+```php
+// Feature: accounts-module, Property 46: Double-entry balance validation
+test('journal entries must have balanced debits and credits', function () {
+    $accounts = FinancialAccount::factory()->count(4)->create();
+    
+    // Generate random line items
+    $lines = collect(range(1, fake()->numberBetween(2, 6)))->map(function () use ($accounts) {
+        return [
+            'account_id' => $accounts->random()->id,
+            'amount' => fake()->randomFloat(2, 1, 10000),
+            'debit_credit' => fake()->randomElement(['debit', 'credit']),
+        ];
+    });
+    
+    // Ensure debits equal credits
+    $totalDebits = $lines->where('debit_credit', 'debit')->sum('amount');
+    $totalCredits = $lines->where('debit_credit', 'credit')->sum('amount');
+    
+    if ($totalDebits !== $totalCredits) {
+        // Test unbalanced entry should fail
+        expect(fn() => JournalEntry::create([
+            'transaction_date' => fake()->date(),
+            'description' => fake()->sentence(),
+            'lines' => $lines->toArray(),
+        ]))->toThrow(ValidationException::class);
+    } else {
+        // Test balanced entry should succeed
+        $entry = JournalEntry::create([
+            'transaction_date' => fake()->date(),
+            'description' => fake()->sentence(),
+            'lines' => $lines->toArray(),
+        ]);
+        
+        expect($entry->isBalanced())->toBeTrue();
+    }
+})->repeat(100);
+
+// Feature: accounts-module, Property 50: Currency conversion calculation
+test('foreign currency transactions calculate base currency correctly', function () {
+    $exchangeRate = fake()->randomFloat(4, 0.1, 10);
+    $foreignAmount = fake()->randomFloat(2, 1, 10000);
+    $expectedBaseAmount = round($foreignAmount * $exchangeRate, 2);
+    
+    $line = JournalEntryLine::create([
+        'amount' => $foreignAmount,
+        'currency_code' => 'EUR',
+        'exchange_rate' => $exchangeRate,
+    ]);
+    
+    expect($line->getAmountInBaseCurrency()->getAmount())->toBe($expectedBaseAmount);
+})->repeat(100);
+```
+
+### Financial Integration Testing
+
+**Scope**: Test financial module integration with existing CRM modules
+- Invoice creation triggering journal entries
+- Payment processing updating accounts receivable
+- Multi-currency invoice and payment handling
+- Financial reporting with CRM data integration
+
+### Financial Security Testing
+
+**Scope**: Verify financial data security and access controls
+- Role-based access to financial accounts and reports
+- Audit trail completeness and immutability
+- Data encryption for sensitive financial information
+- Session logging for financial operations

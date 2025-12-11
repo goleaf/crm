@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use App\Filament\Components\MinimalTabs;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
 
 uses()->group('filament', 'components', 'integration');
@@ -13,7 +13,7 @@ uses()->group('filament', 'components', 'integration');
 /**
  * Integration tests for MinimalTabs component with Filament v4.3+ schemas.
  */
-it('integrates correctly with Filament v4.3+ schema system', function () {
+it('integrates correctly with Filament v4.3+ schema system', function (): void {
     $schema = Schema::make()
         ->components([
             MinimalTabs::make('User Settings')
@@ -66,21 +66,21 @@ it('integrates correctly with Filament v4.3+ schema system', function () {
         ]);
 
     $components = $schema->getComponents();
-    
+
     expect($components)->toHaveCount(1);
     expect($components[0])->toBeInstanceOf(MinimalTabs::class);
-    
+
     $tabs = $components[0];
     expect($tabs->isContained())->toBeTrue();
     expect($tabs->isTabPersistedInQueryString())->toBeTrue();
-    
+
     // Check CSS classes
     $classes = $tabs->getExtraAttributes()['class'];
     expect($classes)->toContain('minimal-tabs');
     expect($classes)->toContain('minimal-tabs-compact');
 });
 
-it('works correctly with nested schemas and complex layouts', function () {
+it('works correctly with nested schemas and complex layouts', function (): void {
     $schema = Schema::make()
         ->components([
             MinimalTabs::make('Application Settings')
@@ -122,17 +122,17 @@ it('works correctly with nested schemas and complex layouts', function () {
 
     $components = $schema->getComponents();
     $tabs = $components[0];
-    
+
     expect($tabs)->toBeInstanceOf(MinimalTabs::class);
     expect($tabs->isVertical())->toBeTrue();
-    
+
     $classes = $tabs->getExtraAttributes()['class'];
     expect($classes)->toContain('minimal-tabs');
 });
 
-it('maintains performance with deeply nested tab structures', function () {
+it('maintains performance with deeply nested tab structures', function (): void {
     $startTime = microtime(true);
-    
+
     $nestedTabs = [];
     for ($i = 0; $i < 50; $i++) {
         $nestedTabs[] = MinimalTabs\Tab::make("Tab {$i}")
@@ -147,7 +147,7 @@ it('maintains performance with deeply nested tab structures', function () {
                     ->default($i % 2 === 0),
             ]);
     }
-    
+
     $schema = Schema::make()
         ->components([
             MinimalTabs::make('Large Tab Set')
@@ -156,48 +156,48 @@ it('maintains performance with deeply nested tab structures', function () {
                 ->compact()
                 ->contained(),
         ]);
-    
+
     $endTime = microtime(true);
     $executionTime = $endTime - $startTime;
-    
+
     // Should complete in reasonable time
     expect($executionTime)->toBeLessThan(1.0);
-    
+
     $components = $schema->getComponents();
     expect($components)->toHaveCount(1);
     expect($components[0])->toBeInstanceOf(MinimalTabs::class);
 });
 
-it('handles dynamic tab content correctly', function () {
+it('handles dynamic tab content correctly', function (): void {
     $dynamicTabs = [];
-    $tabCount = rand(3, 10);
-    
+    $tabCount = random_int(3, 10);
+
     for ($i = 0; $i < $tabCount; $i++) {
-        $fieldCount = rand(1, 5);
+        $fieldCount = random_int(1, 5);
         $fields = [];
-        
+
         for ($j = 0; $j < $fieldCount; $j++) {
             $fields[] = TextInput::make("dynamic_field_{$i}_{$j}")
                 ->label("Dynamic Field {$i}-{$j}");
         }
-        
+
         $dynamicTabs[] = MinimalTabs\Tab::make("Dynamic Tab {$i}")
             ->schema($fields);
     }
-    
+
     $tabs = MinimalTabs::make('Dynamic Tabs')
         ->tabs($dynamicTabs)
         ->minimal()
         ->compact();
-    
+
     expect($tabs)->toBeInstanceOf(MinimalTabs::class);
-    
+
     $classes = $tabs->getExtraAttributes()['class'];
     expect($classes)->toContain('minimal-tabs');
     expect($classes)->toContain('minimal-tabs-compact');
 });
 
-it('preserves tab state and configuration through method chaining', function () {
+it('preserves tab state and configuration through method chaining', function (): void {
     $tabs = MinimalTabs::make('Stateful Tabs')
         ->tabs([
             MinimalTabs\Tab::make('Tab 1')
@@ -217,48 +217,46 @@ it('preserves tab state and configuration through method chaining', function () 
         ->compact(false)  // Remove compact
         ->minimal()       // Add minimal back
         ->compact();      // Add compact back
-    
+
     // All parent configurations should be preserved
     expect($tabs->isContained())->toBeTrue();
     expect($tabs->isVertical())->toBeTrue();
     expect($tabs->isTabPersistedInQueryString())->toBeTrue();
-    
+
     // Final CSS classes should be correct
     $classes = $tabs->getExtraAttributes()['class'];
     expect($classes)->toContain('minimal-tabs');
     expect($classes)->toContain('minimal-tabs-compact');
 });
 
-it('works correctly with conditional tab visibility', function () {
+it('works correctly with conditional tab visibility', function (): void {
     $showAdvanced = true;
-    
+
     $tabsArray = [
         MinimalTabs\Tab::make('Basic')
             ->schema([
                 TextInput::make('name')->required(),
             ]),
     ];
-    
-    if ($showAdvanced) {
-        $tabsArray[] = MinimalTabs\Tab::make('Advanced')
-            ->schema([
-                TextInput::make('api_key')->password(),
-            ]);
-    }
-    
+
+    $tabsArray[] = MinimalTabs\Tab::make('Advanced')
+        ->schema([
+            TextInput::make('api_key')->password(),
+        ]);
+
     $tabs = MinimalTabs::make('Conditional Tabs')
         ->tabs($tabsArray)
         ->minimal()
         ->compact();
-    
+
     expect($tabs)->toBeInstanceOf(MinimalTabs::class);
-    
+
     $classes = $tabs->getExtraAttributes()['class'];
     expect($classes)->toContain('minimal-tabs');
     expect($classes)->toContain('minimal-tabs-compact');
 });
 
-it('maintains compatibility with all Filament v4.3+ tab features', function () {
+it('maintains compatibility with all Filament v4.3+ tab features', function (): void {
     $tabs = MinimalTabs::make('Full Feature Test')
         ->tabs([
             MinimalTabs\Tab::make('Complete Tab')
@@ -281,13 +279,13 @@ it('maintains compatibility with all Filament v4.3+ tab features', function () {
         ->columnSpanFull()
         ->minimal()
         ->compact();
-    
+
     // Test all features work together
     expect($tabs)->toBeInstanceOf(MinimalTabs::class);
     expect($tabs->isContained())->toBeTrue();
     expect($tabs->isVertical())->toBeFalse();
     expect($tabs->isTabPersistedInQueryString())->toBeTrue();
-    
+
     $classes = $tabs->getExtraAttributes()['class'];
     expect($classes)->toContain('minimal-tabs');
     expect($classes)->toContain('minimal-tabs-compact');

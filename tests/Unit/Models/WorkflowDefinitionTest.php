@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\WorkflowDefinition;
 use Tests\TestCase;
 
-class WorkflowDefinitionTest extends TestCase
+final class WorkflowDefinitionTest extends TestCase
 {
-
     public function test_casts(): void
     {
         $this->markTestIncomplete('Test for casts needs implementation');

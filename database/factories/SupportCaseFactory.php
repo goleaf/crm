@@ -43,7 +43,6 @@ use Illuminate\Support\Str;
  *     ->open()
  *     ->create();
  * ```
- *
  * @example Standalone test with all relations
  * ```php
  * $case = SupportCase::factory()
@@ -106,7 +105,6 @@ final class SupportCaseFactory extends Factory
      * Creates Team, User (creator), Company, People (contact), and User (assignee).
      * The assigned_team_id is automatically set to match team_id.
      *
-     * @return static
      *
      * @example
      * ```php
@@ -143,8 +141,7 @@ final class SupportCaseFactory extends Factory
      * Sets both team_id and assigned_team_id to the provided team.
      * If no team is provided, creates a new one.
      *
-     * @param  Team|null  $team  The team to use, or null to create a new one
-     * @return static
+     * @param Team|null $team The team to use, or null to create a new one
      *
      * @example
      * ```php
@@ -169,7 +166,6 @@ final class SupportCaseFactory extends Factory
      * Ensures assigned_team_id matches team_id for consistent team scoping.
      * Useful when team_id is set via state but assigned_team_id needs to match.
      *
-     * @return static
      *
      * @example
      * ```php
@@ -193,8 +189,6 @@ final class SupportCaseFactory extends Factory
 
     /**
      * Set the case status to open/new.
-     *
-     * @return static
      */
     public function open(): static
     {
@@ -208,8 +202,6 @@ final class SupportCaseFactory extends Factory
      * Set the case status to closed (resolved).
      *
      * Sets resolved_at to current timestamp.
-     *
-     * @return static
      */
     public function closed(): static
     {
@@ -221,8 +213,6 @@ final class SupportCaseFactory extends Factory
 
     /**
      * Set the case status to pending input.
-     *
-     * @return static
      */
     public function pendingInput(): static
     {
@@ -234,8 +224,6 @@ final class SupportCaseFactory extends Factory
 
     /**
      * Set the case status to assigned.
-     *
-     * @return static
      */
     public function assigned(): static
     {
@@ -247,8 +235,6 @@ final class SupportCaseFactory extends Factory
 
     /**
      * Set the case as high priority (P1).
-     *
-     * @return static
      */
     public function highPriority(): static
     {
@@ -261,8 +247,6 @@ final class SupportCaseFactory extends Factory
      * Set the case as overdue (SLA breached).
      *
      * Sets sla_due_at to yesterday and sla_breached to true.
-     *
-     * @return static
      */
     public function overdue(): static
     {

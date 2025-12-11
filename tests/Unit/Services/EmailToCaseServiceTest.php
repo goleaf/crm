@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use App\Services\EmailToCaseService;
 use Tests\TestCase;
 
-class EmailToCaseServiceTest extends TestCase
+final class EmailToCaseServiceTest extends TestCase
 {
-
     public function test_create_from_email(): void
     {
         $this->markTestIncomplete('Test for createFromEmail needs implementation');

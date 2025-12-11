@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\ProductDiscountRule;
 use Tests\TestCase;
 
-class ProductDiscountRuleTest extends TestCase
+final class ProductDiscountRuleTest extends TestCase
 {
-
     public function test_casts(): void
     {
         $this->markTestIncomplete('Test for casts needs implementation');

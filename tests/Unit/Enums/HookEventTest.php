@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums;
 
-use App\Enums\HookEvent;
 use Tests\TestCase;
 
-class HookEventTest extends TestCase
+final class HookEventTest extends TestCase
 {
-
     public function test_get_label(): void
     {
         $this->markTestIncomplete('Test for getLabel needs implementation');

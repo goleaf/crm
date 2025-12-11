@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Pages;
 
-use App\Filament\Pages\CrmSettings;
 use Tests\TestCase;
 
-class CrmSettingsTest extends TestCase
+final class CrmSettingsTest extends TestCase
 {
-
     public function test_mount(): void
     {
         $this->markTestIncomplete('Test for mount needs implementation');

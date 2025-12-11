@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums;
 
-use App\Enums\LeadSource;
 use Tests\TestCase;
 
-class LeadSourceTest extends TestCase
+final class LeadSourceTest extends TestCase
 {
-
     public function test_get_label(): void
     {
         $this->markTestIncomplete('Test for getLabel needs implementation');

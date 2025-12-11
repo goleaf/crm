@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Http\Requests\Api;
 
-use App\Http\Requests\Api\StoreWebLeadRequest;
 use Tests\TestCase;
 
-class StoreWebLeadRequestTest extends TestCase
+final class StoreWebLeadRequestTest extends TestCase
 {
-
     public function test_authorize(): void
     {
         $this->markTestIncomplete('Test for authorize needs implementation');

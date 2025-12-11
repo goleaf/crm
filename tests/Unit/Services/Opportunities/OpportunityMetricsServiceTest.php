@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\Opportunities;
 
-use App\Services\Opportunities\OpportunityMetricsService;
 use Tests\TestCase;
 
-class OpportunityMetricsServiceTest extends TestCase
+final class OpportunityMetricsServiceTest extends TestCase
 {
-
     public function test_amount(): void
     {
         $this->markTestIncomplete('Test for amount needs implementation');

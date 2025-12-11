@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\InvoiceResource\RelationManagers;
 
-use App\Filament\Resources\InvoiceResource\RelationManagers\RemindersRelationManager;
 use Tests\TestCase;
 
-class RemindersRelationManagerTest extends TestCase
+final class RemindersRelationManagerTest extends TestCase
 {
-
     public function test_form(): void
     {
         $this->markTestIncomplete('Test for form needs implementation');

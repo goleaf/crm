@@ -7,7 +7,7 @@ use App\Support\ValueObjects\ContactAddressBag;
 use App\Support\ValueObjects\ContactDetailsBag;
 use Illuminate\Validation\ValidationException;
 
-it('builds a contact details bag with nested address', function () {
+it('builds a contact details bag with nested address', function (): void {
     $bag = ContactDetailsBag::from([
         'first_name' => 'Ada',
         'last_name' => 'Lovelace',
@@ -33,7 +33,7 @@ it('builds a contact details bag with nested address', function () {
     expect($bag->address->formatted())->toContain('San Francisco');
 });
 
-it('validates input via Bag', function () {
+it('validates input via Bag', function (): void {
     ContactDetailsBag::from([
         'first_name' => 'Ada',
         'last_name' => 'Lovelace',
@@ -41,7 +41,7 @@ it('validates input via Bag', function () {
     ]);
 })->throws(ValidationException::class);
 
-it('remains immutable when using with', function () {
+it('remains immutable when using with', function (): void {
     $bag = ContactDetailsBag::from([
         'first_name' => 'Ada',
         'last_name' => 'Lovelace',

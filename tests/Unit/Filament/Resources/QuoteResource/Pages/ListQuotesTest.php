@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\QuoteResource\Pages;
 
-use App\Filament\Resources\QuoteResource\Pages\ListQuotes;
 use Tests\TestCase;
 
-class ListQuotesTest extends TestCase
-{
-}
+final class ListQuotesTest extends TestCase {}

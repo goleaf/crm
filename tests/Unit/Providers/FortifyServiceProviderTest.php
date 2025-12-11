@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Providers;
 
-use App\Providers\FortifyServiceProvider;
 use Tests\TestCase;
 
-class FortifyServiceProviderTest extends TestCase
+final class FortifyServiceProviderTest extends TestCase
 {
-
     public function test_register(): void
     {
         $this->markTestIncomplete('Test for register needs implementation');

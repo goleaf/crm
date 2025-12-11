@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use App\Services\ActivityService;
 use Tests\TestCase;
 
-class ActivityServiceTest extends TestCase
+final class ActivityServiceTest extends TestCase
 {
-
     public function test_log(): void
     {
         $this->markTestIncomplete('Test for log needs implementation');

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\Accounts\Pages;
 
-use App\Filament\Resources\Accounts\Pages\CreateAccount;
 use Tests\TestCase;
 
-class CreateAccountTest extends TestCase
+final class CreateAccountTest extends TestCase
 {
-
     public function test_after_create(): void
     {
         $this->markTestIncomplete('Test for afterCreate needs implementation');

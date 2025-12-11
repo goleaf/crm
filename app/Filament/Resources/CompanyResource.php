@@ -606,11 +606,11 @@ final class CompanyResource extends Resource
                         $latest = $record->latestAnnualRevenue;
 
                         if ($latest !== null) {
-                            return ($latest->currency_code ?? $record->currency_code ?? 'USD').' '.number_format((float) $latest->amount, 2).' ('.$latest->year.')';
+                            return ($latest->currency_code ?? $record->currency_code ?? 'USD') . ' ' . number_format((float) $latest->amount, 2) . ' (' . $latest->year . ')';
                         }
 
                         if ($record->revenue !== null) {
-                            return ($record->currency_code ?? 'USD').' '.number_format((float) $record->revenue, 2);
+                            return ($record->currency_code ?? 'USD') . ' ' . number_format((float) $record->revenue, 2);
                         }
 
                         return '—';
@@ -676,11 +676,11 @@ final class CompanyResource extends Resource
                         $indicators = [];
 
                         if (filled($data['min_employee_count'] ?? null)) {
-                            $indicators[] = 'Min '.number_format((int) $data['min_employee_count']);
+                            $indicators[] = 'Min ' . number_format((int) $data['min_employee_count']);
                         }
 
                         if (filled($data['max_employee_count'] ?? null)) {
-                            $indicators[] = 'Max '.number_format((int) $data['max_employee_count']);
+                            $indicators[] = 'Max ' . number_format((int) $data['max_employee_count']);
                         }
 
                         return $indicators;

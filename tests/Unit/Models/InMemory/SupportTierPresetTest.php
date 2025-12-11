@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models\InMemory;
 
-use App\Models\InMemory\SupportTierPreset;
 use Tests\TestCase;
 
-class SupportTierPresetTest extends TestCase
-{
-}
+final class SupportTierPresetTest extends TestCase {}

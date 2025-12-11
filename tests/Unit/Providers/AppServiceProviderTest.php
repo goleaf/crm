@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Providers;
 
-use App\Providers\AppServiceProvider;
 use Tests\TestCase;
 
-class AppServiceProviderTest extends TestCase
+final class AppServiceProviderTest extends TestCase
 {
-
     public function test_register(): void
     {
         $this->markTestIncomplete('Test for register needs implementation');

@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Support\Paths;
 
-use App\Support\Paths\StoragePaths;
 use Tests\TestCase;
 
-class StoragePathsTest extends TestCase
-{
-}
+final class StoragePathsTest extends TestCase {}

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\CompanyResource\RelationManagers;
 
-use App\Filament\Resources\CompanyResource\RelationManagers\AnnualRevenuesRelationManager;
 use Tests\TestCase;
 
-class AnnualRevenuesRelationManagerTest extends TestCase
+final class AnnualRevenuesRelationManagerTest extends TestCase
 {
-
     public function test_form(): void
     {
         $this->markTestIncomplete('Test for form needs implementation');

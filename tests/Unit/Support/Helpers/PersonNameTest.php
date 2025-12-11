@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Support\Helpers;
 
-use App\Support\Helpers\PersonName;
 use Tests\TestCase;
 
-class PersonNameTest extends TestCase
-{
-}
+final class PersonNameTest extends TestCase {}

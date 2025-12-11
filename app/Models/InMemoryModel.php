@@ -41,6 +41,6 @@ abstract class InMemoryModel extends Model
     {
         static::clearConnections();
 
-        (new static())->migrate();
+        (new static)->migrate();
     }
 }

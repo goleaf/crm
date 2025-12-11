@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\Tenancy;
 
-use App\Services\Tenancy\CurrentTeamResolver;
 use Tests\TestCase;
 
-class CurrentTeamResolverTest extends TestCase
-{
-}
+final class CurrentTeamResolverTest extends TestCase {}

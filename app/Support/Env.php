@@ -28,7 +28,7 @@ final class Env
 
     public static function make(): self
     {
-        return new self();
+        return new self;
     }
     // =========================================================================
     // Application Configuration
@@ -638,26 +638,6 @@ final class Env
         return (bool) env('PRISM_SERVER_ENABLED', false);
     }
 
-    public function openaiUrl(): string
-    {
-        return (string) env('OPENAI_URL', 'https://api.openai.com/v1');
-    }
-
-    public function openaiApiKey(): string
-    {
-        return (string) env('OPENAI_API_KEY', '');
-    }
-
-    public function openaiOrganization(): ?string
-    {
-        return env('OPENAI_ORGANIZATION');
-    }
-
-    public function openaiProject(): ?string
-    {
-        return env('OPENAI_PROJECT');
-    }
-
     public function anthropicApiKey(): string
     {
         return (string) env('ANTHROPIC_API_KEY', '');
@@ -705,7 +685,7 @@ final class Env
 
     public function groqUrl(): string
     {
-        return (string) env('GROQ_URL', 'https://api.groq.com/openai/v1');
+        return (string) env('GROQ_URL', 'https://api.groq.com/v1');
     }
 
     public function xaiApiKey(): string

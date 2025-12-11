@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Schema;
  * Tables are configured in userstampTables() with a boolean indicating whether
  * the table uses soft deletes (and thus needs the deleted_by column).
  *
- * @package Database\Migrations
  *
  * @see \App\Models\Concerns\HasCreator for the trait that uses these columns
  * @see tests/Unit/Migrations/UserstampsColumnsTest.php for test coverage
@@ -29,8 +28,6 @@ return new class extends Migration
      *
      * Adds editor_id and deleted_by columns to all configured tables.
      * Handles SQLite compatibility by dropping/recreating the customers_view.
-     *
-     * @return void
      */
     public function up(): void
     {
@@ -78,8 +75,6 @@ return new class extends Migration
      *
      * Removes editor_id and deleted_by columns from all configured tables.
      * Handles SQLite compatibility by dropping/recreating the customers_view.
-     *
-     * @return void
      */
     public function down(): void
     {
@@ -152,8 +147,6 @@ return new class extends Migration
      * Drop the customers_view if it exists.
      *
      * Required before modifying tables that are part of the view.
-     *
-     * @return void
      */
     private function dropCustomersView(): void
     {
@@ -165,8 +158,6 @@ return new class extends Migration
      *
      * This view provides a unified interface for querying customers
      * regardless of whether they are companies or individual people.
-     *
-     * @return void
      */
     private function createCustomersView(): void
     {

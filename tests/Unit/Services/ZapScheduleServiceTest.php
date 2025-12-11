@@ -6,7 +6,6 @@ use App\Models\CalendarEvent;
 use App\Models\User;
 use App\Services\ZapScheduleService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Carbon;
 use Zap\Models\Schedule;
 
 uses(RefreshDatabase::class);
@@ -85,8 +84,8 @@ it('uses configurable defaults for slot duration and buffer', function (): void 
 
     $firstSlot = $slots[0];
 
-    $slotDuration = Carbon::parse('1970-01-01 '.$firstSlot['start_time'])
-        ->diffInMinutes(Carbon::parse('1970-01-01 '.$firstSlot['end_time']));
+    $slotDuration = \Illuminate\Support\Facades\Date::parse('1970-01-01 ' . $firstSlot['start_time'])
+        ->diffInMinutes(\Illuminate\Support\Facades\Date::parse('1970-01-01 ' . $firstSlot['end_time']));
 
     expect((int) $slotDuration)->toBe(30)
         ->and($firstSlot['buffer_minutes'])->toBe(10);

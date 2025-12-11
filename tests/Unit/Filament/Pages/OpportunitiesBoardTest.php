@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Pages;
 
-use App\Filament\Pages\OpportunitiesBoard;
 use Tests\TestCase;
 
-class OpportunitiesBoardTest extends TestCase
+final class OpportunitiesBoardTest extends TestCase
 {
-
     public function test_get_title(): void
     {
         $this->markTestIncomplete('Test for getTitle needs implementation');

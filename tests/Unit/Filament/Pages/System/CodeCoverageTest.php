@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Pages\System;
 
-use App\Filament\Pages\System\CodeCoverage;
 use Tests\TestCase;
 
-class CodeCoverageTest extends TestCase
+final class CodeCoverageTest extends TestCase
 {
-
     public function test_get_title(): void
     {
         $this->markTestIncomplete('Test for getTitle needs implementation');

@@ -50,6 +50,7 @@ final class GroupResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->unique(
+                                ignoreRecord: true,
                                 modifyRuleUsing: function (Rule $rule): Rule {
                                     $teamId = auth()->user()?->currentTeam?->getKey() ?? auth()->user()?->current_team_id;
 
@@ -57,7 +58,6 @@ final class GroupResource extends Resource
                                         ? $rule
                                         : $rule->where(fn ($query) => $query->where('team_id', $teamId));
                                 },
-                                ignoreRecord: true,
                             ),
                         Forms\Components\Textarea::make('description')
                             ->label(__('app.labels.description'))

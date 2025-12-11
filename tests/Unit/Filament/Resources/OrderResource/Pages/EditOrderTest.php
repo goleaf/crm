@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\OrderResource\Pages;
 
-use App\Filament\Resources\OrderResource\Pages\EditOrder;
 use Tests\TestCase;
 
-class EditOrderTest extends TestCase
-{
-}
+final class EditOrderTest extends TestCase {}

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\OCRTemplate;
 use Tests\TestCase;
 
-class OCRTemplateTest extends TestCase
+final class OCRTemplateTest extends TestCase
 {
-
     public function test_fields(): void
     {
         $this->markTestIncomplete('Test for fields needs implementation');

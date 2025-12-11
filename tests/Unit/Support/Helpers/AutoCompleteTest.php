@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Support\Helpers;
 
-use App\Support\Helpers\AutoComplete;
 use Tests\TestCase;
 
-class AutoCompleteTest extends TestCase
-{
-}
+final class AutoCompleteTest extends TestCase {}

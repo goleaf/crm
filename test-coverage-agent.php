@@ -1,40 +1,42 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Test Coverage Agent - Enhanced Testing Infrastructure
- * 
+ *
  * Comprehensive test execution script with intelligent coverage driver detection,
  * progressive test suite execution, and detailed performance reporting.
- * 
+ *
  * Features:
  * - Automatic detection of PCOV and Xdebug coverage drivers
  * - Progressive test execution (Basic → Unit → Feature → Coverage)
  * - Execution time tracking for performance monitoring
  * - Graceful fallback when no coverage driver is available
  * - Detailed error reporting and flow control
- * 
+ *
  * Usage:
  *   php test-coverage-agent.php
- * 
+ *
  * Requirements:
  * - PHP 8.4+
  * - Pest testing framework
  * - PCOV extension (recommended) or Xdebug for coverage analysis
- * 
+ *
  * Exit Codes:
  * - 0: All tests passed successfully
  * - 1: Test failures detected
- * 
- * @package Testing
+ *
  * @author Relaticle CRM Team
+ *
  * @since 2025-12-10
+ *
  * @version 2.0.0
- * 
+ *
  * @see docs/pcov-code-coverage-integration.md PCOV integration guide
  * @see docs/test-profiling.md Test performance optimization
  * @see docs/testing-infrastructure.md Testing setup and patterns
  */
-
 echo "=== Test Coverage Agent ===\n";
 echo "Starting test execution...\n\n";
 
@@ -43,10 +45,10 @@ echo "Checking for coverage drivers...\n";
 $hasPcov = extension_loaded('pcov');
 $hasXdebug = extension_loaded('xdebug');
 
-echo "PCOV: " . ($hasPcov ? "✅ Available" : "❌ Not installed") . "\n";
-echo "Xdebug: " . ($hasXdebug ? "✅ Available" : "❌ Not installed") . "\n";
+echo 'PCOV: ' . ($hasPcov ? '✅ Available' : '❌ Not installed') . "\n";
+echo 'Xdebug: ' . ($hasXdebug ? '✅ Available' : '❌ Not installed') . "\n";
 
-if (!$hasPcov && !$hasXdebug) {
+if (! $hasPcov && ! $hasXdebug) {
     echo "⚠️  No coverage driver available. Running tests without coverage.\n";
 }
 echo "\n";
@@ -71,12 +73,12 @@ exec($basicTestCommand, $output, $exitCode);
 
 if ($exitCode === 0) {
     echo "\n✅ Basic tests passed! Proceeding with full test suite...\n";
-    
+
     // Run a broader test suite
     echo "\nRunning Unit test suite...\n";
     $testCommand = 'vendor/bin/pest --testsuite=Unit --no-coverage --stop-on-failure';
     echo "Command: $testCommand\n";
-    
+
     $testStartTime = time();
     $testResult = shell_exec($testCommand . ' 2>&1');
     $testEndTime = time();
@@ -88,35 +90,35 @@ if ($exitCode === 0) {
 
     // Check if unit tests passed
     exec($testCommand, $fullOutput, $fullExitCode);
-    
+
     if ($fullExitCode === 0) {
         echo "\n✅ All unit tests passed!\n";
-        
+
         // Try Feature tests
         echo "\nRunning Feature test suite...\n";
         $featureCommand = 'vendor/bin/pest --testsuite=Feature --no-coverage --stop-on-failure';
         echo "Command: $featureCommand\n";
-        
+
         $featureStartTime = time();
         $featureResult = shell_exec($featureCommand . ' 2>&1');
         $featureEndTime = time();
         $featureDuration = $featureEndTime - $featureStartTime;
-        
+
         echo "Feature Test Results (took {$featureDuration}s):\n";
         echo "===============================================\n";
         echo $featureResult;
-        
+
         // Try to run coverage if a driver is available
         if ($hasPcov || $hasXdebug) {
             echo "\nRunning coverage analysis...\n";
             $coverageCommand = 'vendor/bin/pest --testsuite=Unit --coverage --min=80';
             echo "Command: $coverageCommand\n";
-            
+
             $coverageStartTime = time();
             $coverageResult = shell_exec($coverageCommand . ' 2>&1');
             $coverageEndTime = time();
             $coverageDuration = $coverageEndTime - $coverageStartTime;
-            
+
             echo "Coverage Results (took {$coverageDuration}s):\n";
             echo "=============================================\n";
             echo $coverageResult;
@@ -143,7 +145,6 @@ echo "\n";
 echo "⚠️  Known Issues:\n";
 echo "- No coverage driver installed (PCOV/Xdebug)\n";
 echo "- Some tests have database transaction issues with PHP 8.4 + SQLite\n";
-echo "- OpenAI deprecation warnings (non-blocking)\n";
 echo "- Tests run slowly (~8-10s per test) - possible bootstrap performance issue\n";
 echo "\n";
 echo "📊 Test Suite Status:\n";

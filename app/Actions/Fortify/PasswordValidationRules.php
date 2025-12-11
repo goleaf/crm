@@ -26,7 +26,7 @@ trait PasswordValidationRules
             'string',
             Password::default(),
             new ZxcvbnRule($this->passwordUserInputs($user, $input)),
-            new RejectCommonPasswords(),
+            new RejectCommonPasswords,
         ];
 
         if ($requiresConfirmation) {

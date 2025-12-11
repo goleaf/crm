@@ -5,7 +5,162 @@
 This guide covers Filament v4.3+ integration patterns, custom components, and best practices for the Relaticle CRM system.
 
 **Version**: 4.3+  
-**Last Updated**: December 10, 2025
+**Last Updated**: December 11, 2025
+
+## Activity Logging Integration
+
+### Displaying Activity History
+
+Show activity history for models using the `LogsActivity` trait:
+
+```php
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\TextEntry;
+use Filament\Schemas\Components\KeyValueEntry;
+
+// In resource ViewPage or InfoList
+Section::make('Activity History')
+    ->schema([
+        TextEntry::make('activities')
+            ->label(__('app.labels.recent_activities'))
+            ->formatStateUsing(function ($record) {
+                return $record->activities()
+                    ->latest()
+                    ->limit(5)
+                    ->get()
+                    ->map(function ($activity) {
+                        $changes = '';
+                        if ($activity->changes && is_array($activity->changes)) {
+                            $changesList = [];
+                            foreach ($activity->changes['attributes'] ?? [] as $field => $newValue) {
+                                $oldValue = $activity->changes['old'][$field] ?? 'N/A';
+                                $changesList[] = "{$field}: {$oldValue} → {$newValue}";
+                            }
+                            $changes = implode(', ', $changesList);
+                        }
+                        
+                        return "{$activity->event}" . ($changes ? " ({$changes})" : '') . 
+                               " by {$activity->causer->name} at {$activity->created_at->format('M j, Y g:i A')}";
+                    })
+                    ->implode("\n");
+            })
+            ->html()
+            ->columnSpanFull(),
+    ]),
+```
+
+### Activity Relation Manager
+
+Create a dedicated relation manager for activity history:
+
+```php
+// app/Filament/Resources/CompanyResource/RelationManagers/ActivitiesRelationManager.php
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\BadgeColumn;
+
+class ActivitiesRelationManager extends RelationManager
+{
+    protected static string $relationship = 'activities';
+    
+    public function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                BadgeColumn::make('event')
+                    ->label(__('app.labels.event'))
+                    ->color(fn (string $state): string => match ($state) {
+                        'created' => 'success',
+                        'updated' => 'warning',
+                        'deleted' => 'danger',
+                        default => 'gray',
+                    }),
+                    
+                TextColumn::make('causer.name')
+                    ->label(__('app.labels.user'))
+                    ->sortable(),
+                    
+                TextColumn::make('changes')
+                    ->label(__('app.labels.changes'))
+                    ->formatStateUsing(function ($state) {
+                        if (!$state || !is_array($state)) {
+                            return '—';
+                        }
+                        
+                        $changes = [];
+                        foreach ($state['attributes'] ?? [] as $field => $newValue) {
+                            $oldValue = $state['old'][$field] ?? 'N/A';
+                            $changes[] = "{$field}: {$oldValue} → {$newValue}";
+                        }
+                        
+                        return implode(', ', $changes);
+                    })
+                    ->limit(50)
+                    ->tooltip(function ($state) {
+                        // Full change details in tooltip
+                        return json_encode($state, JSON_PRETTY_PRINT);
+                    }),
+                    
+                TextColumn::make('created_at')
+                    ->label(__('app.labels.when'))
+                    ->dateTime()
+                    ->sortable(),
+            ])
+            ->defaultSort('created_at', 'desc')
+            ->paginated([10, 25, 50]);
+    }
+}
+```
+
+### Property 28 Validation Widget
+
+Create a widget to validate Property 28 compliance:
+
+```php
+// app/Filament/Widgets/AccountTypeAuditWidget.php
+use Filament\Widgets\StatsOverviewWidget;
+use App\Models\Company;
+use App\Models\Activity;
+
+class AccountTypeAuditWidget extends StatsOverviewWidget
+{
+    protected function getStats(): array
+    {
+        $totalAccountTypeChanges = Activity::where('event', 'updated')
+            ->whereHas('subject', function ($query) {
+                $query->where('subject_type', Company::class);
+            })
+            ->whereRaw("JSON_EXTRACT(changes, '$.attributes.account_type') IS NOT NULL")
+            ->count();
+            
+        $recentChanges = Activity::where('event', 'updated')
+            ->whereHas('subject', function ($query) {
+                $query->where('subject_type', Company::class);
+            })
+            ->whereRaw("JSON_EXTRACT(changes, '$.attributes.account_type') IS NOT NULL")
+            ->where('created_at', '>=', now()->subDays(30))
+            ->count();
+            
+        return [
+            StatsOverviewWidget\Stat::make(
+                __('app.stats.total_account_type_changes'),
+                $totalAccountTypeChanges
+            )
+            ->description(__('app.stats.all_time'))
+            ->descriptionIcon('heroicon-o-arrow-trending-up')
+            ->color('success'),
+            
+            StatsOverviewWidget\Stat::make(
+                __('app.stats.recent_account_type_changes'),
+                $recentChanges
+            )
+            ->description(__('app.stats.last_30_days'))
+            ->descriptionIcon('heroicon-o-calendar')
+            ->color('warning'),
+        ];
+    }
+}
 
 ## Task Reminder Integration
 

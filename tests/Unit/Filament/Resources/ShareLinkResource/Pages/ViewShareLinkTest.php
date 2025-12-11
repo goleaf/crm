@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\ShareLinkResource\Pages;
 
-use App\Filament\Resources\ShareLinkResource\Pages\ViewShareLink;
 use Tests\TestCase;
 
-class ViewShareLinkTest extends TestCase
+final class ViewShareLinkTest extends TestCase
 {
-
     public function test_infolist(): void
     {
         $this->markTestIncomplete('Test for infolist needs implementation');

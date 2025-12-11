@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use App\Services\CaseSlaService;
 use Tests\TestCase;
 
-class CaseSlaServiceTest extends TestCase
+final class CaseSlaServiceTest extends TestCase
 {
-
     public function test_calculate_sla_due_date(): void
     {
         $this->markTestIncomplete('Test for calculateSlaDueDate needs implementation');

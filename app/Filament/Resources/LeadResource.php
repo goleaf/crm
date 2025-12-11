@@ -11,22 +11,21 @@ use App\Enums\LeadNurtureStatus;
 use App\Enums\LeadSource;
 use App\Enums\LeadStatus;
 use App\Enums\LeadType;
-use App\Filament\Resources\LeadResource\Pages\ListLeadActivities;
 use App\Filament\Exports\LeadExporter;
 use App\Filament\RelationManagers\ActivitiesRelationManager;
 use App\Filament\Resources\LeadResource\Forms\LeadForm;
 use App\Filament\Resources\LeadResource\Pages\CreateLead;
+use App\Filament\Resources\LeadResource\Pages\ListLeadActivities;
 use App\Filament\Resources\LeadResource\Pages\ListLeads;
 use App\Filament\Resources\LeadResource\Pages\ViewLead;
 use App\Filament\Resources\LeadResource\RelationManagers\CalendarEventsRelationManager;
 use App\Filament\Resources\LeadResource\RelationManagers\NotesRelationManager;
 use App\Filament\Resources\LeadResource\RelationManagers\TasksRelationManager;
 use App\Filament\Support\Filters\DateScopeFilter;
-use App\Support\Helpers\NumberHelper;
 use App\Models\Lead;
 use App\Models\Tag;
 use App\Models\Team;
-use Filament\Forms;
+use App\Support\Helpers\NumberHelper;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
@@ -40,6 +39,7 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms;
 use Filament\Forms\Components\Select as FormSelect;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -212,17 +212,15 @@ final class LeadResource extends Resource
                             ->numeric()
                             ->minValue(0),
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['min'] ?? null,
-                                fn (Builder $builder, mixed $min): Builder => $builder->where('lead_value', '>=', $min),
-                            )
-                            ->when(
-                                $data['max'] ?? null,
-                                fn (Builder $builder, mixed $max): Builder => $builder->where('lead_value', '<=', $max),
-                            );
-                    }),
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when(
+                            $data['min'] ?? null,
+                            fn (Builder $builder, mixed $min): Builder => $builder->where('lead_value', '>=', $min),
+                        )
+                        ->when(
+                            $data['max'] ?? null,
+                            fn (Builder $builder, mixed $max): Builder => $builder->where('lead_value', '<=', $max),
+                        )),
                 Filter::make('expected_close_date')
                     ->label(__('app.labels.expected_close_date'))
                     ->form([
@@ -233,17 +231,15 @@ final class LeadResource extends Resource
                             ->label('Until')
                             ->native(false),
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['from'] ?? null,
-                                fn (Builder $builder, string $date): Builder => $builder->whereDate('expected_close_date', '>=', $date),
-                            )
-                            ->when(
-                                $data['until'] ?? null,
-                                fn (Builder $builder, string $date): Builder => $builder->whereDate('expected_close_date', '<=', $date),
-                            );
-                    }),
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when(
+                            $data['from'] ?? null,
+                            fn (Builder $builder, string $date): Builder => $builder->whereDate('expected_close_date', '>=', $date),
+                        )
+                        ->when(
+                            $data['until'] ?? null,
+                            fn (Builder $builder, string $date): Builder => $builder->whereDate('expected_close_date', '<=', $date),
+                        )),
                 SelectFilter::make('tags')
                     ->label(__('app.labels.tags'))
                     ->relationship(

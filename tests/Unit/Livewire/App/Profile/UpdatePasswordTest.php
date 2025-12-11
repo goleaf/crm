@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Livewire\App\Profile;
 
-use App\Livewire\App\Profile\UpdatePassword;
 use Tests\TestCase;
 
-class UpdatePasswordTest extends TestCase
+final class UpdatePasswordTest extends TestCase
 {
-
     public function test_mount(): void
     {
         $this->markTestIncomplete('Test for mount needs implementation');

@@ -61,9 +61,9 @@
    - Likely due to application bootstrap overhead
    - Full test suite (877 files) times out
 
-4. **OpenAI Deprecation Warnings**
-   - Non-blocking deprecation warnings from OpenAI client
-   - Does not affect test execution
+4. **AI Integration Disabled**
+   - OpenAI integration has been removed from the project
+   - AI features now use Anthropic Claude as the default provider
 
 ### Test Coverage Agent Status ✅
 

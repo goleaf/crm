@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Listeners\Permissions;
 
-use App\Listeners\Permissions\SyncTeamMemberRole;
 use Tests\TestCase;
 
-class SyncTeamMemberRoleTest extends TestCase
+final class SyncTeamMemberRoleTest extends TestCase
 {
-
     public function test_handle(): void
     {
         $this->markTestIncomplete('Test for handle needs implementation');

@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Support\Helpers;
 
-use App\Support\Helpers\Validate;
 use Tests\TestCase;
 
-class ValidateTest extends TestCase
-{
-}
+final class ValidateTest extends TestCase {}

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Pages;
 
-use App\Filament\Pages\ConfigChecker;
 use Tests\TestCase;
 
-class ConfigCheckerTest extends TestCase
+final class ConfigCheckerTest extends TestCase
 {
-
     public function test_mount(): void
     {
         $this->markTestIncomplete('Test for mount needs implementation');

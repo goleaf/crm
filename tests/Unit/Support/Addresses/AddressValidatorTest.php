@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Support\Addresses;
 
-use App\Support\Addresses\AddressValidator;
 use Tests\TestCase;
 
-class AddressValidatorTest extends TestCase
+final class AddressValidatorTest extends TestCase
 {
-
     public function test_validate(): void
     {
         $this->markTestIncomplete('Test for validate needs implementation');

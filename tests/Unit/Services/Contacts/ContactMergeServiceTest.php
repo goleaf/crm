@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\Contacts;
 
-use App\Services\Contacts\ContactMergeService;
 use Tests\TestCase;
 
-class ContactMergeServiceTest extends TestCase
+final class ContactMergeServiceTest extends TestCase
 {
-
     public function test_merge(): void
     {
         $this->markTestIncomplete('Test for merge needs implementation');

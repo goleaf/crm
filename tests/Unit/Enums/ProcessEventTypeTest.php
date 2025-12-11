@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums;
 
-use App\Enums\ProcessEventType;
 use Tests\TestCase;
 
-class ProcessEventTypeTest extends TestCase
+final class ProcessEventTypeTest extends TestCase
 {
-
     public function test_get_label(): void
     {
         $this->markTestIncomplete('Test for getLabel needs implementation');

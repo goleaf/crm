@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models\Concerns;
 
-use App\Models\Concerns\HasMetadata;
 use Tests\TestCase;
 
-class HasMetadataTest extends TestCase
+final class HasMetadataTest extends TestCase
 {
-
     public function test_initialize_has_metadata(): void
     {
         $this->markTestIncomplete('Test for initializeHasMetadata needs implementation');

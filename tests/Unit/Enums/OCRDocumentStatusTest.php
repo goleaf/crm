@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums;
 
-use App\Enums\OCRDocumentStatus;
 use Tests\TestCase;
 
-class OCRDocumentStatusTest extends TestCase
+final class OCRDocumentStatusTest extends TestCase
 {
-
     public function test_get_label(): void
     {
         $this->markTestIncomplete('Test for getLabel needs implementation');

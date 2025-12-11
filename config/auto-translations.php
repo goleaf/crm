@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'source_locale' => env('AUTO_TRANSLATE_SOURCE_LOCALE', env('APP_LOCALE', 'en')),
 
@@ -21,10 +23,10 @@ return [
     ],
 
     'ai' => [
-        'enabled' => (bool) env('AUTO_TRANSLATE_ENABLED', true),
-        'api_key' => env('AUTO_TRANSLATE_OPENAI_API_KEY', ''),
-        'api_base' => env('AUTO_TRANSLATE_OPENAI_API_BASE', 'https://api.openai.com/v1'),
-        'model' => env('AUTO_TRANSLATE_OPENAI_MODEL', 'gpt-4o-mini'),
+        'enabled' => (bool) env('AUTO_TRANSLATE_ENABLED', false),
+        'api_key' => env('AUTO_TRANSLATE_ANTHROPIC_API_KEY', ''),
+        'api_base' => env('AUTO_TRANSLATE_ANTHROPIC_API_BASE', 'https://api.anthropic.com/v1'),
+        'model' => env('AUTO_TRANSLATE_ANTHROPIC_MODEL', 'claude-3-haiku-20240307'),
         'temp' => (float) env('AUTO_TRANSLATE_TEMPERATURE', 0.3),
         'chunk' => (int) env('AUTO_TRANSLATE_CHUNK_SIZE', 50),
     ],

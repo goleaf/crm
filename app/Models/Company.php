@@ -145,6 +145,8 @@ final class Company extends Model implements HasCustomFields, HasMedia
 
     protected static function booted(): void
     {
+        parent::booted();
+        
         self::saving(function (self $company): void {
             $company->normalizeAddresses();
         });

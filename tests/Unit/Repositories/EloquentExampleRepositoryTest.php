@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Repositories;
 
-use App\Repositories\EloquentExampleRepository;
 use Tests\TestCase;
 
-class EloquentExampleRepositoryTest extends TestCase
+final class EloquentExampleRepositoryTest extends TestCase
 {
-
     public function test_find_by_id(): void
     {
         $this->markTestIncomplete('Test for findById needs implementation');

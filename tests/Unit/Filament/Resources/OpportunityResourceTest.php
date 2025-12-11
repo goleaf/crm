@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources;
 
-use App\Filament\Resources\OpportunityResource;
 use Tests\TestCase;
 
-class OpportunityResourceTest extends TestCase
-{
-}
+final class OpportunityResourceTest extends TestCase {}

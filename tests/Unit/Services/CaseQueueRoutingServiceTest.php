@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use App\Services\CaseQueueRoutingService;
 use Tests\TestCase;
 
-class CaseQueueRoutingServiceTest extends TestCase
+final class CaseQueueRoutingServiceTest extends TestCase
 {
-
     public function test_determine_queue(): void
     {
         $this->markTestIncomplete('Test for determineQueue needs implementation');

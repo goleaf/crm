@@ -9,12 +9,6 @@ return [
         'enabled' => env('PRISM_SERVER_ENABLED', false),
     ],
     'providers' => [
-        'openai' => [
-            'url' => env('OPENAI_URL', 'https://api.openai.com/v1'),
-            'api_key' => env('OPENAI_API_KEY', ''),
-            'organization' => env('OPENAI_ORGANIZATION'),
-            'project' => env('OPENAI_PROJECT'),
-        ],
         'anthropic' => [
             'api_key' => env('ANTHROPIC_API_KEY', ''),
             'version' => env('ANTHROPIC_API_VERSION', '2023-06-01'),
@@ -32,7 +26,7 @@ return [
         ],
         'groq' => [
             'api_key' => env('GROQ_API_KEY', ''),
-            'url' => env('GROQ_URL', 'https://api.groq.com/openai/v1'),
+            'url' => env('GROQ_URL', 'https://api.groq.com/v1'),
         ],
         'xai' => [
             'api_key' => env('XAI_API_KEY', ''),

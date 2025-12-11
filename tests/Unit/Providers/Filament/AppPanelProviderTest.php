@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Providers\Filament;
 
-use App\Providers\Filament\AppPanelProvider;
 use Tests\TestCase;
 
-class AppPanelProviderTest extends TestCase
+final class AppPanelProviderTest extends TestCase
 {
-
     public function test_boot(): void
     {
         $this->markTestIncomplete('Test for boot needs implementation');

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\KnowledgeArticleRelation;
 use Tests\TestCase;
 
-class KnowledgeArticleRelationTest extends TestCase
+final class KnowledgeArticleRelationTest extends TestCase
 {
-
     public function test_article(): void
     {
         $this->markTestIncomplete('Test for article needs implementation');

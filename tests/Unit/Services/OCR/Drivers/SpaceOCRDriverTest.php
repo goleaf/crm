@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\OCR\Drivers;
 
-use App\Services\OCR\Drivers\SpaceOCRDriver;
 use Tests\TestCase;
 
-class SpaceOCRDriverTest extends TestCase
+final class SpaceOCRDriverTest extends TestCase
 {
-
     public function test_extract(): void
     {
         $this->markTestIncomplete('Test for extract needs implementation');

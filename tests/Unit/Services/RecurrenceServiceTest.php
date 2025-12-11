@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use App\Services\RecurrenceService;
 use Tests\TestCase;
 
-class RecurrenceServiceTest extends TestCase
+final class RecurrenceServiceTest extends TestCase
 {
-
     public function test_generate_instances(): void
     {
         $this->markTestIncomplete('Test for generateInstances needs implementation');

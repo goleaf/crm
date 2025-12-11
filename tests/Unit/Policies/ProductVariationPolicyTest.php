@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Policies;
 
-use App\Policies\ProductVariationPolicy;
 use Tests\TestCase;
 
-class ProductVariationPolicyTest extends TestCase
+final class ProductVariationPolicyTest extends TestCase
 {
-
     public function test_view_any(): void
     {
         $this->markTestIncomplete('Test for viewAny needs implementation');

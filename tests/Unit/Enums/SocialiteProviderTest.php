@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums;
 
-use App\Enums\SocialiteProvider;
 use Tests\TestCase;
 
-class SocialiteProviderTest extends TestCase
-{
-}
+final class SocialiteProviderTest extends TestCase {}

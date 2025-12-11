@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums\CustomFields;
 
-use App\Enums\CustomFields\PeopleField;
 use Tests\TestCase;
 
-class PeopleFieldTest extends TestCase
+final class PeopleFieldTest extends TestCase
 {
-
     public function test_get_field_type(): void
     {
         $this->markTestIncomplete('Test for getFieldType needs implementation');

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Livewire\App\Profile;
 
-use App\Livewire\App\Profile\LogoutOtherBrowserSessions;
 use Tests\TestCase;
 
-class LogoutOtherBrowserSessionsTest extends TestCase
+final class LogoutOtherBrowserSessionsTest extends TestCase
 {
-
     public function test_form(): void
     {
         $this->markTestIncomplete('Test for form needs implementation');

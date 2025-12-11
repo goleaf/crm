@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Notifications;
 
-use App\Notifications\RealTimeFilamentNotification;
 use Tests\TestCase;
 
-class RealTimeFilamentNotificationTest extends TestCase
+final class RealTimeFilamentNotificationTest extends TestCase
 {
-
     public function test_via(): void
     {
         $this->markTestIncomplete('Test for via needs implementation');

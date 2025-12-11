@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Observers;
 
-use App\Observers\OpportunityObserver;
 use Tests\TestCase;
 
-class OpportunityObserverTest extends TestCase
+final class OpportunityObserverTest extends TestCase
 {
-
     public function test_creating(): void
     {
         $this->markTestIncomplete('Test for creating needs implementation');

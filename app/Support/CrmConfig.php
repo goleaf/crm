@@ -292,7 +292,7 @@ final class CrmConfig
      */
     public static function aiProvider(): string
     {
-        return self::get('ai.provider', 'openai');
+        return self::get('ai.provider', 'anthropic');
     }
 
     /**

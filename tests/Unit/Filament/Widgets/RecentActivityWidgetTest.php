@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Widgets;
 
-use App\Filament\Widgets\RecentActivityWidget;
 use Tests\TestCase;
 
-class RecentActivityWidgetTest extends TestCase
+final class RecentActivityWidgetTest extends TestCase
 {
-
     public function test_table(): void
     {
         $this->markTestIncomplete('Test for table needs implementation');

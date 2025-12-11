@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums\Knowledge;
 
-use App\Enums\Knowledge\ArticleVisibility;
 use Tests\TestCase;
 
-class ArticleVisibilityTest extends TestCase
+final class ArticleVisibilityTest extends TestCase
 {
-
     public function test_get_label(): void
     {
         $this->markTestIncomplete('Test for getLabel needs implementation');

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models\Concerns;
 
-use App\Models\Concerns\HasCustomFields;
 use Tests\TestCase;
 
-class HasCustomFieldsTest extends TestCase
+final class HasCustomFieldsTest extends TestCase
 {
-
     public function test_custom_field_value(): void
     {
         $this->markTestIncomplete('Test for customFieldValue needs implementation');

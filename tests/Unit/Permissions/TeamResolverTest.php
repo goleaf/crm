@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Permissions;
 
-use App\Permissions\TeamResolver;
 use Tests\TestCase;
 
-class TeamResolverTest extends TestCase
+final class TeamResolverTest extends TestCase
 {
-
     public function test_get_permissions_team_id(): void
     {
         $this->markTestIncomplete('Test for getPermissionsTeamId needs implementation');

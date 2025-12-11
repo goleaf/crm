@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Policies;
 
-use App\Policies\CalendarEventPolicy;
 use Tests\TestCase;
 
-class CalendarEventPolicyTest extends TestCase
+final class CalendarEventPolicyTest extends TestCase
 {
-
     public function test_view_any(): void
     {
         $this->markTestIncomplete('Test for viewAny needs implementation');

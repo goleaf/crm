@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Support;
 
-use App\Support\CrmConfig;
 use Tests\TestCase;
 
-class CrmConfigTest extends TestCase
-{
-}
+final class CrmConfigTest extends TestCase {}

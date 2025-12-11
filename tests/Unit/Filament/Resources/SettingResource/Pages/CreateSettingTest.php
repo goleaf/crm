@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\SettingResource\Pages;
 
-use App\Filament\Resources\SettingResource\Pages\CreateSetting;
 use Tests\TestCase;
 
-class CreateSettingTest extends TestCase
-{
-}
+final class CreateSettingTest extends TestCase {}

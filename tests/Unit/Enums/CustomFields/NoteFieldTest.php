@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums\CustomFields;
 
-use App\Enums\CustomFields\NoteField;
 use Tests\TestCase;
 
-class NoteFieldTest extends TestCase
+final class NoteFieldTest extends TestCase
 {
-
     public function test_get_field_type(): void
     {
         $this->markTestIncomplete('Test for getFieldType needs implementation');

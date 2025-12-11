@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums;
 
-use App\Enums\SubscriberTagEnum;
 use Tests\TestCase;
 
-class SubscriberTagEnumTest extends TestCase
-{
-}
+final class SubscriberTagEnumTest extends TestCase {}

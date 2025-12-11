@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\OrderResource\Pages;
 
-use App\Filament\Resources\OrderResource\Pages\ViewOrder;
 use Tests\TestCase;
 
-class ViewOrderTest extends TestCase
+final class ViewOrderTest extends TestCase
 {
-
     public function test_get_header_actions(): void
     {
         $this->markTestIncomplete('Test for getHeaderActions needs implementation');

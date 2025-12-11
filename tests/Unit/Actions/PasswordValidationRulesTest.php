@@ -6,7 +6,8 @@ use App\Actions\Fortify\PasswordValidationRules;
 use Illuminate\Support\Facades\Validator;
 
 it('rejects common passwords via LaraUtilX rule', function (): void {
-    $rules = (new class {
+    $rules = (new class
+    {
         use PasswordValidationRules;
 
         public function rules(): array

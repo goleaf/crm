@@ -12,7 +12,6 @@ use App\Models\Concerns\HasTags;
 use App\Models\Concerns\HasTaxonomies;
 use App\Models\Concerns\HasTeam;
 use App\Models\Concerns\LogsActivity;
-use App\Models\Group;
 use App\Observers\PeopleObserver;
 use App\Services\AvatarService;
 use App\Services\Opportunities\OpportunityMetricsService;

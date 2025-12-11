@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums\Knowledge;
 
-use App\Enums\Knowledge\FaqStatus;
 use Tests\TestCase;
 
-class FaqStatusTest extends TestCase
+final class FaqStatusTest extends TestCase
 {
-
     public function test_get_label(): void
     {
         $this->markTestIncomplete('Test for getLabel needs implementation');

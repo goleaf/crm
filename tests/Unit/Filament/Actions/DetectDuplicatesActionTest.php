@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Actions;
 
-use App\Filament\Actions\DetectDuplicatesAction;
 use Tests\TestCase;
 
-class DetectDuplicatesActionTest extends TestCase
-{
-}
+final class DetectDuplicatesActionTest extends TestCase {}

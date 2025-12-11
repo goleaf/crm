@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Livewire\PurchaseOrders;
 
-use App\Livewire\PurchaseOrders\ReceiptPanel;
 use Tests\TestCase;
 
-class ReceiptPanelTest extends TestCase
+final class ReceiptPanelTest extends TestCase
 {
-
     public function test_mount(): void
     {
         $this->markTestIncomplete('Test for mount needs implementation');

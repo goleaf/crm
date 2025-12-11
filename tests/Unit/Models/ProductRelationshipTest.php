@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\ProductRelationship;
 use Tests\TestCase;
 
-class ProductRelationshipTest extends TestCase
+final class ProductRelationshipTest extends TestCase
 {
-
     public function test_casts(): void
     {
         $this->markTestIncomplete('Test for casts needs implementation');

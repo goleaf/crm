@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums\Knowledge;
 
-use App\Enums\Knowledge\ApprovalStatus;
 use Tests\TestCase;
 
-class ApprovalStatusTest extends TestCase
+final class ApprovalStatusTest extends TestCase
 {
-
     public function test_get_label(): void
     {
         $this->markTestIncomplete('Test for getLabel needs implementation');

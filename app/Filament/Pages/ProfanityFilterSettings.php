@@ -93,7 +93,7 @@ final class ProfanityFilterSettings extends Page implements HasForms
             Notification::make()
                 ->warning()
                 ->title('Profanity Found!')
-                ->body('Cleaned text: '.$result['clean_text'])
+                ->body('Cleaned text: ' . $result['clean_text'])
                 ->persistent()
                 ->send();
         }

@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Forms\Components;
 
-use App\Filament\Forms\Components\UnsplashPicker;
 use Tests\TestCase;
 
-class UnsplashPickerTest extends TestCase
-{
-}
+final class UnsplashPickerTest extends TestCase {}

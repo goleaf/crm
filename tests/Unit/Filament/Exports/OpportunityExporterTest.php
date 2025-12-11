@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Exports;
 
-use App\Filament\Exports\OpportunityExporter;
 use Tests\TestCase;
 
-class OpportunityExporterTest extends TestCase
-{
-}
+final class OpportunityExporterTest extends TestCase {}

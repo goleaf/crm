@@ -7,7 +7,6 @@
  * It uses property-based testing with randomized inputs to ensure robust coverage across
  * various scenarios and edge cases.
  *
- * @package Tests\Unit\Properties\AccountsModule
  *
  * @see \App\Models\AccountTeamMember
  * @see \App\Models\Company::accountTeam()
@@ -351,6 +350,7 @@ test('property: account team member assignment respects unique constraint per us
 
     // Attempting to add same user again should fail due to unique constraint
     $exceptionThrown = false;
+
     try {
         AccountTeamMember::create([
             'company_id' => $company->getKey(),
@@ -359,7 +359,7 @@ test('property: account team member assignment respects unique constraint per us
             'role' => AccountTeamRole::SUPPORT,
             'access_level' => AccountTeamAccessLevel::VIEW,
         ]);
-    } catch (\Illuminate\Database\QueryException $e) {
+    } catch (\Illuminate\Database\QueryException) {
         $exceptionThrown = true;
     }
 

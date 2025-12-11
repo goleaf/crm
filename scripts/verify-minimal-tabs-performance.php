@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * MinimalTabs Performance Verification Script
- * 
+ *
  * Verifies that the MinimalTabs component meets performance targets
  * after the Filament v4.3+ namespace update.
  */
@@ -26,7 +28,7 @@ $endTime = microtime(true);
 $basicTime = ($endTime - $startTime) * 1000;
 
 echo "   ✅ Basic operations: {$basicTime}ms\n";
-echo "   ✅ Target: < 10ms - " . ($basicTime < 10 ? "PASS" : "FAIL") . "\n\n";
+echo '   ✅ Target: < 10ms - ' . ($basicTime < 10 ? 'PASS' : 'FAIL') . "\n\n";
 
 // Test 2: Large class list performance
 echo "2. Testing large class list performance...\n";
@@ -45,7 +47,7 @@ $endTime = microtime(true);
 $largeClassTime = ($endTime - $startTime) * 1000;
 
 echo "   ✅ 1000 classes: {$largeClassTime}ms\n";
-echo "   ✅ Target: < 100ms - " . ($largeClassTime < 100 ? "PASS" : "FAIL") . "\n\n";
+echo '   ✅ Target: < 100ms - ' . ($largeClassTime < 100 ? 'PASS' : 'FAIL') . "\n\n";
 
 // Test 3: Memory usage
 echo "3. Testing memory efficiency...\n";
@@ -60,7 +62,7 @@ $finalMemory = memory_get_usage();
 $memoryIncrease = ($finalMemory - $initialMemory) / 1024; // KB
 
 echo "   ✅ Memory usage: {$memoryIncrease}KB\n";
-echo "   ✅ Target: < 1024KB - " . ($memoryIncrease < 1024 ? "PASS" : "FAIL") . "\n\n";
+echo '   ✅ Target: < 1024KB - ' . ($memoryIncrease < 1024 ? 'PASS' : 'FAIL') . "\n\n";
 
 // Test 4: Namespace verification
 echo "4. Testing Filament v4.3+ namespace compatibility...\n";
@@ -70,7 +72,7 @@ $expectedNamespace = 'Filament\Schemas\Components\Tabs';
 
 echo "   ✅ Parent class: {$parentClass->getName()}\n";
 echo "   ✅ Expected: {$expectedNamespace}\n";
-echo "   ✅ Namespace: " . ($parentClass->getName() === $expectedNamespace ? "PASS" : "FAIL") . "\n\n";
+echo '   ✅ Namespace: ' . ($parentClass->getName() === $expectedNamespace ? 'PASS' : 'FAIL') . "\n\n";
 
 // Summary
 echo "=== Performance Summary ===\n";

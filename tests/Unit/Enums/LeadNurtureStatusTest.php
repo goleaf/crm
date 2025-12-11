@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums;
 
-use App\Enums\LeadNurtureStatus;
 use Tests\TestCase;
 
-class LeadNurtureStatusTest extends TestCase
+final class LeadNurtureStatusTest extends TestCase
 {
-
     public function test_label(): void
     {
         $this->markTestIncomplete('Test for label needs implementation');

@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources;
 
-use App\Filament\Resources\ShareLinkResource;
 use Tests\TestCase;
 
-class ShareLinkResourceTest extends TestCase
-{
-}
+final class ShareLinkResourceTest extends TestCase {}

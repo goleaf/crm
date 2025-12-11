@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Observers;
 
-use App\Observers\OrderObserver;
 use Tests\TestCase;
 
-class OrderObserverTest extends TestCase
+final class OrderObserverTest extends TestCase
 {
-
     public function test_creating(): void
     {
         $this->markTestIncomplete('Test for creating needs implementation');

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\OpportunityResource\Pages;
 
-use App\Filament\Resources\OpportunityResource\Pages\ViewOpportunity;
 use Tests\TestCase;
 
-class ViewOpportunityTest extends TestCase
+final class ViewOpportunityTest extends TestCase
 {
-
     public function test_get_header_actions(): void
     {
         $this->markTestIncomplete('Test for getHeaderActions needs implementation');

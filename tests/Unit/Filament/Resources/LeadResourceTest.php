@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources;
 
-use App\Filament\Resources\LeadResource;
 use Tests\TestCase;
 
-class LeadResourceTest extends TestCase
-{
-}
+final class LeadResourceTest extends TestCase {}

@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums;
 
-use App\Enums\EmailProgramType;
 use Tests\TestCase;
 
-class EmailProgramTypeTest extends TestCase
-{
-}
+final class EmailProgramTypeTest extends TestCase {}

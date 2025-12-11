@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Actions\Jetstream;
 
-use App\Actions\Jetstream\InviteTeamMember;
 use Tests\TestCase;
 
-class InviteTeamMemberTest extends TestCase
+final class InviteTeamMemberTest extends TestCase
 {
-
     public function test_invite(): void
     {
         $this->markTestIncomplete('Test for invite needs implementation');

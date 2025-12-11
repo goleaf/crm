@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Listeners\Permissions;
 
-use App\Listeners\Permissions\RemoveTeamRole;
 use Tests\TestCase;
 
-class RemoveTeamRoleTest extends TestCase
+final class RemoveTeamRoleTest extends TestCase
 {
-
     public function test_handle(): void
     {
         $this->markTestIncomplete('Test for handle needs implementation');

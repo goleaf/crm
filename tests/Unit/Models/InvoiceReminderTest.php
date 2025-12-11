@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\InvoiceReminder;
 use Tests\TestCase;
 
-class InvoiceReminderTest extends TestCase
+final class InvoiceReminderTest extends TestCase
 {
-
     public function test_casts(): void
     {
         $this->markTestIncomplete('Test for casts needs implementation');

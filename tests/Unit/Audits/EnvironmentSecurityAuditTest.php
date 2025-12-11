@@ -6,22 +6,21 @@ use App\Audits\EnvironmentSecurityAudit;
 
 /**
  * Environment Security Audit Test Suite
- * 
+ *
  * Tests the EnvironmentSecurityAudit class functionality with a simplified test suite
  * optimized for test environment compatibility while maintaining core security audit coverage.
- * 
+ *
  * The actual EnvironmentSecurityAudit class performs all 7 security checks in production:
  * 1. APP_DEBUG enabled in production
- * 2. Weak APP_KEY detection  
+ * 2. Weak APP_KEY detection
  * 3. HTTPS enforcement in production
  * 4. Insecure session cookies in production
  * 5. Debug logging enabled
  * 6. Empty database password
  * 7. Mail driver set to log in production
- * 
+ *
  * This test suite focuses on checks that can be reliably tested across environments.
- * 
- * @package Tests\Unit\Audits
+ *
  * @see App\Audits\EnvironmentSecurityAudit
  * @see docs\warden-security-audit.md
  */

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\EmployeeTimeOff;
 use Tests\TestCase;
 
-class EmployeeTimeOffTest extends TestCase
+final class EmployeeTimeOffTest extends TestCase
 {
-
     public function test_casts(): void
     {
         $this->markTestIncomplete('Test for casts needs implementation');

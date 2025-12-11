@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\KnowledgeCategoryResource\Pages;
 
-use App\Filament\Resources\KnowledgeCategoryResource\Pages\CreateKnowledgeCategory;
 use Tests\TestCase;
 
-class CreateKnowledgeCategoryTest extends TestCase
-{
-}
+final class CreateKnowledgeCategoryTest extends TestCase {}

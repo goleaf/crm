@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\Contact;
 use Tests\TestCase;
 
-class ContactTest extends TestCase
+final class ContactTest extends TestCase
 {
-
     public function test_accounts(): void
     {
         $this->markTestIncomplete('Test for accounts needs implementation');

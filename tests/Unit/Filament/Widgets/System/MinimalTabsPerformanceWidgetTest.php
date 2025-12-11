@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit;
 
-use App\MinimalTabsPerformanceWidget;
 use Tests\TestCase;
 
-class MinimalTabsPerformanceWidgetTest extends TestCase
+final class MinimalTabsPerformanceWidgetTest extends TestCase
 {
-
     public function test_get_stats(): void
     {
         $this->markTestIncomplete('Test for getStats needs implementation');

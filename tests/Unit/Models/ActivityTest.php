@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\Activity;
 use Tests\TestCase;
 
-class ActivityTest extends TestCase
+final class ActivityTest extends TestCase
 {
-
     public function test_subject(): void
     {
         $this->markTestIncomplete('Test for subject needs implementation');

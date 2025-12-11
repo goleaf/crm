@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models\Concerns;
 
-use App\Models\Concerns\HasUniqueSlug;
 use Tests\TestCase;
 
-class HasUniqueSlugTest extends TestCase
+final class HasUniqueSlugTest extends TestCase
 {
-
     public function test_sync_unique_base_value(): void
     {
         $this->markTestIncomplete('Test for syncUniqueBaseValue needs implementation');

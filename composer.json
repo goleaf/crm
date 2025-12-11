@@ -108,7 +108,6 @@
         "fakerphp/faker": "^1.23",
         "hyvor/laravel-playwright": "^2.0",
         "inspector-apm/mcp-server": "^1.2",
-        "iperamuna/laravel-auto-translations": "^0.0.1",
         "itsgoingd/clockwork": "^5.3",
         "larastan/larastan": "^3.0",
         "laravel/boost": "^1.0",
@@ -151,8 +150,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/",
-            "AutoTranslations\\": "tests/Stubs/AutoTranslations/"
+            "Tests\\": "tests/"
         }
     },
     "scripts": {

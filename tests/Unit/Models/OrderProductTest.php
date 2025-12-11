@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\OrderProduct;
 use Tests\TestCase;
 
-class OrderProductTest extends TestCase
-{
-}
+final class OrderProductTest extends TestCase {}

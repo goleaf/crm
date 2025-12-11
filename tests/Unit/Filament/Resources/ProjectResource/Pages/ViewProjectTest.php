@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\ProjectResource\Pages;
 
-use App\Filament\Resources\ProjectResource\Pages\ViewProject;
 use Tests\TestCase;
 
-class ViewProjectTest extends TestCase
+final class ViewProjectTest extends TestCase
 {
-
     public function test_get_header_actions(): void
     {
         $this->markTestIncomplete('Test for getHeaderActions needs implementation');

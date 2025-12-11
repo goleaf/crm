@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\PeopleResource\Pages;
 
-use App\Filament\Resources\PeopleResource\Pages\ExampleServiceIntegration;
 use Tests\TestCase;
 
-class ExampleServiceIntegrationTest extends TestCase
+final class ExampleServiceIntegrationTest extends TestCase
 {
-
     public function test_get_header_actions(): void
     {
         $this->markTestIncomplete('Test for getHeaderActions needs implementation');

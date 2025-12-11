@@ -8,7 +8,6 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Relaticle\CustomFields\Models\CustomField;
-use Relaticle\CustomFields\Models\CustomFieldOption;
 
 uses(RefreshDatabase::class);
 
@@ -52,11 +51,11 @@ test('task status field accepts valid values and rejects invalid values', functi
     // Setting an invalid status (non-existent option ID) should fail gracefully
     // The system should either reject it or handle it appropriately
     $invalidOptionId = 999999;
-    
+
     try {
         $task->saveCustomFieldValue($statusField, $invalidOptionId);
         $savedValue = $task->getCustomFieldValue($statusField);
-        
+
         // If it doesn't throw, it should not save the invalid value
         // It should either keep the old value or set to null
         expect($savedValue)->not->toBe($invalidOptionId);
@@ -97,11 +96,11 @@ test('task priority field accepts valid values and rejects invalid values', func
 
     // Setting an invalid priority (non-existent option ID) should fail gracefully
     $invalidOptionId = 999999;
-    
+
     try {
         $task->saveCustomFieldValue($priorityField, $invalidOptionId);
         $savedValue = $task->getCustomFieldValue($priorityField);
-        
+
         // If it doesn't throw, it should not save the invalid value
         expect($savedValue)->not->toBe($invalidOptionId);
     } catch (\Exception $e) {
@@ -134,7 +133,7 @@ test('task due date field accepts valid dates and rejects invalid dates', functi
     $validDate = now()->addDays(7);
     $task->saveCustomFieldValue($dueDateField, $validDate);
     $savedValue = $task->getCustomFieldValue($dueDateField);
-    
+
     // The saved value should be a date
     expect($savedValue)->toBeInstanceOf(\DateTimeInterface::class);
     expect($savedValue->format('Y-m-d'))->toBe($validDate->format('Y-m-d'));
@@ -143,7 +142,7 @@ test('task due date field accepts valid dates and rejects invalid dates', functi
     try {
         $task->saveCustomFieldValue($dueDateField, 'not-a-date');
         $savedValue = $task->getCustomFieldValue($dueDateField);
-        
+
         // If it doesn't throw, it should not save the invalid value
         // It should either keep the old value or set to null
         expect($savedValue)->not->toBe('not-a-date');
@@ -195,13 +194,13 @@ test('task custom fields maintain data integrity across multiple updates', funct
 
     // Update status without affecting priority
     $task->saveCustomFieldValue($statusField, $statusOption2->id);
-    
+
     expect($task->getCustomFieldValue($statusField))->toBe($statusOption2->id);
     expect($task->getCustomFieldValue($priorityField))->toBe($priorityOption1->id);
 
     // Update priority without affecting status
     $task->saveCustomFieldValue($priorityField, $priorityOption2->id);
-    
+
     expect($task->getCustomFieldValue($statusField))->toBe($statusOption2->id);
     expect($task->getCustomFieldValue($priorityField))->toBe($priorityOption2->id);
 });
@@ -257,7 +256,7 @@ test('task custom field validation respects field type constraints', function ()
     try {
         $task->saveCustomFieldValue($selectField, 'some-string-value');
         $savedValue = $task->getCustomFieldValue($selectField);
-        
+
         // If it doesn't throw, verify it's either null or a valid option ID
         if ($savedValue !== null) {
             expect($savedValue)->toBeInt();

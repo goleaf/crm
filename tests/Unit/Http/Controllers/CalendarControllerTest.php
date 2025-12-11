@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Http\Controllers;
 
-use App\Http\Controllers\CalendarController;
 use Tests\TestCase;
 
-class CalendarControllerTest extends TestCase
+final class CalendarControllerTest extends TestCase
 {
-
     public function test_index(): void
     {
         $this->markTestIncomplete('Test for index needs implementation');

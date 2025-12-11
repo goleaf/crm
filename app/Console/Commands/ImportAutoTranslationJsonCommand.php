@@ -80,6 +80,7 @@ final class ImportAutoTranslationJsonCommand extends Command
 
     /**
      * @param array<string, string> $translations
+     *
      * @return array<string, array<string, mixed>>
      */
     private function groupByFile(array $translations): array
@@ -93,8 +94,13 @@ final class ImportAutoTranslationJsonCommand extends Command
 
             $segments = explode('.', (string) $key);
             $file = array_shift($segments);
-
-            if ($file === null || $file === '' || empty($segments)) {
+            if ($file === null) {
+                continue;
+            }
+            if ($file === '') {
+                continue;
+            }
+            if ($segments === []) {
                 continue;
             }
 
@@ -124,7 +130,7 @@ final class ImportAutoTranslationJsonCommand extends Command
         $lines = [];
 
         foreach ($data as $key => $value) {
-            $keyString = is_int($key) ? $key : "'" . addslashes((string) $key) . "'";
+            $keyString = is_int($key) ? $key : "'" . addslashes($key) . "'";
 
             if (is_array($value)) {
                 $nested = $this->formatArray($value, $indent + 1);

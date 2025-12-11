@@ -286,21 +286,19 @@ final class CalendarEventResource extends Resource
                             ->label('Created To')
                             ->seconds(false),
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when($data['title'] ?? null, fn (Builder $query, string $title): Builder => $query->where('title', 'like', "%{$title}%"))
-                            ->when($data['creator_id'] ?? null, fn (Builder $query, int $creatorId): Builder => $query->where('creator_id', $creatorId))
-                            ->when(
-                                $data['lead_id'] ?? null,
-                                fn (Builder $query, int $leadId): Builder => $query
-                                    ->where('related_type', Lead::class)
-                                    ->where('related_id', $leadId),
-                            )
-                            ->when($data['schedule_from'] ?? null, fn (Builder $query, string $from): Builder => $query->where('start_at', '>=', $from))
-                            ->when($data['schedule_to'] ?? null, fn (Builder $query, string $to): Builder => $query->where('start_at', '<=', $to))
-                            ->when($data['created_from'] ?? null, fn (Builder $query, string $from): Builder => $query->where('created_at', '>=', $from))
-                            ->when($data['created_to'] ?? null, fn (Builder $query, string $to): Builder => $query->where('created_at', '<=', $to));
-                    }),
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when($data['title'] ?? null, fn (Builder $query, string $title): Builder => $query->where('title', 'like', "%{$title}%"))
+                        ->when($data['creator_id'] ?? null, fn (Builder $query, int $creatorId): Builder => $query->where('creator_id', $creatorId))
+                        ->when(
+                            $data['lead_id'] ?? null,
+                            fn (Builder $query, int $leadId): Builder => $query
+                                ->where('related_type', Lead::class)
+                                ->where('related_id', $leadId),
+                        )
+                        ->when($data['schedule_from'] ?? null, fn (Builder $query, string $from): Builder => $query->where('start_at', '>=', $from))
+                        ->when($data['schedule_to'] ?? null, fn (Builder $query, string $to): Builder => $query->where('start_at', '<=', $to))
+                        ->when($data['created_from'] ?? null, fn (Builder $query, string $from): Builder => $query->where('created_at', '>=', $from))
+                        ->when($data['created_to'] ?? null, fn (Builder $query, string $to): Builder => $query->where('created_at', '<=', $to))),
                 DateScopeFilter::make(name: 'start_at_range', column: 'start_at'),
                 SelectFilter::make('status')
                     ->label(__('app.labels.status'))

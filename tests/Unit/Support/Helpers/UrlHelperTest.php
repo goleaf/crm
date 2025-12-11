@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Support\Helpers;
 
-use App\Support\Helpers\UrlHelper;
 use Tests\TestCase;
 
-class UrlHelperTest extends TestCase
-{
-}
+final class UrlHelperTest extends TestCase {}

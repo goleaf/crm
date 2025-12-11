@@ -1,6 +1,6 @@
 # Laravel Auto Translations Integration
 
-Automatically collect translation keys, generate locale JSON files with OpenAI/Groq, and bring the results back into our PHP translation files without changing the source of truth.
+Automatically collect translation keys, generate locale JSON files with Anthropic/Groq, and bring the results back into our PHP translation files without changing the source of truth.
 
 ## Package + Commands
 - **Package:** `iperamuna/laravel-auto-translations` (dev-only)
@@ -14,7 +14,7 @@ Automatically collect translation keys, generate locale JSON files with OpenAI/G
 - Environment flags (see `.env.example`):
   - `AUTO_TRANSLATE_ENABLED`, `AUTO_TRANSLATE_SOURCE_LOCALE`, `AUTO_TRANSLATE_STORAGE_PATH`
   - `AUTO_TRANSLATE_REMOTE_VIEW_ENABLED`, `AUTO_TRANSLATE_REMOTE_VIEW_TOKEN`
-  - `AUTO_TRANSLATE_OPENAI_API_BASE`, `AUTO_TRANSLATE_OPENAI_MODEL`, `AUTO_TRANSLATE_OPENAI_API_KEY`, `AUTO_TRANSLATE_TEMPERATURE`, `AUTO_TRANSLATE_CHUNK_SIZE`
+  - `AUTO_TRANSLATE_ANTHROPIC_API_BASE`, `AUTO_TRANSLATE_ANTHROPIC_MODEL`, `AUTO_TRANSLATE_ANTHROPIC_API_KEY`, `AUTO_TRANSLATE_TEMPERATURE`, `AUTO_TRANSLATE_CHUNK_SIZE`
 - JSON outputs under `lang/*.json`, `resources/lang/*.json`, and `storage/app/auto-translations` are gitignored; PHP translation files remain the source of truth.
 
 ## Recommended Workflow

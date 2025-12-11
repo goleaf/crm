@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Widgets;
 
-use App\Filament\Widgets\CrmStatsOverview;
 use Tests\TestCase;
 
-class CrmStatsOverviewTest extends TestCase
+final class CrmStatsOverviewTest extends TestCase
 {
-
     public function test_get_stats(): void
     {
         $this->markTestIncomplete('Test for getStats needs implementation');

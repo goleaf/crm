@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums\CustomFields;
 
-use App\Enums\CustomFields\CompanyField;
 use Tests\TestCase;
 
-class CompanyFieldTest extends TestCase
+final class CompanyFieldTest extends TestCase
 {
-
     public function test_get_display_name(): void
     {
         $this->markTestIncomplete('Test for getDisplayName needs implementation');

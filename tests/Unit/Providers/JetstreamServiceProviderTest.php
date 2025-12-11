@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Providers;
 
-use App\Providers\JetstreamServiceProvider;
 use Tests\TestCase;
 
-class JetstreamServiceProviderTest extends TestCase
+final class JetstreamServiceProviderTest extends TestCase
 {
-
     public function test_register(): void
     {
         $this->markTestIncomplete('Test for register needs implementation');

@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources;
 
-use App\Filament\Resources\TaskResource;
 use Tests\TestCase;
 
-class TaskResourceTest extends TestCase
-{
-}
+final class TaskResourceTest extends TestCase {}

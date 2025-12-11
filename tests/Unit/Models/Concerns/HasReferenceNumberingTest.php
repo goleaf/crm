@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models\Concerns;
 
-use App\Models\Concerns\HasReferenceNumbering;
 use Tests\TestCase;
 
-class HasReferenceNumberingTest extends TestCase
+final class HasReferenceNumberingTest extends TestCase
 {
-
     public function test_prime_reference_counter(): void
     {
         $this->markTestIncomplete('Test for primeReferenceCounter needs implementation');

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\ShareLink;
 
-use App\Services\ShareLink\ShareLinkService;
 use Tests\TestCase;
 
-class ShareLinkServiceTest extends TestCase
+final class ShareLinkServiceTest extends TestCase
 {
-
     public function test_create_link(): void
     {
         $this->markTestIncomplete('Test for createLink needs implementation');

@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\PurchaseOrderResource\Pages;
 
-use App\Filament\Resources\PurchaseOrderResource\Pages\CreatePurchaseOrder;
 use Tests\TestCase;
 
-class CreatePurchaseOrderTest extends TestCase
-{
-}
+final class CreatePurchaseOrderTest extends TestCase {}

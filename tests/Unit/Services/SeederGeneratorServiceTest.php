@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use App\Services\SeederGeneratorService;
 use Tests\TestCase;
 
-class SeederGeneratorServiceTest extends TestCase
+final class SeederGeneratorServiceTest extends TestCase
 {
-
     public function test_model_options(): void
     {
         $this->markTestIncomplete('Test for modelOptions needs implementation');

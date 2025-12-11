@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums;
 
-use App\Enums\WorkflowConditionLogic;
 use Tests\TestCase;
 
-class WorkflowConditionLogicTest extends TestCase
+final class WorkflowConditionLogicTest extends TestCase
 {
-
     public function test_get_label(): void
     {
         $this->markTestIncomplete('Test for getLabel needs implementation');

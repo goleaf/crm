@@ -61,7 +61,7 @@ it('rebuilds the in-memory dataset after clearing the connection', function (): 
 
         public function getRecords(): array
         {
-            if (static::$seedSet === 1) {
+            if (self::$seedSet === 1) {
                 return [
                     ['code' => 'US', 'name' => 'United States'],
                     ['code' => 'CA', 'name' => 'Canada'],

@@ -6,6 +6,8 @@ namespace App\Filament\Resources\LeadResource\RelationManagers;
 
 use App\Enums\CalendarEventStatus;
 use App\Enums\CalendarEventType;
+use Awcodes\BadgeableColumn\Components\Badge;
+use Awcodes\BadgeableColumn\Components\BadgeableColumn;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -17,8 +19,6 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
-use Awcodes\BadgeableColumn\Components\Badge;
-use Awcodes\BadgeableColumn\Components\BadgeableColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -51,7 +51,7 @@ final class CalendarEventsRelationManager extends RelationManager
                         ->columnSpanFull(),
                     Select::make('type')
                         ->label(__('app.labels.activity'))
-                        ->options(self::activityTypeOptions())
+                        ->options($this->activityTypeOptions())
                         ->default(CalendarEventType::MEETING)
                         ->native(false)
                         ->required(),
@@ -156,7 +156,7 @@ final class CalendarEventsRelationManager extends RelationManager
             ->filters([
                 SelectFilter::make('type')
                     ->label(__('app.labels.activity'))
-                    ->options(self::activityTypeOptions()),
+                    ->options($this->activityTypeOptions()),
                 Filter::make('activity_filters')
                     ->label(__('app.labels.activity_filters'))
                     ->form([
@@ -180,33 +180,31 @@ final class CalendarEventsRelationManager extends RelationManager
                             ->label(__('app.labels.created_to'))
                             ->seconds(false),
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['title'] ?? null,
-                                fn (Builder $query, string $title): Builder => $query->where('title', 'like', "%{$title}%"),
-                            )
-                            ->when(
-                                $data['creator_id'] ?? null,
-                                fn (Builder $query, int $creator): Builder => $query->where('creator_id', $creator),
-                            )
-                            ->when(
-                                $data['schedule_from'] ?? null,
-                                fn (Builder $query, string $from): Builder => $query->where('start_at', '>=', $from),
-                            )
-                            ->when(
-                                $data['schedule_to'] ?? null,
-                                fn (Builder $query, string $to): Builder => $query->where('start_at', '<=', $to),
-                            )
-                            ->when(
-                                $data['created_from'] ?? null,
-                                fn (Builder $query, string $from): Builder => $query->where('created_at', '>=', $from),
-                            )
-                            ->when(
-                                $data['created_to'] ?? null,
-                                fn (Builder $query, string $to): Builder => $query->where('created_at', '<=', $to),
-                            );
-                    }),
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when(
+                            $data['title'] ?? null,
+                            fn (Builder $query, string $title): Builder => $query->where('title', 'like', "%{$title}%"),
+                        )
+                        ->when(
+                            $data['creator_id'] ?? null,
+                            fn (Builder $query, int $creator): Builder => $query->where('creator_id', $creator),
+                        )
+                        ->when(
+                            $data['schedule_from'] ?? null,
+                            fn (Builder $query, string $from): Builder => $query->where('start_at', '>=', $from),
+                        )
+                        ->when(
+                            $data['schedule_to'] ?? null,
+                            fn (Builder $query, string $to): Builder => $query->where('start_at', '<=', $to),
+                        )
+                        ->when(
+                            $data['created_from'] ?? null,
+                            fn (Builder $query, string $from): Builder => $query->where('created_at', '>=', $from),
+                        )
+                        ->when(
+                            $data['created_to'] ?? null,
+                            fn (Builder $query, string $to): Builder => $query->where('created_at', '<=', $to),
+                        )),
             ])
             ->defaultSort('start_at', 'desc')
             ->headerActions([
@@ -231,7 +229,7 @@ final class CalendarEventsRelationManager extends RelationManager
         $data['related_type'] = $lead->getMorphClass();
         $data['status'] ??= CalendarEventStatus::SCHEDULED->value;
 
-        if (empty($data['end_at']) && !empty($data['start_at'])) {
+        if (empty($data['end_at']) && ! empty($data['start_at'])) {
             $data['end_at'] = Date::parse($data['start_at'])->addHour();
         }
 
@@ -248,7 +246,7 @@ final class CalendarEventsRelationManager extends RelationManager
     /**
      * @return array<string, string>
      */
-    private static function activityTypeOptions(): array
+    private function activityTypeOptions(): array
     {
         return collect([
             CalendarEventType::CALL,

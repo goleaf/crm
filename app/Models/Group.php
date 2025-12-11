@@ -20,7 +20,7 @@ final class Group extends Model
     ];
 
     /**
-     * @return BelongsToMany<People, Group>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<\App\Models\People, $this, \Illuminate\Database\Eloquent\Relations\Pivot>
      */
     public function people(): BelongsToMany
     {

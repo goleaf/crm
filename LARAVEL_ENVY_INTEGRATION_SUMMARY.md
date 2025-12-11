@@ -51,7 +51,7 @@ $githubToken = Env::make()->githubToken(); // ?string
 **Warden**: wardenScheduleEnabled, wardenCacheEnabled, wardenHistoryEnabled  
 **Unsplash**: unsplashAccessKey, unsplashCacheEnabled, unsplashAutoDownload  
 **AWS**: awsAccessKeyId, awsSecretAccessKey, awsDefaultRegion, awsBucket  
-**Prism AI**: openaiApiKey, anthropicApiKey, ollamaUrl, mistralApiKey, groqApiKey  
+**Prism AI**: anthropicApiKey, ollamaUrl, mistralApiKey, groqApiKey  
 **Geo**: geoAutoTranslate, geoPhoneDefaultCountry, geoCacheTtlMinutes  
 **System Admin**: sysadminDomain, sysadminPath  
 **Community**: discordInviteUrl  

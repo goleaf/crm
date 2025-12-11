@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Support\Filters;
 
-use App\Filament\Support\Filters\DateScopeFilter;
 use Tests\TestCase;
 
-class DateScopeFilterTest extends TestCase
-{
-}
+final class DateScopeFilterTest extends TestCase {}

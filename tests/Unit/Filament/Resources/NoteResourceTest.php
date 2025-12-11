@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources;
 
-use App\Filament\Resources\NoteResource;
 use Tests\TestCase;
 
-class NoteResourceTest extends TestCase
-{
-}
+final class NoteResourceTest extends TestCase {}

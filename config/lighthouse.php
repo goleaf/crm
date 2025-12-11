@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 return [
     /*
@@ -133,7 +135,7 @@ return [
          * Allows using a specific cache store, uses the app's default if set to null.
          * Not relevant when using opcache mode.
          */
-        'store' => env('LIGHTHOUSE_QUERY_CACHE_STORE', null),
+        'store' => env('LIGHTHOUSE_QUERY_CACHE_STORE'),
 
         /*
          * Duration in seconds the query should remain cached, null means forever.
@@ -160,7 +162,7 @@ return [
         /*
          * Allows using a specific cache store, uses the app's default if set to null.
          */
-        'store' => env('LIGHTHOUSE_VALIDATION_CACHE_STORE', null),
+        'store' => env('LIGHTHOUSE_VALIDATION_CACHE_STORE'),
 
         /*
          * Duration in seconds the validation result should remain cached, null means forever.
@@ -413,7 +415,7 @@ return [
         /*
          * Determines the queue to use for broadcasting queue jobs.
          */
-        'broadcasts_queue_name' => env('LIGHTHOUSE_BROADCASTS_QUEUE_NAME', null),
+        'broadcasts_queue_name' => env('LIGHTHOUSE_BROADCASTS_QUEUE_NAME'),
 
         /*
          * Default subscription storage.
@@ -429,7 +431,7 @@ return [
          * Setting this to `null` means the subscriptions are stored forever. This may cause
          * stale subscriptions to linger indefinitely in case cleanup fails for any reason.
          */
-        'storage_ttl' => env('LIGHTHOUSE_SUBSCRIPTION_STORAGE_TTL', null),
+        'storage_ttl' => env('LIGHTHOUSE_SUBSCRIPTION_STORAGE_TTL'),
 
         /*
          * Encrypt subscription channels by prefixing their names with "private-encrypted-"?

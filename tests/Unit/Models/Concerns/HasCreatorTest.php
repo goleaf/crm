@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models\Concerns;
 
-use App\Models\Concerns\HasCreator;
 use Tests\TestCase;
 
-class HasCreatorTest extends TestCase
+final class HasCreatorTest extends TestCase
 {
-
     public function test_creator(): void
     {
         $this->markTestIncomplete('Test for creator needs implementation');

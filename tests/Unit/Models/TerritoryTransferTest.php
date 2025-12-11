@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\TerritoryTransfer;
 use Tests\TestCase;
 
-class TerritoryTransferTest extends TestCase
+final class TerritoryTransferTest extends TestCase
 {
-
     public function test_from_territory(): void
     {
         $this->markTestIncomplete('Test for fromTerritory needs implementation');

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Observers;
 
-use App\Observers\QuoteObserver;
 use Tests\TestCase;
 
-class QuoteObserverTest extends TestCase
+final class QuoteObserverTest extends TestCase
 {
-
     public function test_updating(): void
     {
         $this->markTestIncomplete('Test for updating needs implementation');

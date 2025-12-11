@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Support\Helpers;
 
-use App\Support\Helpers\ColorHelper;
 use Tests\TestCase;
 
-class ColorHelperTest extends TestCase
-{
-}
+final class ColorHelperTest extends TestCase {}

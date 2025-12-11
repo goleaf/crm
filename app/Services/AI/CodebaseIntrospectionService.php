@@ -124,7 +124,7 @@ final readonly class CodebaseIntrospectionService
             return true;
         }
 
-        return array_any($namespaces, fn ($namespace): bool => str_starts_with($class, $namespace));
+        return array_any($namespaces, fn ($namespace): bool => str_starts_with($class, (string) $namespace));
     }
 
     /**

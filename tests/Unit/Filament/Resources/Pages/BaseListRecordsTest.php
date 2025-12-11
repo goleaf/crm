@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\Pages;
 
-use App\Filament\Resources\Pages\BaseListRecords;
 use Tests\TestCase;
 
-class BaseListRecordsTest extends TestCase
+final class BaseListRecordsTest extends TestCase
 {
-
     public function test_get_chart_date_column(): void
     {
         $this->markTestIncomplete('Test for getChartDateColumn needs implementation');

@@ -47,7 +47,7 @@ final class TaskRecurrenceService
 
         $nextDate = $this->calculateNextDate($recurrence);
 
-        if ($nextDate === null) {
+        if (! $nextDate instanceof \Illuminate\Support\Carbon) {
             return null;
         }
 
@@ -107,7 +107,7 @@ final class TaskRecurrenceService
         // Get the most recent subtask (instance) if any
         $lastInstance = Task::query()
             ->where('parent_id', $task->id)
-            ->orderBy('start_date', 'desc')
+            ->latest('start_date')
             ->first();
 
         if ($lastInstance !== null && $lastInstance->start_date !== null) {
@@ -186,4 +186,3 @@ final class TaskRecurrenceService
         return $recurrence->update(['is_active' => true]);
     }
 }
-

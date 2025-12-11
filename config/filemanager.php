@@ -3,9 +3,7 @@
 declare(strict_types=1);
 
 return [
-    'translate' => static function (string $key, string $fallback): string {
-        return app()->bound('translator') ? __($key) : $fallback;
-    },
+    'translate' => static fn (string $key, string $fallback): string => app()->bound('translator') ? __($key) : $fallback,
     /*
     |--------------------------------------------------------------------------
     | File Manager Mode

@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums;
 
-use App\Enums\CustomFieldType;
 use Tests\TestCase;
 
-class CustomFieldTypeTest extends TestCase
-{
-}
+final class CustomFieldTypeTest extends TestCase {}

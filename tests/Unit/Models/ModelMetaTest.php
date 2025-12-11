@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\ModelMeta;
 use Tests\TestCase;
 
-class ModelMetaTest extends TestCase
+final class ModelMetaTest extends TestCase
 {
-
     public function test_metable(): void
     {
         $this->markTestIncomplete('Test for metable needs implementation');

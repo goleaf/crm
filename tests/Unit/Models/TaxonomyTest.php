@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\Taxonomy;
 use Tests\TestCase;
 
-class TaxonomyTest extends TestCase
-{
-}
+final class TaxonomyTest extends TestCase {}

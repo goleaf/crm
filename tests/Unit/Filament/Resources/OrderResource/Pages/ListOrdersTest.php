@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\OrderResource\Pages;
 
-use App\Filament\Resources\OrderResource\Pages\ListOrders;
 use Tests\TestCase;
 
-class ListOrdersTest extends TestCase
-{
-}
+final class ListOrdersTest extends TestCase {}

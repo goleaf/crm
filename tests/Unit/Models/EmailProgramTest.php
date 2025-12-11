@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\EmailProgram;
 use Tests\TestCase;
 
-class EmailProgramTest extends TestCase
+final class EmailProgramTest extends TestCase
 {
-
     public function test_team(): void
     {
         $this->markTestIncomplete('Test for team needs implementation');

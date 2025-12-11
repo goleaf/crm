@@ -6,9 +6,9 @@ namespace App\Models;
 
 use App\Enums\QuoteDiscountType;
 use App\Enums\QuoteStatus;
-use App\Models\Concerns\HasTeam;
 use App\Models\Concerns\HasCreator;
 use App\Models\Concerns\HasNotesAndNotables;
+use App\Models\Concerns\HasTeam;
 use App\Models\Concerns\LogsActivity;
 use App\Observers\QuoteObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -21,8 +21,8 @@ use Illuminate\Support\Facades\Auth;
 #[ObservedBy(QuoteObserver::class)]
 final class Quote extends Model
 {
-    use HasFactory;
     use HasCreator;
+    use HasFactory;
     use HasNotesAndNotables;
     use HasTeam;
     use LogsActivity;

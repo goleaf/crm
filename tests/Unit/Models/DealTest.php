@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\Deal;
 use Tests\TestCase;
 
-class DealTest extends TestCase
-{
-}
+final class DealTest extends TestCase {}

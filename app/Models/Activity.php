@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\Concerns\HasTeam;
-use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Collection;
 
 final class Activity extends Model
 {
@@ -60,11 +60,19 @@ final class Activity extends Model
     /**
      * Adapter for filament-activity-log expectations (Spatie-compatible).
      */
-    public function getChangesAttribute($value = null): Collection
+    protected function getChangesAttribute($value = null): Collection
     {
-        $changes = $value ?? $this->getAttributes()['changes'] ?? [];
+        $raw = $value ?? $this->getAttributes()['changes'] ?? [];
 
-        return collect($changes ?? []);
+        // Handle JSON string from database
+        if (is_string($raw)) {
+            $decoded = json_decode($raw, true);
+            $changes = is_array($decoded) ? $decoded : [];
+        } else {
+            $changes = is_array($raw) ? $raw : [];
+        }
+
+        return collect($changes);
     }
 
     /**
@@ -72,10 +80,16 @@ final class Activity extends Model
      *
      * @return array<string, mixed>
      */
-    public function getPropertiesAttribute(): array
+    protected function getPropertiesAttribute(): array
     {
         $raw = $this->getAttributes()['changes'] ?? [];
 
-        return $raw instanceof Collection ? $raw->toArray() : ($raw ?? []);
+        // Handle JSON string from database
+        if (is_string($raw)) {
+            $decoded = json_decode($raw, true);
+            return is_array($decoded) ? $decoded : [];
+        }
+
+        return $raw instanceof Collection ? $raw->toArray() : (is_array($raw) ? $raw : []);
     }
 }

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Http\Requests;
 
-use App\Http\Requests\UpdateContactRequest;
 use Tests\TestCase;
 
-class UpdateContactRequestTest extends TestCase
+final class UpdateContactRequestTest extends TestCase
 {
-
     public function test_authorize(): void
     {
         $this->markTestIncomplete('Test for authorize needs implementation');

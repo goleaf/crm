@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Policies;
 
-use App\Policies\ProductAttributeValuePolicy;
 use Tests\TestCase;
 
-class ProductAttributeValuePolicyTest extends TestCase
+final class ProductAttributeValuePolicyTest extends TestCase
 {
-
     public function test_view_any(): void
     {
         $this->markTestIncomplete('Test for viewAny needs implementation');

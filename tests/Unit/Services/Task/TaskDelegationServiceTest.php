@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\Task;
 
-use App\Services\Task\TaskDelegationService;
 use Tests\TestCase;
 
-class TaskDelegationServiceTest extends TestCase
+final class TaskDelegationServiceTest extends TestCase
 {
-
     public function test_delegate_task(): void
     {
         $this->markTestIncomplete('Test for delegateTask needs implementation');

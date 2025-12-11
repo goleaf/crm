@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Support\Helpers;
 
-use App\Support\Helpers\StringHelper;
 use Tests\TestCase;
 
-class StringHelperTest extends TestCase
-{
-}
+final class StringHelperTest extends TestCase {}

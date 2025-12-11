@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Features;
 
-use App\Features\KnowledgeEnhancements;
 use Tests\TestCase;
 
-class KnowledgeEnhancementsTest extends TestCase
-{
-}
+final class KnowledgeEnhancementsTest extends TestCase {}

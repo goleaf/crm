@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Pages;
 
-use App\Filament\Pages\DatabaseOptimization;
 use Tests\TestCase;
 
-class DatabaseOptimizationTest extends TestCase
+final class DatabaseOptimizationTest extends TestCase
 {
-
     public function test_get_title(): void
     {
         $this->markTestIncomplete('Test for getTitle needs implementation');

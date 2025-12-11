@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use App\Services\CustomerProfileService;
 use Tests\TestCase;
 
-class CustomerProfileServiceTest extends TestCase
+final class CustomerProfileServiceTest extends TestCase
 {
-
     public function test_build(): void
     {
         $this->markTestIncomplete('Test for build needs implementation');

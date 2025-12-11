@@ -45,7 +45,7 @@ final class ExportAutoTranslationsCommand extends Command
             }
         }
 
-        if (empty($translations)) {
+        if ($translations === []) {
             $this->warn("No translations found for locale [{$locale}].");
 
             return self::SUCCESS;
@@ -78,6 +78,7 @@ final class ExportAutoTranslationsCommand extends Command
      * Merge translations from a given directory into the export payload.
      *
      * @param array<string, string> $bag
+     *
      * @return array<string, string>
      */
     private function mergeTranslations(array $bag, string $directory): array

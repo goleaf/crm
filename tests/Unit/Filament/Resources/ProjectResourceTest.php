@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources;
 
-use App\Filament\Resources\ProjectResource;
 use Tests\TestCase;
 
-class ProjectResourceTest extends TestCase
-{
-}
+final class ProjectResourceTest extends TestCase {}

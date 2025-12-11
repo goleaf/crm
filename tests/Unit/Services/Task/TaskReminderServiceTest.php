@@ -11,15 +11,15 @@ use Illuminate\Support\Carbon;
 
 uses(RefreshDatabase::class);
 
-beforeEach(function () {
-    $this->service = new TaskReminderService();
+beforeEach(function (): void {
+    $this->service = new TaskReminderService;
 });
 
-describe('scheduleReminder', function () {
-    it('creates a reminder with correct attributes', function () {
+describe('scheduleReminder', function (): void {
+    it('creates a reminder with correct attributes', function (): void {
         $task = Task::factory()->create();
         $user = User::factory()->create();
-        $remindAt = Carbon::now()->addDay();
+        $remindAt = \Illuminate\Support\Facades\Date::now()->addDay();
 
         $reminder = $this->service->scheduleReminder($task, $remindAt, $user);
 
@@ -33,20 +33,20 @@ describe('scheduleReminder', function () {
             ->and($reminder->canceled_at)->toBeNull();
     });
 
-    it('creates a reminder with custom channel', function () {
+    it('creates a reminder with custom channel', function (): void {
         $task = Task::factory()->create();
         $user = User::factory()->create();
-        $remindAt = Carbon::now()->addDay();
+        $remindAt = \Illuminate\Support\Facades\Date::now()->addDay();
 
         $reminder = $this->service->scheduleReminder($task, $remindAt, $user, 'email');
 
         expect($reminder->channel)->toBe('email');
     });
 
-    it('persists reminder to database', function () {
+    it('persists reminder to database', function (): void {
         $task = Task::factory()->create();
         $user = User::factory()->create();
-        $remindAt = Carbon::now()->addDay();
+        $remindAt = \Illuminate\Support\Facades\Date::now()->addDay();
 
         $reminder = $this->service->scheduleReminder($task, $remindAt, $user);
 
@@ -59,10 +59,10 @@ describe('scheduleReminder', function () {
     });
 });
 
-describe('sendDueReminders', function () {
-    it('sends reminders that are due', function () {
+describe('sendDueReminders', function (): void {
+    it('sends reminders that are due', function (): void {
         $pastReminder = TaskReminder::factory()->create([
-            'remind_at' => Carbon::now()->subHour(),
+            'remind_at' => \Illuminate\Support\Facades\Date::now()->subHour(),
             'status' => 'pending',
             'sent_at' => null,
             'canceled_at' => null,
@@ -78,9 +78,9 @@ describe('sendDueReminders', function () {
             ->and($pastReminder->sent_at)->not->toBeNull();
     });
 
-    it('does not send future reminders', function () {
+    it('does not send future reminders', function (): void {
         TaskReminder::factory()->create([
-            'remind_at' => Carbon::now()->addHour(),
+            'remind_at' => \Illuminate\Support\Facades\Date::now()->addHour(),
             'status' => 'pending',
         ]);
 
@@ -89,11 +89,11 @@ describe('sendDueReminders', function () {
         expect($reminders)->toHaveCount(0);
     });
 
-    it('does not send already sent reminders', function () {
+    it('does not send already sent reminders', function (): void {
         TaskReminder::factory()->create([
-            'remind_at' => Carbon::now()->subHour(),
+            'remind_at' => \Illuminate\Support\Facades\Date::now()->subHour(),
             'status' => 'sent',
-            'sent_at' => Carbon::now()->subMinutes(30),
+            'sent_at' => \Illuminate\Support\Facades\Date::now()->subMinutes(30),
         ]);
 
         $reminders = $this->service->sendDueReminders();
@@ -101,11 +101,11 @@ describe('sendDueReminders', function () {
         expect($reminders)->toHaveCount(0);
     });
 
-    it('does not send canceled reminders', function () {
+    it('does not send canceled reminders', function (): void {
         TaskReminder::factory()->create([
-            'remind_at' => Carbon::now()->subHour(),
+            'remind_at' => \Illuminate\Support\Facades\Date::now()->subHour(),
             'status' => 'canceled',
-            'canceled_at' => Carbon::now()->subMinutes(30),
+            'canceled_at' => \Illuminate\Support\Facades\Date::now()->subMinutes(30),
         ]);
 
         $reminders = $this->service->sendDueReminders();
@@ -113,9 +113,9 @@ describe('sendDueReminders', function () {
         expect($reminders)->toHaveCount(0);
     });
 
-    it('sends multiple due reminders', function () {
+    it('sends multiple due reminders', function (): void {
         TaskReminder::factory()->count(3)->create([
-            'remind_at' => Carbon::now()->subHour(),
+            'remind_at' => \Illuminate\Support\Facades\Date::now()->subHour(),
             'status' => 'pending',
             'sent_at' => null,
             'canceled_at' => null,
@@ -126,9 +126,9 @@ describe('sendDueReminders', function () {
         expect($reminders)->toHaveCount(3);
     });
 
-    it('eager loads task and user relationships', function () {
+    it('eager loads task and user relationships', function (): void {
         $reminder = TaskReminder::factory()->create([
-            'remind_at' => Carbon::now()->subHour(),
+            'remind_at' => \Illuminate\Support\Facades\Date::now()->subHour(),
             'status' => 'pending',
         ]);
 
@@ -139,8 +139,8 @@ describe('sendDueReminders', function () {
     });
 });
 
-describe('cancelTaskReminders', function () {
-    it('cancels all pending reminders for a task', function () {
+describe('cancelTaskReminders', function (): void {
+    it('cancels all pending reminders for a task', function (): void {
         $task = Task::factory()->create();
         $reminder1 = TaskReminder::factory()->create([
             'task_id' => $task->id,
@@ -168,12 +168,12 @@ describe('cancelTaskReminders', function () {
             ->and($reminder2->canceled_at)->not->toBeNull();
     });
 
-    it('does not cancel already sent reminders', function () {
+    it('does not cancel already sent reminders', function (): void {
         $task = Task::factory()->create();
         TaskReminder::factory()->create([
             'task_id' => $task->id,
             'status' => 'sent',
-            'sent_at' => Carbon::now(),
+            'sent_at' => \Illuminate\Support\Facades\Date::now(),
         ]);
 
         $count = $this->service->cancelTaskReminders($task);
@@ -181,12 +181,12 @@ describe('cancelTaskReminders', function () {
         expect($count)->toBe(0);
     });
 
-    it('does not cancel already canceled reminders', function () {
+    it('does not cancel already canceled reminders', function (): void {
         $task = Task::factory()->create();
         TaskReminder::factory()->create([
             'task_id' => $task->id,
             'status' => 'canceled',
-            'canceled_at' => Carbon::now(),
+            'canceled_at' => \Illuminate\Support\Facades\Date::now(),
         ]);
 
         $count = $this->service->cancelTaskReminders($task);
@@ -194,7 +194,7 @@ describe('cancelTaskReminders', function () {
         expect($count)->toBe(0);
     });
 
-    it('returns zero when task has no reminders', function () {
+    it('returns zero when task has no reminders', function (): void {
         $task = Task::factory()->create();
 
         $count = $this->service->cancelTaskReminders($task);
@@ -202,10 +202,10 @@ describe('cancelTaskReminders', function () {
         expect($count)->toBe(0);
     });
 
-    it('only cancels reminders for specified task', function () {
+    it('only cancels reminders for specified task', function (): void {
         $task1 = Task::factory()->create();
         $task2 = Task::factory()->create();
-        
+
         TaskReminder::factory()->create([
             'task_id' => $task1->id,
             'status' => 'pending',
@@ -223,8 +223,8 @@ describe('cancelTaskReminders', function () {
     });
 });
 
-describe('getPendingReminders', function () {
-    it('returns only pending reminders for a task', function () {
+describe('getPendingReminders', function (): void {
+    it('returns only pending reminders for a task', function (): void {
         $task = Task::factory()->create();
         $pending = TaskReminder::factory()->create([
             'task_id' => $task->id,
@@ -235,7 +235,7 @@ describe('getPendingReminders', function () {
         TaskReminder::factory()->create([
             'task_id' => $task->id,
             'status' => 'sent',
-            'sent_at' => Carbon::now(),
+            'sent_at' => \Illuminate\Support\Facades\Date::now(),
         ]);
 
         $reminders = $this->service->getPendingReminders($task);
@@ -244,16 +244,16 @@ describe('getPendingReminders', function () {
             ->and($reminders->first()->id)->toBe($pending->id);
     });
 
-    it('orders reminders by remind_at ascending', function () {
+    it('orders reminders by remind_at ascending', function (): void {
         $task = Task::factory()->create();
         $later = TaskReminder::factory()->create([
             'task_id' => $task->id,
-            'remind_at' => Carbon::now()->addDays(2),
+            'remind_at' => \Illuminate\Support\Facades\Date::now()->addDays(2),
             'status' => 'pending',
         ]);
         $earlier = TaskReminder::factory()->create([
             'task_id' => $task->id,
-            'remind_at' => Carbon::now()->addDay(),
+            'remind_at' => \Illuminate\Support\Facades\Date::now()->addDay(),
             'status' => 'pending',
         ]);
 
@@ -263,7 +263,7 @@ describe('getPendingReminders', function () {
             ->and($reminders->last()->id)->toBe($later->id);
     });
 
-    it('returns empty collection when no pending reminders', function () {
+    it('returns empty collection when no pending reminders', function (): void {
         $task = Task::factory()->create();
 
         $reminders = $this->service->getPendingReminders($task);
@@ -272,8 +272,8 @@ describe('getPendingReminders', function () {
     });
 });
 
-describe('getTaskReminders', function () {
-    it('returns all reminders for a task', function () {
+describe('getTaskReminders', function (): void {
+    it('returns all reminders for a task', function (): void {
         $task = Task::factory()->create();
         TaskReminder::factory()->create([
             'task_id' => $task->id,
@@ -293,15 +293,15 @@ describe('getTaskReminders', function () {
         expect($reminders)->toHaveCount(3);
     });
 
-    it('orders reminders by remind_at descending', function () {
+    it('orders reminders by remind_at descending', function (): void {
         $task = Task::factory()->create();
         $earlier = TaskReminder::factory()->create([
             'task_id' => $task->id,
-            'remind_at' => Carbon::now()->addDay(),
+            'remind_at' => \Illuminate\Support\Facades\Date::now()->addDay(),
         ]);
         $later = TaskReminder::factory()->create([
             'task_id' => $task->id,
-            'remind_at' => Carbon::now()->addDays(2),
+            'remind_at' => \Illuminate\Support\Facades\Date::now()->addDays(2),
         ]);
 
         $reminders = $this->service->getTaskReminders($task);
@@ -310,7 +310,7 @@ describe('getTaskReminders', function () {
             ->and($reminders->last()->id)->toBe($earlier->id);
     });
 
-    it('returns empty collection when task has no reminders', function () {
+    it('returns empty collection when task has no reminders', function (): void {
         $task = Task::factory()->create();
 
         $reminders = $this->service->getTaskReminders($task);
@@ -319,8 +319,8 @@ describe('getTaskReminders', function () {
     });
 });
 
-describe('cancelReminder', function () {
-    it('cancels a pending reminder', function () {
+describe('cancelReminder', function (): void {
+    it('cancels a pending reminder', function (): void {
         $reminder = TaskReminder::factory()->create([
             'status' => 'pending',
             'sent_at' => null,
@@ -336,10 +336,10 @@ describe('cancelReminder', function () {
             ->and($reminder->canceled_at)->not->toBeNull();
     });
 
-    it('returns false when reminder is already sent', function () {
+    it('returns false when reminder is already sent', function (): void {
         $reminder = TaskReminder::factory()->create([
             'status' => 'sent',
-            'sent_at' => Carbon::now(),
+            'sent_at' => \Illuminate\Support\Facades\Date::now(),
         ]);
 
         $result = $this->service->cancelReminder($reminder);
@@ -350,10 +350,10 @@ describe('cancelReminder', function () {
         expect($reminder->status)->toBe('sent');
     });
 
-    it('returns false when reminder is already canceled', function () {
+    it('returns false when reminder is already canceled', function (): void {
         $reminder = TaskReminder::factory()->create([
             'status' => 'canceled',
-            'canceled_at' => Carbon::now(),
+            'canceled_at' => \Illuminate\Support\Facades\Date::now(),
         ]);
 
         $result = $this->service->cancelReminder($reminder);
@@ -362,15 +362,15 @@ describe('cancelReminder', function () {
     });
 });
 
-describe('rescheduleReminder', function () {
-    it('reschedules a pending reminder', function () {
+describe('rescheduleReminder', function (): void {
+    it('reschedules a pending reminder', function (): void {
         $reminder = TaskReminder::factory()->create([
-            'remind_at' => Carbon::now()->addDay(),
+            'remind_at' => \Illuminate\Support\Facades\Date::now()->addDay(),
             'status' => 'pending',
             'sent_at' => null,
             'canceled_at' => null,
         ]);
-        $newTime = Carbon::now()->addDays(3);
+        $newTime = \Illuminate\Support\Facades\Date::now()->addDays(3);
 
         $result = $this->service->rescheduleReminder($reminder, $newTime);
 
@@ -381,36 +381,36 @@ describe('rescheduleReminder', function () {
             ->and($reminder->status)->toBe('pending');
     });
 
-    it('returns false when reminder is already sent', function () {
+    it('returns false when reminder is already sent', function (): void {
         $reminder = TaskReminder::factory()->create([
             'status' => 'sent',
-            'sent_at' => Carbon::now(),
+            'sent_at' => \Illuminate\Support\Facades\Date::now(),
         ]);
-        $newTime = Carbon::now()->addDays(3);
+        $newTime = \Illuminate\Support\Facades\Date::now()->addDays(3);
 
         $result = $this->service->rescheduleReminder($reminder, $newTime);
 
         expect($result)->toBeFalse();
     });
 
-    it('returns false when reminder is already canceled', function () {
+    it('returns false when reminder is already canceled', function (): void {
         $reminder = TaskReminder::factory()->create([
             'status' => 'canceled',
-            'canceled_at' => Carbon::now(),
+            'canceled_at' => \Illuminate\Support\Facades\Date::now(),
         ]);
-        $newTime = Carbon::now()->addDays(3);
+        $newTime = \Illuminate\Support\Facades\Date::now()->addDays(3);
 
         $result = $this->service->rescheduleReminder($reminder, $newTime);
 
         expect($result)->toBeFalse();
     });
 
-    it('can reschedule to earlier time', function () {
+    it('can reschedule to earlier time', function (): void {
         $reminder = TaskReminder::factory()->create([
-            'remind_at' => Carbon::now()->addDays(5),
+            'remind_at' => \Illuminate\Support\Facades\Date::now()->addDays(5),
             'status' => 'pending',
         ]);
-        $newTime = Carbon::now()->addDay();
+        $newTime = \Illuminate\Support\Facades\Date::now()->addDay();
 
         $result = $this->service->rescheduleReminder($reminder, $newTime);
 
@@ -420,12 +420,12 @@ describe('rescheduleReminder', function () {
         expect($reminder->remind_at->toDateTimeString())->toBe($newTime->toDateTimeString());
     });
 
-    it('can reschedule to later time', function () {
+    it('can reschedule to later time', function (): void {
         $reminder = TaskReminder::factory()->create([
-            'remind_at' => Carbon::now()->addDay(),
+            'remind_at' => \Illuminate\Support\Facades\Date::now()->addDay(),
             'status' => 'pending',
         ]);
-        $newTime = Carbon::now()->addWeek();
+        $newTime = \Illuminate\Support\Facades\Date::now()->addWeek();
 
         $result = $this->service->rescheduleReminder($reminder, $newTime);
 
@@ -436,8 +436,8 @@ describe('rescheduleReminder', function () {
     });
 });
 
-describe('sendReminderNotification', function () {
-    it('updates reminder status to sent', function () {
+describe('sendReminderNotification', function (): void {
+    it('updates reminder status to sent', function (): void {
         $reminder = TaskReminder::factory()->create([
             'status' => 'pending',
             'sent_at' => null,
@@ -450,15 +450,15 @@ describe('sendReminderNotification', function () {
             ->and($reminder->sent_at)->not->toBeNull();
     });
 
-    it('sets sent_at timestamp', function () {
+    it('sets sent_at timestamp', function (): void {
         $reminder = TaskReminder::factory()->create([
             'status' => 'pending',
             'sent_at' => null,
         ]);
 
-        $before = Carbon::now();
+        $before = \Illuminate\Support\Facades\Date::now();
         $this->service->sendReminderNotification($reminder);
-        $after = Carbon::now();
+        $after = \Illuminate\Support\Facades\Date::now();
 
         $reminder->refresh();
         expect($reminder->sent_at)->toBeInstanceOf(Carbon::class)
@@ -466,8 +466,8 @@ describe('sendReminderNotification', function () {
     });
 });
 
-describe('getValidChannels', function () {
-    it('returns array of valid channels', function () {
+describe('getValidChannels', function (): void {
+    it('returns array of valid channels', function (): void {
         $channels = $this->service->getValidChannels();
 
         expect($channels)->toBeArray()
@@ -476,35 +476,35 @@ describe('getValidChannels', function () {
     });
 });
 
-describe('isValidChannel', function () {
-    it('returns true for valid channels', function () {
+describe('isValidChannel', function (): void {
+    it('returns true for valid channels', function (): void {
         expect($this->service->isValidChannel('database'))->toBeTrue()
             ->and($this->service->isValidChannel('email'))->toBeTrue()
             ->and($this->service->isValidChannel('sms'))->toBeTrue()
             ->and($this->service->isValidChannel('slack'))->toBeTrue();
     });
 
-    it('returns false for invalid channels', function () {
+    it('returns false for invalid channels', function (): void {
         expect($this->service->isValidChannel('invalid'))->toBeFalse()
             ->and($this->service->isValidChannel('webhook'))->toBeFalse()
             ->and($this->service->isValidChannel(''))->toBeFalse();
     });
 });
 
-describe('channel validation', function () {
-    it('throws exception for invalid channel in scheduleReminder', function () {
+describe('channel validation', function (): void {
+    it('throws exception for invalid channel in scheduleReminder', function (): void {
         $task = Task::factory()->create();
         $user = User::factory()->create();
-        $remindAt = Carbon::now()->addDay();
+        $remindAt = \Illuminate\Support\Facades\Date::now()->addDay();
 
         expect(fn () => $this->service->scheduleReminder($task, $remindAt, $user, 'invalid'))
             ->toThrow(\InvalidArgumentException::class, "Invalid channel 'invalid'");
     });
 
-    it('accepts all valid channels', function () {
+    it('accepts all valid channels', function (): void {
         $task = Task::factory()->create();
         $user = User::factory()->create();
-        $remindAt = Carbon::now()->addDay();
+        $remindAt = \Illuminate\Support\Facades\Date::now()->addDay();
 
         foreach (['database', 'email', 'sms', 'slack'] as $channel) {
             $reminder = $this->service->scheduleReminder($task, $remindAt, $user, $channel);
@@ -513,8 +513,8 @@ describe('channel validation', function () {
     });
 });
 
-describe('edge cases', function () {
-    it('handles concurrent reminder cancellation gracefully', function () {
+describe('edge cases', function (): void {
+    it('handles concurrent reminder cancellation gracefully', function (): void {
         $task = Task::factory()->create();
         TaskReminder::factory()->count(5)->create([
             'task_id' => $task->id,
@@ -529,9 +529,9 @@ describe('edge cases', function () {
             ->and($count2)->toBe(0);
     });
 
-    it('handles reminder at exact current time', function () {
+    it('handles reminder at exact current time', function (): void {
         $reminder = TaskReminder::factory()->create([
-            'remind_at' => Carbon::now(),
+            'remind_at' => \Illuminate\Support\Facades\Date::now(),
             'status' => 'pending',
         ]);
 
@@ -540,7 +540,7 @@ describe('edge cases', function () {
         expect($reminders)->toHaveCount(1);
     });
 
-    it('handles task with no reminders', function () {
+    it('handles task with no reminders', function (): void {
         $task = Task::factory()->create();
 
         $pending = $this->service->getPendingReminders($task);
@@ -550,8 +550,8 @@ describe('edge cases', function () {
             ->and($all)->toBeEmpty();
     });
 
-    it('handles reschedule to same time', function () {
-        $remindAt = Carbon::now()->addDay();
+    it('handles reschedule to same time', function (): void {
+        $remindAt = \Illuminate\Support\Facades\Date::now()->addDay();
         $reminder = TaskReminder::factory()->create([
             'remind_at' => $remindAt,
             'status' => 'pending',
@@ -564,12 +564,12 @@ describe('edge cases', function () {
         expect($reminder->remind_at->toDateTimeString())->toBe($remindAt->toDateTimeString());
     });
 
-    it('handles multiple reminders for same task and user', function () {
+    it('handles multiple reminders for same task and user', function (): void {
         $task = Task::factory()->create();
         $user = User::factory()->create();
 
-        $reminder1 = $this->service->scheduleReminder($task, Carbon::now()->addDay(), $user);
-        $reminder2 = $this->service->scheduleReminder($task, Carbon::now()->addDays(2), $user);
+        $reminder1 = $this->service->scheduleReminder($task, \Illuminate\Support\Facades\Date::now()->addDay(), $user);
+        $reminder2 = $this->service->scheduleReminder($task, \Illuminate\Support\Facades\Date::now()->addDays(2), $user);
 
         expect($reminder1->id)->not->toBe($reminder2->id);
 
@@ -578,8 +578,8 @@ describe('edge cases', function () {
     });
 });
 
-describe('transaction safety', function () {
-    it('uses transaction for cancelTaskReminders', function () {
+describe('transaction safety', function (): void {
+    it('uses transaction for cancelTaskReminders', function (): void {
         $task = Task::factory()->create();
         TaskReminder::factory()->count(3)->create([
             'task_id' => $task->id,

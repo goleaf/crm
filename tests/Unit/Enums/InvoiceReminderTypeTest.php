@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums;
 
-use App\Enums\InvoiceReminderType;
 use Tests\TestCase;
 
-class InvoiceReminderTypeTest extends TestCase
+final class InvoiceReminderTypeTest extends TestCase
 {
-
     public function test_get_label(): void
     {
         $this->markTestIncomplete('Test for getLabel needs implementation');

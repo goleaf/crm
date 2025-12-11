@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Support\Helpers;
 
-use App\Support\Helpers\AddressLine;
 use Tests\TestCase;
 
-class AddressLineTest extends TestCase
-{
-}
+final class AddressLineTest extends TestCase {}

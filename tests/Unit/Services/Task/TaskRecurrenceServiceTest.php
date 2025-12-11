@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\Task;
 
-use App\Services\Task\TaskRecurrenceService;
 use Tests\TestCase;
 
-class TaskRecurrenceServiceTest extends TestCase
+final class TaskRecurrenceServiceTest extends TestCase
 {
-
     public function test_create_recurrence(): void
     {
         $this->markTestIncomplete('Test for createRecurrence needs implementation');

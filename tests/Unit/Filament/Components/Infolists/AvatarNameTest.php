@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Components\Infolists;
 
-use App\Filament\Components\Infolists\AvatarName;
 use Tests\TestCase;
 
-class AvatarNameTest extends TestCase
+final class AvatarNameTest extends TestCase
 {
-
     public function test_avatar(): void
     {
         $this->markTestIncomplete('Test for avatar needs implementation');

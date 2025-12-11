@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources;
 
-use App\Filament\Resources\ProductAttributeResource;
 use Tests\TestCase;
 
-class ProductAttributeResourceTest extends TestCase
-{
-}
+final class ProductAttributeResourceTest extends TestCase {}

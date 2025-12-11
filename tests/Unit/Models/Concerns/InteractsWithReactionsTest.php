@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models\Concerns;
 
-use App\Models\Concerns\InteractsWithReactions;
 use Tests\TestCase;
 
-class InteractsWithReactionsTest extends TestCase
+final class InteractsWithReactionsTest extends TestCase
 {
-
     public function test_reaction(): void
     {
         $this->markTestIncomplete('Test for reaction needs implementation');

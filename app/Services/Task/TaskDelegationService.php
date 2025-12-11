@@ -31,7 +31,7 @@ final class TaskDelegationService
         }
 
         // Send notification to delegatee
-        $this->notifyDelegation($delegation);
+        $this->notifyDelegation();
 
         return $delegation;
     }
@@ -77,7 +77,7 @@ final class TaskDelegationService
     /**
      * Send delegation notification.
      */
-    public function notifyDelegation(TaskDelegation $delegation): void
+    public function notifyDelegation(): void
     {
         // TODO: Implement notification sending logic
         // This will be implemented when notification classes are created
@@ -93,7 +93,7 @@ final class TaskDelegationService
         return TaskDelegation::query()
             ->where('task_id', $task->id)
             ->with(['from', 'to'])
-            ->orderBy('delegated_at', 'desc')
+            ->latest('delegated_at')
             ->get();
     }
 
@@ -108,7 +108,7 @@ final class TaskDelegationService
             ->where('to_user_id', $user->id)
             ->where('status', 'pending')
             ->with(['task', 'from'])
-            ->orderBy('delegated_at', 'desc')
+            ->latest('delegated_at')
             ->get();
     }
 
@@ -122,7 +122,7 @@ final class TaskDelegationService
         return TaskDelegation::query()
             ->where('from_user_id', $user->id)
             ->with(['task', 'to'])
-            ->orderBy('delegated_at', 'desc')
+            ->latest('delegated_at')
             ->get();
     }
 
@@ -137,4 +137,3 @@ final class TaskDelegationService
             ->exists();
     }
 }
-

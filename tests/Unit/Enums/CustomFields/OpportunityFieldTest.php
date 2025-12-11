@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums\CustomFields;
 
-use App\Enums\CustomFields\OpportunityField;
 use Tests\TestCase;
 
-class OpportunityFieldTest extends TestCase
+final class OpportunityFieldTest extends TestCase
 {
-
     public function test_get_options(): void
     {
         $this->markTestIncomplete('Test for getOptions needs implementation');

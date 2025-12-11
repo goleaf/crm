@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources;
 
-use App\Filament\Resources\DocumentTemplateResource;
 use Tests\TestCase;
 
-class DocumentTemplateResourceTest extends TestCase
-{
-}
+final class DocumentTemplateResourceTest extends TestCase {}

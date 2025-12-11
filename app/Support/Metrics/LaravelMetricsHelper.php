@@ -107,6 +107,7 @@ final class LaravelMetricsHelper
 
     /**
      * @param array{labels?: array<int, string>, data?: array<int, int|string|float>} $trend
+     *
      * @return array<string, int>
      */
     private static function trendMap(array $trend): array
@@ -148,6 +149,6 @@ final class LaravelMetricsHelper
 
     private static function now(): Carbon
     {
-        return Carbon::now();
+        return \Illuminate\Support\Facades\Date::now();
     }
 }

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\Opportunities;
 
-use App\Services\Opportunities\OpportunityStageService;
 use Tests\TestCase;
 
-class OpportunityStageServiceTest extends TestCase
+final class OpportunityStageServiceTest extends TestCase
 {
-
     public function test_can_transition(): void
     {
         $this->markTestIncomplete('Test for canTransition needs implementation');

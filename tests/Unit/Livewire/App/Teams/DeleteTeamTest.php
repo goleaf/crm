@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Livewire\App\Teams;
 
-use App\Livewire\App\Teams\DeleteTeam;
 use Tests\TestCase;
 
-class DeleteTeamTest extends TestCase
+final class DeleteTeamTest extends TestCase
 {
-
     public function test_mount(): void
     {
         $this->markTestIncomplete('Test for mount needs implementation');

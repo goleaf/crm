@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Events;
 
-use App\Events\CrmModelDeleted;
 use Tests\TestCase;
 
-class CrmModelDeletedTest extends TestCase
-{
-}
+final class CrmModelDeletedTest extends TestCase {}

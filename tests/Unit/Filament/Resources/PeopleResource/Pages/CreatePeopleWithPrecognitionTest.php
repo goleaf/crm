@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\PeopleResource\Pages;
 
-use App\Filament\Resources\PeopleResource\Pages\CreatePeopleWithPrecognition;
 use Tests\TestCase;
 
-class CreatePeopleWithPrecognitionTest extends TestCase
+final class CreatePeopleWithPrecognitionTest extends TestCase
 {
-
     public function test_form(): void
     {
         $this->markTestIncomplete('Test for form needs implementation');

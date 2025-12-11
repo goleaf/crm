@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\Person;
 use Tests\TestCase;
 
-class PersonTest extends TestCase
-{
-}
+final class PersonTest extends TestCase {}

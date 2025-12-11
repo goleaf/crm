@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\LeadResource\Pages;
 
-use App\Filament\Resources\LeadResource\Pages\ViewLead;
 use Tests\TestCase;
 
-class ViewLeadTest extends TestCase
+final class ViewLeadTest extends TestCase
 {
-
     public function test_get_header_actions(): void
     {
         $this->markTestIncomplete('Test for getHeaderActions needs implementation');

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\InvoiceStatusHistory;
 use Tests\TestCase;
 
-class InvoiceStatusHistoryTest extends TestCase
+final class InvoiceStatusHistoryTest extends TestCase
 {
-
     public function test_casts(): void
     {
         $this->markTestIncomplete('Test for casts needs implementation');

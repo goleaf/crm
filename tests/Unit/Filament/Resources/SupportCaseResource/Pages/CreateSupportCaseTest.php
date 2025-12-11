@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\SupportCaseResource\Pages;
 
-use App\Filament\Resources\SupportCaseResource\Pages\CreateSupportCase;
 use Tests\TestCase;
 
-class CreateSupportCaseTest extends TestCase
-{
-}
+final class CreateSupportCaseTest extends TestCase {}

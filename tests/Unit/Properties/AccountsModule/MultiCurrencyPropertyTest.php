@@ -81,7 +81,7 @@ test('property: currency code can be updated on existing account', function (): 
 
     // Select a different currency
     $newCurrency = fake()->randomElement(
-        array_filter($currencies, fn ($c) => $c !== $initialCurrency)
+        array_filter($currencies, fn (int|string $c): bool => $c !== $initialCurrency),
     );
 
     // If all currencies are the same, skip this iteration
@@ -200,4 +200,3 @@ test('property: currency code is included in model serialization', function (): 
     expect($array)->toHaveKey('currency_code')
         ->and($array['currency_code'])->toBe($selectedCurrency);
 })->repeat(50);
-

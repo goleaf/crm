@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Livewire\PurchaseOrders;
 
-use App\Livewire\PurchaseOrders\Index;
 use Tests\TestCase;
 
-class IndexTest extends TestCase
+final class IndexTest extends TestCase
 {
-
     public function test_updating_search(): void
     {
         $this->markTestIncomplete('Test for updatingSearch needs implementation');

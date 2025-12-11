@@ -121,7 +121,7 @@ $extractedData = $ocrService->processWithTemplate($filePath, $templateId);
 
 ### AI-Powered Cleanup
 ```php
-// Uses Prism PHP (already in composer.json)
+// Uses Prism PHP (already in composer.json) - supports Anthropic Claude
 $cleanedText = $textCleaner->clean($rawOcrText);
 // Fixes spacing, punctuation, OCR errors
 ```

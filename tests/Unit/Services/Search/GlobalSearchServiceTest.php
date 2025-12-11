@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\Search;
 
-use App\Services\Search\GlobalSearchService;
 use Tests\TestCase;
 
-class GlobalSearchServiceTest extends TestCase
+final class GlobalSearchServiceTest extends TestCase
 {
-
     public function test_quick_filters(): void
     {
         $this->markTestIncomplete('Test for quickFilters needs implementation');

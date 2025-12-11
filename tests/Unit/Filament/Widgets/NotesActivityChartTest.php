@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Widgets;
 
-use App\Filament\Widgets\NotesActivityChart;
 use Tests\TestCase;
 
-class NotesActivityChartTest extends TestCase
+final class NotesActivityChartTest extends TestCase
 {
-
     public function test_get_heading(): void
     {
         $this->markTestIncomplete('Test for getHeading needs implementation');

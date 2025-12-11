@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\DocumentVersion;
 use Tests\TestCase;
 
-class DocumentVersionTest extends TestCase
+final class DocumentVersionTest extends TestCase
 {
-
     public function test_casts(): void
     {
         $this->markTestIncomplete('Test for casts needs implementation');

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\OCR\Drivers;
 
-use App\Services\OCR\Drivers\TesseractDriver;
 use Tests\TestCase;
 
-class TesseractDriverTest extends TestCase
+final class TesseractDriverTest extends TestCase
 {
-
     public function test_process(): void
     {
         $this->markTestIncomplete('Test for process needs implementation');

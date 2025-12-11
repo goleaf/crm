@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\Search;
 
-use App\Services\Search\SavedSearchService;
 use Tests\TestCase;
 
-class SavedSearchServiceTest extends TestCase
+final class SavedSearchServiceTest extends TestCase
 {
-
     public function test_save(): void
     {
         $this->markTestIncomplete('Test for save needs implementation');

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models\Concerns;
 
-use App\Models\Concerns\HasWorldAddress;
 use Tests\TestCase;
 
-class HasWorldAddressTest extends TestCase
+final class HasWorldAddressTest extends TestCase
 {
-
     public function test_country(): void
     {
         $this->markTestIncomplete('Test for country needs implementation');

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use App\Services\ReminderService;
 use Tests\TestCase;
 
-class ReminderServiceTest extends TestCase
+final class ReminderServiceTest extends TestCase
 {
-
     public function test_schedule_task_reminder(): void
     {
         $this->markTestIncomplete('Test for scheduleTaskReminder needs implementation');

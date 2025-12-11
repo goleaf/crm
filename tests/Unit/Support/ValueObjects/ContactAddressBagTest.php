@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Support\ValueObjects;
 
-use App\Support\ValueObjects\ContactAddressBag;
 use Tests\TestCase;
 
-class ContactAddressBagTest extends TestCase
+final class ContactAddressBagTest extends TestCase
 {
-
     public function test_normalized_country_code(): void
     {
         $this->markTestIncomplete('Test for normalizedCountryCode needs implementation');

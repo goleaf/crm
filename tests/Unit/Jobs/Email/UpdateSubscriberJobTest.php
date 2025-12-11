@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Jobs\Email;
 
-use App\Jobs\Email\UpdateSubscriberJob;
 use Tests\TestCase;
 
-class UpdateSubscriberJobTest extends TestCase
+final class UpdateSubscriberJobTest extends TestCase
 {
-
     public function test_handle(): void
     {
         $this->markTestIncomplete('Test for handle needs implementation');

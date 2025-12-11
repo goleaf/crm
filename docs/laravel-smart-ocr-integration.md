@@ -84,8 +84,8 @@ SMART_OCR_TEMP_PATH=storage/app/ocr/temp
 SMART_OCR_OUTPUT_PATH=storage/app/ocr/output
 
 # AI Cleanup (Optional - uses Prism PHP for local AI)
-SMART_OCR_AI_ENABLED=true
-SMART_OCR_AI_MODEL=gpt-4
+SMART_OCR_AI_ENABLED=false
+SMART_OCR_AI_MODEL=claude-3-haiku
 SMART_OCR_AI_TEMPERATURE=0.3
 
 # Processing
@@ -118,7 +118,7 @@ return [
     
     'ai_cleanup' => [
         'enabled' => env('SMART_OCR_AI_ENABLED', true),
-        'model' => env('SMART_OCR_AI_MODEL', 'gpt-4'),
+        'model' => env('SMART_OCR_AI_MODEL', 'claude-3-haiku'),
         'temperature' => env('SMART_OCR_AI_TEMPERATURE', 0.3),
         'max_tokens' => env('SMART_OCR_AI_MAX_TOKENS', 2000),
     ],

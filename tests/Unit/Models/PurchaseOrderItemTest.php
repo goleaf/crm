@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\PurchaseOrderItem;
 use Tests\TestCase;
 
-class PurchaseOrderItemTest extends TestCase
+final class PurchaseOrderItemTest extends TestCase
 {
-
     public function test_purchase_order(): void
     {
         $this->markTestIncomplete('Test for purchaseOrder needs implementation');

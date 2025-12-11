@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\KnowledgeArticleRating;
 use Tests\TestCase;
 
-class KnowledgeArticleRatingTest extends TestCase
+final class KnowledgeArticleRatingTest extends TestCase
 {
-
     public function test_casts(): void
     {
         $this->markTestIncomplete('Test for casts needs implementation');

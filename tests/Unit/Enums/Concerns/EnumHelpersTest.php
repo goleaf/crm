@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums\Concerns;
 
-use App\Enums\Concerns\EnumHelpers;
 use Tests\TestCase;
 
-class EnumHelpersTest extends TestCase
-{
-}
+final class EnumHelpersTest extends TestCase {}

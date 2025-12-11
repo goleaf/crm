@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\Accounts\Tables;
 
-use App\Filament\Resources\Accounts\Tables\AccountsTable;
 use Tests\TestCase;
 
-class AccountsTableTest extends TestCase
-{
-}
+final class AccountsTableTest extends TestCase {}

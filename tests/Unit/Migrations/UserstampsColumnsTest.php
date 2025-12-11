@@ -49,7 +49,7 @@ describe('Userstamps Columns Migration', function (): void {
     }
 
     it('adds editor_id column to all userstamp tables', function (): void {
-        foreach (userstampTables() as $tableName => $usesSoftDeletes) {
+        foreach (array_keys(userstampTables()) as $tableName) {
             if (! Schema::hasTable($tableName)) {
                 continue;
             }
@@ -75,7 +75,7 @@ describe('Userstamps Columns Migration', function (): void {
     it('does not add deleted_by column to tables without soft deletes', function (): void {
         $tablesWithoutSoftDeletes = array_filter(
             userstampTables(),
-            fn (bool $usesSoftDeletes): bool => ! $usesSoftDeletes
+            fn (bool $usesSoftDeletes): bool => ! $usesSoftDeletes,
         );
 
         foreach (array_keys($tablesWithoutSoftDeletes) as $tableName) {

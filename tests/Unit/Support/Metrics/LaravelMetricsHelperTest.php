@@ -3,14 +3,13 @@
 declare(strict_types=1);
 
 use App\Support\Metrics\LaravelMetricsHelper;
-use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 
 beforeEach(function (): void {
-    Carbon::setTestNow(Carbon::create(2025, 4, 15, 12, 0, 0, 'UTC'));
+    \Illuminate\Support\Facades\Date::setTestNow(\Illuminate\Support\Facades\Date::create(2025, 4, 15, 12, 0, 0, 'UTC'));
 
     Schema::create('metric_examples', function (Blueprint $table): void {
         $table->id();
@@ -21,7 +20,7 @@ beforeEach(function (): void {
 
 afterEach(function (): void {
     Schema::dropIfExists('metric_examples');
-    Carbon::setTestNow();
+    \Illuminate\Support\Facades\Date::setTestNow();
 });
 
 it('builds monthly trend counts and fills missing months', function (): void {

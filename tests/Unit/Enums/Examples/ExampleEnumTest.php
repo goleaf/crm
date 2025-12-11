@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums\Examples;
 
-use App\Enums\Examples\ExampleEnum;
 use Tests\TestCase;
 
-class ExampleEnumTest extends TestCase
+final class ExampleEnumTest extends TestCase
 {
-
     public function test_get_label(): void
     {
         $this->markTestIncomplete('Test for getLabel needs implementation');

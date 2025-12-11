@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\LeadResource\Forms;
 
-use App\Filament\Resources\LeadResource\Forms\LeadForm;
 use Tests\TestCase;
 
-class LeadFormTest extends TestCase
-{
-}
+final class LeadFormTest extends TestCase {}

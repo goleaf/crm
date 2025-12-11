@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Exports;
 
-use App\Filament\Exports\LeadExporter;
 use Tests\TestCase;
 
-class LeadExporterTest extends TestCase
-{
-}
+final class LeadExporterTest extends TestCase {}

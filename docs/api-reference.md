@@ -8,6 +8,72 @@ This document provides a comprehensive reference for all API endpoints in the Re
 **Authentication**: Bearer Token (Sanctum)  
 **Content Type**: `application/json`
 
+## Activity Logging API
+
+### Get Model Activities
+
+Retrieve activity history for any model that implements the `LogsActivity` trait.
+
+**Endpoint**: `GET /api/v1/{model}/{id}/activities`
+
+**Parameters:**
+- `model` (path) - Model type (companies, people, opportunities, tasks, etc.)
+- `id` (path) - Model ID
+- `event` (query, optional) - Filter by event type (created, updated, deleted)
+- `causer_id` (query, optional) - Filter by user who caused the activity
+- `per_page` (query, optional) - Number of results per page (default: 15)
+
+**Response:**
+```json
+{
+    "data": [
+        {
+            "id": 123,
+            "event": "updated",
+            "changes": {
+                "attributes": {
+                    "account_type": "prospect"
+                },
+                "old": {
+                    "account_type": "customer"
+                }
+            },
+            "causer": {
+                "id": 456,
+                "name": "John Doe",
+                "email": "john@example.com"
+            },
+            "created_at": "2025-12-11T10:30:00Z"
+        }
+    ],
+    "meta": {
+        "current_page": 1,
+        "per_page": 15,
+        "total": 25
+    }
+}
+```
+
+### Activity Change Tracking
+
+All models with the `LogsActivity` trait automatically track:
+
+- **Created Events**: When a new record is created
+- **Updated Events**: When fields are modified (includes old/new values)
+- **Deleted Events**: When a record is deleted
+
+**Change Format:**
+```json
+{
+    "attributes": {
+        "field_name": "new_value"
+    },
+    "old": {
+        "field_name": "old_value"
+    }
+}
+```
+
 ## Task Reminders API
 
 ### Schedule Task Reminder

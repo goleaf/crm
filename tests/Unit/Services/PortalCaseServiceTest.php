@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use App\Services\PortalCaseService;
 use Tests\TestCase;
 
-class PortalCaseServiceTest extends TestCase
+final class PortalCaseServiceTest extends TestCase
 {
-
     public function test_create_from_portal(): void
     {
         $this->markTestIncomplete('Test for createFromPortal needs implementation');

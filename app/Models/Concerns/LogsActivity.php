@@ -67,9 +67,22 @@ trait LogsActivity
             return [];
         }
 
+        // Convert enum values to their string representation for proper comparison and logging
+        $attributes = [];
+        $old = [];
+        
+        foreach ($changes as $key => $value) {
+            $attributes[$key] = $value instanceof \BackedEnum ? $value->value : $value;
+        }
+        
+        $originalValues = Arr::only($this->getOriginal(), array_keys($changes));
+        foreach ($originalValues as $key => $value) {
+            $old[$key] = $value instanceof \BackedEnum ? $value->value : $value;
+        }
+
         return [
-            'attributes' => $changes,
-            'old' => Arr::only($this->getOriginal(), array_keys($changes)),
+            'attributes' => $attributes,
+            'old' => $old,
         ];
     }
 }

@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums;
 
-use App\Enums\EmailSendStatus;
 use Tests\TestCase;
 
-class EmailSendStatusTest extends TestCase
-{
-}
+final class EmailSendStatusTest extends TestCase {}

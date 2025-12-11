@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\Favicon\Drivers;
 
-use App\Services\Favicon\Drivers\HighQualityDriver;
 use Tests\TestCase;
 
-class HighQualityDriverTest extends TestCase
+final class HighQualityDriverTest extends TestCase
 {
-
     public function test_fetch(): void
     {
         $this->markTestIncomplete('Test for fetch needs implementation');

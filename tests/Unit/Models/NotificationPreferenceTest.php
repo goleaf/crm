@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\NotificationPreference;
 use Tests\TestCase;
 
-class NotificationPreferenceTest extends TestCase
+final class NotificationPreferenceTest extends TestCase
 {
-
     public function test_casts(): void
     {
         $this->markTestIncomplete('Test for casts needs implementation');

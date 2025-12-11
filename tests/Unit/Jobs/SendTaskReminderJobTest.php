@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Jobs;
 
-use App\Jobs\SendTaskReminderJob;
 use Tests\TestCase;
 
-class SendTaskReminderJobTest extends TestCase
+final class SendTaskReminderJobTest extends TestCase
 {
-
     public function test_unique_id(): void
     {
         $this->markTestIncomplete('Test for uniqueId needs implementation');

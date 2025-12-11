@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\QuoteResource\Pages;
 
-use App\Filament\Resources\QuoteResource\Pages\ViewQuote;
 use Tests\TestCase;
 
-class ViewQuoteTest extends TestCase
+final class ViewQuoteTest extends TestCase
 {
-
     public function test_get_header_actions(): void
     {
         $this->markTestIncomplete('Test for getHeaderActions needs implementation');

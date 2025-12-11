@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\KnowledgeTemplateResponseResource\Pages;
 
-use App\Filament\Resources\KnowledgeTemplateResponseResource\Pages\CreateKnowledgeTemplateResponse;
 use Tests\TestCase;
 
-class CreateKnowledgeTemplateResponseTest extends TestCase
-{
-}
+final class CreateKnowledgeTemplateResponseTest extends TestCase {}

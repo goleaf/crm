@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Exports;
 
-use App\Filament\Exports\SupportCaseExporter;
 use Tests\TestCase;
 
-class SupportCaseExporterTest extends TestCase
-{
-}
+final class SupportCaseExporterTest extends TestCase {}

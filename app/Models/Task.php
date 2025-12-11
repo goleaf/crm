@@ -587,7 +587,7 @@ final class Task extends Model implements HasCustomFields
             ->where('status', 'pending')
             ->whereNull('sent_at')
             ->whereNull('canceled_at')
-            ->orderBy('remind_at')
+            ->oldest('remind_at')
             ->get();
     }
 
@@ -659,7 +659,7 @@ final class Task extends Model implements HasCustomFields
 
         // Get the most recent subtask (instance) if any
         $lastInstance = $this->subtasks()
-            ->orderBy('start_date', 'desc')
+            ->latest('start_date')
             ->first();
 
         if ($lastInstance !== null && $lastInstance->start_date !== null) {
@@ -718,7 +718,7 @@ final class Task extends Model implements HasCustomFields
     {
         return $this->delegations()
             ->with(['from', 'to'])
-            ->orderBy('delegated_at', 'desc')
+            ->latest('delegated_at')
             ->get();
     }
 
@@ -738,7 +738,7 @@ final class Task extends Model implements HasCustomFields
     public function getLatestDelegation(): ?TaskDelegation
     {
         return $this->delegations()
-            ->orderBy('delegated_at', 'desc')
+            ->latest('delegated_at')
             ->first();
     }
 

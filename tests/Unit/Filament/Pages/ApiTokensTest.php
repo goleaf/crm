@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Pages;
 
-use App\Filament\Pages\ApiTokens;
 use Tests\TestCase;
 
-class ApiTokensTest extends TestCase
-{
-}
+final class ApiTokensTest extends TestCase {}

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\CalendarEvent;
 use Tests\TestCase;
 
-class CalendarEventTest extends TestCase
+final class CalendarEventTest extends TestCase
 {
-
     public function test_perform_delete_on_model(): void
     {
         $this->markTestIncomplete('Test for performDeleteOnModel needs implementation');

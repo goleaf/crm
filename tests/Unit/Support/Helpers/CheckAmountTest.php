@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Support\Helpers;
 
-use App\Support\Helpers\CheckAmount;
 use Tests\TestCase;
 
-class CheckAmountTest extends TestCase
-{
-}
+final class CheckAmountTest extends TestCase {}

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Support\Addresses;
 
-use App\Support\Addresses\AddressFormatter;
 use Tests\TestCase;
 
-class AddressFormatterTest extends TestCase
+final class AddressFormatterTest extends TestCase
 {
-
     public function test_format(): void
     {
         $this->markTestIncomplete('Test for format needs implementation');

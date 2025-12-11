@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services;
 
-use App\Services\CaseEscalationService;
 use Tests\TestCase;
 
-class CaseEscalationServiceTest extends TestCase
+final class CaseEscalationServiceTest extends TestCase
 {
-
     public function test_should_escalate(): void
     {
         $this->markTestIncomplete('Test for shouldEscalate needs implementation');

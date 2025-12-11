@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\Address;
 use Tests\TestCase;
 
-class AddressTest extends TestCase
+final class AddressTest extends TestCase
 {
-
     public function test_addressable(): void
     {
         $this->markTestIncomplete('Test for addressable needs implementation');

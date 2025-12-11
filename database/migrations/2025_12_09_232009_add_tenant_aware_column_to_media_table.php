@@ -1,6 +1,7 @@
 <?php
 
-use Awcodes\Curator\Facades\Curator;
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -9,10 +10,10 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $tableName = app(config('curator.model'))->getTable();
-        
+        $tableName = resolve(config('curator.model'))->getTable();
+
         if (config('curator.is_tenant_aware') && Schema::hasTable($tableName)) {
-            Schema::table($tableName, function (Blueprint $table) {
+            Schema::table($tableName, function (Blueprint $table): void {
                 $table->integer(config('curator.tenant_ownership_relationship_name') . '_id')->nullable();
             });
         }
@@ -20,8 +21,8 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (Schema::hasColumn(app(config('curator.model'))->getTable(), config('curator.tenant_ownership_relationship_name') . '_id')) {
-            Schema::table(app(config('curator.model'))->getTable(), function(Blueprint $table) {
+        if (Schema::hasColumn(resolve(config('curator.model'))->getTable(), config('curator.tenant_ownership_relationship_name') . '_id')) {
+            Schema::table(resolve(config('curator.model'))->getTable(), function (Blueprint $table): void {
                 $table->dropColumn(config('curator.tenant_ownership_relationship_name') . '_id');
             });
         }

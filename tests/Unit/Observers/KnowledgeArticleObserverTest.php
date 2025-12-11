@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Observers;
 
-use App\Observers\KnowledgeArticleObserver;
 use Tests\TestCase;
 
-class KnowledgeArticleObserverTest extends TestCase
+final class KnowledgeArticleObserverTest extends TestCase
 {
-
     public function test_creating(): void
     {
         $this->markTestIncomplete('Test for creating needs implementation');

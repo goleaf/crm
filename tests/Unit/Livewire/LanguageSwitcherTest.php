@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Livewire;
 
-use App\Livewire\LanguageSwitcher;
 use Tests\TestCase;
 
-class LanguageSwitcherTest extends TestCase
+final class LanguageSwitcherTest extends TestCase
 {
-
     public function test_mount(): void
     {
         $this->markTestIncomplete('Test for mount needs implementation');

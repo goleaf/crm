@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Livewire;
 
-use App\Livewire\BaseLivewireComponent;
 use Tests\TestCase;
 
-class BaseLivewireComponentTest extends TestCase
+final class BaseLivewireComponentTest extends TestCase
 {
-
     public function test_auth_user(): void
     {
         $this->markTestIncomplete('Test for authUser needs implementation');

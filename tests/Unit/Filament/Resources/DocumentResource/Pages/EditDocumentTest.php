@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\DocumentResource\Pages;
 
-use App\Filament\Resources\DocumentResource\Pages\EditDocument;
 use Tests\TestCase;
 
-class EditDocumentTest extends TestCase
+final class EditDocumentTest extends TestCase
 {
-
     public function test_mutate_form_data_before_save(): void
     {
         $this->markTestIncomplete('Test for mutateFormDataBeforeSave needs implementation');

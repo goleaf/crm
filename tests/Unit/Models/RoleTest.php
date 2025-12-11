@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\Role;
 use Tests\TestCase;
 
-class RoleTest extends TestCase
-{
-}
+final class RoleTest extends TestCase {}

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Contracts\Repositories;
 
-use App\Contracts\Repositories\PeopleRepositoryInterface;
 use Tests\TestCase;
 
-class PeopleRepositoryInterfaceTest extends TestCase
+final class PeopleRepositoryInterfaceTest extends TestCase
 {
-
     public function test_find(): void
     {
         $this->markTestIncomplete('Test for find needs implementation');

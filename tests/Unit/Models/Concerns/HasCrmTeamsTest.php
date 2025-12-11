@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models\Concerns;
 
-use App\Models\Concerns\HasCrmTeams;
 use Tests\TestCase;
 
-class HasCrmTeamsTest extends TestCase
+final class HasCrmTeamsTest extends TestCase
 {
-
     public function test_crm_teams(): void
     {
         $this->markTestIncomplete('Test for crmTeams needs implementation');

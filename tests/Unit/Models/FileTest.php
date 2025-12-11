@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\File;
 use Tests\TestCase;
 
-class FileTest extends TestCase
-{
-}
+final class FileTest extends TestCase {}

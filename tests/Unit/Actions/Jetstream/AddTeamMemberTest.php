@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Actions\Jetstream;
 
-use App\Actions\Jetstream\AddTeamMember;
 use Tests\TestCase;
 
-class AddTeamMemberTest extends TestCase
+final class AddTeamMemberTest extends TestCase
 {
-
     public function test_add(): void
     {
         $this->markTestIncomplete('Test for add needs implementation');

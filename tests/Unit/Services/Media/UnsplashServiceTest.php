@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\Media;
 
-use App\Services\Media\UnsplashService;
 use Tests\TestCase;
 
-class UnsplashServiceTest extends TestCase
+final class UnsplashServiceTest extends TestCase
 {
-
     public function test_search_photos(): void
     {
         $this->markTestIncomplete('Test for searchPhotos needs implementation');

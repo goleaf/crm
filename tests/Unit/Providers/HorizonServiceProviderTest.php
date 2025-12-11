@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Providers;
 
-use App\Providers\HorizonServiceProvider;
 use Tests\TestCase;
 
-class HorizonServiceProviderTest extends TestCase
+final class HorizonServiceProviderTest extends TestCase
 {
-
     public function test_boot(): void
     {
         $this->markTestIncomplete('Test for boot needs implementation');

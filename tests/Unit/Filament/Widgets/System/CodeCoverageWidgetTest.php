@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Widgets\System;
 
-use App\Filament\Widgets\System\CodeCoverageWidget;
 use Tests\TestCase;
 
-class CodeCoverageWidgetTest extends TestCase
+final class CodeCoverageWidgetTest extends TestCase
 {
-
     public function test_get_stats(): void
     {
         $this->markTestIncomplete('Test for getStats needs implementation');

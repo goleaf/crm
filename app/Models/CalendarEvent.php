@@ -38,7 +38,7 @@ final class CalendarEvent extends Model
 
     protected static function booted(): void
     {
-        static::deleted(function (self $event): void {
+        self::deleted(function (self $event): void {
             resolve(\App\Services\ZapScheduleService::class)->deleteCalendarEventSchedule($event);
         });
     }

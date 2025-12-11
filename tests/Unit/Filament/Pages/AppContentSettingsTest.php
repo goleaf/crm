@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Pages;
 
-use App\Filament\Pages\AppContentSettings;
 use Tests\TestCase;
 
-class AppContentSettingsTest extends TestCase
+final class AppContentSettingsTest extends TestCase
 {
-
     public function test_setting_name(): void
     {
         $this->markTestIncomplete('Test for settingName needs implementation');

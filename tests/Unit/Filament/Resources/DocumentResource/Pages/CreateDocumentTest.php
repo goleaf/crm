@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\DocumentResource\Pages;
 
-use App\Filament\Resources\DocumentResource\Pages\CreateDocument;
 use Tests\TestCase;
 
-class CreateDocumentTest extends TestCase
+final class CreateDocumentTest extends TestCase
 {
-
     public function test_mutate_form_data_before_create(): void
     {
         $this->markTestIncomplete('Test for mutateFormDataBeforeCreate needs implementation');

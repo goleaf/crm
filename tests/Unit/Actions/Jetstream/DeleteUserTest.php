@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Actions\Jetstream;
 
-use App\Actions\Jetstream\DeleteUser;
 use Tests\TestCase;
 
-class DeleteUserTest extends TestCase
+final class DeleteUserTest extends TestCase
 {
-
     public function test_delete(): void
     {
         $this->markTestIncomplete('Test for delete needs implementation');

@@ -11,8 +11,8 @@ use App\Filament\Exports\PeopleExporter;
 use App\Filament\RelationManagers\ActivitiesRelationManager as SharedActivitiesRelationManager;
 use App\Filament\Resources\PeopleResource\Pages\CreatePeople;
 use App\Filament\Resources\PeopleResource\Pages\EditPeople;
-use App\Filament\Resources\PeopleResource\Pages\ListPeopleActivities;
 use App\Filament\Resources\PeopleResource\Pages\ListPeople;
+use App\Filament\Resources\PeopleResource\Pages\ListPeopleActivities;
 use App\Filament\Resources\PeopleResource\Pages\ViewPeople;
 use App\Filament\Resources\PeopleResource\RelationManagers\CasesRelationManager;
 use App\Filament\Resources\PeopleResource\RelationManagers\NotesRelationManager;
@@ -145,7 +145,7 @@ final class PeopleResource extends Resource
                                     ->options(
                                         collect(config('contacts.roles', []))
                                             ->mapWithKeys(fn (string $role): array => [$role => $role])
-                                            ->all()
+                                            ->all(),
                                     )
                                     ->native(false)
                                     ->searchable()
@@ -184,7 +184,7 @@ final class PeopleResource extends Resource
                                 Select::make('type')
                                     ->label('Type')
                                     ->options(collect(ContactEmailType::cases())->mapWithKeys(
-                                        fn (ContactEmailType $type): array => [$type->value => $type->label()]
+                                        fn (ContactEmailType $type): array => [$type->value => $type->label()],
                                     ))
                                     ->default(ContactEmailType::Work)
                                     ->required()
@@ -324,8 +324,8 @@ final class PeopleResource extends Resource
                                         'name',
                                         modifyQueryUsing: fn (Builder $query): Builder => $query->when(
                                             Auth::user()?->currentTeam,
-                                            fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey())
-                                        )
+                                            fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey()),
+                                        ),
                                     )
                                     ->multiple()
                                     ->searchable()
@@ -431,7 +431,7 @@ final class PeopleResource extends Resource
                     ->options(
                         collect(config('contacts.lead_sources', []))
                             ->mapWithKeys(fn (string $source): array => [$source => $source])
-                            ->all()
+                            ->all(),
                     ),
                 SelectFilter::make('is_portal_user')
                     ->label('Portal User')
@@ -450,8 +450,8 @@ final class PeopleResource extends Resource
                         'name',
                         modifyQueryUsing: fn (Builder $query): Builder => $query->when(
                             Auth::user()?->currentTeam,
-                            fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey())
-                        )
+                            fn (Builder $builder, $team): Builder => $builder->where('team_id', $team->getKey()),
+                        ),
                     )
                     ->multiple()
                     ->preload(),
@@ -462,7 +462,7 @@ final class PeopleResource extends Resource
                     Action::make('activities')
                         ->label(__('ui.navigation.activities'))
                         ->icon('heroicon-o-queue-list')
-                        ->url(fn (People $record): string => static::getUrl('activities', ['record' => $record])),
+                        ->url(fn (People $record): string => self::getUrl('activities', ['record' => $record])),
                     ViewAction::make(),
                     EditAction::make(),
                     RestoreAction::make(),

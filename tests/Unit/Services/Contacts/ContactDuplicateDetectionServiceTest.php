@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\Contacts;
 
-use App\Services\Contacts\ContactDuplicateDetectionService;
 use Tests\TestCase;
 
-class ContactDuplicateDetectionServiceTest extends TestCase
+final class ContactDuplicateDetectionServiceTest extends TestCase
 {
-
     public function test_find_duplicates(): void
     {
         $this->markTestIncomplete('Test for findDuplicates needs implementation');

@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Support\Reactions;
 
-use App\Support\Reactions\ReactionOptions;
 use Tests\TestCase;
 
-class ReactionOptionsTest extends TestCase
-{
-}
+final class ReactionOptionsTest extends TestCase {}

@@ -17,7 +17,6 @@ use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Collection;
 use Relaticle\CustomFields\Models\Concerns\UsesCustomFields;
 use Relaticle\CustomFields\Models\Contracts\HasCustomFields;
 use Relaticle\CustomFields\Services\TenantContextService;
@@ -928,17 +927,22 @@ test('account type changes are preserved in activity history', function (): void
 
     // Find the activity that logged the account_type change
     $accountTypeChangeActivity = $activities->first(function ($activity): bool {
-        $changes = $activity->changes instanceof Collection ? $activity->changes->toArray() : (array) $activity->changes;
+        // Get the raw changes from the database and decode the JSON
+        $rawChanges = $activity->getAttributes()['changes'] ?? null;
+        if (is_string($rawChanges)) {
+            $changes = json_decode($rawChanges, true);
 
-        return isset($changes['attributes']['account_type']);
+            return isset($changes['attributes']['account_type']);
+        }
+
+        return false;
     });
 
     expect($accountTypeChangeActivity)->not->toBeNull('Expected to find activity logging account_type change');
 
     // Verify the activity contains the old and new values
-    $changes = $accountTypeChangeActivity->changes instanceof Collection
-        ? $accountTypeChangeActivity->changes->toArray()
-        : (array) $accountTypeChangeActivity->changes;
+    $rawChanges = $accountTypeChangeActivity->getAttributes()['changes'];
+    $changes = json_decode($rawChanges, true);
 
     expect($changes)->toBeArray()
         ->and($changes['attributes']['account_type'])->toBe($newType->value)

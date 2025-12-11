@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Imports;
 
-use App\Filament\Imports\OpportunityImporter;
 use Tests\TestCase;
 
-class OpportunityImporterTest extends TestCase
+final class OpportunityImporterTest extends TestCase
 {
-
     public function test_resolve_record(): void
     {
         $this->markTestIncomplete('Test for resolveRecord needs implementation');

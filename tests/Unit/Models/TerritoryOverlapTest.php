@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\TerritoryOverlap;
 use Tests\TestCase;
 
-class TerritoryOverlapTest extends TestCase
+final class TerritoryOverlapTest extends TestCase
 {
-
     public function test_territory_a(): void
     {
         $this->markTestIncomplete('Test for territoryA needs implementation');

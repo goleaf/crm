@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\Membership;
 use Tests\TestCase;
 
-class MembershipTest extends TestCase
+final class MembershipTest extends TestCase
 {
-
     public function test_user(): void
     {
         $this->markTestIncomplete('Test for user needs implementation');

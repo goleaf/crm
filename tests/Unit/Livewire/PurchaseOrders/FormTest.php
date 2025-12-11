@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Livewire\PurchaseOrders;
 
-use App\Livewire\PurchaseOrders\Form;
 use Tests\TestCase;
 
-class FormTest extends TestCase
+final class FormTest extends TestCase
 {
-
     public function test_mount(): void
     {
         $this->markTestIncomplete('Test for mount needs implementation');

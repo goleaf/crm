@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\KnowledgeFaqResource\Pages;
 
-use App\Filament\Resources\KnowledgeFaqResource\Pages\CreateKnowledgeFaq;
 use Tests\TestCase;
 
-class CreateKnowledgeFaqTest extends TestCase
-{
-}
+final class CreateKnowledgeFaqTest extends TestCase {}

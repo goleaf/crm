@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\AI;
 
-use App\Services\AI\CodebaseIntrospectionService;
 use Tests\TestCase;
 
-class CodebaseIntrospectionServiceTest extends TestCase
+final class CodebaseIntrospectionServiceTest extends TestCase
 {
-
     public function test_snapshot(): void
     {
         $this->markTestIncomplete('Test for snapshot needs implementation');

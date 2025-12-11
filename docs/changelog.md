@@ -7,11 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Property 28 Standalone Test**: Created `test_property_28.php` for validating account type change audit trail functionality
+- Comprehensive PHPDoc documentation for Property 28 test implementation
+- Enhanced activity logging validation for account type changes
+
 ### Changed
 - **MinimalTabs Component**: Updated to use Filament v4.3+ unified schema system (`Filament\Schemas\Components\Tabs`)
 - Enhanced compatibility with Filament v4.3+ unified schema architecture
 - **Test Coverage Agent**: Enhanced with intelligent coverage driver detection and progressive test execution
 - **Environment Security Audit Tests**: Simplified test suite for better test environment compatibility while maintaining full audit functionality
+- **Activity Logging**: Improved handling of JSON-encoded activity changes in Collection format
 
 ### Added
 - Task Reminder System with comprehensive notification support
@@ -22,11 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Filament integration for reminder management
 - API endpoints for task reminder operations
 
-### Changed
-- Enhanced Task model with reminder relationship and convenience methods
-- Updated documentation structure with comprehensive guides
-
 ### Technical Details
+- **New Test**: `test_property_28.php` - Standalone validation for account type audit trail (Property 28)
+- **Enhanced Activity Model**: Improved `getChangesAttribute()` method for Collection handling
+- **LogsActivity Trait**: Validates proper change tracking for enum fields
 - **New Service**: `App\Services\Task\TaskReminderService`
 - **New Model**: `App\Models\TaskReminder`
 - **New Job**: `App\Jobs\SendTaskReminderJob`

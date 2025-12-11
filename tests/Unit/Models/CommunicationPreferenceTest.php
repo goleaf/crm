@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\CommunicationPreference;
 use Tests\TestCase;
 
-class CommunicationPreferenceTest extends TestCase
+final class CommunicationPreferenceTest extends TestCase
 {
-
     public function test_contact(): void
     {
         $this->markTestIncomplete('Test for contact needs implementation');

@@ -50,7 +50,7 @@ final class AppContentSettings extends AbstractPageSettings
      */
     public function getDefaultData(): array
     {
-        $supportEmail = config('mail.from.address') ?? 'support@example.com';
+        $supportEmail = config('mail.from.address', 'support@example.com');
 
         return [
             'brand' => [

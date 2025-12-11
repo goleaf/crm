@@ -31,9 +31,9 @@ final class Login extends \Filament\Auth\Pages\Login
         if (! $user) {
             return new \Illuminate\Support\HtmlString(
                 '<span class="text-gray-500 dark:text-gray-400">'
-                .__('app.messages.developer_login_hint')
-                .' - '.__('app.messages.developer_login_user_not_found', ['email' => 'any'])
-                .'</span>'
+                . __('app.messages.developer_login_hint')
+                . ' - ' . __('app.messages.developer_login_user_not_found', ['email' => 'any'])
+                . '</span>',
             );
         }
 
@@ -43,9 +43,9 @@ final class Login extends \Filament\Auth\Pages\Login
         ]);
 
         return new \Illuminate\Support\HtmlString(
-            '<a href="'.$devLoginUrl.'" class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300 font-medium">'
-            .__('app.actions.developer_login').' ('.$user->name.')'
-            .'</a>'
+            '<a href="' . $devLoginUrl . '" class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300 font-medium">'
+            . __('app.actions.developer_login') . ' (' . $user->name . ')'
+            . '</a>',
         );
     }
 }

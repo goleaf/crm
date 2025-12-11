@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Livewire\App\Profile;
 
-use App\Livewire\App\Profile\NotificationPreferences;
 use Tests\TestCase;
 
-class NotificationPreferencesTest extends TestCase
+final class NotificationPreferencesTest extends TestCase
 {
-
     public function test_mount(): void
     {
         $this->markTestIncomplete('Test for mount needs implementation');

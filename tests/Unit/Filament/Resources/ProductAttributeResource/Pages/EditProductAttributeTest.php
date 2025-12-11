@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\ProductAttributeResource\Pages;
 
-use App\Filament\Resources\ProductAttributeResource\Pages\EditProductAttribute;
 use Tests\TestCase;
 
-class EditProductAttributeTest extends TestCase
+final class EditProductAttributeTest extends TestCase
 {
-
     public function test_get_header_actions(): void
     {
         $this->markTestIncomplete('Test for getHeaderActions needs implementation');

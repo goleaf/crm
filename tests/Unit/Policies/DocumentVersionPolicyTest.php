@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Policies;
 
-use App\Policies\DocumentVersionPolicy;
 use Tests\TestCase;
 
-class DocumentVersionPolicyTest extends TestCase
+final class DocumentVersionPolicyTest extends TestCase
 {
-
     public function test_view_any(): void
     {
         $this->markTestIncomplete('Test for viewAny needs implementation');

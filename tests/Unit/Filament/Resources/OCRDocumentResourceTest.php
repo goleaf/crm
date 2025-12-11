@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources;
 
-use App\Filament\Resources\OCRDocumentResource;
 use Tests\TestCase;
 
-class OCRDocumentResourceTest extends TestCase
-{
-}
+final class OCRDocumentResourceTest extends TestCase {}

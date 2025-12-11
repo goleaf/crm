@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\TerritoryAssignment;
 use Tests\TestCase;
 
-class TerritoryAssignmentTest extends TestCase
+final class TerritoryAssignmentTest extends TestCase
 {
-
     public function test_territory(): void
     {
         $this->markTestIncomplete('Test for territory needs implementation');

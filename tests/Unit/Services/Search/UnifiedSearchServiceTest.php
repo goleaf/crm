@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\Search;
 
-use App\Services\Search\UnifiedSearchService;
 use Tests\TestCase;
 
-class UnifiedSearchServiceTest extends TestCase
+final class UnifiedSearchServiceTest extends TestCase
 {
-
     public function test_search(): void
     {
         $this->markTestIncomplete('Test for search needs implementation');

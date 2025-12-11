@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Filament\Pages\Auth;
 
 use App\Models\User;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Pages\SimplePage;
-use Filament\Actions\Action;
-use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -40,7 +39,7 @@ final class DeveloperLogin extends SimplePage
 {
     protected string $view = 'filament.pages.auth.developer-login';
 
-    protected static bool $shouldRegisterNavigation = false;
+    private static bool $shouldRegisterNavigation = false;
 
     public ?string $selectedUser = null;
 
@@ -52,17 +51,17 @@ final class DeveloperLogin extends SimplePage
         }
     }
 
-    public function getTitle(): string|Htmlable
+    public function getTitle(): string
     {
         return __('app.actions.developer_login');
     }
 
-    public function getHeading(): string|Htmlable
+    public function getHeading(): string
     {
         return __('app.actions.developer_login');
     }
 
-    public function getSubheading(): string|Htmlable|null
+    public function getSubheading(): ?string
     {
         return __('app.messages.developer_login_hint');
     }

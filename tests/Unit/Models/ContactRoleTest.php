@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\ContactRole;
 use Tests\TestCase;
 
-class ContactRoleTest extends TestCase
+final class ContactRoleTest extends TestCase
 {
-
     public function test_team(): void
     {
         $this->markTestIncomplete('Test for team needs implementation');

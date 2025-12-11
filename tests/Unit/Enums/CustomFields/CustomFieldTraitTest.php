@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Enums\CustomFields;
 
-use App\Enums\CustomFields\CustomFieldTrait;
 use Tests\TestCase;
 
-class CustomFieldTraitTest extends TestCase
+final class CustomFieldTraitTest extends TestCase
 {
-
     public function test_get_display_name(): void
     {
         $this->markTestIncomplete('Test for getDisplayName needs implementation');

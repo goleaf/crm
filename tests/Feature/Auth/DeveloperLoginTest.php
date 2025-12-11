@@ -175,7 +175,6 @@ it('works with users having different email formats', function (): void {
     }
 });
 
-
 it('redirects to tenant dashboard when user has a team', function (): void {
     $user = User::factory()->withPersonalTeam()->create([
         'email' => 'tenant-test@example.com',
@@ -210,7 +209,6 @@ it('falls back to root when user has no team', function (): void {
     $response->assertRedirect('/')
         ->assertSessionHas('success');
 });
-
 
 // Developer Login Form Page Tests
 it('has developer login form route registered in local environment', function (): void {

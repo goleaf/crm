@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\ProductAttributeAssignment;
 use Tests\TestCase;
 
-class ProductAttributeAssignmentTest extends TestCase
+final class ProductAttributeAssignmentTest extends TestCase
 {
-
     public function test_product(): void
     {
         $this->markTestIncomplete('Test for product needs implementation');

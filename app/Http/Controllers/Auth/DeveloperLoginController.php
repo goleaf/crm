@@ -86,7 +86,8 @@ final class DeveloperLoginController extends Controller
      * - `app.messages.developer_login_user_not_found`
      * - `app.messages.developer_login_success`
      *
-     * @param  Request  $request  The HTTP request containing email and optional redirect parameters
+     * @param Request $request The HTTP request containing email and optional redirect parameters
+     *
      * @return RedirectResponse Redirects to the specified URL or tenant dashboard after login
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException When accessed outside local/testing environment

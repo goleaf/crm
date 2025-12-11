@@ -36,7 +36,7 @@ test('employee factory generates valid postal code format', function (): void {
 
     // Postal code should be a 5-digit string
     expect($employee->postal_code)->toBeString()
-        ->and(strlen($employee->postal_code))->toBe(5)
+        ->and(strlen((string) $employee->postal_code))->toBe(5)
         ->and((int) $employee->postal_code)->toBeGreaterThanOrEqual(10000)
         ->and((int) $employee->postal_code)->toBeLessThanOrEqual(99999);
 });

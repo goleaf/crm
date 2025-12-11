@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Resources\Accounts\Schemas;
 
-use App\Filament\Resources\Accounts\Schemas\AccountForm;
 use Tests\TestCase;
 
-class AccountFormTest extends TestCase
-{
-}
+final class AccountFormTest extends TestCase {}

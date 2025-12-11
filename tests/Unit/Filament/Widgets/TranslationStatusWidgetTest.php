@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Widgets;
 
-use App\Filament\Widgets\TranslationStatusWidget;
 use Tests\TestCase;
 
-class TranslationStatusWidgetTest extends TestCase
+final class TranslationStatusWidgetTest extends TestCase
 {
-
     public function test_get_stats(): void
     {
         $this->markTestIncomplete('Test for getStats needs implementation');

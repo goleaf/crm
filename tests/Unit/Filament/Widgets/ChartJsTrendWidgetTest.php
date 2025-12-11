@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Filament\Widgets;
 
-use App\Filament\Widgets\ChartJsTrendWidget;
 use Tests\TestCase;
 
-class ChartJsTrendWidgetTest extends TestCase
+final class ChartJsTrendWidgetTest extends TestCase
 {
-
     public function test_get_heading(): void
     {
         $this->markTestIncomplete('Test for getHeading needs implementation');

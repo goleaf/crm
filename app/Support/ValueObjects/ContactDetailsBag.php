@@ -12,7 +12,7 @@ use Bag\Attributes\Validation\Required;
 use Bag\Attributes\Validation\Str;
 use Bag\Bag;
 
-readonly class ContactDetailsBag extends Bag
+final readonly class ContactDetailsBag extends Bag
 {
     public function __construct(
         #[Required, Str, Min(2)]

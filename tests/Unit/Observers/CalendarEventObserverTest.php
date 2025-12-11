@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Observers;
 
-use App\Observers\CalendarEventObserver;
 use Tests\TestCase;
 
-class CalendarEventObserverTest extends TestCase
+final class CalendarEventObserverTest extends TestCase
 {
-
     public function test_creating(): void
     {
         $this->markTestIncomplete('Test for creating needs implementation');

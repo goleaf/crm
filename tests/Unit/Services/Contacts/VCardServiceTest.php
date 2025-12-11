@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Services\Contacts;
 
-use App\Services\Contacts\VCardService;
 use Tests\TestCase;
 
-class VCardServiceTest extends TestCase
+final class VCardServiceTest extends TestCase
 {
-
     public function test_import(): void
     {
         $this->markTestIncomplete('Test for import needs implementation');

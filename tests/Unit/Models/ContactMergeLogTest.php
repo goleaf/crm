@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\ContactMergeLog;
 use Tests\TestCase;
 
-class ContactMergeLogTest extends TestCase
+final class ContactMergeLogTest extends TestCase
 {
-
     public function test_primary_contact(): void
     {
         $this->markTestIncomplete('Test for primaryContact needs implementation');

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Observers;
 
-use App\Observers\TaskTimeEntryObserver;
 use Tests\TestCase;
 
-class TaskTimeEntryObserverTest extends TestCase
+final class TaskTimeEntryObserverTest extends TestCase
 {
-
     public function test_created(): void
     {
         $this->markTestIncomplete('Test for created needs implementation');

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit\Models;
 
-use App\Models\DocumentShare;
 use Tests\TestCase;
 
-class DocumentShareTest extends TestCase
+final class DocumentShareTest extends TestCase
 {
-
     public function test_document(): void
     {
         $this->markTestIncomplete('Test for document needs implementation');
