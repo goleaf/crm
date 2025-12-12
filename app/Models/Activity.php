@@ -87,6 +87,7 @@ final class Activity extends Model
         // Handle JSON string from database
         if (is_string($raw)) {
             $decoded = json_decode($raw, true);
+
             return is_array($decoded) ? $decoded : [];
         }
 

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\ProductLifecycleStage;
+use App\Enums\ProductRelationshipType;
+use App\Enums\ProductStatus;
 use App\Models\Concerns\HasTaxonomies;
 use App\Models\Concerns\HasTeam;
 use App\Models\Concerns\HasUniqueSlug;
@@ -53,6 +56,7 @@ final class Product extends Model implements HasMedia
         'is_bundle',
         'track_inventory',
         'inventory_quantity',
+        'reserved_quantity',
         'custom_fields',
     ];
 
@@ -61,14 +65,15 @@ final class Product extends Model implements HasMedia
      */
     protected $attributes = [
         'currency_code' => 'USD',
-        'status' => 'active',
-        'lifecycle_stage' => 'released',
+        'status' => ProductStatus::ACTIVE,
+        'lifecycle_stage' => ProductLifecycleStage::RELEASED,
         'product_type' => 'stocked',
         'cost_price' => 0,
         'is_active' => true,
         'is_bundle' => false,
         'track_inventory' => false,
         'inventory_quantity' => 0,
+        'reserved_quantity' => 0,
     ];
 
     /**
@@ -77,12 +82,15 @@ final class Product extends Model implements HasMedia
     protected function casts(): array
     {
         return [
+            'status' => ProductStatus::class,
+            'lifecycle_stage' => ProductLifecycleStage::class,
             'price' => 'decimal:2',
             'cost_price' => 'decimal:2',
             'is_active' => 'boolean',
             'is_bundle' => 'boolean',
             'track_inventory' => 'boolean',
             'inventory_quantity' => 'integer',
+            'reserved_quantity' => 'integer',
             'price_effective_from' => 'datetime',
             'price_effective_to' => 'datetime',
             'custom_fields' => 'array',
@@ -147,7 +155,7 @@ final class Product extends Model implements HasMedia
      */
     public function crossSells(): HasMany
     {
-        return $this->relationships()->where('relationship_type', 'cross_sell');
+        return $this->relationships()->where('relationship_type', ProductRelationshipType::CROSS_SELL);
     }
 
     /**
@@ -155,7 +163,7 @@ final class Product extends Model implements HasMedia
      */
     public function upsells(): HasMany
     {
-        return $this->relationships()->where('relationship_type', 'upsell');
+        return $this->relationships()->where('relationship_type', ProductRelationshipType::UPSELL);
     }
 
     /**
@@ -163,7 +171,7 @@ final class Product extends Model implements HasMedia
      */
     public function bundleComponents(): HasMany
     {
-        return $this->relationships()->where('relationship_type', 'bundle');
+        return $this->relationships()->where('relationship_type', ProductRelationshipType::BUNDLE);
     }
 
     /**
@@ -171,7 +179,51 @@ final class Product extends Model implements HasMedia
      */
     public function dependencies(): HasMany
     {
-        return $this->relationships()->where('relationship_type', 'dependency');
+        return $this->relationships()->where('relationship_type', ProductRelationshipType::DEPENDENCY);
+    }
+
+    /**
+     * @return HasMany<ProductRelationship>
+     */
+    public function alternatives(): HasMany
+    {
+        return $this->relationships()->where('relationship_type', ProductRelationshipType::ALTERNATIVE);
+    }
+
+    /**
+     * @return HasMany<ProductRelationship>
+     */
+    public function accessories(): HasMany
+    {
+        return $this->relationships()->where('relationship_type', ProductRelationshipType::ACCESSORY);
+    }
+
+    /**
+     * Get all related products for this product.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, Product>
+     */
+    public function getRelatedProducts(): \Illuminate\Database\Eloquent\Collection
+    {
+        $relatedProductIds = $this->relationships()
+            ->pluck('related_product_id')
+            ->unique();
+
+        return Product::whereIn('id', $relatedProductIds)->get();
+    }
+
+    /**
+     * Get products that suggest this product as related.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, Product>
+     */
+    public function getProductsThatSuggestThis(): \Illuminate\Database\Eloquent\Collection
+    {
+        $productIds = ProductRelationship::where('related_product_id', $this->id)
+            ->pluck('product_id')
+            ->unique();
+
+        return Product::whereIn('id', $productIds)->get();
     }
 
     /**
@@ -193,8 +245,68 @@ final class Product extends Model implements HasMedia
     public function isSellable(): bool
     {
         return $this->is_active === true
-            && $this->status === 'active'
-            && \in_array($this->lifecycle_stage, ['released', 'active'], true);
+            && $this->status->isSellable()
+            && $this->lifecycle_stage->isSellable();
+    }
+
+    /**
+     * Check if the product allows new sales (not discontinued).
+     */
+    public function allowsNewSales(): bool
+    {
+        return $this->status->allowsNewSales() && $this->lifecycle_stage->allowsNewSales();
+    }
+
+    /**
+     * Activate the product for sales.
+     */
+    public function activate(): void
+    {
+        $this->update([
+            'status' => ProductStatus::ACTIVE,
+            'is_active' => true,
+        ]);
+    }
+
+    /**
+     * Deactivate the product (prevent new sales but maintain historical data).
+     */
+    public function deactivate(): void
+    {
+        $this->update([
+            'status' => ProductStatus::INACTIVE,
+            'is_active' => false,
+        ]);
+    }
+
+    /**
+     * Discontinue the product (prevent new sales, maintain historical data).
+     */
+    public function discontinue(): void
+    {
+        $this->update([
+            'status' => ProductStatus::DISCONTINUED,
+            'is_active' => false,
+        ]);
+    }
+
+    /**
+     * Set the product to draft status.
+     */
+    public function setToDraft(): void
+    {
+        $this->update([
+            'status' => ProductStatus::DRAFT,
+            'is_active' => false,
+        ]);
+    }
+
+    /**
+     * Transition the product to a new lifecycle stage.
+     */
+    public function transitionToLifecycleStage(ProductLifecycleStage $stage): void
+    {
+        $this->update(['lifecycle_stage' => $stage]);
     }
 
     public function priceFor(int $quantity = 1, ?Company $company = null, ?CarbonInterface $date = null): float
@@ -270,16 +382,168 @@ final class Product extends Model implements HasMedia
 
     public function availableInventory(): int
     {
-        if ($this->variations()->exists()) {
+        if ($this->hasVariants()) {
+            $totalInventory = (int) $this->variations()->sum('inventory_quantity');
+            $totalReserved = (int) $this->variations()->sum('reserved_quantity');
+
+            return max(0, $totalInventory - $totalReserved);
+        }
+
+        return max(0, (int) $this->inventory_quantity - (int) $this->reserved_quantity);
+    }
+
+    public function hasVariants(): bool
+    {
+        return $this->variations()->exists();
+    }
+
+    /**
+     * Get total inventory quantity (including variations).
+     */
+    public function getTotalInventory(): int
+    {
+        if ($this->hasVariants()) {
             return (int) $this->variations()->sum('inventory_quantity');
         }
 
         return (int) $this->inventory_quantity;
     }
 
-    public function hasVariants(): bool
+    /**
+     * Get total reserved quantity (including variations).
+     */
+    public function getTotalReserved(): int
     {
-        return $this->variations()->exists();
+        if ($this->hasVariants()) {
+            return (int) $this->variations()->sum('reserved_quantity');
+        }
+
+        return (int) $this->reserved_quantity;
+    }
+
+    /**
+     * Check if the product is in stock.
+     */
+    public function isInStock(): bool
+    {
+        if (! $this->track_inventory) {
+            return true;
+        }
+
+        return $this->availableInventory() > 0;
+    }
+
+    /**
+     * Check if the product is low on stock.
+     */
+    public function isLowStock(int $threshold = 10): bool
+    {
+        if (! $this->track_inventory) {
+            return false;
+        }
+
+        return $this->availableInventory() <= $threshold;
+    }
+
+    /**
+     * Reserve inventory for this product.
+     */
+    public function reserveInventory(int $quantity): bool
+    {
+        if (! $this->track_inventory) {
+            return true;
+        }
+
+        if ($this->availableInventory() < $quantity) {
+            return false;
+        }
+
+        $this->increment('reserved_quantity', $quantity);
+
+        return true;
+    }
+
+    /**
+     * Release reserved inventory.
+     */
+    public function releaseInventory(int $quantity): void
+    {
+        if (! $this->track_inventory) {
+            return;
+        }
+
+        $this->decrement('reserved_quantity', min($quantity, $this->reserved_quantity));
+    }
+
+    /**
+     * Adjust inventory quantity.
+     */
+    public function adjustInventory(int $adjustment, string $reason = 'Manual adjustment'): void
+    {
+        if (! $this->track_inventory) {
+            return;
+        }
+
+        $newQuantity = max(0, $this->inventory_quantity + $adjustment);
+        $this->update(['inventory_quantity' => $newQuantity]);
+
+        // Create inventory adjustment record if the model exists
+        if (class_exists(\App\Models\InventoryAdjustment::class)) {
+            \App\Models\InventoryAdjustment::create([
+                'team_id' => $this->team_id,
+                'product_id' => $this->id,
+                'adjustment_quantity' => $adjustment,
+                'reason' => $reason,
+                'previous_quantity' => $this->inventory_quantity - $adjustment,
+                'new_quantity' => $newQuantity,
+                'adjusted_by' => auth()->id(),
+            ]);
+        }
+    }
+
+    /**
+     * Get the bundle price for this product if it's a bundle.
+     */
+    public function getBundlePrice(): float
+    {
+        if (! $this->is_bundle) {
+            return (float) $this->price;
+        }
+
+        $componentPrice = $this->bundleComponents()
+            ->with('relatedProduct')
+            ->get()
+            ->sum(function (ProductRelationship $relationship): int|float {
+                $componentPrice = $relationship->price_override ?? $relationship->relatedProduct->price;
+
+                return $componentPrice * $relationship->quantity;
+            });
+
+        // Use the bundle's set price or the sum of components, whichever is lower
+        return min((float) $this->price, $componentPrice);
+    }
+
+    /**
+     * Check if this product can be added to quotes/orders based on status.
+     */
+    public function canBeAddedToQuote(): bool
+    {
+        return $this->allowsNewSales() && $this->isSellable();
+    }
+
+    /**
+     * Get suggested products for cross-sell/upsell.
+     */
+    public function getSuggestedProducts(): \Illuminate\Database\Eloquent\Collection
+    {
+        $crossSellIds = $this->crossSells()->pluck('related_product_id');
+        $upsellIds = $this->upsells()->pluck('related_product_id');
+
+        $suggestedIds = $crossSellIds->merge($upsellIds)->unique();
+
+        return Product::whereIn('id', $suggestedIds)
+            ->where('status', ProductStatus::ACTIVE)
+            ->get();
     }
 
     protected static function booted(): void

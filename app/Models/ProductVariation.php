@@ -29,6 +29,7 @@ final class ProductVariation extends Model
         'is_default',
         'track_inventory',
         'inventory_quantity',
+        'reserved_quantity',
         'options',
     ];
 
@@ -38,6 +39,7 @@ final class ProductVariation extends Model
     protected $attributes = [
         'track_inventory' => false,
         'inventory_quantity' => 0,
+        'reserved_quantity' => 0,
         'is_default' => false,
     ];
 
@@ -51,6 +53,7 @@ final class ProductVariation extends Model
             'is_default' => 'boolean',
             'track_inventory' => 'boolean',
             'inventory_quantity' => 'integer',
+            'reserved_quantity' => 'integer',
             'options' => 'array',
         ];
     }
@@ -61,6 +64,18 @@ final class ProductVariation extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function availableInventory(): int
+    {
+        return max(0, (int) $this->inventory_quantity - (int) $this->reserved_quantity);
+    }
+
+    public function getOptionValue(string $attributeSlug): ?string
+    {
+        $options = $this->options ?? [];
+
+        return $options[$attributeSlug] ?? null;
     }
 
     protected static function booted(): void

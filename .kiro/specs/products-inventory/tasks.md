@@ -1,13 +1,13 @@
 # Implementation Plan: Products & Inventory Management
 
-- [ ] 1. Database schema and migrations
+- [x] 1. Database schema and migrations
   - Create migrations for all product-related tables
   - Add indexes for performance optimization
   - Set up foreign key constraints
   - _Requirements: 1.1, 2.1, 3.1, 4.1, 5.1_
 
-- [ ] 2. Core product model enhancements
-  - [ ] 2.1 Enhance Product model with missing relationships
+- [-] 2. Core product model enhancements
+  - [x] 2.1 Enhance Product model with missing relationships
     - Add product relationships (bundles, cross-sell, upsell)
     - Implement lifecycle status management
     - Add inventory calculation methods
@@ -21,14 +21,14 @@
     - **Property 2: Pricing data persistence**
     - **Validates: Requirements 1.2**
 
-- [ ] 3. Category hierarchy implementation
-  - [ ] 3.1 Enhance ProductCategory model with hierarchy support
+- [-] 3. Category hierarchy implementation
+  - [x] 3.1 Enhance ProductCategory model with hierarchy support
     - Add parent_id and sort_order fields
     - Implement parent/children relationships
     - Add methods for ancestor/descendant retrieval
     - _Requirements: 2.1, 2.2_
 
-  - [ ] 3.2 Write property test for category hierarchy
+  - [-] 3.2 Write property test for category hierarchy
     - **Property 6: Category hierarchy preservation**
     - **Validates: Requirements 2.2**
 

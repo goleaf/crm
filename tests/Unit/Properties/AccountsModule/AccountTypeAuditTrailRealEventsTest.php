@@ -24,15 +24,15 @@ use Tests\TestCase;
  * NOTE: This test file does NOT use the global Pest configuration that fakes events,
  * so we can test the actual LogsActivity trait functionality.
  */
-class AccountTypeAuditTrailRealEventsTest extends TestCase
+final class AccountTypeAuditTrailRealEventsTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function testAccountTypeChangesCreateAuditTrailWithOldAndNewValues(): void
+    public function test_account_type_changes_create_audit_trail_with_old_and_new_values(): void
     {
         // Clear any existing activity logs FIRST
         Activity::truncate();
-        
+
         $team = Team::factory()->create();
         $owner = User::factory()->create();
         $editor = User::factory()->create();
@@ -48,7 +48,7 @@ class AccountTypeAuditTrailRealEventsTest extends TestCase
 
         // Simulate user making the change
         $this->actingAs($editor);
-        
+
         // Use direct assignment and save instead of update()
         $company->account_type = AccountType::CUSTOMER;
         $company->save();
@@ -73,11 +73,11 @@ class AccountTypeAuditTrailRealEventsTest extends TestCase
         $this->assertEquals(AccountType::CUSTOMER->value, $properties['attributes']['account_type']);
     }
 
-    public function testMultipleAccountTypeChangesCreateSeparateAuditTrailEntries(): void
+    public function test_multiple_account_type_changes_create_separate_audit_trail_entries(): void
     {
         // Clear any existing activity logs FIRST
         Activity::truncate();
-        
+
         $team = Team::factory()->create();
         $owner = User::factory()->create();
         $editor = User::factory()->create();
@@ -100,13 +100,14 @@ class AccountTypeAuditTrailRealEventsTest extends TestCase
         ];
 
         $this->actingAs($editor);
+        $counter = count($typeChanges);
 
-        for ($i = 1; $i < count($typeChanges); $i++) {
+        for ($i = 1; $i < $counter; $i++) {
             $company->account_type = $typeChanges[$i];
             $company->save();
-            
+
             // Add small delay to ensure different timestamps
-            sleep(1);
+            \Illuminate\Support\Sleep::sleep(1);
         }
 
         // Verify separate audit entries were created
@@ -129,11 +130,11 @@ class AccountTypeAuditTrailRealEventsTest extends TestCase
         }
     }
 
-    public function testAccountTypeChangesAttributedToCorrectUsers(): void
+    public function test_account_type_changes_attributed_to_correct_users(): void
     {
         // Clear any existing activity logs FIRST
         Activity::truncate();
-        
+
         $team = Team::factory()->create();
         $owner = User::factory()->create();
         $editor1 = User::factory()->create();
@@ -152,7 +153,7 @@ class AccountTypeAuditTrailRealEventsTest extends TestCase
         $company->account_type = AccountType::CUSTOMER;
         $company->save();
 
-        sleep(1);
+        \Illuminate\Support\Sleep::sleep(1);
 
         // Second user makes a change
         $this->actingAs($editor2);
@@ -181,11 +182,11 @@ class AccountTypeAuditTrailRealEventsTest extends TestCase
         $this->assertEquals(AccountType::PARTNER->value, $secondLog->properties['attributes']['account_type']);
     }
 
-    public function testAccountTypeAuditTrailIncludesAccurateTimestamps(): void
+    public function test_account_type_audit_trail_includes_accurate_timestamps(): void
     {
         // Clear any existing activity logs FIRST
         Activity::truncate();
-        
+
         $team = Team::factory()->create();
         $owner = User::factory()->create();
         $editor = User::factory()->create();
@@ -200,11 +201,11 @@ class AccountTypeAuditTrailRealEventsTest extends TestCase
 
         // Record time before change
         $beforeChange = now();
-        
+
         $this->actingAs($editor);
         $company->account_type = AccountType::CUSTOMER;
         $company->save();
-        
+
         // Record time after change
         $afterChange = now();
 
@@ -223,11 +224,11 @@ class AccountTypeAuditTrailRealEventsTest extends TestCase
         $this->assertTrue($auditLog->updated_at->between($beforeChange, $afterChange));
     }
 
-    public function testAccountTypeAuditTrailHandlesNullTransitions(): void
+    public function test_account_type_audit_trail_handles_null_transitions(): void
     {
         // Clear any existing activity logs FIRST
         Activity::truncate();
-        
+
         $team = Team::factory()->create();
         $owner = User::factory()->create();
         $editor = User::factory()->create();

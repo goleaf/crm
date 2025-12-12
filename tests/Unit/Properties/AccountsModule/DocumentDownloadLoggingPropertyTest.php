@@ -141,7 +141,7 @@ test('property: multiple downloads by same user create separate log entries', fu
     expect($downloadLogs)->toHaveCount($downloadCount);
 
     // Verify each log has unique timestamp and sequence
-    foreach ($downloadLogs as $index => $log) {
+    foreach ($downloadLogs as $log) {
         expect($log->properties['download_sequence'])->toBeInt();
         expect($log->properties['download_timestamp'])->not->toBeNull();
     }
@@ -420,14 +420,14 @@ test('property: download logs cannot be modified after creation', function (): v
 
     // Verify the log was updated (in practice, this should be prevented)
     $modifiedLog = Activity::find($downloadLog->id);
-    
+
     // The test verifies that IF modifications occur, they can be detected
     // In a real system, you would implement immutability through:
     // 1. Database triggers
     // 2. Model policies
     // 3. Separate audit table with append-only access
     expect($modifiedLog->created_at)->toBe($originalCreatedAt); // Created timestamp should never change
-    
+
     // For this test, we verify that the original data structure is maintained
     expect($modifiedLog->subject_id)->toBe($media->id); // Subject should not change
     expect($modifiedLog->subject_type)->toBe(Media::class); // Subject type should not change
@@ -449,7 +449,7 @@ test('property: bulk document downloads are logged individually', function (): v
     // Upload multiple documents
     $documents = [];
     $documentCount = fake()->numberBetween(3, 6);
-    
+
     for ($i = 0; $i < $documentCount; $i++) {
         $filename = fake()->word() . '_' . $i . '.png';
         $file = UploadedFile::fake()->image($filename, 400, 300);

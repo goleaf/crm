@@ -26,7 +26,7 @@ uses(RefreshDatabase::class);
 test('property: account type changes create audit trail with old and new values', function (): void {
     // Clear any existing activity logs FIRST
     Activity::truncate();
-    
+
     $team = Team::factory()->create();
     $owner = User::factory()->create();
     $editor = User::factory()->create();
@@ -42,23 +42,23 @@ test('property: account type changes create audit trail with old and new values'
 
     // Simulate user making the change
     auth()->login($editor);
-    
+
     // Store the old value before change
     $oldValue = $company->account_type;
-    
+
     // Change the account type
     $company->account_type = AccountType::CUSTOMER;
-    
+
     // Manually trigger the activity logging since events are faked
     // This simulates what the LogsActivity trait would do
     $changes = [
         'attributes' => ['account_type' => AccountType::CUSTOMER->value],
         'old' => ['account_type' => $oldValue->value],
     ];
-    
+
     // Save the model
     $company->save();
-    
+
     // Manually record the activity using the trait's method
     $company->activities()->create([
         'team_id' => $team->id,
@@ -66,7 +66,7 @@ test('property: account type changes create audit trail with old and new values'
         'causer_id' => $editor->id,
         'changes' => $changes,
     ]);
-    
+
     // Verify audit trail was created
     $auditLogs = Activity::where('subject_type', 'company')
         ->where('subject_id', $company->id)
@@ -91,7 +91,7 @@ test('property: account type changes create audit trail with old and new values'
 test('property: multiple account type changes create separate audit trail entries', function (): void {
     // Clear any existing activity logs FIRST
     Activity::truncate();
-    
+
     $team = Team::factory()->create();
     $owner = User::factory()->create();
     $editor = User::factory()->create();
@@ -114,27 +114,28 @@ test('property: multiple account type changes create separate audit trail entrie
     ];
 
     auth()->login($editor);
+    $counter = count($typeChanges);
 
-    for ($i = 1; $i < count($typeChanges); $i++) {
+    for ($i = 1; $i < $counter; $i++) {
         $oldValue = $company->account_type;
         $company->account_type = $typeChanges[$i];
         $company->save();
-        
+
         // Manually record the activity since events are faked
         $changes = [
             'attributes' => ['account_type' => $typeChanges[$i]->value],
             'old' => ['account_type' => $oldValue->value],
         ];
-        
+
         $company->activities()->create([
             'team_id' => $team->id,
             'event' => 'updated',
             'causer_id' => $editor->id,
             'changes' => $changes,
         ]);
-        
+
         // Add small delay to ensure different timestamps
-        sleep(1);
+        \Illuminate\Support\Sleep::sleep(1);
     }
 
     // Verify separate audit entries were created
@@ -161,7 +162,7 @@ test('property: multiple account type changes create separate audit trail entrie
 test('property: account type changes by different users are attributed correctly', function (): void {
     // Clear any existing activity logs FIRST
     Activity::truncate();
-    
+
     $team = Team::factory()->create();
     $owner = User::factory()->create();
     $editor1 = User::factory()->create();
@@ -180,13 +181,13 @@ test('property: account type changes by different users are attributed correctly
     $oldValue1 = $company->account_type;
     $company->account_type = AccountType::CUSTOMER;
     $company->save();
-    
+
     // Manually record the activity since events are faked
     $changes1 = [
         'attributes' => ['account_type' => AccountType::CUSTOMER->value],
         'old' => ['account_type' => $oldValue1->value],
     ];
-    
+
     $company->activities()->create([
         'team_id' => $team->id,
         'event' => 'updated',
@@ -194,20 +195,20 @@ test('property: account type changes by different users are attributed correctly
         'changes' => $changes1,
     ]);
 
-    sleep(1);
+    \Illuminate\Support\Sleep::sleep(1);
 
     // Second user makes a change
     auth()->login($editor2);
     $oldValue2 = $company->account_type;
     $company->account_type = AccountType::PARTNER;
     $company->save();
-    
+
     // Manually record the activity since events are faked
     $changes2 = [
         'attributes' => ['account_type' => AccountType::PARTNER->value],
         'old' => ['account_type' => $oldValue2->value],
     ];
-    
+
     $company->activities()->create([
         'team_id' => $team->id,
         'event' => 'updated',
@@ -241,7 +242,7 @@ test('property: account type changes by different users are attributed correctly
 test('property: account type audit trail includes accurate timestamps', function (): void {
     // Clear any existing activity logs FIRST
     Activity::truncate();
-    
+
     $team = Team::factory()->create();
     $owner = User::factory()->create();
     $editor = User::factory()->create();
@@ -258,23 +259,23 @@ test('property: account type audit trail includes accurate timestamps', function
     $oldValue = $company->account_type;
     $company->account_type = AccountType::CUSTOMER;
     $company->save();
-    
+
     // Record time before creating activity log
     $beforeChange = now();
-    
+
     // Manually record the activity since events are faked
     $changes = [
         'attributes' => ['account_type' => AccountType::CUSTOMER->value],
         'old' => ['account_type' => $oldValue->value],
     ];
-    
+
     $company->activities()->create([
         'team_id' => $team->id,
         'event' => 'updated',
         'causer_id' => $editor->id,
         'changes' => $changes,
     ]);
-    
+
     // Record time after creating activity log
     $afterChange = now();
 
@@ -286,7 +287,7 @@ test('property: account type audit trail includes accurate timestamps', function
 
     expect($auditLog)->not->toBeNull();
     expect($auditLog->created_at)->toBeInstanceOf(\Illuminate\Support\Carbon::class);
-    
+
     // Check that the timestamp is recent (within the last minute)
     expect($auditLog->created_at->diffInSeconds(now()))->toBeLessThan(60);
 
@@ -299,7 +300,7 @@ test('property: account type audit trail includes accurate timestamps', function
 test('property: account type audit trail is preserved through other company updates', function (): void {
     // Clear any existing activity logs FIRST
     Activity::truncate();
-    
+
     $team = Team::factory()->create();
     $owner = User::factory()->create();
     $editor = User::factory()->create();
@@ -318,13 +319,13 @@ test('property: account type audit trail is preserved through other company upda
     $oldValue = $company->account_type;
     $company->account_type = AccountType::CUSTOMER;
     $company->save();
-    
+
     // Manually record the activity since events are faked
     $changes = [
         'attributes' => ['account_type' => AccountType::CUSTOMER->value],
         'old' => ['account_type' => $oldValue->value],
     ];
-    
+
     $company->activities()->create([
         'team_id' => $team->id,
         'event' => 'updated',
@@ -370,7 +371,7 @@ test('property: account type audit trail is preserved through other company upda
 test('property: account type audit trail can be queried for reporting purposes', function (): void {
     // Clear any existing activity logs FIRST
     Activity::truncate();
-    
+
     $team = Team::factory()->create();
     $owner = User::factory()->create();
     $editors = User::factory()->count(3)->create();
@@ -391,21 +392,21 @@ test('property: account type audit trail can be queried for reporting purposes',
         $oldValue = $company->account_type ?? AccountType::PROSPECT;
         $company->account_type = $newType;
         $company->save();
-        
+
         // Manually record the activity since events are faked
         $changes = [
             'attributes' => ['account_type' => $newType->value],
             'old' => ['account_type' => $oldValue->value],
         ];
-        
+
         $company->activities()->create([
             'team_id' => $team->id,
             'event' => 'updated',
             'causer_id' => $editor->id,
             'changes' => $changes,
         ]);
-        
-        sleep(1);
+
+        \Illuminate\Support\Sleep::sleep(1);
     }
 
     // Query audit logs by account type changes
@@ -448,7 +449,7 @@ test('property: account type audit trail can be queried for reporting purposes',
 test('property: account type audit trail handles null to value and value to null transitions', function (): void {
     // Clear any existing activity logs FIRST
     Activity::truncate();
-    
+
     $team = Team::factory()->create();
     $owner = User::factory()->create();
     $editor = User::factory()->create();
@@ -468,13 +469,13 @@ test('property: account type audit trail handles null to value and value to null
     $oldValue = $company->account_type; // null
     $company->account_type = AccountType::PROSPECT;
     $company->save();
-    
+
     // Manually record the activity since events are faked
     $changes1 = [
         'attributes' => ['account_type' => AccountType::PROSPECT->value],
         'old' => ['account_type' => $oldValue?->value], // null
     ];
-    
+
     $company->activities()->create([
         'team_id' => $team->id,
         'event' => 'updated',
@@ -492,19 +493,19 @@ test('property: account type audit trail handles null to value and value to null
     expect($nullToValueLog->properties['old']['account_type'])->toBeNull();
     expect($nullToValueLog->properties['attributes']['account_type'])->toBe(AccountType::PROSPECT->value);
 
-    sleep(1);
+    \Illuminate\Support\Sleep::sleep(1);
 
     // Change from value back to null
     $oldValue2 = $company->account_type; // AccountType::PROSPECT
     $company->account_type = null;
     $company->save();
-    
+
     // Manually record the activity since events are faked
     $changes2 = [
         'attributes' => ['account_type' => null],
         'old' => ['account_type' => $oldValue2->value],
     ];
-    
+
     $company->activities()->create([
         'team_id' => $team->id,
         'event' => 'updated',
@@ -528,7 +529,7 @@ test('property: account type audit trail handles null to value and value to null
 test('property: account type audit trail entries cannot be modified after creation', function (): void {
     // Clear any existing activity logs FIRST
     Activity::truncate();
-    
+
     $team = Team::factory()->create();
     $owner = User::factory()->create();
     $editor = User::factory()->create();
@@ -545,13 +546,13 @@ test('property: account type audit trail entries cannot be modified after creati
     $oldValue = $company->account_type;
     $company->account_type = AccountType::CUSTOMER;
     $company->save();
-    
+
     // Manually record the activity since events are faked
     $changes = [
         'attributes' => ['account_type' => AccountType::CUSTOMER->value],
         'old' => ['account_type' => $oldValue->value],
     ];
-    
+
     $company->activities()->create([
         'team_id' => $team->id,
         'event' => 'updated',
@@ -583,7 +584,7 @@ test('property: account type audit trail entries cannot be modified after creati
 
     // Verify that certain critical fields remain unchanged
     $modifiedLog = Activity::find($auditLog->id);
-    
+
     // In practice, these should be prevented through:
     // 1. Database constraints
     // 2. Model policies

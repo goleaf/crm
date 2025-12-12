@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 use Tests\Support\Generators\ActivityGenerator;
+use Tests\Support\Generators\CalendarEventGenerator;
+use Tests\Support\Generators\CallGenerator;
+use Tests\Support\Generators\EmailGenerator;
 use Tests\Support\Generators\NoteGenerator;
 use Tests\Support\Generators\TaskGenerator;
 use Tests\Support\Generators\TaskRelatedGenerator;
@@ -210,5 +213,50 @@ if (! function_exists('randomBoolean')) {
     function randomBoolean(float $trueProbability = 0.5): bool
     {
         return fake()->boolean((int) ($trueProbability * 100));
+    }
+}
+
+if (! function_exists('generateCalendarEvent')) {
+    /**
+     * Generate a random calendar event.
+     *
+     * @param array<string, mixed> $overrides
+     */
+    function generateCalendarEvent(
+        \App\Models\Team $team,
+        ?\App\Models\User $creator = null,
+        array $overrides = [],
+    ): \App\Models\CalendarEvent {
+        return CalendarEventGenerator::generate($team, $creator, $overrides);
+    }
+}
+
+if (! function_exists('generateEmail')) {
+    /**
+     * Generate a random email.
+     *
+     * @param array<string, mixed> $overrides
+     */
+    function generateEmail(
+        \App\Models\Team $team,
+        ?\App\Models\User $creator = null,
+        array $overrides = [],
+    ): \App\Models\EmailMessage {
+        return EmailGenerator::generate($team, $creator, $overrides);
+    }
+}
+
+if (! function_exists('generateCall')) {
+    /**
+     * Generate a random call.
+     *
+     * @param array<string, mixed> $overrides
+     */
+    function generateCall(
+        \App\Models\Team $team,
+        ?\App\Models\User $creator = null,
+        array $overrides = [],
+    ): \App\Models\Call {
+        return CallGenerator::generate($team, $creator, $overrides);
     }
 }

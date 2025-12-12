@@ -62,4 +62,38 @@ return [
         'passport' => 'Passport',
         'custom' => 'Custom',
     ],
+
+    'product_status' => [
+        'active' => 'Active',
+        'inactive' => 'Inactive',
+        'discontinued' => 'Discontinued',
+        'draft' => 'Draft',
+    ],
+
+    'product_lifecycle_stage' => [
+        'concept' => 'Concept',
+        'development' => 'Development',
+        'testing' => 'Testing',
+        'released' => 'Released',
+        'active' => 'Active',
+        'mature' => 'Mature',
+        'declining' => 'Declining',
+        'discontinued' => 'Discontinued',
+        'end_of_life' => 'End of Life',
+    ],
+
+    'product_relationship_type' => [
+        'bundle' => 'Bundle',
+        'cross_sell' => 'Cross-sell',
+        'upsell' => 'Upsell',
+        'dependency' => 'Dependency',
+        'alternative' => 'Alternative',
+        'accessory' => 'Accessory',
+        'bundle_description' => 'Products sold together as a package',
+        'cross_sell_description' => 'Related products that complement this item',
+        'upsell_description' => 'Higher-value alternatives to this product',
+        'dependency_description' => 'Products required for this item to function',
+        'alternative_description' => 'Similar products that can substitute this item',
+        'accessory_description' => 'Optional add-ons that enhance this product',
+    ],
 ];

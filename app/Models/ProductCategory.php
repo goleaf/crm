@@ -34,6 +34,7 @@ final class ProductCategory extends Model
         'name',
         'slug',
         'description',
+        'sort_order',
     ];
 
     /**
@@ -57,7 +58,91 @@ final class ProductCategory extends Model
      */
     public function children(): HasMany
     {
-        return $this->hasMany(self::class, 'parent_id');
+        return $this->hasMany(self::class, 'parent_id')->orderBy('sort_order');
+    }
+
+    /**
+     * Get all ancestors (parent, grandparent, etc.) of this category.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, ProductCategory>
+     */
+    public function ancestors(): \Illuminate\Database\Eloquent\Collection
+    {
+        $ancestors = collect();
+        $current = $this->parent;
+
+        while ($current !== null) {
+            $ancestors->push($current);
+            $current = $current->parent;
+        }
+
+        return $ancestors;
+    }
+
+    /**
+     * Get all descendants (children, grandchildren, etc.) of this category.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, ProductCategory>
+     */
+    public function descendants(): \Illuminate\Database\Eloquent\Collection
+    {
+        $descendants = collect();
+        
+        foreach ($this->children as $child) {
+            $descendants->push($child);
+            $descendants = $descendants->merge($child->descendants());
+        }
+
+        return $descendants;
+    }
+
+    /**
+     * Get all products in this category and its subcategories.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, Product>
+     */
+    public function allProducts(): \Illuminate\Database\Eloquent\Collection
+    {
+        $categoryIds = collect([$this->id]);
+        $categoryIds = $categoryIds->merge($this->descendants()->pluck('id'));
+
+        return Product::whereHas('categories', function ($query) use ($categoryIds) {
+            $query->whereIn('product_categories.id', $categoryIds);
+        })->get();
+    }
+
+    /**
+     * Check if this category is an ancestor of the given category.
+     */
+    public function isAncestorOf(ProductCategory $category): bool
+    {
+        return $category->ancestors()->contains('id', $this->id);
+    }
+
+    /**
+     * Check if this category is a descendant of the given category.
+     */
+    public function isDescendantOf(ProductCategory $category): bool
+    {
+        return $this->ancestors()->contains('id', $category->id);
+    }
+
+    /**
+     * Get the depth level of this category in the hierarchy (root = 0).
+     */
+    public function getDepth(): int
+    {
+        return $this->ancestors()->count();
+    }
+
+    /**
+     * Get the root category of this category's hierarchy.
+     */
+    public function getRoot(): ProductCategory
+    {
+        $ancestors = $this->ancestors();
+        
+        return $ancestors->isEmpty() ? $this : $ancestors->last();
     }
 
     protected function getBreadcrumbAttribute(): string
@@ -73,11 +158,27 @@ final class ProductCategory extends Model
         return implode(' / ', array_reverse($segments));
     }
 
+    /**
+     * Scope to order categories by sort_order and name.
+     */
+    public function scopeOrdered($query)
+    {
+        return $query->orderBy('sort_order')->orderBy('name');
+    }
+
     protected static function booted(): void
     {
         self::creating(function (self $category): void {
             if ($category->team_id === null && auth('web')->check()) {
                 $category->team_id = auth('web')->user()?->currentTeam?->getKey();
+            }
+            
+            // Set default sort_order if not provided
+            if ($category->sort_order === null) {
+                $maxSortOrder = self::where('team_id', $category->team_id)
+                    ->where('parent_id', $category->parent_id)
+                    ->max('sort_order') ?? 0;
+                $category->sort_order = $maxSortOrder + 1;
             }
         });
     }
