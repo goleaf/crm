@@ -546,6 +546,94 @@ final class Product extends Model implements HasMedia
             ->get();
     }
 
+    /**
+     * Assign an attribute value to this product
+     */
+    public function assignAttribute(ProductAttribute $attribute, mixed $value): ProductAttributeAssignment
+    {
+        // Check if assignment already exists
+        $assignment = $this->attributeAssignments()
+            ->where('product_attribute_id', $attribute->id)
+            ->first();
+
+        if (!$assignment) {
+            $assignment = new ProductAttributeAssignment([
+                'product_id' => $this->id,
+                'product_attribute_id' => $attribute->id,
+            ]);
+        }
+
+        // Set the value using the assignment's setValue method
+        $assignment->setValue($value);
+        $assignment->save();
+
+        return $assignment;
+    }
+
+    /**
+     * Remove an attribute assignment from this product
+     */
+    public function removeAttribute(ProductAttribute $attribute): bool
+    {
+        return $this->attributeAssignments()
+            ->where('product_attribute_id', $attribute->id)
+            ->delete() > 0;
+    }
+
+    /**
+     * Get the value of a specific attribute for this product
+     */
+    public function getAttributeValue(ProductAttribute $attribute): mixed
+    {
+        $assignment = $this->attributeAssignments()
+            ->where('product_attribute_id', $attribute->id)
+            ->with('attributeValue')
+            ->first();
+
+        return $assignment?->getValue();
+    }
+
+    /**
+     * Check if this product has a specific attribute assigned
+     */
+    public function hasAttribute(ProductAttribute $attribute): bool
+    {
+        return $this->attributeAssignments()
+            ->where('product_attribute_id', $attribute->id)
+            ->exists();
+    }
+
+    /**
+     * Get all attribute assignments with their values for display
+     */
+    public function getAttributesForDisplay(): array
+    {
+        return $this->attributeAssignments()
+            ->with(['attribute', 'attributeValue'])
+            ->get()
+            ->map(function (ProductAttributeAssignment $assignment) {
+                return [
+                    'attribute' => $assignment->attribute,
+                    'value' => $assignment->getValue(),
+                    'display_value' => $assignment->getDisplayValue(),
+                ];
+            })
+            ->toArray();
+    }
+
+    /**
+     * Bulk assign multiple attributes to this product
+     */
+    public function assignAttributes(array $attributeValues): void
+    {
+        foreach ($attributeValues as $attributeId => $value) {
+            $attribute = ProductAttribute::find($attributeId);
+            if ($attribute) {
+                $this->assignAttribute($attribute, $value);
+            }
+        }
+    }
+
     protected static function booted(): void
     {
         self::creating(function (self $product): void {

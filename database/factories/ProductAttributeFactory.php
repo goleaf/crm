@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\ProductAttributeDataType;
 use App\Models\ProductAttribute;
 use App\Models\Team;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -26,7 +27,7 @@ final class ProductAttributeFactory extends Factory
             'team_id' => Team::factory(),
             'name' => $name,
             'slug' => \Illuminate\Support\Str::slug($name) . '-' . fake()->unique()->numberBetween(1000, 9999),
-            'data_type' => fake()->randomElement(['string', 'number', 'boolean']),
+            'data_type' => fake()->randomElement(ProductAttributeDataType::cases()),
             'is_configurable' => fake()->boolean(),
             'is_filterable' => fake()->boolean(),
             'is_required' => false,

@@ -133,6 +133,9 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\Task\TaskReminderService::class);
         $this->app->singleton(\App\Services\Task\TaskRecurrenceService::class);
         $this->app->singleton(\App\Services\Task\TaskDelegationService::class);
+
+        // Register Product Services
+        $this->app->singleton(\App\Services\Products\AttributeAssignmentService::class);
     }
 
     /**

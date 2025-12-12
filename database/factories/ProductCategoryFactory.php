@@ -28,6 +28,7 @@ final class ProductCategoryFactory extends Factory
             'slug' => \Illuminate\Support\Str::slug($name) . '-' . fake()->unique()->numberBetween(1000, 9999),
             'parent_id' => null,
             'description' => fake()->sentence(),
+            'sort_order' => fake()->numberBetween(1, 100),
         ];
     }
 }

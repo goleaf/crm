@@ -96,4 +96,12 @@ return [
         'alternative_description' => 'Similar products that can substitute this item',
         'accessory_description' => 'Optional add-ons that enhance this product',
     ],
+
+    'product_attribute_data_type' => [
+        'text' => 'Text',
+        'number' => 'Number',
+        'select' => 'Select',
+        'multi_select' => 'Multi-Select',
+        'boolean' => 'Boolean',
+    ],
 ];

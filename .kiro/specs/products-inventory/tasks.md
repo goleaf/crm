@@ -21,33 +21,33 @@
     - **Property 2: Pricing data persistence**
     - **Validates: Requirements 1.2**
 
-- [-] 3. Category hierarchy implementation
+- [x] 3. Category hierarchy implementation
   - [x] 3.1 Enhance ProductCategory model with hierarchy support
     - Add parent_id and sort_order fields
     - Implement parent/children relationships
     - Add methods for ancestor/descendant retrieval
     - _Requirements: 2.1, 2.2_
 
-  - [-] 3.2 Write property test for category hierarchy
+  - [x] 3.2 Write property test for category hierarchy
     - **Property 6: Category hierarchy preservation**
     - **Validates: Requirements 2.2**
 
-  - [ ] 3.3 Write property test for category filtering
+  - [x] 3.3 Write property test for category filtering
     - **Property 7: Category filtering includes subcategories**
     - **Validates: Requirements 2.4**
 
-  - [ ] 3.4 Write property test for category sort order
+  - [x] 3.4 Write property test for category sort order
     - **Property 8: Category sort order persistence**
     - **Validates: Requirements 2.5**
 
-- [ ] 4. Product attributes system
-  - [ ] 4.1 Enhance ProductAttribute and related models
+- [-] 4. Product attributes system
+  - [x] 4.1 Enhance ProductAttribute and related models
     - Add data type validation
     - Implement attribute value management
     - Create attribute assignment logic
     - _Requirements: 3.1, 3.2, 3.3_
 
-  - [ ] 4.2 Write property test for attribute validation
+  - [-] 4.2 Write property test for attribute validation
     - **Property 9: Attribute data type validation**
     - **Validates: Requirements 3.4**
 
