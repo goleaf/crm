@@ -138,6 +138,14 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\Products\AttributeAssignmentService::class);
         $this->app->singleton(\App\Services\Products\VariationService::class);
         $this->app->singleton(\App\Services\Products\InventoryService::class);
+
+        // Register Studio Service
+        $this->app->singleton(\App\Services\Studio\StudioService::class, fn (): \App\Services\Studio\StudioService => new \App\Services\Studio\StudioService(
+            cacheTtl: (int) config('cache.ttl.studio', 3600),
+        ));
+
+        // Register Admin Service
+        $this->app->singleton(\App\Services\Admin\AdminService::class);
     }
 
     /**

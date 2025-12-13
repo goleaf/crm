@@ -11,7 +11,7 @@
   - _Requirements: 4.1-4.2_
   - **Property 4: Authentication policy compliance**
 
-- [ ] 5. Role management
+- [-] 5. Role management
   - Create role model/resource with permissions matrix (module/field/action), inheritance/templates, admin/studio rights, assignment to users/groups, audit trail.
   - _Requirements: 5.1-5.2_
   - **Property 3: Permission enforcement**, **Property 6: Auditability**

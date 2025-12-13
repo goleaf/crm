@@ -68,6 +68,17 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Has
         'email',
         'password',
         'timezone',
+        'user_type',
+        'status',
+        'password_expires_at',
+        'last_login_at',
+        'failed_login_attempts',
+        'locked_until',
+        'password_policy_id',
+        'force_password_change',
+        'two_factor_enabled',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     /**
@@ -101,6 +112,12 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Has
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'password_expires_at' => 'datetime',
+            'last_login_at' => 'datetime',
+            'locked_until' => 'datetime',
+            'force_password_change' => 'boolean',
+            'two_factor_enabled' => 'boolean',
+            'two_factor_recovery_codes' => 'array',
         ];
     }
 
@@ -209,5 +226,45 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Has
     public function canAccessTenant(EloquentModel $tenant): bool
     {
         return $this->belongsToTeam($tenant);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Admin\PasswordPolicy, $this>
+     */
+    public function passwordPolicy(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Admin\PasswordPolicy::class);
+    }
+
+    /**
+     * @return HasMany<\App\Models\Admin\LoginHistory, $this>
+     */
+    public function loginHistories(): HasMany
+    {
+        return $this->hasMany(\App\Models\Admin\LoginHistory::class);
+    }
+
+    /**
+     * @return HasMany<\App\Models\Admin\UserActivity, $this>
+     */
+    public function activities(): HasMany
+    {
+        return $this->hasMany(\App\Models\Admin\UserActivity::class);
+    }
+
+    /**
+     * @return HasMany<\App\Models\Admin\UserSession, $this>
+     */
+    public function sessions(): HasMany
+    {
+        return $this->hasMany(\App\Models\Admin\UserSession::class);
+    }
+
+    /**
+     * @return HasMany<\App\Models\Admin\PasswordHistory, $this>
+     */
+    public function passwordHistories(): HasMany
+    {
+        return $this->hasMany(\App\Models\Admin\PasswordHistory::class);
     }
 }
