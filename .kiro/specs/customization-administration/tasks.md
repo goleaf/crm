@@ -5,18 +5,9 @@
   - _Requirements: 1.1-1.3_
   - **Property 1: Customization isolation**
 
-- [ ] 2. Module builder
-  - Build package tooling with templates, field/relationship/layout designers, export/version/publish/update/uninstall, licensing docs, module manager integration.
-  - _Requirements: 2.1-2.3_
-  - **Property 2: Module packaging integrity**
-
-- [ ] 3. Developer tools
-  - Provide module loader/manager, dropdown/language editors, display/tab configuration, rename tools, repair utilities (rebuild/quick repair/cache/index/permission repair), diagnostics.
-  - _Requirements: 3.1-3.2_
-  - **Property 5: Repair tool safety**
 
 - [ ] 4. Admin panel
-  - Implement user management, password policies/expiration, login history, activity tracking, bulk operations, LDAP/SAML/OAuth/2FA configuration, session controls.
+  - Implement user management, password policies/expiration, login history, activity tracking, bulk operations, session controls.
   - _Requirements: 4.1-4.2_
   - **Property 4: Authentication policy compliance**
 

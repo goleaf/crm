@@ -18,6 +18,7 @@ use Database\Factories\SupportCaseFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
@@ -71,6 +72,8 @@ final class SupportCase extends Model implements HasCustomFields
         'escalation_level',
         'resolution_summary',
         'thread_reference',
+        'thread_id',
+        'parent_case_id',
         'customer_portal_url',
         'portal_visible',
         'knowledge_base_reference',
@@ -179,6 +182,26 @@ final class SupportCase extends Model implements HasCustomFields
     public function knowledgeArticle(): BelongsTo
     {
         return $this->belongsTo(KnowledgeArticle::class);
+    }
+
+    /**
+     * Parent case for threaded conversations.
+     *
+     * @return BelongsTo<SupportCase, $this>
+     */
+    public function parentCase(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_case_id');
+    }
+
+    /**
+     * Child cases in the thread.
+     *
+     * @return HasMany<SupportCase, $this>
+     */
+    public function childCases(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_case_id');
     }
 
     /**

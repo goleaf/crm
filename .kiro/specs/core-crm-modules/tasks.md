@@ -1,6 +1,6 @@
 # Implementation Plan: Core CRM Modules
 
-- [ ] 1. Data model extensions
+- [x] 1. Data model extensions
   - Add required fields for Accounts (hierarchies, addresses, industry, revenue, employee_count, ownership, website/social, multi-currency).
   - Ensure Contacts support multi-email/phone, reporting structure, portal flags, and segmentation fields.
   - Enhance Leads with score/grade/status/source, routing metadata, duplication hashes, and conversion flags.

@@ -47,6 +47,15 @@ final class Opportunity extends Model implements HasCustomFields
     use SortableTrait;
     use UsesCustomFields;
 
+    protected static function booted(): void
+    {
+        parent::booted();
+
+        static::saving(function (self $opportunity): void {
+            $opportunity->calculateWeightedAmount();
+        });
+    }
+
     /**
      * The attributes that are mass assignable.
      *
@@ -55,6 +64,15 @@ final class Opportunity extends Model implements HasCustomFields
     protected $fillable = [
         'creation_source',
         'account_id',
+        'stage',
+        'probability',
+        'amount',
+        'weighted_amount',
+        'expected_close_date',
+        'competitors',
+        'next_steps',
+        'win_loss_reason',
+        'forecast_category',
     ];
 
     /**
@@ -74,6 +92,11 @@ final class Opportunity extends Model implements HasCustomFields
         return [
             'creation_source' => CreationSource::class,
             'closed_at' => 'datetime',
+            'probability' => 'decimal:2',
+            'amount' => 'decimal:2',
+            'weighted_amount' => 'decimal:2',
+            'expected_close_date' => 'date',
+            'competitors' => 'array',
         ];
     }
 
@@ -149,5 +172,47 @@ final class Opportunity extends Model implements HasCustomFields
     public function order(): HasOne
     {
         return $this->hasOne(Order::class);
+    }
+
+    /**
+     * Calculate and update the weighted amount based on amount and probability.
+     */
+    public function calculateWeightedAmount(): void
+    {
+        if ($this->amount !== null && $this->probability !== null) {
+            $this->weighted_amount = $this->amount * ($this->probability / 100);
+        } else {
+            $this->weighted_amount = null;
+        }
+    }
+
+    /**
+     * Check if the opportunity is in an open stage.
+     */
+    public function isOpen(): bool
+    {
+        // This would typically check against stage values
+        // For now, we'll consider it open if not closed
+        return $this->closed_at === null;
+    }
+
+    /**
+     * Check if the opportunity is won.
+     */
+    public function isWon(): bool
+    {
+        return $this->closed_at !== null && 
+               $this->win_loss_reason !== null && 
+               str_contains(strtolower($this->win_loss_reason), 'won');
+    }
+
+    /**
+     * Check if the opportunity is lost.
+     */
+    public function isLost(): bool
+    {
+        return $this->closed_at !== null && 
+               $this->win_loss_reason !== null && 
+               str_contains(strtolower($this->win_loss_reason), 'lost');
     }
 }
