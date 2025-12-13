@@ -31,7 +31,7 @@ final class ProductFactory extends Factory
             'manufacturer' => fake()->company(),
             'product_type' => fake()->randomElement(['stocked', 'service', 'non_stock']),
             'status' => 'active',
-            'lifecycle_stage' => fake()->randomElement(['draft', 'released']),
+            'lifecycle_stage' => fake()->randomElement(['concept', 'development', 'testing', 'released', 'active']),
             'description' => fake()->sentence(),
             'price' => fake()->randomFloat(2, 10, 1000),
             'cost_price' => fake()->randomFloat(2, 5, 500),

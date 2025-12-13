@@ -104,7 +104,7 @@ test('property: number attributes validate numeric values correctly', function (
         
         // Should be able to assign the value
         $assignment = $product->assignAttribute($attribute, $value);
-        expect($assignment->getValue())->toBe((float) $value);
+        expect($assignment->getValue())->toEqual((float) $value);
     }
 
     // Invalid non-numeric values should be rejected

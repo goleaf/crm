@@ -263,7 +263,7 @@ test('product lifecycle gating determines sellable status', function (): void {
     $product = Product::factory()->create([
         'team_id' => $team->id,
         'status' => 'inactive',
-        'lifecycle_stage' => 'draft',
+        'lifecycle_stage' => 'concept',
         'is_active' => false,
     ]);
 

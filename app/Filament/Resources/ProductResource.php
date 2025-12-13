@@ -10,6 +10,7 @@ use App\Filament\Resources\ProductResource\Pages\EditProduct;
 use App\Filament\Resources\ProductResource\Pages\ListProducts;
 use App\Filament\Support\SlugHelper;
 use App\Models\Product;
+use App\Enums\ProductLifecycleStage;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -87,12 +88,8 @@ final class ProductResource extends Resource
                                 ->default('active'),
                             Select::make('lifecycle_stage')
                                 ->label('Lifecycle')
-                                ->options([
-                                    'draft' => 'Draft',
-                                    'released' => 'Released',
-                                    'end_of_life' => 'End of Life',
-                                ])
-                                ->default('released'),
+                                ->options(ProductLifecycleStage::class)
+                                ->default(ProductLifecycleStage::RELEASED),
                         ]),
                 ])
                 ->columns(1),

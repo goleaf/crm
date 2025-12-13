@@ -583,7 +583,7 @@ final class Product extends Model implements HasMedia
     /**
      * Get the value of a specific attribute for this product
      */
-    public function getAttributeValue(ProductAttribute $attribute): mixed
+    public function getProductAttributeValue(ProductAttribute $attribute): mixed
     {
         $assignment = $this->attributeAssignments()
             ->where('product_attribute_id', $attribute->id)
@@ -596,7 +596,7 @@ final class Product extends Model implements HasMedia
     /**
      * Check if this product has a specific attribute assigned
      */
-    public function hasAttribute(ProductAttribute $attribute): bool
+    public function hasProductAttribute(ProductAttribute $attribute): bool
     {
         return $this->attributeAssignments()
             ->where('product_attribute_id', $attribute->id)
