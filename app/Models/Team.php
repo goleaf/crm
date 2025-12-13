@@ -15,7 +15,31 @@ use Laravel\Jetstream\Events\TeamUpdated;
 use Laravel\Jetstream\Team as JetstreamTeam;
 
 /**
- * @property string $name
+ * Team Model - Multi-tenant organization entity
+ * 
+ * Represents a team/organization in the multi-tenant CRM system. Teams serve as the primary
+ * tenant boundary, containing all related CRM entities (people, companies, tasks, etc.).
+ * Extends Laravel Jetstream's Team model with CRM-specific relationships and avatar functionality.
+ * 
+ * @property int $id Primary key
+ * @property int $user_id Team owner user ID
+ * @property string $name Team name
+ * @property bool $personal_team Whether this is a personal team
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * 
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\People> $people
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Company> $companies
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Task> $tasks
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Lead> $leads
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Opportunity> $opportunities
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Note> $notes
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SupportCase> $supportCases
+ * 
+ * @method static \Database\Factories\TeamFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder|Team newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Team newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Team query()
  */
 final class Team extends JetstreamTeam implements HasAvatar
 {
@@ -55,11 +79,27 @@ final class Team extends JetstreamTeam implements HasAvatar
         ];
     }
 
+    /**
+     * Check if this is a personal team
+     * 
+     * Personal teams are automatically created for individual users and typically
+     * contain only that user's personal data.
+     * 
+     * @return bool True if this is a personal team, false otherwise
+     */
     public function isPersonalTeam(): bool
     {
         return $this->personal_team;
     }
 
+    /**
+     * Generate avatar URL for Filament interface
+     * 
+     * Creates a generated avatar using the team name with consistent styling.
+     * Used in Filament's tenant switcher and team displays.
+     * 
+     * @return string Generated avatar URL
+     */
     public function getFilamentAvatarUrl(): string
     {
         return resolve(AvatarService::class)->generate(name: $this->name, bgColor: '#000000', textColor: '#ffffff');

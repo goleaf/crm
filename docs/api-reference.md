@@ -8,6 +8,62 @@ This document provides a comprehensive reference for all API endpoints in the Re
 **Authentication**: Bearer Token (Sanctum)  
 **Content Type**: `application/json`
 
+## Team Management API
+
+### Get Team Information
+
+Retrieve information about the current team (tenant).
+
+**Endpoint**: `GET /api/v1/team`
+
+**Response:**
+```json
+{
+    "data": {
+        "id": 1,
+        "name": "Acme Corporation",
+        "personal_team": false,
+        "created_at": "2025-01-01T00:00:00Z",
+        "updated_at": "2025-01-01T00:00:00Z",
+        "avatar_url": "https://example.com/avatar.png",
+        "stats": {
+            "people_count": 150,
+            "companies_count": 45,
+            "tasks_count": 89,
+            "opportunities_count": 23,
+            "notes_count": 234,
+            "leads_count": 67,
+            "support_cases_count": 12
+        }
+    }
+}
+```
+
+### Update Team Information
+
+Update team details (requires team owner permissions).
+
+**Endpoint**: `PUT /api/v1/team`
+
+**Request Body:**
+```json
+{
+    "name": "Updated Team Name"
+}
+```
+
+**Response:**
+```json
+{
+    "data": {
+        "id": 1,
+        "name": "Updated Team Name",
+        "personal_team": false,
+        "updated_at": "2025-12-13T15:30:00Z"
+    }
+}
+```
+
 ## Activity Logging API
 
 ### Get Model Activities

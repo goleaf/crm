@@ -5,7 +5,111 @@
 This guide covers Filament v4.3+ integration patterns, custom components, and best practices for the Relaticle CRM system.
 
 **Version**: 4.3+  
-**Last Updated**: December 11, 2025
+**Last Updated**: December 13, 2025
+
+## Team Management Integration
+
+### Multi-Tenancy with Teams
+
+The Team model serves as the primary tenant boundary in Filament. All resources are automatically scoped to the current team.
+
+```php
+// In PanelProvider
+use App\Models\Team;
+
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        ->tenant(Team::class)
+        ->tenantProfile(EditTeamProfile::class)
+        ->tenantRegistration(RegisterTeam::class);
+}
+```
+
+### Team Avatar Integration
+
+Teams implement the `HasAvatar` contract for Filament's tenant switcher:
+
+```php
+// In Team model
+use Filament\Models\Contracts\HasAvatar;
+
+public function getFilamentAvatarUrl(): string
+{
+    return resolve(AvatarService::class)->generate(
+        name: $this->name, 
+        bgColor: '#000000', 
+        textColor: '#ffffff'
+    );
+}
+```
+
+### Team Statistics Widget
+
+Display team-wide statistics on the dashboard:
+
+```php
+// app/Filament/Widgets/TeamStatsWidget.php
+use Filament\Widgets\StatsOverviewWidget;
+use Filament\Widgets\StatsOverviewWidget\Stat;
+
+class TeamStatsWidget extends StatsOverviewWidget
+{
+    protected function getStats(): array
+    {
+        $team = Filament::getTenant();
+        
+        return [
+            Stat::make(__('app.labels.people'), $team->people()->count())
+                ->description(__('app.descriptions.total_people'))
+                ->descriptionIcon('heroicon-o-users')
+                ->color('success'),
+                
+            Stat::make(__('app.labels.companies'), $team->companies()->count())
+                ->description(__('app.descriptions.total_companies'))
+                ->descriptionIcon('heroicon-o-building-office')
+                ->color('info'),
+                
+            Stat::make(__('app.labels.active_tasks'), $team->tasks()->where('status', 'active')->count())
+                ->description(__('app.descriptions.active_tasks'))
+                ->descriptionIcon('heroicon-o-clipboard-document-list')
+                ->color('warning'),
+                
+            Stat::make(__('app.labels.opportunities'), $team->opportunities()->count())
+                ->description(__('app.descriptions.total_opportunities'))
+                ->descriptionIcon('heroicon-o-currency-dollar')
+                ->color('primary'),
+        ];
+    }
+}
+```
+
+### Team Resource Configuration
+
+The TeamResource in the SystemAdmin module provides team management:
+
+```php
+// app-modules/SystemAdmin/src/Filament/Resources/TeamResource.php
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+
+public static function form(Schema $schema): Schema
+{
+    return $schema
+        ->components([
+            TextInput::make('name')
+                ->label(__('app.labels.team_name'))
+                ->required()
+                ->maxLength(255)
+                ->helperText(__('app.helpers.team_name')),
+                
+            Toggle::make('personal_team')
+                ->label(__('app.labels.personal_team'))
+                ->helperText(__('app.helpers.personal_team'))
+                ->disabled(fn ($record) => $record?->isPersonalTeam()),
+        ]);
+}
+```
 
 ## Activity Logging Integration
 

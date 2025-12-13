@@ -31,7 +31,7 @@
   - _Requirements: 4.1, 4.3, 4.4_
   - **Property 5: Opportunity pipeline math**, **Property 6: Opportunity stage progression**
 
-- [ ] 6. Case management
+- [-] 6. Case management
   - Implement SLA timers, breach detection, escalation workflows, queue routing, and knowledge base linkage.
   - Add email-to-case and portal intake handlers with threading and assignment.
   - _Requirements: 5.1, 5.2, 5.3_

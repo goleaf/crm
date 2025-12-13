@@ -48,6 +48,10 @@
 - **[World Data Enhanced Features](world-data-enhanced-features.md)** - Country/state/city data with utilities
 - **[World Data Integration](world-data-integration.md)** - World data service patterns
 - **[Laravel Translation Checker Integration](laravel-translation-checker-integration.md)** - Database-backed translations
+
+### 👥 Models & Entities
+
+- **[Team Model Guide](team-model-guide.md)** - Multi-tenant team management, relationships, and Filament integration
 - **[Laravel Localization Integration](laravel-localization-integration.md)** - Localized routes, slug translation, Accept-Language redirects
 - **[Localazy GitHub Actions Integration](localazy-github-actions-integration.md)** - Automated translation management
 - **[Laravel Auto Translations](laravel-auto-translations.md)** - AI-assisted JSON export/import workflow for translations

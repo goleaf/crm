@@ -1,0 +1,317 @@
+# Team Model Guide
+
+## Overview
+
+The `Team` model is the cornerstone of Relaticle CRM's multi-tenant architecture. It extends Laravel Jetstream's Team model to provide CRM-specific functionality and serves as the primary tenant boundary for all CRM entities.
+
+**Model Location**: `app/Models/Team.php`  
+**Factory**: `database/factories/TeamFactory.php`  
+**Test Coverage**: `tests/Unit/Models/TeamTest.php`  
+**Filament Resource**: `app-modules/SystemAdmin/src/Filament/Resources/TeamResource.php`
+
+## Key Features
+
+### Multi-Tenancy
+- **Primary Tenant Boundary**: All CRM entities (People, Companies, Tasks, etc.) belong to a team
+- **Automatic Scoping**: Filament v4.3+ automatically scopes all queries to the current team
+- **Team Switching**: Users can switch between teams they belong to
+
+### Avatar Generation
+- **Filament Integration**: Implements `HasAvatar` contract for tenant switcher
+- **Generated Avatars**: Uses `AvatarService` to create consistent team avatars
+- **Customizable Styling**: Black background with white text by default
+
+### Personal Teams
+- **Individual Users**: Each user gets a personal team for individual data
+- **Team Type Detection**: `isPersonalTeam()` method distinguishes personal from organizational teams
+
+## Database Schema
+
+```sql
+CREATE TABLE teams (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT UNSIGNED NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    personal_team BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+```
+
+## Model Relationships
+
+### Core CRM Entities
+
+```php
+// All major CRM entities belong to a team
+$team->people()         // HasMany<People>
+$team->companies()      // HasMany<Company>
+$team->tasks()          // HasMany<Task>
+$team->opportunities()  // HasMany<Opportunity>
+$team->notes()          // HasMany<Note>
+$team->leads()          // HasMany<Lead>
+$team->supportCases()   // HasMany<SupportCase>
+```
+
+### Usage Examples
+
+```php
+// Get all people in a team
+$teamPeople = $team->people()->get();
+
+// Count active tasks
+$activeTasks = $team->tasks()->where('status', 'active')->count();
+
+// Get recent opportunities
+$recentOpportunities = $team->opportunities()
+    ->where('created_at', '>=', now()->subDays(30))
+    ->get();
+```
+
+## Events
+
+The Team model dispatches Laravel Jetstream events:
+
+- `TeamCreated` - When a new team is created
+- `TeamUpdated` - When team details are modified
+- `TeamDeleted` - When a team is deleted
+
+```php
+// Listen for team events
+Event::listen(TeamCreated::class, function ($event) {
+    // Initialize team-specific data
+    $team = $event->team;
+    // ... setup logic
+});
+```
+
+## Filament Integration
+
+### Multi-Tenant Panel Configuration
+
+```php
+// In PanelProvider
+use App\Models\Team;
+
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        ->tenant(Team::class)
+        ->tenantProfile(EditTeamProfile::class)
+        ->tenantRegistration(RegisterTeam::class);
+}
+```
+
+### Team Statistics Widget
+
+```php
+// Display team-wide statistics
+class TeamStatsWidget extends StatsOverviewWidget
+{
+    protected function getStats(): array
+    {
+        $team = Filament::getTenant();
+        
+        return [
+            Stat::make('People', $team->people()->count()),
+            Stat::make('Companies', $team->companies()->count()),
+            Stat::make('Active Tasks', $team->tasks()->active()->count()),
+            Stat::make('Opportunities', $team->opportunities()->count()),
+        ];
+    }
+}
+```
+
+### Resource Auto-Scoping
+
+All Filament resources are automatically scoped to the current team:
+
+```php
+// No manual scoping needed - Filament v4.3+ handles this automatically
+public static function getEloquentQuery(): Builder
+{
+    return parent::getEloquentQuery(); // Already team-scoped
+}
+```
+
+## API Integration
+
+### Team Information Endpoint
+
+```http
+GET /api/v1/team
+Authorization: Bearer {token}
+```
+
+**Response:**
+```json
+{
+    "data": {
+        "id": 1,
+        "name": "Acme Corporation",
+        "personal_team": false,
+        "avatar_url": "https://example.com/avatar.png",
+        "stats": {
+            "people_count": 150,
+            "companies_count": 45,
+            "tasks_count": 89
+        }
+    }
+}
+```
+
+### Update Team
+
+```http
+PUT /api/v1/team
+Content-Type: application/json
+Authorization: Bearer {token}
+
+{
+    "name": "Updated Team Name"
+}
+```
+
+## Testing Patterns
+
+### Comprehensive Test Coverage
+
+The `TeamTest.php` file provides extensive test coverage:
+
+```php
+// Relationship testing
+test('team has many people', function () {
+    $team = Team::factory()->create();
+    $people = People::factory()->count(3)->create(['team_id' => $team->id]);
+    
+    expect($team->people)->toHaveCount(3);
+});
+
+// Avatar functionality
+test('team avatar url is generated by avatar service', function () {
+    $team = Team::factory()->create(['name' => 'Test Team']);
+    $avatarUrl = $team->getFilamentAvatarUrl();
+    
+    expect($avatarUrl)->toBeString()->not->toBeEmpty();
+});
+
+// Event dispatching
+test('team events are dispatched on lifecycle operations', function () {
+    $team = Team::factory()->create();
+    $team->update(['name' => 'Updated']);
+    $team->delete();
+    
+    Event::assertDispatched(TeamCreated::class);
+    Event::assertDispatched(TeamUpdated::class);
+    Event::assertDispatched(TeamDeleted::class);
+});
+```
+
+### Performance Testing
+
+```php
+// Test relationship performance
+test('team relationships are properly indexed and performant', function () {
+    $team = Team::factory()->create();
+    People::factory()->count(10)->create(['team_id' => $team->id]);
+    
+    $loadedTeam = Team::with(['people'])->find($team->id);
+    expect($loadedTeam->relationLoaded('people'))->toBeTrue();
+});
+```
+
+## Best Practices
+
+### DO:
+- ✅ Use team relationships to access related entities
+- ✅ Leverage Filament's automatic team scoping
+- ✅ Test team relationships and events
+- ✅ Use the avatar service for consistent team avatars
+- ✅ Implement proper authorization for team operations
+
+### DON'T:
+- ❌ Manually scope queries to teams (Filament handles this)
+- ❌ Skip team relationship validation in tests
+- ❌ Hardcode team IDs in application logic
+- ❌ Forget to test personal team functionality
+- ❌ Ignore team events for audit trails
+
+## Security Considerations
+
+### Team Isolation
+- **Data Isolation**: Teams cannot access each other's data
+- **User Permissions**: Users can only access teams they belong to
+- **API Security**: All API endpoints respect team boundaries
+
+### Authorization
+```php
+// Check team membership
+Gate::define('access-team', function (User $user, Team $team) {
+    return $user->belongsToTeam($team);
+});
+
+// In controllers
+$this->authorize('access-team', $team);
+```
+
+## Performance Optimization
+
+### Database Indexes
+```sql
+-- Essential indexes for team queries
+CREATE INDEX idx_teams_user_id ON teams(user_id);
+CREATE INDEX idx_teams_personal_team ON teams(personal_team);
+
+-- Indexes on related tables
+CREATE INDEX idx_people_team_id ON people(team_id);
+CREATE INDEX idx_companies_team_id ON companies(team_id);
+CREATE INDEX idx_tasks_team_id ON tasks(team_id);
+```
+
+### Query Optimization
+```php
+// Eager load relationships to avoid N+1 queries
+$teams = Team::with(['people', 'companies', 'tasks'])->get();
+
+// Use specific columns when possible
+$teamNames = Team::select('id', 'name')->get();
+```
+
+## Migration and Seeding
+
+### Team Factory
+```php
+// Create teams with related data
+$team = Team::factory()
+    ->has(People::factory()->count(10))
+    ->has(Company::factory()->count(5))
+    ->create();
+```
+
+### Seeding Teams
+```php
+// In DatabaseSeeder
+Team::factory()
+    ->count(3)
+    ->sequence(
+        ['name' => 'Sales Team'],
+        ['name' => 'Marketing Team'],
+        ['name' => 'Support Team']
+    )
+    ->create();
+```
+
+## Related Documentation
+
+- [Filament Multi-Tenancy Guide](filament-guide.md#team-management-integration)
+- [API Reference - Team Endpoints](api-reference.md#team-management-api)
+- [Testing Infrastructure](testing-infrastructure.md)
+- [Laravel Jetstream Documentation](https://jetstream.laravel.com/features/teams.html)
+
+## Version History
+
+- **v1.0.0**: Initial Team model implementation
+- **v1.1.0**: Enhanced PHPDoc and avatar integration
+- **Current**: Comprehensive documentation and test coverage

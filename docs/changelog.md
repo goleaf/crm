@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Property 28 Standalone Test**: Created `test_property_28.php` for validating account type change audit trail functionality
 - Comprehensive PHPDoc documentation for Property 28 test implementation
 - Enhanced activity logging validation for account type changes
+- **Team Model Documentation**: Enhanced PHPDoc with comprehensive property and relationship documentation
+- **Team API Documentation**: Added Team management endpoints to API reference
+- **Team Filament Integration**: Documented multi-tenancy patterns and team statistics widgets
 
 ### Changed
 - **MinimalTabs Component**: Updated to use Filament v4.3+ unified schema system (`Filament\Schemas\Components\Tabs`)
@@ -38,6 +41,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **New Command**: `App\Console\Commands\ProcessTaskRemindersCommand`
 - **Database Migration**: `create_task_reminders_table`
 - **Enhanced Testing**: `test-coverage-agent.php` v2.0.0 with coverage driver detection
+- **Team Model**: Enhanced PHPDoc with @property and @property-read annotations for all relationships
+- **Documentation**: Updated API reference with Team endpoints and Filament guide with multi-tenancy patterns
 
 ## [1.0.0] - 2025-12-10
 
