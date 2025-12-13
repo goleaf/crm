@@ -55,7 +55,7 @@
     - **Property 10: Attribute assignment completeness**
     - **Validates: Requirements 3.5**
 
-- [-] 5. Product variations system
+- [ ] 5. Product variations system
   - [x] 5.1 Implement variation generation service
     - Create VariationService class
     - Implement cartesian product algorithm for variation generation
@@ -105,7 +105,7 @@
     - **Property 17: Custom field validation**
     - **Validates: Requirements 6.3**
 
-- [-] 8. Search and filtering system
+- [ ] 8. Search and filtering system
   - [x] 8.1 Implement comprehensive product search
     - Add search across name, SKU, description, categories, custom fields
     - Implement category filtering with subcategory inclusion
@@ -126,7 +126,7 @@
     - **Property 20: Sort order correctness**
     - **Validates: Requirements 7.5**
 
-- [-] 9. Product relationships
+- [ ] 9. Product relationships
   - [ ] 9.1 Implement product relationship system
     - Create database tables for relationships (bundles, cross-sell, upsell)
     - Add relationship methods to Product model

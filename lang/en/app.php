@@ -332,6 +332,7 @@ return [
         'uploaded_by' => 'Uploaded By',
         'uploaded' => 'Uploaded',
         'activity' => 'Activity',
+        'activity_timeline' => 'Activity Timeline',
         'activity_details' => 'Activity Details',
         'activity_filters' => 'Activity Filters',
         'entry' => 'Entry',

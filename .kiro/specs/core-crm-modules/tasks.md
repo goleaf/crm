@@ -31,7 +31,7 @@
   - _Requirements: 4.1, 4.3, 4.4_
   - **Property 5: Opportunity pipeline math**, **Property 6: Opportunity stage progression**
 
-- [-] 6. Case management
+- [ ] 6. Case management
   - Implement SLA timers, breach detection, escalation workflows, queue routing, and knowledge base linkage.
   - Add email-to-case and portal intake handlers with threading and assignment.
   - _Requirements: 5.1, 5.2, 5.3_
@@ -47,7 +47,7 @@
   - _Requirements: all_
   - **Property 1: Account persistence**, **Property 2: Bidirectional account-contact links**
 
-- [ ] 9. Testing
+- [-] 9. Testing
   - Property tests: persistence, relationship symmetry, routing determinism, conversion atomicity, weighted revenue math, SLA breach triggers, duplicate detection.
   - Integration tests: web-to-lead intake, conversion wizard, email-to-case ingestion, opportunity forecast rollup, activity timeline rendering.
   - _Requirements: all_

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Models;
+namespace Tests\Unit\Properties\AccountsModule;
 
 use App\Enums\CustomFields\NoteField;
 use App\Enums\CustomFields\OpportunityField;
