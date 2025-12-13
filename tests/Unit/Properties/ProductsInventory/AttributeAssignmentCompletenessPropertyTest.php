@@ -157,7 +157,7 @@ test('property: attribute assignments persist when product is updated', function
 
     // Update the product
     $product->update([
-        'name' => fake()->productName(),
+        'name' => fake()->words(3, true),
         'description' => fake()->paragraph(),
         'price' => fake()->randomFloat(2, 10, 1000),
     ]);

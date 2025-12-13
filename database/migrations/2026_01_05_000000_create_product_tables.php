@@ -107,6 +107,7 @@ return new class extends Migration
             $table->boolean('is_default')->default(false);
             $table->boolean('track_inventory')->default(false);
             $table->integer('inventory_quantity')->default(0);
+            $table->integer('reserved_quantity')->default(0);
             $table->json('options')->nullable();
             $table->timestamps();
             $table->softDeletes();

@@ -136,6 +136,8 @@ final class AppServiceProvider extends ServiceProvider
 
         // Register Product Services
         $this->app->singleton(\App\Services\Products\AttributeAssignmentService::class);
+        $this->app->singleton(\App\Services\Products\VariationService::class);
+        $this->app->singleton(\App\Services\Products\InventoryService::class);
     }
 
     /**

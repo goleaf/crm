@@ -21,8 +21,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Relaticle\CustomFields\Models\Concerns\UsesCustomFields;
+use Relaticle\CustomFields\Models\Contracts\HasCustomFields;
 
-final class Product extends Model implements HasMedia
+final class Product extends Model implements HasMedia, HasCustomFields
 {
     /** @use HasFactory<ProductFactory> */
     use HasFactory;
@@ -32,6 +34,7 @@ final class Product extends Model implements HasMedia
     use HasUniqueSlug;
     use InteractsWithMedia;
     use SoftDeletes;
+    use UsesCustomFields;
 
     /**
      * @var list<string>
@@ -57,7 +60,6 @@ final class Product extends Model implements HasMedia
         'track_inventory',
         'inventory_quantity',
         'reserved_quantity',
-        'custom_fields',
     ];
 
     /**
@@ -93,7 +95,6 @@ final class Product extends Model implements HasMedia
             'reserved_quantity' => 'integer',
             'price_effective_from' => 'datetime',
             'price_effective_to' => 'datetime',
-            'custom_fields' => 'array',
         ];
     }
 
@@ -632,6 +633,136 @@ final class Product extends Model implements HasMedia
                 $this->assignAttribute($attribute, $value);
             }
         }
+    }
+
+    /**
+     * Get all custom field values for search indexing
+     */
+    public function getCustomFieldsForSearch(): array
+    {
+        $searchableValues = [];
+        
+        if (!$this->customFieldValues) {
+            return $searchableValues;
+        }
+
+        foreach ($this->customFieldValues as $customFieldValue) {
+            $field = $customFieldValue->customField;
+            $value = $customFieldValue->value;
+            
+            if ($value !== null && $value !== '') {
+                // Convert value to searchable text
+                if (is_array($value)) {
+                    $searchableValues[] = implode(' ', $value);
+                } else {
+                    $searchableValues[] = (string) $value;
+                }
+            }
+        }
+
+        return $searchableValues;
+    }
+
+    /**
+     * Validate custom field values
+     */
+    public function validateCustomFields(array $customFieldData): array
+    {
+        $errors = [];
+        
+        foreach ($customFieldData as $fieldId => $value) {
+            $customField = \Relaticle\CustomFields\Models\CustomField::find($fieldId);
+            
+            if (!$customField) {
+                continue;
+            }
+
+            // Skip validation for null/empty values (let the custom fields system handle required validation)
+            if ($value === null || $value === '') {
+                continue;
+            }
+
+            // Validate field type
+            $validationResult = $this->validateCustomFieldType($customField, $value);
+            if ($validationResult !== true) {
+                $errors[$fieldId] = $validationResult;
+            }
+        }
+
+        return $errors;
+    }
+
+    /**
+     * Validate custom field value against its type
+     */
+    private function validateCustomFieldType(\Relaticle\CustomFields\Models\CustomField $field, mixed $value): string|bool
+    {
+        if ($value === null || $value === '') {
+            return true; // Empty values are handled by required validation
+        }
+
+        switch ($field->type) {
+            case 'number':
+                if (!is_numeric($value)) {
+                    return "The {$field->name} field must be a number.";
+                }
+                break;
+                
+            case 'email':
+                if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                    return "The {$field->name} field must be a valid email address.";
+                }
+                break;
+                
+            case 'url':
+                if (!filter_var($value, FILTER_VALIDATE_URL)) {
+                    return "The {$field->name} field must be a valid URL.";
+                }
+                break;
+                
+            case 'select':
+            case 'multi_select':
+                $validOptions = $field->options->pluck('name')->toArray();
+                if (is_array($value)) {
+                    foreach ($value as $val) {
+                        if (!in_array($val, $validOptions)) {
+                            return "The {$field->name} field contains invalid options.";
+                        }
+                    }
+                } else {
+                    if (!in_array($value, $validOptions)) {
+                        return "The {$field->name} field contains an invalid option.";
+                    }
+                }
+                break;
+                
+            case 'boolean':
+            case 'toggle':
+                if (!is_bool($value) && !in_array($value, [0, 1, '0', '1', 'true', 'false'])) {
+                    return "The {$field->name} field must be true or false.";
+                }
+                break;
+        }
+
+        return true;
+    }
+
+    /**
+     * Search products including custom fields
+     */
+    public static function search(string $query): Builder
+    {
+        return static::query()
+            ->where(function (Builder $builder) use ($query) {
+                $builder->where('name', 'like', "%{$query}%")
+                    ->orWhere('sku', 'like', "%{$query}%")
+                    ->orWhere('description', 'like', "%{$query}%")
+                    ->orWhere('part_number', 'like', "%{$query}%")
+                    ->orWhere('manufacturer', 'like', "%{$query}%")
+                    ->orWhereHas('customFieldValues', function (Builder $customFieldQuery) use ($query) {
+                        $customFieldQuery->where('value', 'like', "%{$query}%");
+                    });
+            });
     }
 
     protected static function booted(): void

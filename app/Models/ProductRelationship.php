@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\ProductRelationshipType;
 use App\Models\Concerns\HasTeam;
 use App\Services\Tenancy\CurrentTeamResolver;
 use Database\Factories\ProductRelationshipFactory;
@@ -44,6 +45,7 @@ final class ProductRelationship extends Model
     protected function casts(): array
     {
         return [
+            'relationship_type' => ProductRelationshipType::class,
             'priority' => 'integer',
             'quantity' => 'integer',
             'price_override' => 'decimal:2',
@@ -67,6 +69,28 @@ final class ProductRelationship extends Model
         return $this->belongsTo(Product::class, 'related_product_id');
     }
 
+    /**
+     * Validate upsell price constraint.
+     */
+    public function validateUpsellPrice(): bool
+    {
+        if ($this->relationship_type !== ProductRelationshipType::UPSELL) {
+            return true;
+        }
+
+        $sourceProduct = $this->product;
+        $upsellProduct = $this->relatedProduct;
+
+        if (!$sourceProduct || !$upsellProduct) {
+            return false;
+        }
+
+        // Use price_override if set, otherwise use the product's price
+        $upsellPrice = $this->price_override ?? $upsellProduct->price;
+        
+        return $upsellPrice >= $sourceProduct->price;
+    }
+
     protected static function booted(): void
     {
         self::creating(function (self $relationship): void {
@@ -79,6 +103,11 @@ final class ProductRelationship extends Model
             $relationship->team_id ??= $relationship->product?->team_id
                 ?? Product::withoutGlobalScopes()->whereKey($relationship->product_id)->value('team_id')
                 ?? CurrentTeamResolver::resolveId();
+
+            // Validate upsell price constraint
+            if ($relationship->relationship_type === ProductRelationshipType::UPSELL->value && !$relationship->validateUpsellPrice()) {
+                throw new \InvalidArgumentException('Upsell product price must be greater than or equal to the source product price.');
+            }
         });
     }
 }

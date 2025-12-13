@@ -41,9 +41,8 @@ return new class extends Migration
             $table->index(['reserved_quantity'], 'products_reserved_quantity_index');
         });
 
-        // Add reserved_quantity column to product_variations table for inventory reservation
+        // Add index to existing reserved_quantity column in product_variations table
         Schema::table('product_variations', function (Blueprint $table): void {
-            $table->integer('reserved_quantity')->default(0)->after('inventory_quantity');
             $table->index(['reserved_quantity'], 'product_variations_reserved_quantity_index');
         });
     }
@@ -53,15 +52,15 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Drop reserved_quantity columns
+        // Drop reserved_quantity column from products table
         Schema::table('products', function (Blueprint $table): void {
             $table->dropIndex('products_reserved_quantity_index');
             $table->dropColumn('reserved_quantity');
         });
 
+        // Drop index from product_variations table (column exists in base migration)
         Schema::table('product_variations', function (Blueprint $table): void {
             $table->dropIndex('product_variations_reserved_quantity_index');
-            $table->dropColumn('reserved_quantity');
         });
 
         Schema::dropIfExists('inventory_adjustments');

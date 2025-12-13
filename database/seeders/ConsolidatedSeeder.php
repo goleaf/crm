@@ -229,6 +229,7 @@ final class ConsolidatedSeeder extends Seeder
                 'team_id' => $this->team->id,
                 'company_id' => $companyIds[array_rand($companyIds)],
                 'contact_id' => $peopleIds[array_rand($peopleIds)],
+                'creation_source' => \App\Enums\CreationSource::WEB->value,
                 'created_at' => $now->copy()->subMinutes($i),
                 'updated_at' => $now->copy()->subMinutes($i),
             ];
