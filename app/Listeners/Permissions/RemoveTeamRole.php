@@ -6,7 +6,7 @@ namespace App\Listeners\Permissions;
 
 use App\Models\Team;
 use App\Models\User;
-use App\Permissions\PermissionService;
+use App\Services\Permissions\PermissionService;
 use Laravel\Jetstream\Events\TeamMemberRemoved;
 
 final readonly class RemoveTeamRole

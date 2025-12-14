@@ -100,6 +100,16 @@ final class AppServiceProvider extends ServiceProvider
         // Register Profanity Filter Service
         $this->app->singleton(\App\Services\Content\ProfanityFilterService::class);
 
+        // Register Data Quality Services
+        $this->app->singleton(\App\Services\DataQuality\DataIntegrityService::class);
+        $this->app->singleton(\App\Services\DataQuality\DataCleanupService::class);
+        $this->app->singleton(\App\Services\DataQuality\BackupService::class);
+        $this->app->singleton(\App\Services\DataQuality\DataQualityService::class);
+        $this->app->singleton(\App\Services\Content\ProfanityFilterService::class);
+
+        // Register Bulk Operations Service
+        $this->app->singleton(\App\Services\BulkOperations\BulkOperationService::class);
+
         // Register Translation Checker Service
         $this->app->singleton(\App\Services\Translation\TranslationCheckerService::class, fn ($app): \App\Services\Translation\TranslationCheckerService => new \App\Services\Translation\TranslationCheckerService(
             cacheTtl: (int) config('translations.cache.ttl', 3600),
@@ -139,6 +149,11 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\Products\VariationService::class);
         $this->app->singleton(\App\Services\Products\InventoryService::class);
 
+        // Register Search Services
+        $this->app->singleton(\App\Services\Search\SearchIndexService::class);
+        $this->app->singleton(\App\Services\Search\AdvancedSearchService::class);
+        $this->app->singleton(\App\Services\Search\SavedSearchService::class);
+
         // Register Studio Service
         $this->app->singleton(\App\Services\Studio\StudioService::class, fn (): \App\Services\Studio\StudioService => new \App\Services\Studio\StudioService(
             cacheTtl: (int) config('cache.ttl.studio', 3600),
@@ -146,6 +161,46 @@ final class AppServiceProvider extends ServiceProvider
 
         // Register Admin Service
         $this->app->singleton(\App\Services\Admin\AdminService::class);
+
+        // Register Permission Service
+        $this->app->singleton(\App\Services\Permissions\PermissionService::class);
+
+        // Register Role Management Service
+        $this->app->singleton(\App\Services\Role\RoleManagementService::class, fn (): \App\Services\Role\RoleManagementService => new \App\Services\Role\RoleManagementService(
+            cacheTtl: (int) config('cache.ttl.roles', 3600),
+        ));
+
+        // Register Security Group Service
+        $this->app->singleton(\App\Services\SecurityGroup\SecurityGroupService::class);
+
+        // Register Import Services
+        $this->registerImportServices();
+
+        // Register Export Services
+        $this->registerExportServices();
+    }
+
+    /**
+     * Register Import services.
+     */
+    private function registerImportServices(): void
+    {
+        $this->app->singleton(\App\Services\Import\ImportValidationService::class);
+        $this->app->singleton(\App\Services\Import\ImportMappingService::class);
+        $this->app->singleton(\App\Services\Import\ImportDuplicateService::class);
+        $this->app->singleton(\App\Services\Import\ImportProcessorService::class);
+        $this->app->singleton(\App\Services\Import\ImportService::class);
+    }
+
+    /**
+     * Register Export services.
+     */
+    private function registerExportServices(): void
+    {
+        $this->app->singleton(\App\Services\Export\ExportTemplateService::class);
+        $this->app->singleton(\App\Services\Export\ExportFilterService::class);
+        $this->app->singleton(\App\Services\Export\ExportProcessorService::class);
+        $this->app->singleton(\App\Services\Export\ExportService::class);
     }
 
     /**
@@ -237,7 +292,6 @@ final class AppServiceProvider extends ServiceProvider
         $this->configureTranslations();
         $this->configureCompanyConfig();
         $this->shareUiTranslations();
-        $this->configureScrambleGate();
     }
 
     /**
@@ -246,17 +300,6 @@ final class AppServiceProvider extends ServiceProvider
     private function configureTranslations(): void
     {
         // Use package translations; overrides can be placed in resources/lang/vendor/custom-fields if needed.
-    }
-
-    private function configureScrambleGate(): void
-    {
-        Gate::define('viewApiDocs', function (User $user): bool {
-            if ($user->hasRole('super_admin')) {
-                return true;
-            }
-
-            return $user->can('view_api_docs');
-        });
     }
 
     /**

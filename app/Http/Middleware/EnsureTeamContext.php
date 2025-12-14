@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
-use App\Permissions\TeamResolver as PermissionTeamResolver;
+use App\Services\Permissions\TeamResolver as PermissionTeamResolver;
 use App\Services\Tenancy\CurrentTeamResolver;
 use Closure;
 use Filament\Facades\Filament;

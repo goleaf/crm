@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Models\Role;
 use App\Models\Team;
 use App\Models\User;
-use App\Permissions\PermissionService;
+use App\Services\Permissions\PermissionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
 

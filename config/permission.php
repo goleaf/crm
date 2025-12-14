@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Role;
-use App\Permissions\TeamResolver;
+use App\Services\Permissions\TeamResolver;
 
 return [
 

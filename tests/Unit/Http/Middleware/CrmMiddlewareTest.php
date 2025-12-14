@@ -8,7 +8,7 @@ use App\Http\Middleware\EnsurePermission;
 use App\Http\Middleware\EnsureTeamContext;
 use App\Models\Team;
 use App\Models\User;
-use App\Permissions\TeamResolver;
+use App\Services\Permissions\TeamResolver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Permission;
