@@ -89,7 +89,6 @@
 
 - **[Inspector MCP Server Integration](inspector-mcp-server-integration.md)** - MCP server for Inspector.dev telemetry access by coding agents
 - **[Filament Badgeable Column](https://github.com/awcodes/filament-badgeable-column)** - Badge prefixes/suffixes for Filament table columns
-- **[GraphQL (Lighthouse) Integration](graphql-lighthouse-integration.md)** - Secure GraphQL layer with Lighthouse + Sanctum
 - **[Facade Maker Integration](facade-maker-integration.md)** - Scaffold facades and services with `app:facade-maker`
 - **[PHP 8.5 Highlights](php-85-whats-new.md)** - Upcoming language features (pipe operator, final property promotion, CLI diff flag, more)
 - **[Zap Scheduling Integration](zap-integration.md)** - Zap-powered availability, bookable slots, and calendar syncing defaults

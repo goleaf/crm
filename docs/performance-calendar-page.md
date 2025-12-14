@@ -367,7 +367,6 @@ ab -n 1000 -c 100 https://your-app.test/app/calendar
 1. **Virtual Scrolling** for year view
 2. **Progressive Loading** for large event lists
 3. **Service Worker** for offline calendar access
-4. **GraphQL API** for more efficient data fetching
 
 ---
 
