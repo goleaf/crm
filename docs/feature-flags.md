@@ -31,7 +31,7 @@
 2. Add `use Stephenjude\FilamentFeatureFlag\Traits\WithFeatureResolver;` to the feature class (inherits default value + segment resolution).
 3. Check a feature in code (tenant-aware by default):
    ```php
-   use App\Features\NewDashboard;
+   use App\FeatureFlags\NewDashboard;
    use Laravel\Pennant\Feature;
 
    if (Feature::active(NewDashboard::class)) {
@@ -47,10 +47,10 @@
 - Segments and table rows are filtered by `team_id` so one tenant cannot view or edit another tenant's rules.
 
 ## Current Flags
-- `App\Features\NewCalendarExperience` — optimized calendar views, recurrence, performance tweaks.
-- `App\Features\KnowledgeEnhancements` — enriched knowledge widgets and template response workflows.
+- `App\FeatureFlags\NewCalendarExperience` — optimized calendar views, recurrence, performance tweaks.
+- `App\FeatureFlags\KnowledgeEnhancements` — enriched knowledge widgets and template response workflows.
 
 ## Maintenance Tips
 - Use **Purge Feature Flags** after bulk updates or deployments to flush stale Pennant cache.
-- Keep feature classes in `app/Features`; the package auto-discovers them.
+- Keep feature classes in `app/FeatureFlags`; the package auto-discovers them.
 - Add translation keys under `lang/*/app.php` (`feature_flags`, `feature_flag_segment`, etc.) when introducing new UI strings.
