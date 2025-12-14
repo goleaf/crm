@@ -36,6 +36,11 @@ abstract class PropertyTestCase extends TestCase
     protected User $user;
 
     /**
+     * Property-based test generator for creating test data.
+     */
+    protected PropertyGenerator $generator;
+
+    /**
      * Set up the test environment.
      *
      * Creates a team and authenticated user for each test.
@@ -52,6 +57,9 @@ abstract class PropertyTestCase extends TestCase
         $this->user->switchTeam($this->team);
 
         $this->actingAs($this->user);
+
+        // Initialize property generator
+        $this->generator = new PropertyGenerator;
     }
 
     /**
@@ -229,5 +237,151 @@ abstract class PropertyTestCase extends TestCase
 
         // Re-authenticate
         $this->actingAs($this->user);
+    }
+
+    /**
+     * Run a property-based test with generated inputs.
+     *
+     * This method provides a fluent interface for property-based testing,
+     * allowing you to specify generators and then run assertions.
+     *
+     * @param mixed ...$generators The generators to use for test inputs
+     */
+    protected function forAll(...$generators): PropertyAssertion
+    {
+        return new PropertyAssertion($generators);
+    }
+}
+
+/**
+ * Property generator for creating test data.
+ */
+final class PropertyGenerator
+{
+    /**
+     * Generate random elements from an array.
+     */
+    public function elements(array $elements): ElementGenerator
+    {
+        return new ElementGenerator($elements);
+    }
+
+    /**
+     * Generate random integers within a range.
+     */
+    public function integers(int $min = 0, int $max = 100): IntegerGenerator
+    {
+        return new IntegerGenerator($min, $max);
+    }
+
+    /**
+     * Generate random strings.
+     */
+    public function strings(int $minLength = 1, int $maxLength = 50): StringGenerator
+    {
+        return new StringGenerator($minLength, $maxLength);
+    }
+
+    /**
+     * Generate random booleans.
+     */
+    public function booleans(): BooleanGenerator
+    {
+        return new BooleanGenerator;
+    }
+}
+
+/**
+ * Property assertion for running property-based tests.
+ */
+final readonly class PropertyAssertion
+{
+    public function __construct(private array $generators) {}
+
+    /**
+     * Run the property test with the given assertion.
+     */
+    public function then(callable $assertion, int $iterations = 100): void
+    {
+        for ($i = 0; $i < $iterations; $i++) {
+            $values = [];
+            foreach ($this->generators as $generator) {
+                $values[] = $generator->generate();
+            }
+
+            try {
+                $assertion(...$values);
+            } catch (\Throwable $e) {
+                throw new \RuntimeException(
+                    sprintf('Property test failed on iteration %d with values: %s. Error: %s',
+                        $i,
+                        json_encode($values),
+                        $e->getMessage(),
+                    ),
+                    0,
+                    $e,
+                );
+            }
+        }
+    }
+}
+
+/**
+ * Base generator interface.
+ */
+interface GeneratorInterface
+{
+    public function generate();
+}
+
+/**
+ * Element generator for selecting from arrays.
+ */
+final readonly class ElementGenerator implements GeneratorInterface
+{
+    public function __construct(private array $elements) {}
+
+    public function generate()
+    {
+        return fake()->randomElement($this->elements);
+    }
+}
+
+/**
+ * Integer generator for random integers.
+ */
+final readonly class IntegerGenerator implements GeneratorInterface
+{
+    public function __construct(private int $min, private int $max) {}
+
+    public function generate(): int
+    {
+        return fake()->numberBetween($this->min, $this->max);
+    }
+}
+
+/**
+ * String generator for random strings.
+ */
+final readonly class StringGenerator implements GeneratorInterface
+{
+    public function __construct(private int $minLength, private int $maxLength) {}
+
+    public function generate(): string
+    {
+        $length = fake()->numberBetween($this->minLength, $this->maxLength);
+
+        return fake()->lexify(str_repeat('?', $length));
+    }
+}
+
+/**
+ * Boolean generator for random booleans.
+ */
+final class BooleanGenerator implements GeneratorInterface
+{
+    public function generate(): bool
+    {
+        return fake()->boolean();
     }
 }

@@ -11,7 +11,7 @@
   - _Requirements: 4.1-4.2_
   - **Property 4: Authentication policy compliance**
 
-- [-] 5. Role management
+- [ ] 5. Role management
   - Create role model/resource with permissions matrix (module/field/action), inheritance/templates, admin/studio rights, assignment to users/groups, audit trail.
   - _Requirements: 5.1-5.2_
   - **Property 3: Permission enforcement**, **Property 6: Auditability**
@@ -21,7 +21,7 @@
   - _Requirements: 6.1-6.3_
   - **Property 3: Permission enforcement**, **Property 6: Auditability**
 
-- [ ] 7. Testing
+- [x] 7. Testing
   - Property tests for permission enforcement, package completeness, auth policy enforcement, repair idempotence, audit logging.
   - Integration tests for studio changes, module install/update/uninstall, role/group enforcement across records, SSO/2FA flows, repair tools.
   - _Requirements: all_

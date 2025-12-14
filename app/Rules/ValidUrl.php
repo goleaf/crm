@@ -27,6 +27,7 @@ final readonly class ValidUrl implements ValidationRule
 
         if (! is_string($value)) {
             $fail(__('validation.url', ['attribute' => $attribute]));
+
             return;
         }
 
@@ -34,16 +35,19 @@ final readonly class ValidUrl implements ValidationRule
 
         if (! $this->isValidUrl($url)) {
             $fail(__('validation.url', ['attribute' => $attribute]));
+
             return;
         }
 
         if ($this->requireHttps && ! str_starts_with($url, 'https://')) {
             $fail(__('validation.custom.url.https_required', ['attribute' => $attribute]));
+
             return;
         }
 
         if (! $this->allowLocalhost && $this->isLocalhost($url)) {
             $fail(__('validation.custom.url.no_localhost', ['attribute' => $attribute]));
+
             return;
         }
 
@@ -58,7 +62,7 @@ final readonly class ValidUrl implements ValidationRule
 
         // Add protocol if missing
         if (! preg_match('/^https?:\/\//', $url)) {
-            $url = 'https://' . $url;
+            return 'https://' . $url;
         }
 
         return $url;
@@ -71,7 +75,7 @@ final readonly class ValidUrl implements ValidationRule
         }
 
         $parsed = parse_url($url);
-        
+
         if ($parsed === false || ! isset($parsed['scheme'], $parsed['host'])) {
             return false;
         }
@@ -82,17 +86,13 @@ final readonly class ValidUrl implements ValidationRule
         }
 
         // Check host length
-        if (strlen($parsed['host']) > 253) {
-            return false;
-        }
-
-        return true;
+        return strlen($parsed['host']) <= 253;
     }
 
     private function isLocalhost(string $url): bool
     {
         $parsed = parse_url($url);
-        
+
         if (! isset($parsed['host'])) {
             return false;
         }
@@ -107,7 +107,7 @@ final readonly class ValidUrl implements ValidationRule
     private function isIpAddress(string $url): bool
     {
         $parsed = parse_url($url);
-        
+
         if (! isset($parsed['host'])) {
             return false;
         }

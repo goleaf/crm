@@ -17,7 +17,7 @@ uses(RefreshDatabase::class);
  *
  * **Validates: Requirements 3.4**
  *
- * Property: For any attribute value entry, the system should validate the value 
+ * Property: For any attribute value entry, the system should validate the value
  * against the attribute's defined data type and reject invalid values.
  */
 
@@ -49,7 +49,7 @@ test('property: text attributes validate string values correctly', function (): 
     foreach ($validValues as $value) {
         expect($attribute->validateValue($value))->toBeTrue("Value '{$value}' should be valid for text attribute");
         expect($attribute->isValidValue($value))->toBeTrue("Value '{$value}' should be valid for text attribute");
-        
+
         // Should be able to assign the value
         $assignment = $product->assignAttribute($attribute, $value);
         expect($assignment->getValue())->toBe($value);
@@ -67,8 +67,8 @@ test('property: text attributes validate string values correctly', function (): 
     ];
 
     foreach ($invalidValues as $value) {
-        expect($attribute->validateValue($value))->toBeFalse("Value should be invalid for text attribute");
-        expect($attribute->isValidValue($value))->toBeFalse("Value should be invalid for text attribute");
+        expect($attribute->validateValue($value))->toBeFalse('Value should be invalid for text attribute');
+        expect($attribute->isValidValue($value))->toBeFalse('Value should be invalid for text attribute');
     }
 })->repeat(100);
 
@@ -101,7 +101,7 @@ test('property: number attributes validate numeric values correctly', function (
     foreach ($validValues as $value) {
         expect($attribute->validateValue($value))->toBeTrue("Value '{$value}' should be valid for number attribute");
         expect($attribute->isValidValue($value))->toBeTrue("Value '{$value}' should be valid for number attribute");
-        
+
         // Should be able to assign the value
         $assignment = $product->assignAttribute($attribute, $value);
         expect($assignment->getValue())->toEqual((float) $value);
@@ -119,8 +119,8 @@ test('property: number attributes validate numeric values correctly', function (
     ];
 
     foreach ($invalidValues as $value) {
-        expect($attribute->validateValue($value))->toBeFalse("Value should be invalid for number attribute");
-        expect($attribute->isValidValue($value))->toBeFalse("Value should be invalid for number attribute");
+        expect($attribute->validateValue($value))->toBeFalse('Value should be invalid for number attribute');
+        expect($attribute->isValidValue($value))->toBeFalse('Value should be invalid for number attribute');
     }
 })->repeat(100);
 
@@ -152,7 +152,7 @@ test('property: boolean attributes validate boolean values correctly', function 
     foreach ($validValues as $value) {
         expect($attribute->validateValue($value))->toBeTrue("Value '{$value}' should be valid for boolean attribute");
         expect($attribute->isValidValue($value))->toBeTrue("Value '{$value}' should be valid for boolean attribute");
-        
+
         // Should be able to assign the value
         $assignment = $product->assignAttribute($attribute, $value);
         expect($assignment->getValue())->toBeIn([true, false]);
@@ -171,8 +171,8 @@ test('property: boolean attributes validate boolean values correctly', function 
     ];
 
     foreach ($invalidValues as $value) {
-        expect($attribute->validateValue($value))->toBeFalse("Value should be invalid for boolean attribute");
-        expect($attribute->isValidValue($value))->toBeFalse("Value should be invalid for boolean attribute");
+        expect($attribute->validateValue($value))->toBeFalse('Value should be invalid for boolean attribute');
+        expect($attribute->isValidValue($value))->toBeFalse('Value should be invalid for boolean attribute');
     }
 })->repeat(100);
 
@@ -205,7 +205,7 @@ test('property: select attributes validate against predefined values', function 
     foreach ($validOptions as $value) {
         expect($attribute->validateValue($value))->toBeTrue("Value '{$value}' should be valid for select attribute");
         expect($attribute->isValidValue($value))->toBeTrue("Value '{$value}' should be valid for select attribute");
-        
+
         // Should be able to assign the value
         $assignment = $product->assignAttribute($attribute, $value);
         expect($assignment->getValue())->toBe($value);
@@ -222,7 +222,7 @@ test('property: select attributes validate against predefined values', function 
     ];
 
     foreach ($invalidValues as $value) {
-        expect($attribute->isValidValue($value))->toBeFalse("Value should be invalid for select attribute");
+        expect($attribute->isValidValue($value))->toBeFalse('Value should be invalid for select attribute');
     }
 })->repeat(100);
 
@@ -261,9 +261,9 @@ test('property: multi-select attributes validate arrays of predefined values', f
     ];
 
     foreach ($validValueArrays as $values) {
-        expect($attribute->validateValue($values))->toBeTrue("Values should be valid for multi-select attribute");
-        expect($attribute->isValidValue($values))->toBeTrue("Values should be valid for multi-select attribute");
-        
+        expect($attribute->validateValue($values))->toBeTrue('Values should be valid for multi-select attribute');
+        expect($attribute->isValidValue($values))->toBeTrue('Values should be valid for multi-select attribute');
+
         // Should be able to assign the values
         $assignment = $product->assignAttribute($attribute, $values);
         expect($assignment->getValue())->toBe($values);
@@ -280,7 +280,7 @@ test('property: multi-select attributes validate arrays of predefined values', f
     ];
 
     foreach ($invalidValues as $value) {
-        expect($attribute->isValidValue($value))->toBeFalse("Value should be invalid for multi-select attribute");
+        expect($attribute->isValidValue($value))->toBeFalse('Value should be invalid for multi-select attribute');
     }
 })->repeat(100);
 
@@ -353,7 +353,7 @@ test('property: required attributes enforce value presence in validation', funct
         if ($value === '') {
             expect($requiredAttribute->validateValue($value))->toBeTrue();
         }
-        
+
         // But assignment validation should consider required status
         // This will be tested in the assignment completeness property test
     }

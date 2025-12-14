@@ -11,7 +11,6 @@ use App\Enums\LeadStatus;
 use App\Models\Account;
 use App\Models\Lead;
 use App\Models\Opportunity;
-use App\Models\SupportCase;
 use App\Rules\CleanContent;
 use App\Rules\ValidEmail;
 use App\Rules\ValidPhone;
@@ -30,7 +29,9 @@ final class CrmValidationService
      * Validate account data with comprehensive rules.
      *
      * @param array<string, mixed> $data
+     *
      * @return array<string, mixed>
+     *
      * @throws ValidationException
      */
     public function validateAccountData(array $data, ?Account $account = null): array
@@ -50,12 +51,12 @@ final class CrmValidationService
         ];
 
         // Add parent validation with cycle detection
-        if ($account !== null) {
+        if ($account instanceof \App\Models\Account) {
             $rules['parent_id'] = [
                 'nullable',
                 'integer',
                 'exists:accounts,id',
-                function ($attribute, $value, $fail) use ($account) {
+                function ($attribute, $value, $fail) use ($account): void {
                     if ($value !== null && $account->wouldCreateCycle($value)) {
                         $fail(__('validation.custom.parent_id.no_cycle'));
                     }
@@ -78,7 +79,9 @@ final class CrmValidationService
      * Validate lead data with comprehensive rules.
      *
      * @param array<string, mixed> $data
+     *
      * @return array<string, mixed>
+     *
      * @throws ValidationException
      */
     public function validateLeadData(array $data): array
@@ -114,7 +117,9 @@ final class CrmValidationService
      * Validate opportunity data with comprehensive rules.
      *
      * @param array<string, mixed> $data
+     *
      * @return array<string, mixed>
+     *
      * @throws ValidationException
      */
     public function validateOpportunityData(array $data): array
@@ -147,7 +152,9 @@ final class CrmValidationService
      * Validate case data with comprehensive rules.
      *
      * @param array<string, mixed> $data
+     *
      * @return array<string, mixed>
+     *
      * @throws ValidationException
      */
     public function validateCaseData(array $data): array
@@ -182,7 +189,9 @@ final class CrmValidationService
      * Validate contact data with comprehensive rules.
      *
      * @param array<string, mixed> $data
+     *
      * @return array<string, mixed>
+     *
      * @throws ValidationException
      */
     public function validateContactData(array $data): array
@@ -218,7 +227,6 @@ final class CrmValidationService
     /**
      * Validate enum values with proper error messages.
      *
-     * @param mixed $value
      * @param class-string $enumClass
      */
     public function validateEnum(mixed $value, string $enumClass): bool
@@ -236,16 +244,19 @@ final class CrmValidationService
         }
 
         $validNames = array_column($enumClass::cases(), 'name');
+
         return in_array($value, $validNames, true);
     }
 
     /**
      * Validate with custom messages and return validated data.
      *
-     * @param array<string, mixed> $data
-     * @param array<string, mixed> $rules
+     * @param array<string, mixed>  $data
+     * @param array<string, mixed>  $rules
      * @param array<string, string> $messages
+     *
      * @return array<string, mixed>
+     *
      * @throws ValidationException
      */
     private function validateWithCustomMessages(array $data, array $rules, array $messages = []): array

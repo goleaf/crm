@@ -18,13 +18,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Relaticle\CustomFields\Models\Concerns\UsesCustomFields;
+use Relaticle\CustomFields\Models\Contracts\HasCustomFields;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Relaticle\CustomFields\Models\Concerns\UsesCustomFields;
-use Relaticle\CustomFields\Models\Contracts\HasCustomFields;
 
-final class Product extends Model implements HasMedia, HasCustomFields
+final class Product extends Model implements HasCustomFields, HasMedia
 {
     /** @use HasFactory<ProductFactory> */
     use HasFactory;
@@ -557,7 +557,7 @@ final class Product extends Model implements HasMedia, HasCustomFields
             ->where('product_attribute_id', $attribute->id)
             ->first();
 
-        if (!$assignment) {
+        if (! $assignment) {
             $assignment = new ProductAttributeAssignment([
                 'product_id' => $this->id,
                 'product_attribute_id' => $attribute->id,
@@ -612,14 +612,12 @@ final class Product extends Model implements HasMedia, HasCustomFields
         return $this->attributeAssignments()
             ->with(['attribute', 'attributeValue'])
             ->get()
-            ->map(function (ProductAttributeAssignment $assignment) {
-                return [
-                    'attribute' => $assignment->attribute,
-                    'value' => $assignment->getValue(),
-                    'display_value' => $assignment->getDisplayValue(),
-                ];
-            })
-            ->toArray();
+            ->map(fn (ProductAttributeAssignment $assignment): array => [
+                'attribute' => $assignment->attribute,
+                'value' => $assignment->getValue(),
+                'display_value' => $assignment->getDisplayValue(),
+            ])
+            ->all();
     }
 
     /**
@@ -641,22 +639,18 @@ final class Product extends Model implements HasMedia, HasCustomFields
     public function getCustomFieldsForSearch(): array
     {
         $searchableValues = [];
-        
-        if (!$this->customFieldValues) {
+
+        if (! $this->customFieldValues) {
             return $searchableValues;
         }
 
         foreach ($this->customFieldValues as $customFieldValue) {
             $field = $customFieldValue->customField;
             $value = $customFieldValue->value;
-            
+
             if ($value !== null && $value !== '') {
                 // Convert value to searchable text
-                if (is_array($value)) {
-                    $searchableValues[] = implode(' ', $value);
-                } else {
-                    $searchableValues[] = (string) $value;
-                }
+                $searchableValues[] = is_array($value) ? implode(' ', $value) : (string) $value;
             }
         }
 
@@ -669,16 +663,18 @@ final class Product extends Model implements HasMedia, HasCustomFields
     public function validateCustomFields(array $customFieldData): array
     {
         $errors = [];
-        
+
         foreach ($customFieldData as $fieldId => $value) {
             $customField = \Relaticle\CustomFields\Models\CustomField::find($fieldId);
-            
-            if (!$customField) {
+
+            if (! $customField) {
                 continue;
             }
-
             // Skip validation for null/empty values (let the custom fields system handle required validation)
-            if ($value === null || $value === '') {
+            if ($value === null) {
+                continue;
+            }
+            if ($value === '') {
                 continue;
             }
 
@@ -703,42 +699,40 @@ final class Product extends Model implements HasMedia, HasCustomFields
 
         switch ($field->type) {
             case 'number':
-                if (!is_numeric($value)) {
+                if (! is_numeric($value)) {
                     return "The {$field->name} field must be a number.";
                 }
                 break;
-                
+
             case 'email':
-                if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                if (! filter_var($value, FILTER_VALIDATE_EMAIL)) {
                     return "The {$field->name} field must be a valid email address.";
                 }
                 break;
-                
+
             case 'url':
-                if (!filter_var($value, FILTER_VALIDATE_URL)) {
+                if (! filter_var($value, FILTER_VALIDATE_URL)) {
                     return "The {$field->name} field must be a valid URL.";
                 }
                 break;
-                
+
             case 'select':
             case 'multi_select':
                 $validOptions = $field->options->pluck('name')->toArray();
                 if (is_array($value)) {
                     foreach ($value as $val) {
-                        if (!in_array($val, $validOptions)) {
+                        if (! in_array($val, $validOptions)) {
                             return "The {$field->name} field contains invalid options.";
                         }
                     }
-                } else {
-                    if (!in_array($value, $validOptions)) {
-                        return "The {$field->name} field contains an invalid option.";
-                    }
+                } elseif (! in_array($value, $validOptions)) {
+                    return "The {$field->name} field contains an invalid option.";
                 }
                 break;
-                
+
             case 'boolean':
             case 'toggle':
-                if (!is_bool($value) && !in_array($value, [0, 1, '0', '1', 'true', 'false'])) {
+                if (! is_bool($value) && ! in_array($value, [0, 1, '0', '1', 'true', 'false'])) {
                     return "The {$field->name} field must be true or false.";
                 }
                 break;
@@ -752,14 +746,14 @@ final class Product extends Model implements HasMedia, HasCustomFields
      */
     public static function search(string $query): Builder
     {
-        return static::query()
-            ->where(function (Builder $builder) use ($query) {
+        return self::query()
+            ->where(function (Builder $builder) use ($query): void {
                 $builder->where('name', 'like', "%{$query}%")
                     ->orWhere('sku', 'like', "%{$query}%")
                     ->orWhere('description', 'like', "%{$query}%")
                     ->orWhere('part_number', 'like', "%{$query}%")
                     ->orWhere('manufacturer', 'like', "%{$query}%")
-                    ->orWhereHas('customFieldValues', function (Builder $customFieldQuery) use ($query) {
+                    ->orWhereHas('customFieldValues', function (Builder $customFieldQuery) use ($query): void {
                         $customFieldQuery->where('value', 'like', "%{$query}%");
                     });
             });

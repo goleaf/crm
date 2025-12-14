@@ -5,11 +5,8 @@ declare(strict_types=1);
 use App\Models\Opportunity;
 use App\Models\Team;
 use App\Models\User;
-use App\Services\Opportunities\OpportunityMetricsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
-
-uses(TestCase::class, RefreshDatabase::class);
+// Uses TestCase and RefreshDatabase globally via Pest.php
 
 beforeEach(function (): void {
     $this->team = Team::factory()->create();
@@ -97,7 +94,7 @@ test('opportunity forecast calculates weighted revenue correctly', function (): 
 
     // Verify forecast by stage
     expect($forecastData['forecast_by_stage'])->toHaveCount(4);
-    
+
     foreach ($forecastData['forecast_by_stage'] as $stageData) {
         expect($stageData)->toHaveKeys(['stage', 'count', 'total_value', 'weighted_value']);
     }
@@ -146,25 +143,25 @@ test('opportunity forecast groups by time periods correctly', function (): void 
     $response->assertStatus(200);
 
     $forecastData = $response->json();
-    
+
     // Verify monthly forecast grouping
     expect($forecastData['forecast_by_month'])->not->toBeEmpty();
-    
+
     $monthlyData = collect($forecastData['forecast_by_month']);
-    
+
     // Should have at least 3 months represented
     expect($monthlyData->count())->toBeGreaterThanOrEqual(3);
-    
+
     // Verify structure of monthly data
     foreach ($monthlyData as $monthData) {
         expect($monthData)->toHaveKeys(['month', 'year', 'count', 'total_value', 'weighted_value']);
     }
-    
+
     // Verify this month's data
     $thisMonthData = $monthlyData->where('month', $thisMonth->month)
         ->where('year', $thisMonth->year)
         ->first();
-    
+
     expect($thisMonthData)->not->toBeNull();
     expect($thisMonthData['count'])->toBe(2);
     expect($thisMonthData['total_value'])->toBe(80000); // 50000 + 30000
@@ -191,7 +188,7 @@ test('opportunity forecast filters by team correctly', function (): void {
     $response->assertStatus(200);
 
     $forecastData = $response->json();
-    
+
     // Should only include current team's opportunities
     expect($forecastData['deals_count'])->toBe(3);
     expect($forecastData['total_pipeline_value'])->toBe(150000); // 3 * 50000
@@ -225,20 +222,20 @@ test('opportunity forecast handles different forecast categories', function (): 
     $response->assertStatus(200);
 
     $forecastData = $response->json();
-    
+
     // Verify forecast by category is included
     expect($forecastData)->toHaveKey('forecast_by_category');
     expect($forecastData['forecast_by_category'])->toHaveCount(3);
-    
+
     $categoryData = collect($forecastData['forecast_by_category']);
-    
+
     // Verify commit category
     $commitData = $categoryData->where('category', 'commit')->first();
     expect($commitData)->not->toBeNull();
     expect($commitData['count'])->toBe(1);
     expect($commitData['total_value'])->toBe(100000);
     expect($commitData['weighted_value'])->toBe(90000);
-    
+
     // Verify best_case category
     $bestCaseData = $categoryData->where('category', 'best_case')->first();
     expect($bestCaseData)->not->toBeNull();
@@ -278,7 +275,7 @@ test('opportunity forecast excludes closed opportunities by default', function (
     $response->assertStatus(200);
 
     $forecastData = $response->json();
-    
+
     // Should only include open opportunities
     expect($forecastData['deals_count'])->toBe(2);
     expect($forecastData['total_pipeline_value'])->toBe(100000); // 2 * 50000
@@ -305,7 +302,7 @@ test('opportunity forecast includes closed opportunities when requested', functi
     $response->assertStatus(200);
 
     $forecastData = $response->json();
-    
+
     // Should include both open and closed opportunities
     expect($forecastData['deals_count'])->toBe(2);
     expect($forecastData['total_pipeline_value'])->toBe(150000); // 50000 + 100000
@@ -316,14 +313,14 @@ test('opportunity forecast calculates win rate correctly', function (): void {
     $wonOpportunities = Opportunity::factory()->count(7)->create([
         'team_id' => $this->team->id,
         'stage' => 'closed_won',
-        'closed_at' => now()->subDays(rand(1, 30)),
+        'closed_at' => now()->subDays(random_int(1, 30)),
         'amount' => 50000,
     ]);
 
     $lostOpportunities = Opportunity::factory()->count(3)->create([
         'team_id' => $this->team->id,
         'stage' => 'closed_lost',
-        'closed_at' => now()->subDays(rand(1, 30)),
+        'closed_at' => now()->subDays(random_int(1, 30)),
         'amount' => 25000,
     ]);
 
@@ -331,11 +328,11 @@ test('opportunity forecast calculates win rate correctly', function (): void {
     $response->assertStatus(200);
 
     $forecastData = $response->json();
-    
+
     // Verify win rate calculation
     expect($forecastData)->toHaveKey('historical_win_rate');
     expect($forecastData['historical_win_rate'])->toBe(70.0); // 7 won / (7 won + 3 lost) = 70%
-    
+
     expect($forecastData)->toHaveKey('historical_deals_count');
     expect($forecastData['historical_deals_count'])->toBe(10);
 });
@@ -363,12 +360,12 @@ test('opportunity forecast handles date range filtering', function (): void {
     // Filter to next 60 days
     $startDate = now()->format('Y-m-d');
     $endDate = now()->addDays(60)->format('Y-m-d');
-    
+
     $response = $this->getJson("/api/opportunities/forecast?start_date={$startDate}&end_date={$endDate}");
     $response->assertStatus(200);
 
     $forecastData = $response->json();
-    
+
     // Should only include opportunities within date range
     expect($forecastData['deals_count'])->toBe(1); // Only currentOpp
     expect($forecastData['total_pipeline_value'])->toBe(50000);
@@ -408,12 +405,12 @@ test('opportunity forecast updates in real-time when opportunities change', func
 
 test('opportunity forecast handles empty pipeline gracefully', function (): void {
     // No opportunities created
-    
+
     $response = $this->getJson('/api/opportunities/forecast');
     $response->assertStatus(200);
 
     $forecastData = $response->json();
-    
+
     // Should return zero values
     expect($forecastData['total_pipeline_value'])->toBe(0);
     expect($forecastData['weighted_pipeline_value'])->toBe(0);
@@ -434,19 +431,19 @@ test('opportunity forecast caches results for performance', function (): void {
     $start1 = microtime(true);
     $response1 = $this->getJson('/api/opportunities/forecast');
     $time1 = microtime(true) - $start1;
-    
+
     $response1->assertStatus(200);
 
     // Second request (should be cached)
     $start2 = microtime(true);
     $response2 = $this->getJson('/api/opportunities/forecast');
     $time2 = microtime(true) - $start2;
-    
+
     $response2->assertStatus(200);
 
     // Results should be identical
     expect($response1->json())->toBe($response2->json());
-    
+
     // Second request should be faster (cached)
     expect($time2)->toBeLessThan($time1);
 });

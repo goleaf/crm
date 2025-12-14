@@ -15,17 +15,17 @@ uses(RefreshDatabase::class);
 
 /**
  * Property 11: Variation generation completeness
- * 
+ *
  * For any product with N configurable attributes where attribute i has V_i values,
  * generating variations should create exactly V_1 × V_2 × ... × V_N variations
  * with all unique combinations.
- * 
+ *
  * Validates: Requirements 4.2
  */
-it('generates complete cartesian product of attribute combinations', function () {
+it('generates complete cartesian product of attribute combinations', function (): void {
     $team = Team::factory()->create();
     $product = Product::factory()->create(['team_id' => $team->id]);
-    $variationService = app(VariationService::class);
+    $variationService = resolve(VariationService::class);
 
     // Generate random number of attributes (2-4 for reasonable test execution time)
     $numAttributes = fake()->numberBetween(2, 4);
@@ -66,17 +66,17 @@ it('generates complete cartesian product of attribute combinations', function ()
     expect($variations)->toHaveCount($expectedCombinations);
 
     // Verify all combinations are unique
-    $optionSets = $variations->map(fn($variation) => json_encode($variation->options))->toArray();
+    $optionSets = $variations->map(fn ($variation) => json_encode($variation->options))->all();
     $uniqueOptionSets = array_unique($optionSets);
     expect($uniqueOptionSets)->toHaveCount($expectedCombinations);
 
     // Verify each variation has all attributes represented
     foreach ($variations as $variation) {
         expect($variation->options)->toHaveCount($numAttributes);
-        
+
         foreach ($attributes as $attribute) {
             expect($variation->options)->toHaveKey($attribute->slug);
-            
+
             // Verify the value is one of the valid values for this attribute
             $validValues = $attribute->values->pluck('value')->toArray();
             expect($validValues)->toContain($variation->options[$attribute->slug]);
@@ -86,25 +86,25 @@ it('generates complete cartesian product of attribute combinations', function ()
     // Verify cartesian product completeness by checking all possible combinations exist
     $allPossibleCombinations = [];
     $attributeSlugs = collect($attributes)->pluck('slug')->toArray();
-    
+
     // Build all possible combinations manually to verify completeness
     $valueSets = [];
     foreach ($attributes as $attribute) {
         $valueSets[$attribute->slug] = $attribute->values->pluck('value')->toArray();
     }
-    
+
     // Generate expected combinations using recursive approach
     $expectedCombinations = generateCartesianProduct($valueSets);
-    
+
     // Convert variations to comparable format
-    $actualCombinations = $variations->map(fn($v) => $v->options)->toArray();
-    
+    $actualCombinations = $variations->map(fn ($v) => $v->options)->toArray();
+
     // Sort both arrays for comparison
     sort($expectedCombinations);
     sort($actualCombinations);
-    
+
     expect($actualCombinations)->toHaveCount(count($expectedCombinations));
-    
+
     // Verify each expected combination exists in actual results
     foreach ($expectedCombinations as $expectedCombo) {
         $found = false;
@@ -114,7 +114,7 @@ it('generates complete cartesian product of attribute combinations', function ()
                 break;
             }
         }
-        expect($found)->toBeTrue("Expected combination not found: " . json_encode($expectedCombo));
+        expect($found)->toBeTrue('Expected combination not found: ' . json_encode($expectedCombo));
     }
 })->repeat(100);
 
@@ -124,7 +124,7 @@ it('generates complete cartesian product of attribute combinations', function ()
 function generateCartesianProduct(array $sets): array
 {
     $result = [[]];
-    
+
     foreach ($sets as $attributeSlug => $values) {
         $temp = [];
         foreach ($result as $combination) {
@@ -136,7 +136,7 @@ function generateCartesianProduct(array $sets): array
         }
         $result = $temp;
     }
-    
+
     return $result;
 }
 
@@ -148,23 +148,17 @@ function arraysEqual(array $a, array $b): bool
     if (count($a) !== count($b)) {
         return false;
     }
-    
-    foreach ($a as $key => $value) {
-        if (!array_key_exists($key, $b) || $b[$key] !== $value) {
-            return false;
-        }
-    }
-    
-    return true;
+
+    return array_all($a, fn ($value, $key): bool => array_key_exists($key, $b) && $b[$key] === $value);
 }
 
 /**
  * Property 11b: Empty attributes should generate no variations
  */
-it('generates no variations when no configurable attributes exist', function () {
+it('generates no variations when no configurable attributes exist', function (): void {
     $team = Team::factory()->create();
     $product = Product::factory()->create(['team_id' => $team->id]);
-    $variationService = app(VariationService::class);
+    $variationService = resolve(VariationService::class);
 
     // Generate variations with empty attribute array
     $variations = $variationService->generateVariations($product, []);
@@ -175,10 +169,10 @@ it('generates no variations when no configurable attributes exist', function () 
 /**
  * Property 11c: Attributes without values should be skipped
  */
-it('skips attributes that have no values defined', function () {
+it('skips attributes that have no values defined', function (): void {
     $team = Team::factory()->create();
     $product = Product::factory()->create(['team_id' => $team->id]);
-    $variationService = app(VariationService::class);
+    $variationService = resolve(VariationService::class);
 
     // Create one attribute with values and one without
     $attributeWithValues = ProductAttribute::factory()->create([
@@ -224,7 +218,7 @@ it('skips attributes that have no values defined', function () {
     // Should generate variations only for the attribute with values (2 variations for Red and Blue)
     // The attribute without values should be skipped
     expect($variations)->toHaveCount(2);
-    
+
     // Verify each variation only has the attribute with values
     foreach ($variations as $variation) {
         expect($variation->options)->toHaveKey('color');

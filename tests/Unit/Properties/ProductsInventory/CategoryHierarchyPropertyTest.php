@@ -30,7 +30,7 @@ test('property: category hierarchy preservation maintains parent-child relations
     // Create a random hierarchy depth (1-5 levels)
     $depth = fake()->numberBetween(1, 5);
     $categories = [];
-    
+
     // Create root category
     $rootCategory = ProductCategory::create([
         'team_id' => $team->id,
@@ -57,10 +57,10 @@ test('property: category hierarchy preservation maintains parent-child relations
     // Verify hierarchy structure is preserved
     $leafCategory = end($categories);
     $ancestors = $leafCategory->ancestors();
-    
+
     // Check that ancestors are correctly retrieved
     expect($ancestors->count())->toBe($depth - 1);
-    
+
     // Verify ancestor chain is correct
     for ($i = $depth - 2; $i >= 0; $i--) {
         expect($ancestors->contains('id', $categories[$i]->id))->toBeTrue();
@@ -70,7 +70,7 @@ test('property: category hierarchy preservation maintains parent-child relations
     for ($i = 0; $i < $depth - 1; $i++) {
         $parent = $categories[$i];
         $child = $categories[$i + 1];
-        
+
         expect($child->parent_id)->toBe($parent->id);
         expect($parent->children->contains('id', $child->id))->toBeTrue();
         expect($child->isDescendantOf($parent))->toBeTrue();
@@ -90,7 +90,7 @@ test('property: category hierarchy preservation maintains parent-child relations
     // Verify descendants from root
     $descendants = $rootCategory->descendants();
     expect($descendants->count())->toBe($depth - 1);
-    
+
     for ($i = 1; $i < $depth; $i++) {
         expect($descendants->contains('id', $categories[$i]->id))->toBeTrue();
     }
@@ -115,7 +115,7 @@ test('property: category hierarchy with siblings preserves sibling relationships
     // Create random number of siblings (2-5)
     $siblingCount = fake()->numberBetween(2, 5);
     $siblings = [];
-    
+
     for ($i = 0; $i < $siblingCount; $i++) {
         $sibling = ProductCategory::create([
             'team_id' => $team->id,
@@ -129,7 +129,7 @@ test('property: category hierarchy with siblings preserves sibling relationships
     // Verify parent has all children
     $parent->refresh();
     expect($parent->children)->toHaveCount($siblingCount);
-    
+
     foreach ($siblings as $sibling) {
         expect($parent->children->contains('id', $sibling->id))->toBeTrue();
     }
@@ -173,9 +173,9 @@ test('property: category hierarchy maintains sort order within levels', function
     $childrenCount = fake()->numberBetween(3, 6);
     $sortOrders = range(1, $childrenCount);
     shuffle($sortOrders); // Randomize creation order
-    
+
     $children = [];
-    foreach ($sortOrders as $index => $sortOrder) {
+    foreach ($sortOrders as $sortOrder) {
         $child = ProductCategory::create([
             'team_id' => $team->id,
             'parent_id' => $parent->id,
@@ -188,9 +188,9 @@ test('property: category hierarchy maintains sort order within levels', function
     // Verify children are returned in sort order
     $parent->refresh();
     $orderedChildren = $parent->children;
-    
+
     expect($orderedChildren)->toHaveCount($childrenCount);
-    
+
     // Check that children are ordered by sort_order
     $previousSortOrder = 0;
     foreach ($orderedChildren as $child) {
@@ -200,7 +200,7 @@ test('property: category hierarchy maintains sort order within levels', function
 
     // Verify the first child has the lowest sort_order
     expect($orderedChildren->first()->sort_order)->toBe(1);
-    
+
     // Verify the last child has the highest sort_order
     expect($orderedChildren->last()->sort_order)->toBe($childrenCount);
 })->repeat(100);
@@ -218,11 +218,11 @@ test('property: category hierarchy generates correct breadcrumbs', function (): 
     $depth = fake()->numberBetween(2, 4);
     $categoryNames = [];
     $categories = [];
-    
+
     for ($i = 0; $i < $depth; $i++) {
         $name = "Level {$i} " . fake()->word();
         $categoryNames[] = $name;
-        
+
         $category = ProductCategory::create([
             'team_id' => $team->id,
             'parent_id' => $i > 0 ? $categories[$i - 1]->id : null,
@@ -236,13 +236,13 @@ test('property: category hierarchy generates correct breadcrumbs', function (): 
     for ($i = 0; $i < $depth; $i++) {
         $category = $categories[$i];
         $expectedBreadcrumb = implode(' / ', array_slice($categoryNames, 0, $i + 1));
-        
+
         expect($category->breadcrumb)->toBe($expectedBreadcrumb);
     }
 
     // Verify root category breadcrumb is just its name
     expect($categories[0]->breadcrumb)->toBe($categoryNames[0]);
-    
+
     // Verify leaf category breadcrumb contains all ancestors
     $leafCategory = end($categories);
     $fullBreadcrumb = implode(' / ', $categoryNames);

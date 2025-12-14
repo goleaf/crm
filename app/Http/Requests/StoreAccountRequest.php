@@ -7,8 +7,6 @@ namespace App\Http\Requests;
 use App\Enums\AccountType;
 use App\Enums\Industry;
 use App\Rules\CleanContent;
-use App\Rules\ValidEmail;
-use App\Rules\ValidPhone;
 use App\Rules\ValidUrl;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -31,8 +29,8 @@ final class StoreAccountRequest extends FormRequest
                 'nullable',
                 'integer',
                 'exists:accounts,id',
-                function ($attribute, $value, $fail) {
-                    if ($value !== null && $this->wouldCreateCycle($value)) {
+                function ($attribute, $value, $fail): void {
+                    if ($value !== null && $this->wouldCreateCycle()) {
                         $fail(__('validation.custom.parent_id.no_cycle'));
                     }
                 },
@@ -47,7 +45,7 @@ final class StoreAccountRequest extends FormRequest
             'social_links.*' => ['nullable', 'string', new ValidUrl],
             'owner_id' => ['nullable', 'integer', 'exists:users,id'],
             'assigned_to_id' => ['nullable', 'integer', 'exists:users,id'],
-            
+
             // Address validation
             'billing_address' => ['nullable', 'array'],
             'billing_address.street' => ['nullable', 'string', 'max:255', new CleanContent],
@@ -55,14 +53,14 @@ final class StoreAccountRequest extends FormRequest
             'billing_address.state' => ['nullable', 'string', 'max:255', new CleanContent],
             'billing_address.postal_code' => ['nullable', 'string', 'max:20'],
             'billing_address.country' => ['nullable', 'string', 'size:2'],
-            
+
             'shipping_address' => ['nullable', 'array'],
             'shipping_address.street' => ['nullable', 'string', 'max:255', new CleanContent],
             'shipping_address.city' => ['nullable', 'string', 'max:255', new CleanContent],
             'shipping_address.state' => ['nullable', 'string', 'max:255', new CleanContent],
             'shipping_address.postal_code' => ['nullable', 'string', 'max:20'],
             'shipping_address.country' => ['nullable', 'string', 'size:2'],
-            
+
             // Structured addresses
             'addresses' => ['nullable', 'array'],
             'addresses.*.type' => ['required_with:addresses.*', 'string'],
@@ -72,7 +70,7 @@ final class StoreAccountRequest extends FormRequest
             'addresses.*.state' => ['nullable', 'string', 'max:255', new CleanContent],
             'addresses.*.postal_code' => ['nullable', 'string', 'max:20'],
             'addresses.*.country_code' => ['nullable', 'string', 'size:2'],
-            
+
             'custom_fields' => ['nullable', 'array'],
         ];
     }
@@ -107,12 +105,8 @@ final class StoreAccountRequest extends FormRequest
         ];
     }
 
-    private function wouldCreateCycle(?int $parentId): bool
+    private function wouldCreateCycle(): bool
     {
-        if ($parentId === null) {
-            return false;
-        }
-
         // For new accounts, we can't create a cycle
         // This will be handled by the model's wouldCreateCycle method during updates
         return false;

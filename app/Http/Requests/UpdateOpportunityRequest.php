@@ -35,11 +35,11 @@ final class UpdateOpportunityRequest extends FormRequest
             'win_loss_reason' => ['nullable', 'string', 'max:500', new CleanContent],
             'forecast_category' => ['nullable', 'string', 'max:255', new CleanContent],
             'custom_fields' => ['nullable', 'array'],
-            
+
             // Collaborators
             'collaborators' => ['nullable', 'array'],
             'collaborators.*' => ['integer', 'exists:users,id'],
-            
+
             // Closing fields
             'closed_at' => ['nullable', 'date'],
             'closed_by_id' => ['nullable', 'integer', 'exists:users,id'],

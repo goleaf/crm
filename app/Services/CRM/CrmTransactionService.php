@@ -19,16 +19,17 @@ use Illuminate\Validation\ValidationException;
  * Service for handling CRM operations with transactional safety.
  * Ensures data integrity across complex operations.
  */
-final class CrmTransactionService
+final readonly class CrmTransactionService
 {
     public function __construct(
-        private readonly CrmValidationService $validator,
+        private CrmValidationService $validator,
     ) {}
 
     /**
      * Create or update an account with full validation and transaction safety.
      *
      * @param array<string, mixed> $data
+     *
      * @throws ValidationException
      */
     public function saveAccount(array $data, ?Account $account = null): Account
@@ -39,9 +40,9 @@ final class CrmTransactionService
                 $validated = $this->validator->validateAccountData($data, $account);
 
                 // Create or update
-                if ($account === null) {
+                if (! $account instanceof \App\Models\Account) {
                     $account = Account::create($validated);
-                    
+
                     Log::info('Account created', [
                         'account_id' => $account->id,
                         'name' => $account->name,
@@ -49,7 +50,7 @@ final class CrmTransactionService
                     ]);
                 } else {
                     $account->update($validated);
-                    
+
                     Log::info('Account updated', [
                         'account_id' => $account->id,
                         'name' => $account->name,
@@ -76,6 +77,7 @@ final class CrmTransactionService
      * Create or update an opportunity with validation and weighted amount calculation.
      *
      * @param array<string, mixed> $data
+     *
      * @throws ValidationException
      */
     public function saveOpportunity(array $data, ?Opportunity $opportunity = null): Opportunity
@@ -86,9 +88,9 @@ final class CrmTransactionService
                 $validated = $this->validator->validateOpportunityData($data);
 
                 // Create or update
-                if ($opportunity === null) {
+                if (! $opportunity instanceof \App\Models\Opportunity) {
                     $opportunity = Opportunity::create($validated);
-                    
+
                     Log::info('Opportunity created', [
                         'opportunity_id' => $opportunity->id,
                         'name' => $opportunity->name,
@@ -97,7 +99,7 @@ final class CrmTransactionService
                     ]);
                 } else {
                     $opportunity->update($validated);
-                    
+
                     Log::info('Opportunity updated', [
                         'opportunity_id' => $opportunity->id,
                         'name' => $opportunity->name,
@@ -126,6 +128,7 @@ final class CrmTransactionService
      * Create or update a case with SLA validation.
      *
      * @param array<string, mixed> $data
+     *
      * @throws ValidationException
      */
     public function saveCase(array $data, ?SupportCase $case = null): SupportCase
@@ -136,9 +139,9 @@ final class CrmTransactionService
                 $validated = $this->validator->validateCaseData($data);
 
                 // Create or update
-                if ($case === null) {
+                if (! $case instanceof \App\Models\SupportCase) {
                     $case = SupportCase::create($validated);
-                    
+
                     Log::info('Case created', [
                         'case_id' => $case->id,
                         'case_number' => $case->case_number,
@@ -147,7 +150,7 @@ final class CrmTransactionService
                     ]);
                 } else {
                     $case->update($validated);
-                    
+
                     Log::info('Case updated', [
                         'case_id' => $case->id,
                         'case_number' => $case->case_number,
@@ -175,6 +178,7 @@ final class CrmTransactionService
      * Create or update a contact with validation.
      *
      * @param array<string, mixed> $data
+     *
      * @throws ValidationException
      */
     public function saveContact(array $data, ?People $contact = null): People
@@ -185,9 +189,9 @@ final class CrmTransactionService
                 $validated = $this->validator->validateContactData($data);
 
                 // Create or update
-                if ($contact === null) {
+                if (! $contact instanceof \App\Models\People) {
                     $contact = People::create($validated);
-                    
+
                     Log::info('Contact created', [
                         'contact_id' => $contact->id,
                         'name' => $contact->name,
@@ -196,7 +200,7 @@ final class CrmTransactionService
                     ]);
                 } else {
                     $contact->update($validated);
-                    
+
                     Log::info('Contact updated', [
                         'contact_id' => $contact->id,
                         'name' => $contact->name,
@@ -324,7 +328,7 @@ final class CrmTransactionService
             try {
                 $updates = [];
 
-                if ($breachAt !== null) {
+                if ($breachAt instanceof \Carbon\Carbon) {
                     $updates['sla_breach_at'] = $breachAt;
                 }
 
@@ -503,8 +507,8 @@ final class CrmTransactionService
             } catch (ValidationException $e) {
                 // Quarantine invalid form data for review
                 $this->quarantineInvalidData('web-to-lead', $formData, 'Validation failed: ' . $e->getMessage());
-                throw $e;
 
+                throw $e;
             } catch (\Exception $e) {
                 Log::error('Web-to-lead processing failed', [
                     'form_data' => $formData,
@@ -513,6 +517,7 @@ final class CrmTransactionService
 
                 // Quarantine for retry
                 $this->quarantineInvalidData('web-to-lead', $formData, 'Processing error: ' . $e->getMessage());
+
                 throw $e;
             }
         });
@@ -561,8 +566,8 @@ final class CrmTransactionService
             } catch (ValidationException $e) {
                 // Quarantine invalid email data for review
                 $this->quarantineInvalidData('email-to-case', $emailData, 'Validation failed: ' . $e->getMessage());
-                throw $e;
 
+                throw $e;
             } catch (\Exception $e) {
                 Log::error('Email-to-case processing failed', [
                     'email_data' => $emailData,
@@ -571,6 +576,7 @@ final class CrmTransactionService
 
                 // Quarantine for retry
                 $this->quarantineInvalidData('email-to-case', $emailData, 'Processing error: ' . $e->getMessage());
+
                 throw $e;
             }
         });

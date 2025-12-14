@@ -49,7 +49,7 @@ final class FieldDependencyFactory extends Factory
      */
     public function active(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'active' => true,
         ]);
     }
@@ -59,7 +59,7 @@ final class FieldDependencyFactory extends Factory
      */
     public function inactive(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'active' => false,
         ]);
     }
@@ -69,7 +69,7 @@ final class FieldDependencyFactory extends Factory
      */
     public function forModule(string $moduleName): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'module_name' => $moduleName,
         ]);
     }
@@ -79,7 +79,7 @@ final class FieldDependencyFactory extends Factory
      */
     public function ofType(string $dependencyType): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'dependency_type' => $dependencyType,
         ]);
     }
@@ -89,7 +89,7 @@ final class FieldDependencyFactory extends Factory
      */
     public function withFields(string $sourceField, string $targetField): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'source_field_code' => $sourceField,
             'target_field_code' => $targetField,
         ]);
@@ -100,7 +100,7 @@ final class FieldDependencyFactory extends Factory
      */
     public function withCondition(string $operator, mixed $value): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'condition_operator' => $operator,
             'condition_value' => is_array($value) ? $value : ['value' => $value],
         ]);

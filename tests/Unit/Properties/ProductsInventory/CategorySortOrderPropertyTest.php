@@ -39,7 +39,7 @@ test('property: category sort order persistence maintains correct sequence', fun
     $categories = [];
     $sortOrders = range(1, $categoryCount);
     shuffle($sortOrders); // Randomize the sort orders
-    
+
     for ($i = 0; $i < $categoryCount; $i++) {
         $category = ProductCategory::create([
             'team_id' => $team->id,
@@ -53,26 +53,26 @@ test('property: category sort order persistence maintains correct sequence', fun
     // Retrieve children and verify they are ordered by sort_order
     $parent->refresh();
     $orderedChildren = $parent->children;
-    
+
     expect($orderedChildren)->toHaveCount($categoryCount);
-    
+
     // Verify categories are returned in sort_order sequence
     $previousSortOrder = 0;
     foreach ($orderedChildren as $child) {
         expect($child->sort_order)->toBeGreaterThan($previousSortOrder);
         $previousSortOrder = $child->sort_order;
     }
-    
+
     // Verify the sort orders match the expected sequence
     $expectedSortedOrders = collect($sortOrders)->sort()->values();
     $actualSortOrders = $orderedChildren->pluck('sort_order');
-    
-    expect($actualSortOrders->toArray())->toBe($expectedSortedOrders->toArray());
+
+    expect($actualSortOrders->toArray())->toBe($expectedSortedOrders->all());
 
     // Test reordering: Update sort orders to new sequence
     $newSortOrders = range(1, $categoryCount);
     shuffle($newSortOrders);
-    
+
     foreach ($categories as $index => $category) {
         $category->update(['sort_order' => $newSortOrders[$index]]);
     }
@@ -80,12 +80,12 @@ test('property: category sort order persistence maintains correct sequence', fun
     // Verify the new order is persisted
     $parent->refresh();
     $reorderedChildren = $parent->children;
-    
+
     $newExpectedSortedOrders = collect($newSortOrders)->sort()->values();
     $newActualSortOrders = $reorderedChildren->pluck('sort_order');
-    
-    expect($newActualSortOrders->toArray())->toBe($newExpectedSortedOrders->toArray());
-    
+
+    expect($newActualSortOrders->toArray())->toBe($newExpectedSortedOrders->all());
+
     // Verify categories are still returned in correct order
     $previousSortOrder = 0;
     foreach ($reorderedChildren as $child) {
@@ -108,7 +108,7 @@ test('property: category sort order works independently at each hierarchy level'
     $rootCategories = [];
     $rootSortOrders = range(1, $rootCount);
     shuffle($rootSortOrders);
-    
+
     for ($i = 0; $i < $rootCount; $i++) {
         $rootCategory = ProductCategory::create([
             'team_id' => $team->id,
@@ -124,7 +124,7 @@ test('property: category sort order works independently at each hierarchy level'
         $childCount = fake()->numberBetween(2, 4);
         $childSortOrders = range(1, $childCount);
         shuffle($childSortOrders);
-        
+
         $childCategories = [];
         for ($j = 0; $j < $childCount; $j++) {
             $childCategory = ProductCategory::create([
@@ -139,13 +139,13 @@ test('property: category sort order works independently at each hierarchy level'
     }
 
     // Verify root categories are ordered correctly
-    $orderedRoots = ProductCategory::where('team_id', $team->id)
+    $orderedRoots = ProductCategory::where('team_id')
         ->whereNull('parent_id')
         ->ordered()
         ->get();
-    
+
     expect($orderedRoots)->toHaveCount($rootCount);
-    
+
     $previousRootSortOrder = 0;
     foreach ($orderedRoots as $root) {
         expect($root->sort_order)->toBeGreaterThan($previousRootSortOrder);
@@ -153,16 +153,16 @@ test('property: category sort order works independently at each hierarchy level'
     }
 
     // Verify each root's children are ordered correctly within their level
-    foreach ($rootCategories as $rootIndex => $rootCategory) {
+    foreach ($rootCategories as $rootCategory) {
         $rootCategory->refresh();
         $orderedChildren = $rootCategory->children;
-        
+
         $previousChildSortOrder = 0;
         foreach ($orderedChildren as $child) {
             expect($child->sort_order)->toBeGreaterThan($previousChildSortOrder);
             $previousChildSortOrder = $child->sort_order;
         }
-        
+
         // Verify the children belong to the correct parent
         foreach ($orderedChildren as $child) {
             expect($child->parent_id)->toBe($rootCategory->id);
@@ -173,7 +173,7 @@ test('property: category sort order works independently at each hierarchy level'
     $firstRoot = $rootCategories[0];
     $originalRootSortOrder = $firstRoot->sort_order;
     $firstRoot->update(['sort_order' => 999]);
-    
+
     // Verify other roots are unaffected
     foreach ($rootCategories as $index => $rootCategory) {
         if ($index !== 0) {
@@ -181,7 +181,7 @@ test('property: category sort order works independently at each hierarchy level'
             expect($rootCategory->sort_order)->toBe($rootSortOrders[$index]);
         }
     }
-    
+
     // Verify children of first root are unaffected
     $firstRoot->refresh();
     $firstRootChildren = $firstRoot->children;
@@ -208,11 +208,11 @@ test('property: category sort order handles duplicate values correctly', functio
     // Create categories with some duplicate sort orders
     $categoryCount = fake()->numberBetween(4, 6);
     $categories = [];
-    
+
     // Create some categories with duplicate sort orders
     $duplicateSortOrder = fake()->numberBetween(5, 10);
     $duplicateCount = fake()->numberBetween(2, 3);
-    
+
     for ($i = 0; $i < $duplicateCount; $i++) {
         $category = ProductCategory::create([
             'team_id' => $team->id,
@@ -222,7 +222,7 @@ test('property: category sort order handles duplicate values correctly', functio
         ]);
         $categories[] = $category;
     }
-    
+
     // Create categories with unique sort orders
     for ($i = $duplicateCount; $i < $categoryCount; $i++) {
         $uniqueSortOrder = $duplicateSortOrder + ($i - $duplicateCount + 1) * 5;
@@ -238,13 +238,13 @@ test('property: category sort order handles duplicate values correctly', functio
     // Verify categories are still returned in a consistent order
     $parent->refresh();
     $orderedChildren = $parent->children;
-    
+
     expect($orderedChildren)->toHaveCount($categoryCount);
-    
+
     // Categories with same sort_order should be ordered by name (secondary sort)
     $previousSortOrder = 0;
     $previousName = '';
-    
+
     foreach ($orderedChildren as $child) {
         if ($child->sort_order === $previousSortOrder) {
             // When sort orders are equal, should be ordered by name
@@ -253,7 +253,7 @@ test('property: category sort order handles duplicate values correctly', functio
             // Sort order should be greater than or equal to previous
             expect($child->sort_order)->toBeGreaterThanOrEqual($previousSortOrder);
         }
-        
+
         $previousSortOrder = $child->sort_order;
         $previousName = $child->name;
     }
@@ -261,7 +261,7 @@ test('property: category sort order handles duplicate values correctly', functio
     // Verify all categories with duplicate sort order are grouped together
     $duplicateCategories = $orderedChildren->where('sort_order', $duplicateSortOrder);
     expect($duplicateCategories)->toHaveCount($duplicateCount);
-    
+
     // Verify they are ordered by name within the group
     $duplicateNames = $duplicateCategories->pluck('name')->toArray();
     $sortedDuplicateNames = $duplicateCategories->pluck('name')->sort()->values()->toArray();
@@ -286,11 +286,11 @@ test('property: category sort order auto-assignment maintains sequence', functio
     // Create some initial categories with explicit sort orders
     $initialCount = fake()->numberBetween(2, 4);
     $maxSortOrder = 0;
-    
+
     for ($i = 0; $i < $initialCount; $i++) {
         $sortOrder = fake()->numberBetween($maxSortOrder + 1, $maxSortOrder + 5);
         $maxSortOrder = $sortOrder;
-        
+
         ProductCategory::create([
             'team_id' => $team->id,
             'parent_id' => $parent->id,
@@ -302,7 +302,7 @@ test('property: category sort order auto-assignment maintains sequence', functio
     // Create new categories without explicit sort_order (should auto-assign)
     $newCategoriesCount = fake()->numberBetween(2, 3);
     $newCategories = [];
-    
+
     for ($i = 0; $i < $newCategoriesCount; $i++) {
         $category = ProductCategory::create([
             'team_id' => $team->id,
@@ -322,7 +322,7 @@ test('property: category sort order auto-assignment maintains sequence', functio
     // Verify all categories are still in correct order
     $parent->refresh();
     $allChildren = $parent->children;
-    
+
     $previousSortOrder = 0;
     foreach ($allChildren as $child) {
         expect($child->sort_order)->toBeGreaterThan($previousSortOrder);
@@ -330,10 +330,10 @@ test('property: category sort order auto-assignment maintains sequence', functio
     }
 
     // Test auto-assignment for root categories (no parent)
-    $existingRootCount = ProductCategory::where('team_id', $team->id)
+    $existingRootCount = ProductCategory::where('team_id')
         ->whereNull('parent_id')
         ->count();
-    
+
     $newRootCategory = ProductCategory::create([
         'team_id' => $team->id,
         'name' => 'Auto Sort Root Category',
@@ -377,13 +377,13 @@ test('property: category sort order respects team boundaries', function (): void
     }
 
     // Verify team 1 categories are ordered correctly within team 1
-    $team1OrderedCategories = ProductCategory::where('team_id', $team1->id)
+    $team1OrderedCategories = ProductCategory::where('team_id')
         ->whereNull('parent_id')
         ->ordered()
         ->get();
-    
+
     expect($team1OrderedCategories)->toHaveCount(3);
-    
+
     $previousSortOrder = 0;
     foreach ($team1OrderedCategories as $category) {
         expect($category->team_id)->toBe($team1->id);
@@ -392,13 +392,13 @@ test('property: category sort order respects team boundaries', function (): void
     }
 
     // Verify team 2 categories are ordered correctly within team 2
-    $team2OrderedCategories = ProductCategory::where('team_id', $team2->id)
+    $team2OrderedCategories = ProductCategory::where('team_id')
         ->whereNull('parent_id')
         ->ordered()
         ->get();
-    
+
     expect($team2OrderedCategories)->toHaveCount(3);
-    
+
     $previousSortOrder = 0;
     foreach ($team2OrderedCategories as $category) {
         expect($category->team_id)->toBe($team2->id);
@@ -412,7 +412,7 @@ test('property: category sort order respects team boundaries', function (): void
         'name' => 'New Team 1 Category',
         // sort_order not specified
     ]);
-    
+
     $newTeam2Category = ProductCategory::create([
         'team_id' => $team2->id,
         'name' => 'New Team 2 Category',
@@ -422,7 +422,7 @@ test('property: category sort order respects team boundaries', function (): void
     // Both should get sort_order 4 (next in their respective teams)
     expect($newTeam1Category->sort_order)->toBe(4);
     expect($newTeam2Category->sort_order)->toBe(4);
-    
+
     // Verify they don't interfere with each other
     expect($newTeam1Category->team_id)->toBe($team1->id);
     expect($newTeam2Category->team_id)->toBe($team2->id);

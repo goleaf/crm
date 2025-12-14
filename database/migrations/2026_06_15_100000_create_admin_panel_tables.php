@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -9,7 +11,7 @@ return new class extends Migration
     public function up(): void
     {
         // Password policies table
-        Schema::create('password_policies', function (Blueprint $table) {
+        Schema::create('password_policies', function (Blueprint $table): void {
             $table->id();
             $table->string('name');
             $table->integer('min_length')->default(8);
@@ -28,7 +30,7 @@ return new class extends Migration
         });
 
         // Login history table
-        Schema::create('login_histories', function (Blueprint $table) {
+        Schema::create('login_histories', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('ip_address');
@@ -45,7 +47,7 @@ return new class extends Migration
         });
 
         // User activity tracking table
-        Schema::create('user_activities', function (Blueprint $table) {
+        Schema::create('user_activities', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('action');
@@ -62,7 +64,7 @@ return new class extends Migration
         });
 
         // User sessions table (for session management)
-        Schema::create('user_sessions', function (Blueprint $table) {
+        Schema::create('user_sessions', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('session_id')->unique();
@@ -77,7 +79,7 @@ return new class extends Migration
         });
 
         // Password history table
-        Schema::create('password_histories', function (Blueprint $table) {
+        Schema::create('password_histories', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('password_hash');
@@ -87,33 +89,33 @@ return new class extends Migration
         });
 
         // Add admin panel related columns to users table (only if they don't exist)
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table): void {
             // Check if columns exist before adding them
-            if (!Schema::hasColumn('users', 'user_type')) {
+            if (! Schema::hasColumn('users', 'user_type')) {
                 $table->string('user_type')->default('regular'); // admin, regular
             }
-            if (!Schema::hasColumn('users', 'status')) {
+            if (! Schema::hasColumn('users', 'status')) {
                 $table->string('status')->default('active'); // active, inactive, suspended, locked
             }
-            if (!Schema::hasColumn('users', 'password_expires_at')) {
+            if (! Schema::hasColumn('users', 'password_expires_at')) {
                 $table->timestamp('password_expires_at')->nullable();
             }
-            if (!Schema::hasColumn('users', 'last_login_at')) {
+            if (! Schema::hasColumn('users', 'last_login_at')) {
                 $table->timestamp('last_login_at')->nullable();
             }
-            if (!Schema::hasColumn('users', 'failed_login_attempts')) {
+            if (! Schema::hasColumn('users', 'failed_login_attempts')) {
                 $table->integer('failed_login_attempts')->default(0);
             }
-            if (!Schema::hasColumn('users', 'locked_until')) {
+            if (! Schema::hasColumn('users', 'locked_until')) {
                 $table->timestamp('locked_until')->nullable();
             }
-            if (!Schema::hasColumn('users', 'password_policy_id')) {
+            if (! Schema::hasColumn('users', 'password_policy_id')) {
                 $table->foreignId('password_policy_id')->nullable()->constrained()->onDelete('set null');
             }
-            if (!Schema::hasColumn('users', 'force_password_change')) {
+            if (! Schema::hasColumn('users', 'force_password_change')) {
                 $table->boolean('force_password_change')->default(false);
             }
-            if (!Schema::hasColumn('users', 'two_factor_enabled')) {
+            if (! Schema::hasColumn('users', 'two_factor_enabled')) {
                 $table->boolean('two_factor_enabled')->default(false);
             }
             // two_factor_secret and two_factor_recovery_codes already exist from Jetstream
@@ -122,11 +124,11 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table): void {
             if (Schema::hasColumn('users', 'password_policy_id')) {
                 $table->dropForeign(['password_policy_id']);
             }
-            
+
             $columnsToCheck = [
                 'user_type',
                 'status',
@@ -138,7 +140,7 @@ return new class extends Migration
                 'force_password_change',
                 'two_factor_enabled',
             ];
-            
+
             foreach ($columnsToCheck as $column) {
                 if (Schema::hasColumn('users', $column)) {
                     $table->dropColumn($column);

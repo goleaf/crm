@@ -10,14 +10,14 @@ use App\Models\ProductAttributeAssignment;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
-class AttributeAssignmentService
+final class AttributeAssignmentService
 {
     /**
      * Assign multiple attributes to a product in a transaction
      */
     public function assignAttributesToProduct(Product $product, array $attributeValues): Collection
     {
-        return DB::transaction(function () use ($product, $attributeValues) {
+        return DB::transaction(function () use ($product, $attributeValues): \Illuminate\Support\Collection {
             $assignments = collect();
 
             foreach ($attributeValues as $attributeId => $value) {
@@ -35,11 +35,11 @@ class AttributeAssignmentService
      */
     public function updateProductAttributes(Product $product, array $attributeValues): Collection
     {
-        return DB::transaction(function () use ($product, $attributeValues) {
+        return DB::transaction(function () use ($product, $attributeValues): \Illuminate\Database\Eloquent\Collection {
             // Remove existing assignments that are not in the new data
             $existingAttributeIds = $product->attributeAssignments()->pluck('product_attribute_id');
             $newAttributeIds = collect(array_keys($attributeValues));
-            
+
             $toRemove = $existingAttributeIds->diff($newAttributeIds);
             if ($toRemove->isNotEmpty()) {
                 $product->attributeAssignments()
@@ -57,13 +57,13 @@ class AttributeAssignmentService
      */
     public function copyAttributeAssignments(Product $sourceProduct, Product $targetProduct): Collection
     {
-        return DB::transaction(function () use ($sourceProduct, $targetProduct) {
+        return DB::transaction(function () use ($sourceProduct, $targetProduct): \Illuminate\Support\Collection {
             $assignments = collect();
 
             foreach ($sourceProduct->attributeAssignments as $sourceAssignment) {
                 $assignment = $targetProduct->assignAttribute(
                     $sourceAssignment->attribute,
-                    $sourceAssignment->getValue()
+                    $sourceAssignment->getValue(),
                 );
                 $assignments->push($assignment);
             }
@@ -89,20 +89,20 @@ class AttributeAssignmentService
             }
 
             // Validate the value against the attribute type
-            if ($value !== null && !$attribute->isValidValue($value)) {
+            if ($value !== null && ! $attribute->isValidValue($value)) {
                 $errors[] = "Invalid value for attribute '{$attribute->name}': {$assignment->getDisplayValue()}";
             }
         }
 
         // Check for missing required attributes
-        $requiredAttributes = ProductAttribute::where('team_id', $product->team_id)
-            ->where('is_required', true)
+        $requiredAttributes = ProductAttribute::where('team_id')
+            ->where('is_required')
             ->get();
 
         $assignedAttributeIds = $product->attributeAssignments->pluck('product_attribute_id');
 
         foreach ($requiredAttributes as $requiredAttribute) {
-            if (!$assignedAttributeIds->contains($requiredAttribute->id)) {
+            if (! $assignedAttributeIds->contains($requiredAttribute->id)) {
                 $errors[] = "Required attribute '{$requiredAttribute->name}' is not assigned";
             }
         }
@@ -115,13 +115,13 @@ class AttributeAssignmentService
      */
     public function getProductsWithAttributeValue(ProductAttribute $attribute, mixed $value): Collection
     {
-        $query = Product::whereHas('attributeAssignments', function ($query) use ($attribute, $value) {
+        $query = Product::whereHas('attributeAssignments', function (\Illuminate\Contracts\Database\Query\Builder $query) use ($attribute, $value): void {
             $query->where('product_attribute_id', $attribute->id);
 
             if ($attribute->requiresValues()) {
                 // For select/multi-select, check both predefined and custom values
-                $query->where(function ($subQuery) use ($value) {
-                    $subQuery->whereHas('attributeValue', function ($valueQuery) use ($value) {
+                $query->where(function (\Illuminate\Contracts\Database\Query\Builder $subQuery) use ($value): void {
+                    $subQuery->whereHas('attributeValue', function (\Illuminate\Contracts\Database\Query\Builder $valueQuery) use ($value): void {
                         $valueQuery->where('value', $value);
                     })->orWhere('custom_value', $value);
                 });
@@ -164,7 +164,7 @@ class AttributeAssignmentService
      */
     public function bulkUpdateAttributes(Collection $products, array $attributeValues): void
     {
-        DB::transaction(function () use ($products, $attributeValues) {
+        DB::transaction(function () use ($products, $attributeValues): void {
             foreach ($products as $product) {
                 $this->assignAttributesToProduct($product, $attributeValues);
             }

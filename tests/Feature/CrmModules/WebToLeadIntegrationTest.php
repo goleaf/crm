@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Models\Lead;
 use App\Models\Team;
 use App\Models\User;
-use App\Services\LeadAssignmentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
@@ -106,7 +105,7 @@ test('web-to-lead handles duplicate detection', function (): void {
     $response = $this->postJson('/api/web-leads', $webFormData);
 
     $response->assertStatus(201);
-    
+
     // Should still create lead but mark as potential duplicate
     $leadId = $response->json('lead_id');
     $lead = Lead::find($leadId);
@@ -213,7 +212,7 @@ test('web-to-lead creates audit trail', function (): void {
 
     // Verify audit trail exists
     expect($lead->activities)->not->toBeEmpty();
-    
+
     // Should have creation activity
     $creationActivity = $lead->activities->where('description', 'Lead created from web form')->first();
     expect($creationActivity)->not->toBeNull();
@@ -271,7 +270,7 @@ test('web-to-lead handles malformed data gracefully', function (): void {
     ]);
 
     $response->assertStatus(422);
-    
+
     // Should not create any lead
     $leadCount = Lead::where('team_id', $this->team->id)->count();
     expect($leadCount)->toBe(0);
@@ -280,7 +279,7 @@ test('web-to-lead handles malformed data gracefully', function (): void {
 test('web-to-lead respects rate limiting', function (): void {
     // This test would verify rate limiting if implemented
     // For now, we'll just verify the endpoint exists and works
-    
+
     $webFormData = [
         'first_name' => fake()->firstName(),
         'last_name' => fake()->lastName(),

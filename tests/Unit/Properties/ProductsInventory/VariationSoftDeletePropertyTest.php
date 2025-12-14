@@ -14,22 +14,22 @@ uses(RefreshDatabase::class);
 
 /**
  * Property 13: Soft delete preservation
- * 
+ *
  * For any variation that is disabled, the variation data should remain in the
  * database and be retrievable with deleted_at timestamp, but excluded from
  * active queries.
- * 
+ *
  * Validates: Requirements 4.5
  */
-it('preserves variation data when soft deleted and excludes from active queries', function () {
+it('preserves variation data when soft deleted and excludes from active queries', function (): void {
     $team = Team::factory()->create();
     $product = Product::factory()->create(['team_id' => $team->id]);
-    $variationService = app(VariationService::class);
+    $variationService = resolve(VariationService::class);
 
     // Create multiple variations
     $numVariations = fake()->numberBetween(3, 6);
     $variations = [];
-    
+
     for ($i = 0; $i < $numVariations; $i++) {
         $variation = ProductVariation::factory()->create([
             'product_id' => $product->id,
@@ -91,14 +91,14 @@ it('preserves variation data when soft deleted and excludes from active queries'
         if ($index === $targetIndex) {
             continue; // Skip the deleted variation
         }
-        
+
         $variation->refresh();
         $originalVariationData = $originalData[$variation->id];
-        
+
         // Should still be accessible via active queries
         expect(ProductVariation::find($variation->id))->not->toBeNull();
         expect($variation->deleted_at)->toBeNull();
-        
+
         // Data should be unchanged
         expect($variation->name)->toEqual($originalVariationData['name']);
         expect($variation->sku)->toEqual($originalVariationData['sku']);
@@ -110,7 +110,7 @@ it('preserves variation data when soft deleted and excludes from active queries'
     // Verify deleted variation can be retrieved with withTrashed()
     $allVariationsIncludingDeleted = $product->variations()->withTrashed()->get();
     expect($allVariationsIncludingDeleted)->toHaveCount($numVariations);
-    
+
     $deletedInCollection = $allVariationsIncludingDeleted->firstWhere('id', $targetId);
     expect($deletedInCollection)->not->toBeNull();
     expect($deletedInCollection->deleted_at)->not->toBeNull();
@@ -124,15 +124,15 @@ it('preserves variation data when soft deleted and excludes from active queries'
 /**
  * Property 13b: Multiple soft deletes should preserve all data independently
  */
-it('preserves data for multiple soft deleted variations independently', function () {
+it('preserves data for multiple soft deleted variations independently', function (): void {
     $team = Team::factory()->create();
     $product = Product::factory()->create(['team_id' => $team->id]);
-    $variationService = app(VariationService::class);
+    $variationService = resolve(VariationService::class);
 
     // Create variations
     $totalVariations = fake()->numberBetween(5, 8);
     $variations = [];
-    
+
     for ($i = 0; $i < $totalVariations; $i++) {
         $variation = ProductVariation::factory()->create([
             'product_id' => $product->id,
@@ -148,7 +148,7 @@ it('preserves data for multiple soft deleted variations independently', function
     $numToDelete = fake()->numberBetween(2, $totalVariations - 1);
     $indicesToDelete = fake()->randomElements(range(0, $totalVariations - 1), $numToDelete);
     $variationsToDelete = [];
-    
+
     foreach ($indicesToDelete as $index) {
         $variationsToDelete[] = $variations[$index];
     }
@@ -169,9 +169,9 @@ it('preserves data for multiple soft deleted variations independently', function
     foreach ($variationsToDelete as $variation) {
         $variationService->deleteVariation($variation);
         $deletedIds[] = $variation->id;
-        
+
         // Small delay to ensure different timestamps (if needed)
-        usleep(1000); // 1ms delay
+        \Illuminate\Support\Sleep::usleep(1000); // 1ms delay
     }
 
     // Verify correct number of active variations remain
@@ -180,10 +180,10 @@ it('preserves data for multiple soft deleted variations independently', function
     // Verify all deleted variations are preserved with deleted_at timestamps
     $deletedVariations = ProductVariation::withTrashed()->whereIn('id', $deletedIds)->get();
     expect($deletedVariations)->toHaveCount($numToDelete);
-    
+
     foreach ($deletedVariations as $deletedVariation) {
         expect($deletedVariation->deleted_at)->not->toBeNull();
-        
+
         // Verify original data is preserved
         $originalVariationData = $originalData[$deletedVariation->id];
         expect($deletedVariation->name)->toEqual($originalVariationData['name']);
@@ -197,7 +197,7 @@ it('preserves data for multiple soft deleted variations independently', function
     foreach ($activeVariations as $activeVariation) {
         expect($activeVariation->deleted_at)->toBeNull();
         expect($deletedIds)->not->toContain($activeVariation->id);
-        
+
         // Verify data is unchanged
         $originalVariationData = $originalData[$activeVariation->id];
         expect($activeVariation->name)->toEqual($originalVariationData['name']);
@@ -213,7 +213,7 @@ it('preserves data for multiple soft deleted variations independently', function
 /**
  * Property 13c: Soft deleted variations should not affect parent product
  */
-it('does not affect parent product when variations are soft deleted', function () {
+it('does not affect parent product when variations are soft deleted', function (): void {
     $team = Team::factory()->create();
     $product = Product::factory()->create([
         'team_id' => $team->id,
@@ -221,7 +221,7 @@ it('does not affect parent product when variations are soft deleted', function (
         'price' => fake()->randomFloat(2, 50, 500),
         'inventory_quantity' => fake()->numberBetween(50, 200),
     ]);
-    $variationService = app(VariationService::class);
+    $variationService = resolve(VariationService::class);
 
     // Store original product data
     $originalProductData = [
@@ -248,7 +248,7 @@ it('does not affect parent product when variations are soft deleted', function (
     // Delete random number of variations
     $numToDelete = fake()->numberBetween(1, 3);
     $variationsToDelete = fake()->randomElements($variations, $numToDelete);
-    
+
     foreach ($variationsToDelete as $variation) {
         $variationService->deleteVariation($variation);
     }
@@ -269,10 +269,10 @@ it('does not affect parent product when variations are soft deleted', function (
 /**
  * Property 13d: Soft deleted variations should maintain relationships
  */
-it('maintains product relationship for soft deleted variations', function () {
+it('maintains product relationship for soft deleted variations', function (): void {
     $team = Team::factory()->create();
     $product = Product::factory()->create(['team_id' => $team->id]);
-    $variationService = app(VariationService::class);
+    $variationService = resolve(VariationService::class);
 
     // Create variation
     $variation = ProductVariation::factory()->create([
@@ -297,7 +297,7 @@ it('maintains product relationship for soft deleted variations', function () {
 
     // Verify the reverse relationship excludes soft deleted by default
     expect($product->variations()->count())->toEqual(0);
-    
+
     // But includes them with withTrashed
     expect($product->variations()->withTrashed()->count())->toEqual(1);
     expect($product->variations()->withTrashed()->first()->id)->toEqual($variation->id);

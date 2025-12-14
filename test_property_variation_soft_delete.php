@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Models\Product;
@@ -20,7 +22,7 @@ $totalTests = 10;
 for ($test = 1; $test <= $totalTests; $test++) {
     try {
         echo "Test iteration $test: ";
-        
+
         // Create test data
         $team = Team::factory()->create();
         $product = Product::factory()->create(['team_id' => $team->id]);
@@ -72,7 +74,7 @@ for ($test = 1; $test <= $totalTests; $test++) {
         $variations = $variationService->generateVariations($product, [$colorAttribute->id, $sizeAttribute->id]);
 
         if ($variations->count() !== 4) {
-            throw new Exception("Expected 4 variations, got " . $variations->count());
+            throw new Exception('Expected 4 variations, got ' . $variations->count());
         }
 
         // Store original data for all variations
@@ -100,7 +102,7 @@ for ($test = 1; $test <= $totalTests; $test++) {
         // Verify all variations are active
         $activeCount = $product->variations()->count();
         $totalCount = $product->variations()->withTrashed()->count();
-        
+
         if ($activeCount !== 4) {
             throw new Exception("Expected 4 active variations, got $activeCount");
         }
@@ -124,7 +126,7 @@ for ($test = 1; $test <= $totalTests; $test++) {
         // Verify counts after soft delete
         $activeCountAfterDelete = $product->variations()->count();
         $totalCountAfterDelete = $product->variations()->withTrashed()->count();
-        
+
         if ($activeCountAfterDelete !== 3) {
             throw new Exception("Expected 3 active variations after delete, got $activeCountAfterDelete");
         }
@@ -134,85 +136,85 @@ for ($test = 1; $test <= $totalTests; $test++) {
 
         // Verify the deleted variation is soft deleted (not hard deleted)
         $deletedVariation = $product->variations()->withTrashed()->find($deletedVariationId);
-        if (!$deletedVariation) {
-            throw new Exception("Deleted variation was hard deleted instead of soft deleted");
+        if (! $deletedVariation) {
+            throw new Exception('Deleted variation was hard deleted instead of soft deleted');
         }
-        if (!$deletedVariation->trashed()) {
-            throw new Exception("Variation was not properly soft deleted");
+        if (! $deletedVariation->trashed()) {
+            throw new Exception('Variation was not properly soft deleted');
         }
 
         // Verify deleted variation data is preserved
         if ($deletedVariation->name !== $deletedVariationData['name']) {
-            throw new Exception("Deleted variation name was not preserved");
+            throw new Exception('Deleted variation name was not preserved');
         }
         if ($deletedVariation->sku !== $deletedVariationData['sku']) {
-            throw new Exception("Deleted variation SKU was not preserved");
+            throw new Exception('Deleted variation SKU was not preserved');
         }
-        if ($deletedVariation->price != $deletedVariationData['price']) {
-            throw new Exception("Deleted variation price was not preserved");
+        if ($deletedVariation->price !== $deletedVariationData['price']) {
+            throw new Exception('Deleted variation price was not preserved');
         }
         if (json_encode($deletedVariation->options) !== json_encode($deletedVariationData['options'])) {
-            throw new Exception("Deleted variation options were not preserved");
+            throw new Exception('Deleted variation options were not preserved');
         }
-        if ($deletedVariation->inventory_quantity != $deletedVariationData['inventory_quantity']) {
-            throw new Exception("Deleted variation inventory was not preserved");
+        if ($deletedVariation->inventory_quantity !== $deletedVariationData['inventory_quantity']) {
+            throw new Exception('Deleted variation inventory was not preserved');
         }
 
         // Verify remaining variations are unaffected
         $remainingVariations = $product->variations()->get();
         if ($remainingVariations->count() !== 3) {
-            throw new Exception("Expected 3 remaining active variations");
+            throw new Exception('Expected 3 remaining active variations');
         }
 
         foreach ($remainingVariations as $remaining) {
             if ($remaining->id === $deletedVariationId) {
-                throw new Exception("Deleted variation still appears in active variations");
+                throw new Exception('Deleted variation still appears in active variations');
             }
-            
+
             // Verify remaining variations still have their updated data
             $found = false;
             foreach ($updatedVariations as $updated) {
                 if ($updated->id === $remaining->id && $updated->id !== $deletedVariationId) {
-                    if ($remaining->price != $updated->price) {
-                        throw new Exception("Remaining variation price was affected by delete");
+                    if ($remaining->price !== $updated->price) {
+                        throw new Exception('Remaining variation price was affected by delete');
                     }
-                    if ($remaining->inventory_quantity != $updated->inventory_quantity) {
-                        throw new Exception("Remaining variation inventory was affected by delete");
+                    if ($remaining->inventory_quantity !== $updated->inventory_quantity) {
+                        throw new Exception('Remaining variation inventory was affected by delete');
                     }
                     $found = true;
                     break;
                 }
             }
-            if (!$found) {
-                throw new Exception("Could not verify remaining variation data");
+            if (! $found) {
+                throw new Exception('Could not verify remaining variation data');
             }
         }
 
         // Verify we can still access the deleted variation with withTrashed()
         $allVariationsIncludingDeleted = $product->variations()->withTrashed()->get();
         if ($allVariationsIncludingDeleted->count() !== 4) {
-            throw new Exception("Expected 4 variations when including trashed");
+            throw new Exception('Expected 4 variations when including trashed');
         }
 
         $deletedFound = false;
         foreach ($allVariationsIncludingDeleted as $variation) {
             if ($variation->id === $deletedVariationId) {
                 $deletedFound = true;
-                if (!$variation->trashed()) {
-                    throw new Exception("Deleted variation should be marked as trashed");
+                if (! $variation->trashed()) {
+                    throw new Exception('Deleted variation should be marked as trashed');
                 }
                 break;
             }
         }
-        if (!$deletedFound) {
-            throw new Exception("Deleted variation not found in withTrashed() query");
+        if (! $deletedFound) {
+            throw new Exception('Deleted variation not found in withTrashed() query');
         }
 
         echo "PASS (Soft delete preserves data and maintains integrity)\n";
         $passCount++;
 
     } catch (Exception $e) {
-        echo "FAIL - " . $e->getMessage() . "\n";
+        echo 'FAIL - ' . $e->getMessage() . "\n";
     }
 }
 

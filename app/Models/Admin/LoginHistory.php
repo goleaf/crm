@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Admin;
 
 use App\Models\Model;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class LoginHistory extends Model
+final class LoginHistory extends Model
 {
     protected $fillable = [
         'user_id',
@@ -24,39 +26,47 @@ class LoginHistory extends Model
         'attempted_at' => 'datetime',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function scopeSuccessful($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function successful($query)
     {
         return $query->where('successful', true);
     }
 
-    public function scopeFailed($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function failed($query)
     {
         return $query->where('successful', false);
     }
 
-    public function scopeForUser($query, User $user)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forUser($query, User $user)
     {
         return $query->where('user_id', $user->id);
     }
 
-    public function scopeFromIp($query, string $ip)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function fromIp($query, string $ip)
     {
         return $query->where('ip_address', $ip);
     }
 
-    public function scopeRecent($query, int $hours = 24)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function recent($query, int $hours = 24)
     {
         return $query->where('attempted_at', '>=', now()->subHours($hours));
     }
 
     public static function recordLogin(User $user, array $data): self
     {
-        return static::create([
+        return self::create([
             'user_id' => $user->id,
             'ip_address' => $data['ip_address'] ?? request()->ip(),
             'user_agent' => $data['user_agent'] ?? request()->userAgent(),

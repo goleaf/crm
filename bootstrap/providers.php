@@ -8,6 +8,7 @@ return [
     App\Providers\FaviconServiceProvider::class,
     App\Providers\Filament\AppPanelProvider::class,
     App\Providers\FortifyServiceProvider::class,
+    App\Providers\PerformanceServiceProvider::class,
     App\Providers\HorizonServiceProvider::class,
     App\Providers\JetstreamServiceProvider::class,
     App\Providers\HttpClientServiceProvider::class,

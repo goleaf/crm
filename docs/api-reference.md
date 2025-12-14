@@ -500,7 +500,6 @@ curl -X POST \
 
 ## OpenAPI Specification
 
-The complete OpenAPI specification is available at `/docs/api` when logged into the application.
 
 ## Testing Commands
 

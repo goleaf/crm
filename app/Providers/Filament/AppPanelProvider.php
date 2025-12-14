@@ -219,14 +219,6 @@ final class AppPanelProvider extends PanelProvider
                     ->label(__('app.labels.tasks'))
                     ->icon('heroicon-o-shopping-cart'),
             ])
-            ->navigationItems([
-                \Filament\Navigation\NavigationItem::make('API Documentation')
-                    ->url('/docs/api', shouldOpenInNewTab: true)
-                    ->icon('heroicon-o-book-open')
-                    ->group('API Utils')
-                    ->sort(10)
-                    ->visible(fn (): bool => Gate::check('viewApiDocs')),
-            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

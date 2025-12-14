@@ -17,7 +17,7 @@ final class EditLayoutDefinition extends EditRecord
         return [
             Actions\ViewAction::make(),
             Actions\DeleteAction::make()
-                ->visible(fn (): bool => !$this->record->system_defined),
+                ->visible(fn (): bool => ! $this->record->system_defined),
         ];
     }
 }

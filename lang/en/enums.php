@@ -45,6 +45,53 @@ return [
         'other' => 'Other',
     ],
 
+    'bulk_operation_type' => [
+        'update' => 'Update',
+        'delete' => 'Delete',
+        'assign' => 'Assign',
+    ],
+
+    'bulk_operation_status' => [
+        'pending' => 'Pending',
+        'processing' => 'Processing',
+        'completed' => 'Completed',
+        'failed' => 'Failed',
+        'cancelled' => 'Cancelled',
+    ],
+
+    'merge_job_type' => [
+        'company' => 'Company',
+        'contact' => 'Contact',
+        'lead' => 'Lead',
+        'opportunity' => 'Opportunity',
+        'account' => 'Account',
+    ],
+
+    'merge_job_status' => [
+        'pending' => 'Pending',
+        'processing' => 'Processing',
+        'completed' => 'Completed',
+        'failed' => 'Failed',
+        'cancelled' => 'Cancelled',
+    ],
+
+    'data_integrity_check_type' => [
+        'orphaned_records' => 'Orphaned Records',
+        'missing_relationships' => 'Missing Relationships',
+        'duplicate_detection' => 'Duplicate Detection',
+        'data_validation' => 'Data Validation',
+        'foreign_key_constraints' => 'Foreign Key Constraints',
+        'required_fields' => 'Required Fields',
+        'data_consistency' => 'Data Consistency',
+    ],
+
+    'data_integrity_check_status' => [
+        'pending' => 'Pending',
+        'running' => 'Running',
+        'completed' => 'Completed',
+        'failed' => 'Failed',
+    ],
+
     'ocr_document_status' => [
         'pending' => 'Pending',
         'processing' => 'Processing',
@@ -150,5 +197,21 @@ return [
             'gb' => 'United Kingdom',
             'ca' => 'Canada',
         ],
+    ],
+
+    'backup_job_status' => [
+        'pending' => 'Pending',
+        'running' => 'Running',
+        'completed' => 'Completed',
+        'failed' => 'Failed',
+        'expired' => 'Expired',
+    ],
+
+    'backup_job_type' => [
+        'full' => 'Full Backup',
+        'incremental' => 'Incremental Backup',
+        'differential' => 'Differential Backup',
+        'database_only' => 'Database Only',
+        'files_only' => 'Files Only',
     ],
 ];

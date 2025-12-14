@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Label Customization Model
- * 
+ *
  * Stores custom labels for fields, modules, and UI elements
  */
 final class LabelCustomization extends Model
@@ -31,6 +31,9 @@ final class LabelCustomization extends Model
         'active' => 'boolean',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Team, $this>
+     */
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
@@ -54,7 +57,8 @@ final class LabelCustomization extends Model
     /**
      * Scope to active customizations only
      */
-    public function scopeActive($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function active($query)
     {
         return $query->where('active', true);
     }
@@ -62,7 +66,8 @@ final class LabelCustomization extends Model
     /**
      * Scope by module name
      */
-    public function scopeForModule($query, string $moduleName)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forModule($query, string $moduleName)
     {
         return $query->where('module_name', $moduleName);
     }
@@ -70,7 +75,8 @@ final class LabelCustomization extends Model
     /**
      * Scope by element type
      */
-    public function scopeForElementType($query, string $elementType)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forElementType($query, string $elementType)
     {
         return $query->where('element_type', $elementType);
     }
@@ -78,7 +84,8 @@ final class LabelCustomization extends Model
     /**
      * Scope by locale
      */
-    public function scopeForLocale($query, string $locale)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forLocale($query, string $locale)
     {
         return $query->where('locale', $locale);
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Admin;
 
 use App\Models\Model;
@@ -7,7 +9,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Hash;
 
-class PasswordHistory extends Model
+final class PasswordHistory extends Model
 {
     protected $fillable = [
         'user_id',
@@ -18,24 +20,29 @@ class PasswordHistory extends Model
         'password_hash',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function scopeForUser($query, User $user)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forUser($query, User $user)
     {
         return $query->where('user_id', $user->id);
     }
 
-    public function scopeRecent($query, int $count)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function recent($query, int $count)
     {
         return $query->orderBy('created_at', 'desc')->limit($count);
     }
 
     public static function addPasswordHistory(User $user, string $password): self
     {
-        return static::create([
+        return self::create([
             'user_id' => $user->id,
             'password_hash' => Hash::make($password),
         ]);
@@ -43,7 +50,7 @@ class PasswordHistory extends Model
 
     public static function isPasswordReused(User $user, string $password, int $historyCount): bool
     {
-        $recentPasswords = static::forUser($user)
+        $recentPasswords = self::forUser($user)
             ->recent($historyCount)
             ->get();
 
@@ -58,7 +65,7 @@ class PasswordHistory extends Model
 
     public static function cleanupOldPasswords(User $user, int $keepCount): int
     {
-        $oldPasswords = static::forUser($user)
+        $oldPasswords = self::forUser($user)
             ->orderBy('created_at', 'desc')
             ->skip($keepCount)
             ->get();

@@ -13,9 +13,9 @@ uses(PropertyTestCase::class);
 
 /**
  * Property: Layout customizations are isolated per module and team
- * 
+ *
  * **Feature: customization-administration, Property 1: Customization isolation**
- * 
+ *
  * Validates: Requirements 1.3
  */
 test('property: layout customizations are scoped to selected modules and teams', function (): void {
@@ -82,9 +82,9 @@ test('property: layout customizations are scoped to selected modules and teams',
 
 /**
  * Property: Field dependencies are isolated per module and team
- * 
+ *
  * **Feature: customization-administration, Property 1: Customization isolation**
- * 
+ *
  * Validates: Requirements 1.3
  */
 test('property: field dependencies are scoped to selected modules and teams', function (): void {
@@ -141,9 +141,9 @@ test('property: field dependencies are scoped to selected modules and teams', fu
 
 /**
  * Property: Label customizations are isolated per module and team
- * 
+ *
  * **Feature: customization-administration, Property 1: Customization isolation**
- * 
+ *
  * Validates: Requirements 1.3
  */
 test('property: label customizations are scoped to selected modules and teams', function (): void {
@@ -211,16 +211,16 @@ test('property: label customizations are scoped to selected modules and teams', 
 
 /**
  * Property: Studio service validates customization isolation
- * 
+ *
  * **Feature: customization-administration, Property 1: Customization isolation**
- * 
+ *
  * Validates: Requirements 1.3
  */
 test('property: studio service enforces customization isolation', function (): void {
     runPropertyTest(function (): void {
         $team = Team::factory()->create();
         $moduleName = 'companies';
-        $studioService = app(StudioService::class);
+        $studioService = resolve(StudioService::class);
 
         // Test that validation passes for consistent module names
         $validData = [

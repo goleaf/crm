@@ -57,5 +57,3 @@ function createCustomFieldFor(string $entity, string $code, string $type, array 
 
     return $customField->fresh(['options']);
 }
-
-

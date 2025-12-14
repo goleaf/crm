@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Layout Definition Model
- * 
+ *
  * Stores layout configurations for different views (list/detail/edit/search/subpanels)
  * with per-module scoping and team isolation.
  */
@@ -39,6 +39,9 @@ final class LayoutDefinition extends Model
         'system_defined' => 'boolean',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Team, $this>
+     */
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
@@ -47,7 +50,8 @@ final class LayoutDefinition extends Model
     /**
      * Scope to active layouts only
      */
-    public function scopeActive($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function active($query)
     {
         return $query->where('active', true);
     }
@@ -55,7 +59,8 @@ final class LayoutDefinition extends Model
     /**
      * Scope by module name
      */
-    public function scopeForModule($query, string $moduleName)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forModule($query, string $moduleName)
     {
         return $query->where('module_name', $moduleName);
     }
@@ -63,7 +68,8 @@ final class LayoutDefinition extends Model
     /**
      * Scope by view type
      */
-    public function scopeForViewType($query, string $viewType)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forViewType($query, string $viewType)
     {
         return $query->where('view_type', $viewType);
     }

@@ -55,7 +55,7 @@
     - **Property 10: Attribute assignment completeness**
     - **Validates: Requirements 3.5**
 
-- [ ] 5. Product variations system
+- [-] 5. Product variations system
   - [x] 5.1 Implement variation generation service
     - Create VariationService class
     - Implement cartesian product algorithm for variation generation
@@ -66,7 +66,7 @@
     - **Property 11: Variation generation completeness**
     - **Validates: Requirements 4.2**
 
-  - [ ] 5.3 Write property test for variation independence
+  - [x] 5.3 Write property test for variation independence
     - **Property 12: Variation data independence**
     - **Validates: Requirements 4.3**
 
@@ -105,7 +105,7 @@
     - **Property 17: Custom field validation**
     - **Validates: Requirements 6.3**
 
-- [ ] 8. Search and filtering system
+- [-] 8. Search and filtering system
   - [x] 8.1 Implement comprehensive product search
     - Add search across name, SKU, description, categories, custom fields
     - Implement category filtering with subcategory inclusion

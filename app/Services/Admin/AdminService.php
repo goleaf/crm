@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Admin;
 
 use App\Models\Admin\LoginHistory;
@@ -12,17 +14,15 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
-class AdminService
+final class AdminService
 {
-    public function __construct() {}
-
     /**
      * Create a new user with admin panel features
      */
     public function createUser(array $data): User
     {
         $passwordPolicy = PasswordPolicy::getDefault();
-        
+
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -30,8 +30,8 @@ class AdminService
             'user_type' => $data['user_type'] ?? 'regular',
             'status' => $data['status'] ?? 'active',
             'password_policy_id' => $passwordPolicy?->id,
-            'password_expires_at' => $passwordPolicy?->max_age_days 
-                ? now()->addDays($passwordPolicy->max_age_days) 
+            'password_expires_at' => $passwordPolicy?->max_age_days
+                ? now()->addDays($passwordPolicy->max_age_days)
                 : null,
             'force_password_change' => $data['force_password_change'] ?? false,
         ]);
@@ -54,7 +54,7 @@ class AdminService
     public function updateUser(User $user, array $data): User
     {
         $originalData = $user->toArray();
-        
+
         $user->update($data);
 
         // Log activity
@@ -72,14 +72,14 @@ class AdminService
     public function changePassword(User $user, string $newPassword): array
     {
         $policy = $user->passwordPolicy ?? PasswordPolicy::getDefault();
-        
-        if (!$policy) {
+
+        if (! $policy) {
             return ['success' => false, 'errors' => [__('app.errors.no_password_policy')]];
         }
 
         // Validate password against policy
         $errors = $policy->validatePassword($newPassword);
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             return ['success' => false, 'errors' => $errors];
         }
 
@@ -91,8 +91,8 @@ class AdminService
         // Update password
         $user->update([
             'password' => Hash::make($newPassword),
-            'password_expires_at' => $policy->max_age_days 
-                ? now()->addDays($policy->max_age_days) 
+            'password_expires_at' => $policy->max_age_days
+                ? now()->addDays($policy->max_age_days)
                 : null,
             'force_password_change' => false,
         ]);
@@ -115,8 +115,8 @@ class AdminService
     public function handleLoginAttempt(string $email, bool $successful, ?string $failureReason = null): void
     {
         $user = User::where('email', $email)->first();
-        
-        if (!$user) {
+
+        if (! $user) {
             // Log failed attempt for non-existent user
             LoginHistory::create([
                 'user_id' => null,
@@ -126,6 +126,7 @@ class AdminService
                 'failure_reason' => 'user_not_found',
                 'attempted_at' => now(),
             ]);
+
             return;
         }
 
@@ -152,19 +153,19 @@ class AdminService
             // Increment failed attempts
             $policy = $user->passwordPolicy ?? PasswordPolicy::getDefault();
             $failedAttempts = $user->failed_login_attempts + 1;
-            
+
             $updateData = ['failed_login_attempts' => $failedAttempts];
-            
+
             // Lock account if threshold reached
             if ($policy && $failedAttempts >= $policy->lockout_attempts) {
                 $updateData['locked_until'] = now()->addMinutes($policy->lockout_duration_minutes);
-                
+
                 UserActivity::log('user_locked', $user, [
                     'reason' => 'failed_login_attempts',
                     'attempts' => $failedAttempts,
                 ]);
             }
-            
+
             $user->update($updateData);
         }
     }
@@ -176,7 +177,7 @@ class AdminService
     {
         $policy = $user->passwordPolicy ?? PasswordPolicy::getDefault();
         $duration = $durationMinutes ?? $policy?->lockout_duration_minutes ?? 60;
-        
+
         $user->update([
             'status' => 'locked',
             'locked_until' => now()->addMinutes($duration),
@@ -269,16 +270,16 @@ class AdminService
     public function getUserLoginStats(User $user, int $days = 30): array
     {
         $startDate = now()->subDays($days);
-        
+
         $totalLogins = LoginHistory::forUser($user)
             ->where('attempted_at', '>=', $startDate)
             ->count();
-            
+
         $successfulLogins = LoginHistory::forUser($user)
             ->successful()
             ->where('attempted_at', '>=', $startDate)
             ->count();
-            
+
         $failedLogins = LoginHistory::forUser($user)
             ->failed()
             ->where('attempted_at', '>=', $startDate)
@@ -298,7 +299,7 @@ class AdminService
     public function getUserActivitySummary(User $user, int $days = 30): array
     {
         $startDate = now()->subDays($days);
-        
+
         $activities = UserActivity::forUser($user)
             ->where('created_at', '>=', $startDate)
             ->selectRaw('action, COUNT(*) as count')
@@ -321,7 +322,7 @@ class AdminService
     public function bulkUpdateUsers(Collection $users, array $data): array
     {
         $results = ['success' => 0, 'failed' => 0, 'errors' => []];
-        
+
         foreach ($users as $user) {
             try {
                 $this->updateUser($user, $data);
@@ -349,18 +350,21 @@ class AdminService
      */
     public function isUserLocked(User $user): bool
     {
-        if ($user->status === 'locked' && $user->locked_until) {
-            if ($user->locked_until->isFuture()) {
-                return true;
-            } else {
-                // Auto-unlock if lock period has expired
-                $user->update([
-                    'status' => 'active',
-                    'locked_until' => null,
-                ]);
-            }
+        if ($user->status !== 'locked') {
+            return false;
         }
-        
+        if (! $user->locked_until) {
+            return false;
+        }
+        if ($user->locked_until->isFuture()) {
+            return true;
+        }
+        // Auto-unlock if lock period has expired
+        $user->update([
+            'status' => 'active',
+            'locked_until' => null,
+        ]);
+
         return false;
     }
 
@@ -370,6 +374,7 @@ class AdminService
     public function isPasswordExpired(User $user): bool
     {
         $policy = $user->passwordPolicy ?? PasswordPolicy::getDefault();
+
         return $policy ? $policy->isPasswordExpired($user) : false;
     }
 }

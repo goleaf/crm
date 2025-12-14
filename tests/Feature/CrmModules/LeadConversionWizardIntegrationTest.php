@@ -8,9 +8,7 @@ use App\Models\Opportunity;
 use App\Models\People;
 use App\Models\Team;
 use App\Models\User;
-use App\Services\LeadConversionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 

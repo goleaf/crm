@@ -9,7 +9,6 @@ use App\Models\Team;
 use App\Models\User;
 use App\Services\Opportunities\OpportunityMetricsService;
 use App\Services\Opportunities\OpportunityStageService;
-use Relaticle\CustomFields\Models\CustomField;
 use Relaticle\CustomFields\Services\TenantContextService;
 
 beforeEach(function (): void {
@@ -29,7 +28,7 @@ beforeEach(function (): void {
     foreach (OpportunityField::cases() as $fieldEnum) {
         // Ensure tenant context is set for each field creation
         TenantContextService::setTenantId($this->team->getKey());
-        
+
         $customField = createCustomFieldFor(
             Opportunity::class,
             $fieldEnum->value,
@@ -37,22 +36,20 @@ beforeEach(function (): void {
             $fieldEnum->getOptions() ?? [],
             $this->team,
         );
-        
+
         // Verify the custom field was created with correct tenant
         expect($customField->tenant_id)->toBe($this->team->getKey());
-        
+
         $this->customFields[$fieldEnum->value] = $customField;
     }
-    
+
     // Force a database flush to ensure all custom fields are persisted
     \Illuminate\Support\Facades\DB::commit();
     \Illuminate\Support\Facades\DB::beginTransaction();
-    
+
     // Re-set tenant context after database operations
     TenantContextService::setTenantId($this->team->getKey());
 });
-
-
 
 /**
  * **Feature: core-crm-modules, Property 5: Opportunity pipeline math**
@@ -82,16 +79,16 @@ test('property: weighted revenue equals amount times probability', function (): 
     // Save custom field values directly
     $opportunity->saveCustomFieldValue($amountField, $amount);
     $opportunity->saveCustomFieldValue($probabilityField, $probability);
-    
+
     // Force the model to be saved to ensure custom field values are persisted
     $opportunity->save();
 
     // Fresh load with explicit eager loading of custom field relationships
     $opportunity = Opportunity::with([
         'customFieldValues.customField.options',
-        'customFieldValues' => function ($query) {
+        'customFieldValues' => function ($query): void {
             $query->where('tenant_id', $this->team->getKey());
-        }
+        },
     ])->find($opportunity->id);
 
     // Verify the opportunity was loaded correctly
@@ -114,7 +111,7 @@ test('property: weighted revenue equals amount times probability', function (): 
             'retrieved_amount' => $retrievedAmount,
             'retrieved_probability' => $retrievedProbability,
         ]);
-        
+
         // Skip this iteration by returning early
         return;
     }

@@ -148,7 +148,7 @@ test('property: account soft deletes preserve data', function (): void {
     // Verify data integrity after soft delete
     $trashedAccount = Account::withTrashed()->find($account->id);
     expect($trashedAccount->deleted_at)->not->toBeNull();
-    
+
     // Core data should remain unchanged
     foreach (['name', 'account_type', 'industry', 'revenue'] as $field) {
         if (isset($originalData[$field])) {
@@ -180,15 +180,14 @@ test('property: account hierarchies persist parent-child relationships', functio
     $retrievedParent = Account::find($parentAccount->id);
 
     expect($retrievedChild->parent_id)->toBe($parentAccount->id);
-    
+
     if (method_exists($retrievedChild, 'parent')) {
         expect($retrievedChild->parent)->not->toBeNull();
         expect($retrievedChild->parent->id)->toBe($parentAccount->id);
     }
-    
+
     if (method_exists($retrievedParent, 'children')) {
         expect($retrievedParent->children)->toHaveCount(1);
         expect($retrievedParent->children->first()->id)->toBe($childAccount->id);
     }
 })->repeat(50);
-

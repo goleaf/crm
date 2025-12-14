@@ -113,8 +113,7 @@ final class FieldDependencyResource extends Resource
                 Tables\Columns\TextColumn::make('module_name')
                     ->label(__('app.labels.module'))
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => 
-                        LayoutDefinition::getAvailableModules()[$state] ?? $state
+                    ->formatStateUsing(fn (string $state): string => LayoutDefinition::getAvailableModules()[$state] ?? $state,
                     )
                     ->sortable()
                     ->searchable(),
@@ -132,23 +131,20 @@ final class FieldDependencyResource extends Resource
                 Tables\Columns\TextColumn::make('dependency_type')
                     ->label(__('app.labels.dependency_type'))
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => 
-                        FieldDependency::getDependencyTypes()[$state] ?? $state
+                    ->formatStateUsing(fn (string $state): string => FieldDependency::getDependencyTypes()[$state] ?? $state,
                     )
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('condition_operator')
                     ->label(__('app.labels.condition'))
-                    ->formatStateUsing(fn (string $state): string => 
-                        FieldDependency::getConditionOperators()[$state] ?? $state
+                    ->formatStateUsing(fn (string $state): string => FieldDependency::getConditionOperators()[$state] ?? $state,
                     )
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('action_type')
                     ->label(__('app.labels.action'))
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => 
-                        FieldDependency::getActionTypes()[$state] ?? $state
+                    ->formatStateUsing(fn (string $state): string => FieldDependency::getActionTypes()[$state] ?? $state,
                     )
                     ->sortable(),
 

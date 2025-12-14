@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Models\Product;
@@ -73,17 +75,17 @@ try {
     // Generate variations
     $variations = $variationService->generateVariations($product, [$colorAttribute->id, $sizeAttribute->id]);
 
-    echo "✓ Generated variations: " . $variations->count() . " variations created\n";
+    echo '✓ Generated variations: ' . $variations->count() . " variations created\n";
 
     // Expected: 2 colors × 2 sizes = 4 variations
     if ($variations->count() === 4) {
         echo "✓ Correct number of variations generated\n";
     } else {
-        echo "✗ Expected 4 variations, got " . $variations->count() . "\n";
+        echo '✗ Expected 4 variations, got ' . $variations->count() . "\n";
     }
 
     // Check variation combinations
-    $combinations = $variations->map(fn($v) => $v->options)->toArray();
+    $combinations = $variations->map(fn ($v) => $v->options)->toArray();
     $expectedCombinations = [
         ['color' => 'Red', 'size' => 'Small'],
         ['color' => 'Red', 'size' => 'Large'],
@@ -93,7 +95,7 @@ try {
 
     echo "Generated combinations:\n";
     foreach ($combinations as $combo) {
-        echo "  - " . json_encode($combo) . "\n";
+        echo '  - ' . json_encode($combo) . "\n";
     }
 
     // Test variation update
@@ -103,7 +105,7 @@ try {
 
     $updatedVariation = $variationService->updateVariation($firstVariation, ['price' => $newPrice]);
 
-    if ($updatedVariation->price == $newPrice) {
+    if ($updatedVariation->price === $newPrice) {
         echo "✓ Variation update works correctly\n";
     } else {
         echo "✗ Variation update failed\n";
@@ -111,10 +113,10 @@ try {
 
     // Test soft delete
     $variationService->deleteVariation($firstVariation);
-    
+
     $activeVariations = $product->variations()->count();
     $allVariations = $product->variations()->withTrashed()->count();
-    
+
     if ($activeVariations === 3 && $allVariations === 4) {
         echo "✓ Soft delete works correctly\n";
     } else {

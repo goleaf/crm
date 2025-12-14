@@ -87,7 +87,7 @@ final class ProductCategory extends Model
     public function descendants(): \Illuminate\Database\Eloquent\Collection
     {
         $descendants = collect();
-        
+
         foreach ($this->children as $child) {
             $descendants->push($child);
             $descendants = $descendants->merge($child->descendants());
@@ -106,7 +106,7 @@ final class ProductCategory extends Model
         $categoryIds = collect([$this->id]);
         $categoryIds = $categoryIds->merge($this->descendants()->pluck('id'));
 
-        return Product::whereHas('categories', function ($query) use ($categoryIds) {
+        return Product::whereHas('categories', function (\Illuminate\Contracts\Database\Query\Builder $query) use ($categoryIds): void {
             $query->whereIn('product_categories.id', $categoryIds);
         })->get();
     }
@@ -141,7 +141,7 @@ final class ProductCategory extends Model
     public function getRoot(): ProductCategory
     {
         $ancestors = $this->ancestors();
-        
+
         return $ancestors->isEmpty() ? $this : $ancestors->last();
     }
 
@@ -161,7 +161,8 @@ final class ProductCategory extends Model
     /**
      * Scope to order categories by sort_order and name.
      */
-    public function scopeOrdered($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function ordered($query)
     {
         return $query->orderBy('sort_order')->orderBy('name');
     }
@@ -172,11 +173,11 @@ final class ProductCategory extends Model
             if ($category->team_id === null && auth('web')->check()) {
                 $category->team_id = auth('web')->user()?->currentTeam?->getKey();
             }
-            
+
             // Set default sort_order if not provided
             if ($category->sort_order === null) {
-                $maxSortOrder = self::where('team_id', $category->team_id)
-                    ->where('parent_id', $category->parent_id)
+                $maxSortOrder = self::where('team_id')
+                    ->where('parent_id')
                     ->max('sort_order') ?? 0;
                 $category->sort_order = $maxSortOrder + 1;
             }

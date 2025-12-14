@@ -34,7 +34,7 @@ final class CreateProduct extends CreateRecord
     protected function afterCreate(): void
     {
         // Save custom fields after the product is created
-        if (isset($this->customFieldsData) && !empty($this->customFieldsData)) {
+        if (isset($this->customFieldsData) && $this->customFieldsData !== []) {
             $tenant = Filament::getTenant();
             if ($tenant) {
                 foreach ($this->customFieldsData as $fieldId => $value) {

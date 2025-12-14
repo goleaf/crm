@@ -26,6 +26,7 @@ final readonly class ValidPhone implements ValidationRule
 
         if (! is_string($value)) {
             $fail(__('validation.custom.phone.invalid_format', ['attribute' => $attribute]));
+
             return;
         }
 
@@ -40,9 +41,9 @@ final readonly class ValidPhone implements ValidationRule
     {
         // Remove all non-digit characters except + at the beginning
         $normalized = preg_replace('/[^\d+]/', '', $phone);
-        
+
         // Ensure + is only at the beginning
-        if (str_contains($normalized, '+')) {
+        if (str_contains((string) $normalized, '+')) {
             $normalized = '+' . str_replace('+', '', $normalized);
         }
 
@@ -70,7 +71,7 @@ final readonly class ValidPhone implements ValidationRule
             if (! $this->allowInternational) {
                 return false;
             }
-            
+
             // Must have country code (1-4 digits) + number
             return $digitCount >= 8 && $digitCount <= 15;
         }

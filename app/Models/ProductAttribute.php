@@ -119,7 +119,7 @@ final class ProductAttribute extends Model
      */
     public function getValidValues(): array
     {
-        if (!$this->requiresValues()) {
+        if (! $this->requiresValues()) {
             return [];
         }
 
@@ -132,21 +132,22 @@ final class ProductAttribute extends Model
     public function isValidValue(mixed $value): bool
     {
         // First check data type validation
-        if (!$this->validateValue($value)) {
+        if (! $this->validateValue($value)) {
             return false;
         }
 
         // For select/multi-select, check against predefined values
         if ($this->requiresValues()) {
             $validValues = $this->getValidValues();
-            
+
             if ($this->data_type === ProductAttributeDataType::MULTI_SELECT) {
-                if (!is_array($value)) {
+                if (! is_array($value)) {
                     return false;
                 }
-                return collect($value)->every(fn($v) => in_array($v, $validValues, true));
+
+                return collect($value)->every(fn ($v): bool => in_array($v, $validValues, true));
             }
-            
+
             return in_array($value, $validValues, true);
         }
 

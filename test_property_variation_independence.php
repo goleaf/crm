@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Models\Product;
@@ -20,7 +22,7 @@ $totalTests = 10;
 for ($test = 1; $test <= $totalTests; $test++) {
     try {
         echo "Test iteration $test: ";
-        
+
         // Create test data
         $team = Team::factory()->create();
         $product = Product::factory()->create(['team_id' => $team->id]);
@@ -72,7 +74,7 @@ for ($test = 1; $test <= $totalTests; $test++) {
         $variations = $variationService->generateVariations($product, [$colorAttribute->id, $sizeAttribute->id]);
 
         if ($variations->count() !== 4) {
-            throw new Exception("Expected 4 variations, got " . $variations->count());
+            throw new Exception('Expected 4 variations, got ' . $variations->count());
         }
 
         // Get two different variations
@@ -94,20 +96,20 @@ for ($test = 1; $test <= $totalTests; $test++) {
         ]);
 
         // Verify first variation was updated
-        if ($updatedVariation1->price != $newPrice1) {
-            throw new Exception("First variation price not updated correctly");
+        if ($updatedVariation1->price !== $newPrice1) {
+            throw new Exception('First variation price not updated correctly');
         }
-        if ($updatedVariation1->inventory_quantity != $newInventory1) {
-            throw new Exception("First variation inventory not updated correctly");
+        if ($updatedVariation1->inventory_quantity !== $newInventory1) {
+            throw new Exception('First variation inventory not updated correctly');
         }
 
         // Verify second variation was NOT affected
         $variation2->refresh();
-        if ($variation2->price != $originalPrice2) {
-            throw new Exception("Second variation price was incorrectly modified");
+        if ($variation2->price !== $originalPrice2) {
+            throw new Exception('Second variation price was incorrectly modified');
         }
-        if ($variation2->inventory_quantity != $originalInventory2) {
-            throw new Exception("Second variation inventory was incorrectly modified");
+        if ($variation2->inventory_quantity !== $originalInventory2) {
+            throw new Exception('Second variation inventory was incorrectly modified');
         }
 
         // Update second variation with different values
@@ -119,31 +121,31 @@ for ($test = 1; $test <= $totalTests; $test++) {
         ]);
 
         // Verify second variation was updated
-        if ($updatedVariation2->price != $newPrice2) {
-            throw new Exception("Second variation price not updated correctly");
+        if ($updatedVariation2->price !== $newPrice2) {
+            throw new Exception('Second variation price not updated correctly');
         }
-        if ($updatedVariation2->inventory_quantity != $newInventory2) {
-            throw new Exception("Second variation inventory not updated correctly");
+        if ($updatedVariation2->inventory_quantity !== $newInventory2) {
+            throw new Exception('Second variation inventory not updated correctly');
         }
 
         // Verify first variation is still unchanged
         $updatedVariation1->refresh();
-        if ($updatedVariation1->price != $newPrice1) {
-            throw new Exception("First variation price was incorrectly modified after second update");
+        if ($updatedVariation1->price !== $newPrice1) {
+            throw new Exception('First variation price was incorrectly modified after second update');
         }
-        if ($updatedVariation1->inventory_quantity != $newInventory1) {
-            throw new Exception("First variation inventory was incorrectly modified after second update");
+        if ($updatedVariation1->inventory_quantity !== $newInventory1) {
+            throw new Exception('First variation inventory was incorrectly modified after second update');
         }
 
         // Verify other variations remain unchanged
         $otherVariations = $variations->skip(2);
         foreach ($otherVariations as $otherVariation) {
             $otherVariation->refresh();
-            if ($otherVariation->price != $product->price) {
-                throw new Exception("Other variation price was incorrectly modified");
+            if ($otherVariation->price !== $product->price) {
+                throw new Exception('Other variation price was incorrectly modified');
             }
-            if ($otherVariation->inventory_quantity != 0) {
-                throw new Exception("Other variation inventory was incorrectly modified");
+            if ($otherVariation->inventory_quantity !== 0) {
+                throw new Exception('Other variation inventory was incorrectly modified');
             }
         }
 
@@ -151,7 +153,7 @@ for ($test = 1; $test <= $totalTests; $test++) {
         $passCount++;
 
     } catch (Exception $e) {
-        echo "FAIL - " . $e->getMessage() . "\n";
+        echo 'FAIL - ' . $e->getMessage() . "\n";
     }
 }
 

@@ -5,13 +5,10 @@ declare(strict_types=1);
 use App\Models\SupportCase;
 use App\Models\Team;
 use App\Models\User;
-use App\Services\EmailToCaseService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
-use Tests\TestCase;
-
-uses(TestCase::class, RefreshDatabase::class);
+// Uses TestCase and RefreshDatabase globally via Pest.php
 
 beforeEach(function (): void {
     $this->team = Team::factory()->create();
@@ -129,7 +126,7 @@ test('email-to-case handles email threading correctly', function (): void {
 
     // Verify case has multiple email messages
     expect($updatedCase->emailMessages)->toHaveCount(2);
-    
+
     // Verify latest message content
     $latestMessage = $updatedCase->emailMessages()->latest()->first();
     expect($latestMessage->body)->toBe($replyEmailData['body']);
@@ -155,7 +152,7 @@ test('email-to-case assigns cases to correct queue based on rules', function ():
     $response->assertStatus(201);
 
     $case = SupportCase::find($response->json('case_id'));
-    
+
     // Should be assigned to high priority queue
     expect($case->priority)->toBe('high');
     expect($case->queue)->toBe('critical');
@@ -190,10 +187,10 @@ test('email-to-case handles attachments', function (): void {
     $response->assertStatus(201);
 
     $case = SupportCase::find($response->json('case_id'));
-    
+
     // Verify attachments were processed
     expect($case->attachments)->toHaveCount(2);
-    
+
     $attachments = $case->attachments;
     expect($attachments->pluck('filename'))->toContain('error_screenshot.png');
     expect($attachments->pluck('filename'))->toContain('error_log.txt');
@@ -263,7 +260,7 @@ test('email-to-case creates SLA timers', function (): void {
     $response->assertStatus(201);
 
     $case = SupportCase::find($response->json('case_id'));
-    
+
     // Verify SLA timers are set
     expect($case->sla_first_response_due)->not->toBeNull();
     expect($case->sla_resolution_due)->not->toBeNull();
@@ -289,11 +286,11 @@ test('email-to-case handles duplicate message IDs', function (): void {
 
     // Send same email again (duplicate message ID)
     $response2 = $this->postJson('/api/email-to-case/inbound', $emailData);
-    
+
     // Should not create duplicate case
     $response2->assertStatus(200);
     expect($response2->json('case_id'))->toBe($firstCaseId);
-    
+
     // Verify only one case exists
     expect(SupportCase::count())->toBe(1);
 });
@@ -318,7 +315,7 @@ test('email-to-case handles auto-replies and out-of-office messages', function (
     // Should not create case for auto-replies
     $response->assertStatus(200);
     $response->assertJson(['message' => 'Auto-reply ignored']);
-    
+
     expect(SupportCase::count())->toBe(0);
 });
 
@@ -337,13 +334,13 @@ test('email-to-case creates audit trail', function (): void {
     $response->assertStatus(201);
 
     $case = SupportCase::find($response->json('case_id'));
-    
+
     // Verify audit activities were created
     expect($case->activities)->not->toBeEmpty();
-    
+
     $creationActivity = $case->activities->where('description', 'Case created from email')->first();
     expect($creationActivity)->not->toBeNull();
-    
+
     if ($case->assigned_user_id) {
         $assignmentActivity = $case->activities->where('description', 'like', '%assigned%')->first();
         expect($assignmentActivity)->not->toBeNull();

@@ -47,7 +47,7 @@
   - _Requirements: all_
   - **Property 1: Account persistence**, **Property 2: Bidirectional account-contact links**
 
-- [-] 9. Testing
+- [ ] 9. Testing
   - Property tests: persistence, relationship symmetry, routing determinism, conversion atomicity, weighted revenue math, SLA breach triggers, duplicate detection.
   - Integration tests: web-to-lead intake, conversion wizard, email-to-case ingestion, opportunity forecast rollup, activity timeline rendering.
   - _Requirements: all_

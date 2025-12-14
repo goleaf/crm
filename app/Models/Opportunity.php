@@ -51,7 +51,7 @@ final class Opportunity extends Model implements HasCustomFields
     {
         parent::booted();
 
-        static::saving(function (self $opportunity): void {
+        self::saving(function (self $opportunity): void {
             $opportunity->calculateWeightedAmount();
         });
     }
@@ -201,8 +201,8 @@ final class Opportunity extends Model implements HasCustomFields
      */
     public function isWon(): bool
     {
-        return $this->closed_at !== null && 
-               $this->win_loss_reason !== null && 
+        return $this->closed_at !== null &&
+               $this->win_loss_reason !== null &&
                str_contains(strtolower($this->win_loss_reason), 'won');
     }
 
@@ -211,8 +211,8 @@ final class Opportunity extends Model implements HasCustomFields
      */
     public function isLost(): bool
     {
-        return $this->closed_at !== null && 
-               $this->win_loss_reason !== null && 
+        return $this->closed_at !== null &&
+               $this->win_loss_reason !== null &&
                str_contains(strtolower($this->win_loss_reason), 'lost');
     }
 }

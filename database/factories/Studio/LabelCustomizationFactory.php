@@ -52,7 +52,7 @@ final class LabelCustomizationFactory extends Factory
      */
     public function active(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'active' => true,
         ]);
     }
@@ -62,7 +62,7 @@ final class LabelCustomizationFactory extends Factory
      */
     public function inactive(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'active' => false,
         ]);
     }
@@ -72,7 +72,7 @@ final class LabelCustomizationFactory extends Factory
      */
     public function forModule(string $moduleName): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'module_name' => $moduleName,
         ]);
     }
@@ -82,7 +82,7 @@ final class LabelCustomizationFactory extends Factory
      */
     public function forElement(string $elementType, string $elementKey): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'element_type' => $elementType,
             'element_key' => $elementKey,
         ]);
@@ -93,7 +93,7 @@ final class LabelCustomizationFactory extends Factory
      */
     public function forLocale(string $locale): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'locale' => $locale,
         ]);
     }
@@ -103,7 +103,7 @@ final class LabelCustomizationFactory extends Factory
      */
     public function withLabels(string $originalLabel, string $customLabel): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'original_label' => $originalLabel,
             'custom_label' => $customLabel,
         ]);

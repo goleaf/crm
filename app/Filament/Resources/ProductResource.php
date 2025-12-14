@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
+use App\Enums\ProductLifecycleStage;
 use App\Filament\RelationManagers\ActivitiesRelationManager;
 use App\Filament\Resources\ProductResource\Pages\CreateProduct;
 use App\Filament\Resources\ProductResource\Pages\EditProduct;
 use App\Filament\Resources\ProductResource\Pages\ListProducts;
 use App\Filament\Support\SlugHelper;
 use App\Models\Product;
-use App\Enums\ProductLifecycleStage;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -165,9 +165,9 @@ final class ProductResource extends Resource
                         ->columnSpanFull(),
                 ]),
             Section::make('Custom Fields')
-                ->schema(function (?Product $record) {
+                ->schema(function (?Product $record): array {
                     $tenant = Filament::getTenant();
-                    if (!$tenant) {
+                    if (! $tenant) {
                         return [];
                     }
 
@@ -181,7 +181,7 @@ final class ProductResource extends Resource
                         return [
                             \Filament\Forms\Components\Placeholder::make('no_custom_fields')
                                 ->label('No custom fields configured')
-                                ->content('Custom fields can be configured in the system settings.')
+                                ->content('Custom fields can be configured in the system settings.'),
                         ];
                     }
 
@@ -229,7 +229,7 @@ final class ProductResource extends Resource
                         }
 
                         // Set the value from the custom field relationship
-                        if ($record) {
+                        if ($record instanceof \App\Models\Product) {
                             $customFieldValue = $record->customFieldValues()
                                 ->where('custom_field_id', $field->id)
                                 ->first();
@@ -244,22 +244,22 @@ final class ProductResource extends Resource
                     return $fields;
                 })
                 ->collapsible()
-                ->collapsed(fn (?Product $record) => $record === null), // Collapsed for new records
+                ->collapsed(fn (?Product $record): bool => ! $record instanceof \App\Models\Product), // Collapsed for new records
         ])->columns(1);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(function (Builder $query) {
+            ->modifyQueryUsing(
                 // Include relationships for search and filtering
-                return $query->with([
+
+                fn (Builder $query) => $query->with([
                     'customFieldValues.customField',
                     'taxonomyCategories',
                     'attributeAssignments.attribute',
-                    'attributeAssignments.attributeValue'
-                ]);
-            })
+                    'attributeAssignments.attributeValue',
+                ]))
             ->columns([
                 TextColumn::make('name')
                     ->searchable()
@@ -327,9 +327,9 @@ final class ProductResource extends Resource
                             return $query;
                         }
 
-                        return $query->whereHas('taxonomyCategories', function (Builder $subQuery) use ($data) {
+                        return $query->whereHas('taxonomyCategories', function (Builder $subQuery) use ($data): void {
                             $subQuery->whereIn('taxonomies.id', $data['values'])
-                                ->orWhereHas('parent', function (Builder $parentQuery) use ($data) {
+                                ->orWhereHas('parent', function (Builder $parentQuery) use ($data): void {
                                     $parentQuery->whereIn('id', $data['values']);
                                 });
                         });
@@ -402,17 +402,15 @@ final class ProductResource extends Resource
                                     ->prefix('$'),
                             ]),
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['price_from'],
-                                fn (Builder $query, $price): Builder => $query->where('price', '>=', $price),
-                            )
-                            ->when(
-                                $data['price_to'],
-                                fn (Builder $query, $price): Builder => $query->where('price', '<=', $price),
-                            );
-                    }),
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when(
+                            $data['price_from'],
+                            fn (Builder $query, $price): Builder => $query->where('price', '>=', $price),
+                        )
+                        ->when(
+                            $data['price_to'],
+                            fn (Builder $query, $price): Builder => $query->where('price', '<=', $price),
+                        )),
 
                 // Inventory level filter
                 \Filament\Tables\Filters\Filter::make('inventory_level')
@@ -446,10 +444,10 @@ final class ProductResource extends Resource
                     }),
 
                 // Attribute-based filters (dynamic based on available attributes)
-                ...static::getAttributeFilters(),
+                ...self::getAttributeFilters(),
 
                 // Custom field filters (dynamic based on available custom fields)
-                ...static::getCustomFieldFilters(),
+                ...self::getCustomFieldFilters(),
             ])
             ->persistFiltersInSession()
             ->filtersFormColumns(3);
@@ -495,16 +493,16 @@ final class ProductResource extends Resource
     /**
      * Get dynamic attribute-based filters
      */
-    protected static function getAttributeFilters(): array
+    private static function getAttributeFilters(): array
     {
         $tenant = Filament::getTenant();
-        if (!$tenant) {
+        if (! $tenant) {
             return [];
         }
 
         $attributes = \App\Models\ProductAttribute::query()
-            ->where('team_id', $tenant->id)
-            ->where('is_filterable', true)
+            ->where('team_id')
+            ->where('is_filterable')
             ->with('values')
             ->get();
 
@@ -512,7 +510,7 @@ final class ProductResource extends Resource
 
         foreach ($attributes as $attribute) {
             $filterId = "attribute_{$attribute->id}";
-            
+
             if ($attribute->data_type === 'select' || $attribute->data_type === 'multi_select') {
                 $filters[] = \Filament\Tables\Filters\SelectFilter::make($filterId)
                     ->label($attribute->name)
@@ -523,7 +521,7 @@ final class ProductResource extends Resource
                             return $query;
                         }
 
-                        return $query->whereHas('attributeAssignments', function (Builder $subQuery) use ($attribute, $data) {
+                        return $query->whereHas('attributeAssignments', function (Builder $subQuery) use ($attribute, $data): void {
                             $subQuery->where('product_attribute_id', $attribute->id)
                                 ->whereIn('product_attribute_value_id', $data['values']);
                         });
@@ -538,7 +536,8 @@ final class ProductResource extends Resource
                         }
 
                         $boolValue = $state === '1';
-                        return $query->whereHas('attributeAssignments', function (Builder $subQuery) use ($attribute, $boolValue) {
+
+                        return $query->whereHas('attributeAssignments', function (Builder $subQuery) use ($attribute, $boolValue): void {
                             $subQuery->where('product_attribute_id', $attribute->id)
                                 ->where('value', $boolValue ? 'true' : 'false');
                         });
@@ -557,19 +556,17 @@ final class ProductResource extends Resource
                                     ->numeric(),
                             ]),
                     ])
-                    ->query(function (Builder $query, array $data) use ($attribute): Builder {
-                        return $query->whereHas('attributeAssignments', function (Builder $subQuery) use ($attribute, $data) {
-                            $subQuery->where('product_attribute_id', $attribute->id);
-                            
-                            if (!empty($data['min_value'])) {
-                                $subQuery->where('value', '>=', $data['min_value']);
-                            }
-                            
-                            if (!empty($data['max_value'])) {
-                                $subQuery->where('value', '<=', $data['max_value']);
-                            }
-                        });
-                    });
+                    ->query(fn (Builder $query, array $data): Builder => $query->whereHas('attributeAssignments', function (Builder $subQuery) use ($attribute, $data): void {
+                        $subQuery->where('product_attribute_id', $attribute->id);
+
+                        if (! empty($data['min_value'])) {
+                            $subQuery->where('value', '>=', $data['min_value']);
+                        }
+
+                        if (! empty($data['max_value'])) {
+                            $subQuery->where('value', '<=', $data['max_value']);
+                        }
+                    }));
             }
         }
 
@@ -579,10 +576,10 @@ final class ProductResource extends Resource
     /**
      * Get dynamic custom field filters
      */
-    protected static function getCustomFieldFilters(): array
+    private static function getCustomFieldFilters(): array
     {
         $tenant = Filament::getTenant();
-        if (!$tenant) {
+        if (! $tenant) {
             return [];
         }
 
@@ -595,10 +592,10 @@ final class ProductResource extends Resource
 
         foreach ($customFields as $field) {
             $filterId = "custom_field_{$field->id}";
-            
+
             if ($field->type === 'select' || $field->type === 'multi_select') {
                 $options = $field->options->pluck('label', 'value')->toArray();
-                
+
                 $filters[] = \Filament\Tables\Filters\SelectFilter::make($filterId)
                     ->label($field->name)
                     ->multiple($field->type === 'multi_select')
@@ -608,9 +605,9 @@ final class ProductResource extends Resource
                             return $query;
                         }
 
-                        return $query->whereHas('customFieldValues', function (Builder $subQuery) use ($field, $data) {
+                        return $query->whereHas('customFieldValues', function (Builder $subQuery) use ($field, $data): void {
                             $subQuery->where('custom_field_id', $field->id);
-                            
+
                             if ($field->type === 'multi_select') {
                                 // For multi-select, check if any of the selected values are in the JSON array
                                 foreach ($data['values'] as $value) {
@@ -631,7 +628,8 @@ final class ProductResource extends Resource
                         }
 
                         $boolValue = $state === '1';
-                        return $query->whereHas('customFieldValues', function (Builder $subQuery) use ($field, $boolValue) {
+
+                        return $query->whereHas('customFieldValues', function (Builder $subQuery) use ($field, $boolValue): void {
                             $subQuery->where('custom_field_id', $field->id)
                                 ->where('value', $boolValue);
                         });
@@ -684,25 +682,25 @@ final class ProductResource extends Resource
      */
     public static function getGlobalSearchQuery(string $search): Builder
     {
-        return static::getEloquentQuery()
-            ->where(function (Builder $query) use ($search) {
+        return self::getEloquentQuery()
+            ->where(function (Builder $query) use ($search): void {
                 $query->where('name', 'like', "%{$search}%")
                     ->orWhere('sku', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%")
                     ->orWhere('manufacturer', 'like', "%{$search}%")
                     ->orWhere('part_number', 'like', "%{$search}%")
                     // Search in categories
-                    ->orWhereHas('taxonomyCategories', function (Builder $categoryQuery) use ($search) {
+                    ->orWhereHas('taxonomyCategories', function (Builder $categoryQuery) use ($search): void {
                         $categoryQuery->where('name', 'like', "%{$search}%");
                     })
                     // Search in custom fields
-                    ->orWhereHas('customFieldValues', function (Builder $customFieldQuery) use ($search) {
+                    ->orWhereHas('customFieldValues', function (Builder $customFieldQuery) use ($search): void {
                         $customFieldQuery->where('value', 'like', "%{$search}%");
                     })
                     // Search in attribute values
-                    ->orWhereHas('attributeAssignments', function (Builder $attributeQuery) use ($search) {
+                    ->orWhereHas('attributeAssignments', function (Builder $attributeQuery) use ($search): void {
                         $attributeQuery->where('value', 'like', "%{$search}%")
-                            ->orWhereHas('attributeValue', function (Builder $valueQuery) use ($search) {
+                            ->orWhereHas('attributeValue', function (Builder $valueQuery) use ($search): void {
                                 $valueQuery->where('value', 'like', "%{$search}%");
                             });
                     });

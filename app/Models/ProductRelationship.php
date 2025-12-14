@@ -81,13 +81,13 @@ final class ProductRelationship extends Model
         $sourceProduct = $this->product;
         $upsellProduct = $this->relatedProduct;
 
-        if (!$sourceProduct || !$upsellProduct) {
+        if (! $sourceProduct || ! $upsellProduct) {
             return false;
         }
 
         // Use price_override if set, otherwise use the product's price
         $upsellPrice = $this->price_override ?? $upsellProduct->price;
-        
+
         return $upsellPrice >= $sourceProduct->price;
     }
 
@@ -105,7 +105,7 @@ final class ProductRelationship extends Model
                 ?? CurrentTeamResolver::resolveId();
 
             // Validate upsell price constraint
-            if ($relationship->relationship_type === ProductRelationshipType::UPSELL->value && !$relationship->validateUpsellPrice()) {
+            if ($relationship->relationship_type === ProductRelationshipType::UPSELL->value && ! $relationship->validateUpsellPrice()) {
                 throw new \InvalidArgumentException('Upsell product price must be greater than or equal to the source product price.');
             }
         });

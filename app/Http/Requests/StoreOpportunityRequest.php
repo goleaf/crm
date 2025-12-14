@@ -35,7 +35,7 @@ final class StoreOpportunityRequest extends FormRequest
             'win_loss_reason' => ['nullable', 'string', 'max:500', new CleanContent],
             'forecast_category' => ['nullable', 'string', 'max:255', new CleanContent],
             'custom_fields' => ['nullable', 'array'],
-            
+
             // Collaborators
             'collaborators' => ['nullable', 'array'],
             'collaborators.*' => ['integer', 'exists:users,id'],

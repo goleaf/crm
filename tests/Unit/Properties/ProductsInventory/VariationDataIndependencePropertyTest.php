@@ -16,20 +16,20 @@ uses(RefreshDatabase::class);
 
 /**
  * Property 12: Variation data independence
- * 
+ *
  * For any product variation, updating its SKU, price, or inventory should not
  * affect other variations or the parent product.
- * 
+ *
  * Validates: Requirements 4.3
  */
-it('maintains data independence when updating variation properties', function () {
+it('maintains data independence when updating variation properties', function (): void {
     $team = Team::factory()->create();
     $product = Product::factory()->create([
         'team_id' => $team->id,
         'price' => fake()->randomFloat(2, 10, 1000),
         'inventory_quantity' => fake()->numberBetween(0, 100),
     ]);
-    $variationService = app(VariationService::class);
+    $variationService = resolve(VariationService::class);
 
     // Create configurable attributes
     $colorAttribute = ProductAttribute::factory()->create([
@@ -84,15 +84,13 @@ it('maintains data independence when updating variation properties', function ()
         'sku' => $product->sku,
     ];
 
-    $originalVariationsData = $variations->map(function ($variation) {
-        return [
-            'id' => $variation->id,
-            'price' => $variation->price,
-            'inventory_quantity' => $variation->inventory_quantity,
-            'sku' => $variation->sku,
-            'options' => $variation->options,
-        ];
-    })->toArray();
+    $originalVariationsData = $variations->map(fn ($variation): array => [
+        'id' => $variation->id,
+        'price' => $variation->price,
+        'inventory_quantity' => $variation->inventory_quantity,
+        'sku' => $variation->sku,
+        'options' => $variation->options,
+    ])->all();
 
     // Select one variation to update
     $targetVariation = $variations->first();
@@ -125,7 +123,7 @@ it('maintains data independence when updating variation properties', function ()
     foreach ($otherVariations as $variation) {
         $variation->refresh();
         $originalData = collect($originalVariationsData)->firstWhere('id', $variation->id);
-        
+
         expect($variation->price)->toEqual($originalData['price']);
         expect($variation->inventory_quantity)->toEqual($originalData['inventory_quantity']);
         expect($variation->sku)->toEqual($originalData['sku']);
@@ -141,7 +139,7 @@ it('maintains data independence when updating variation properties', function ()
 /**
  * Property 12b: Inventory adjustments should be independent
  */
-it('maintains inventory independence when adjusting variation inventory', function () {
+it('maintains inventory independence when adjusting variation inventory', function (): void {
     $team = Team::factory()->create();
     $product = Product::factory()->create([
         'team_id' => $team->id,
@@ -202,7 +200,7 @@ it('maintains inventory independence when adjusting variation inventory', functi
 /**
  * Property 12c: Price updates should be independent
  */
-it('maintains price independence when updating variation prices', function () {
+it('maintains price independence when updating variation prices', function (): void {
     $team = Team::factory()->create();
     $basePrice = fake()->randomFloat(2, 50, 500);
     $product = Product::factory()->create([
@@ -223,7 +221,7 @@ it('maintains price independence when updating variation prices', function () {
             'price' => $price,
             'options' => ['variant' => "option-{$i}"],
         ]);
-        
+
         $variations[] = $variation;
         $originalPrices[$variation->id] = $price;
     }
@@ -234,7 +232,7 @@ it('maintains price independence when updating variation prices', function () {
     $newPrice = fake()->randomFloat(2, 10, 1000);
 
     // Update target variation price
-    $variationService = app(VariationService::class);
+    $variationService = resolve(VariationService::class);
     $updatedVariation = $variationService->updateVariation($targetVariation, [
         'price' => $newPrice,
     ]);
@@ -251,7 +249,7 @@ it('maintains price independence when updating variation prices', function () {
         if ($index === $targetIndex) {
             continue; // Skip the updated variation
         }
-        
+
         $variation->refresh();
         expect($variation->price)->toEqual($originalPrices[$variation->id]);
     }
@@ -260,7 +258,7 @@ it('maintains price independence when updating variation prices', function () {
 /**
  * Property 12d: SKU updates should be independent and unique
  */
-it('maintains SKU independence and uniqueness when updating variation SKUs', function () {
+it('maintains SKU independence and uniqueness when updating variation SKUs', function (): void {
     $team = Team::factory()->create();
     $product = Product::factory()->create([
         'team_id' => $team->id,
@@ -289,7 +287,7 @@ it('maintains SKU independence and uniqueness when updating variation SKUs', fun
 
     // Update variation1 SKU
     $newSku = fake()->unique()->regexify('[A-Z]{3}-[0-9]{3}-NEW');
-    $variationService = app(VariationService::class);
+    $variationService = resolve(VariationService::class);
     $updatedVariation = $variationService->updateVariation($variation1, [
         'sku' => $newSku,
     ]);

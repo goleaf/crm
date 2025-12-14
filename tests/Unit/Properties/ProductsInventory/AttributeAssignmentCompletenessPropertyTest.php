@@ -17,7 +17,7 @@ uses(RefreshDatabase::class);
  *
  * **Validates: Requirements 3.5**
  *
- * Property: For any product with assigned attributes, retrieving the product 
+ * Property: For any product with assigned attributes, retrieving the product
  * should return all attribute assignments with their values.
  */
 
@@ -103,7 +103,7 @@ test('property: product returns all assigned attributes with values', function (
 
     // Verify each attribute value is correctly retrievable
     expect($retrievedProduct->getProductAttributeValue($textAttribute))->toBe($textValue);
-    expect($retrievedProduct->getProductAttributeValue($numberAttribute))->toEqual((float) $numberValue);
+    expect($retrievedProduct->getProductAttributeValue($numberAttribute))->toEqual($numberValue);
     expect($retrievedProduct->getProductAttributeValue($booleanAttribute))->toBe($booleanValue);
     expect($retrievedProduct->getProductAttributeValue($selectAttribute))->toBe($selectValue);
     expect($retrievedProduct->getProductAttributeValue($multiSelectAttribute))->toBe($multiSelectValue);
@@ -166,7 +166,7 @@ test('property: attribute assignments persist when product is updated', function
     $product->refresh();
     expect($product->attributeAssignments)->toHaveCount(2);
     expect($product->getProductAttributeValue($attribute1))->toBe($value1);
-    expect($product->getProductAttributeValue($attribute2))->toEqual((float) $value2);
+    expect($product->getProductAttributeValue($attribute2))->toEqual($value2);
 })->repeat(100);
 
 // Property: Bulk attribute assignment completeness
@@ -318,7 +318,7 @@ test('property: updating one attribute assignment preserves others', function ()
     expect($product->getProductAttributeValue($attribute1))->toBe($newValue1);
 
     // Verify other attributes are unchanged
-    expect($product->getProductAttributeValue($attribute2))->toEqual((float) $value2);
+    expect($product->getProductAttributeValue($attribute2))->toEqual($value2);
     expect($product->getProductAttributeValue($attribute3))->toBe($value3);
 
     // Verify total count is still 3

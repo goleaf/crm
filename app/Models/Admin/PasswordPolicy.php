@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Admin;
 
 use App\Models\Model;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class PasswordPolicy extends Model
+final class PasswordPolicy extends Model
 {
     protected $fillable = [
         'name',
@@ -33,6 +35,9 @@ class PasswordPolicy extends Model
         'is_active' => 'boolean',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\User, $this>
+     */
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
@@ -50,19 +55,19 @@ class PasswordPolicy extends Model
             $errors[] = __('app.validation.password_max_length', ['max' => $this->max_length]);
         }
 
-        if ($this->require_uppercase && !preg_match('/[A-Z]/', $password)) {
+        if ($this->require_uppercase && ! preg_match('/[A-Z]/', $password)) {
             $errors[] = __('app.validation.password_require_uppercase');
         }
 
-        if ($this->require_lowercase && !preg_match('/[a-z]/', $password)) {
+        if ($this->require_lowercase && ! preg_match('/[a-z]/', $password)) {
             $errors[] = __('app.validation.password_require_lowercase');
         }
 
-        if ($this->require_numbers && !preg_match('/[0-9]/', $password)) {
+        if ($this->require_numbers && ! preg_match('/\d/', $password)) {
             $errors[] = __('app.validation.password_require_numbers');
         }
 
-        if ($this->require_symbols && !preg_match('/[^A-Za-z0-9]/', $password)) {
+        if ($this->require_symbols && ! preg_match('/[^A-Za-z0-9]/', $password)) {
             $errors[] = __('app.validation.password_require_symbols');
         }
 
@@ -71,7 +76,7 @@ class PasswordPolicy extends Model
 
     public function isPasswordExpired(User $user): bool
     {
-        if (!$this->max_age_days || !$user->password_expires_at) {
+        if (! $this->max_age_days || ! $user->password_expires_at) {
             return false;
         }
 
@@ -80,6 +85,6 @@ class PasswordPolicy extends Model
 
     public static function getDefault(): ?self
     {
-        return static::where('is_default', true)->where('is_active', true)->first();
+        return self::where('is_default', true)->where('is_active', true)->first();
     }
 }

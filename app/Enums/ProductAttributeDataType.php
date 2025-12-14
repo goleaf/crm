@@ -67,7 +67,7 @@ enum ProductAttributeDataType: string implements HasColor, HasLabel
             self::TEXT => is_string($value),
             self::NUMBER => is_numeric($value),
             self::SELECT => is_string($value),
-            self::MULTI_SELECT => is_array($value) && collect($value)->every(fn($v) => is_string($v)),
+            self::MULTI_SELECT => is_array($value) && collect($value)->every(fn ($v): bool => is_string($v)),
             self::BOOLEAN => is_bool($value) || in_array($value, ['0', '1', 'true', 'false'], true),
         };
     }

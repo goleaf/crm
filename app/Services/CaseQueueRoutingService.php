@@ -75,8 +75,8 @@ final class CaseQueueRoutingService
         foreach ($conditions as $field => $values) {
             $caseValue = $case->{$field};
 
-            // Handle enum values
-            if (is_object($caseValue) && method_exists($caseValue, 'value')) {
+            // Handle enum values - check if it's a backed enum
+            if ($caseValue instanceof \BackedEnum) {
                 $caseValue = $caseValue->value;
             }
 

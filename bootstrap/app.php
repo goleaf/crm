@@ -29,6 +29,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
             'crm.permission' => \App\Http\Middleware\EnsurePermission::class,
             'crm.team' => \App\Http\Middleware\EnsureTeamContext::class,
             'crm.custom' => \App\Http\Middleware\ApplyCustomMiddleware::class,
+            'performance.pagination' => \App\Http\Middleware\EnforcePaginationLimits::class,
             'localizationRedirect' => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRedirectFilter::class,
             'localeSessionRedirect' => \Mcamara\LaravelLocalization\Middleware\LocaleSessionRedirect::class,
             'localeViewPath' => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationViewPath::class,
@@ -37,6 +38,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
         $middleware->append([
             ApplySecurityHeaders::class,
             SecurityHeaders::class,
+            \App\Http\Middleware\EnforcePaginationLimits::class,
         ]);
 
         // Exclude login link route from CSRF verification
@@ -73,6 +75,35 @@ $app = Application::configure(basePath: dirname(__DIR__))
     })
     ->withSchedule(function (Schedule $schedule): void {
         $schedule->command('app:generate-sitemap')->daily();
+
+        // Backup scheduling
+        $schedule->command('backup:create', ['--type=full', '--name=Daily Full Backup'])
+            ->daily()
+            ->at('02:00')
+            ->runInBackground()
+            ->withoutOverlapping()
+            ->onSuccess(function (): void {
+                \Illuminate\Support\Facades\Log::info('Daily backup completed successfully');
+            })
+            ->onFailure(function (): void {
+                \Illuminate\Support\Facades\Log::error('Daily backup failed');
+            });
+
+        $schedule->command('backup:create', ['--type=incremental', '--name=Hourly Incremental Backup'])
+            ->hourly()
+            ->between('08:00', '18:00')
+            ->runInBackground()
+            ->withoutOverlapping()
+            ->skip(
+                // Skip if it's the daily backup hour
+
+                fn (): bool => now()->hour === 2);
+
+        $schedule->command('backup:cleanup')
+            ->daily()
+            ->at('03:00')
+            ->runInBackground()
+            ->withoutOverlapping();
 
         $supportedDrivers = ['database', 'file'];
 

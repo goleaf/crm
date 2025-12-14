@@ -15,7 +15,7 @@
   - _Requirements: 2.1, 2.3_
   - **Property 2: Duplicate prevention**, **Property 5: Backup reliability**
 
-- [ ] 4. Bulk operations
+- [x] 4. Bulk operations
   - Implement bulk update/delete/assignment with permission checks, preview counts, batching, rollback on failure.
   - _Requirements: 2.2_
   - **Property 3: Bulk operation safety**

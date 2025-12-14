@@ -27,12 +27,12 @@ final class LayoutDefinitionFactory extends Factory
             'name' => $this->faker->words(3, true) . ' Layout',
             'description' => $this->faker->sentence(),
             'components' => [
-                'field_' . $this->faker->word => [
+                'field_' . $this->faker->word() => [
                     'type' => $this->faker->randomElement(['text', 'select', 'textarea']),
                     'label' => $this->faker->words(2, true),
                     'required' => $this->faker->boolean(),
                 ],
-                'field_' . $this->faker->word => [
+                'field_' . $this->faker->word() => [
                     'type' => $this->faker->randomElement(['number', 'date', 'email']),
                     'label' => $this->faker->words(2, true),
                     'required' => $this->faker->boolean(),
@@ -68,7 +68,7 @@ final class LayoutDefinitionFactory extends Factory
      */
     public function active(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'active' => true,
         ]);
     }
@@ -78,7 +78,7 @@ final class LayoutDefinitionFactory extends Factory
      */
     public function inactive(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'active' => false,
         ]);
     }
@@ -88,7 +88,7 @@ final class LayoutDefinitionFactory extends Factory
      */
     public function systemDefined(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'system_defined' => true,
         ]);
     }
@@ -98,7 +98,7 @@ final class LayoutDefinitionFactory extends Factory
      */
     public function userDefined(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'system_defined' => false,
         ]);
     }
@@ -108,7 +108,7 @@ final class LayoutDefinitionFactory extends Factory
      */
     public function forModule(string $moduleName): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'module_name' => $moduleName,
         ]);
     }
@@ -118,7 +118,7 @@ final class LayoutDefinitionFactory extends Factory
      */
     public function forViewType(string $viewType): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'view_type' => $viewType,
         ]);
     }

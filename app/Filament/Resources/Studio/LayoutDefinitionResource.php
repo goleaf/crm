@@ -7,7 +7,6 @@ namespace App\Filament\Resources\Studio;
 use App\Filament\Clusters\Studio;
 use App\Filament\Resources\Studio\LayoutDefinitionResource\Pages;
 use App\Models\Studio\LayoutDefinition;
-use App\Services\Studio\StudioService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -114,8 +113,7 @@ final class LayoutDefinitionResource extends Resource
                 Tables\Columns\TextColumn::make('module_name')
                     ->label(__('app.labels.module'))
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => 
-                        LayoutDefinition::getAvailableModules()[$state] ?? $state
+                    ->formatStateUsing(fn (string $state): string => LayoutDefinition::getAvailableModules()[$state] ?? $state,
                     )
                     ->sortable()
                     ->searchable(),
@@ -123,8 +121,7 @@ final class LayoutDefinitionResource extends Resource
                 Tables\Columns\TextColumn::make('view_type')
                     ->label(__('app.labels.view_type'))
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => 
-                        LayoutDefinition::getViewTypes()[$state] ?? $state
+                    ->formatStateUsing(fn (string $state): string => LayoutDefinition::getViewTypes()[$state] ?? $state,
                     )
                     ->sortable(),
 
@@ -174,14 +171,14 @@ final class LayoutDefinitionResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
-                    ->visible(fn (LayoutDefinition $record): bool => !$record->system_defined),
+                    ->visible(fn (LayoutDefinition $record): bool => ! $record->system_defined),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
-                        ->action(function ($records) {
-                            $records->each(function (LayoutDefinition $record) {
-                                if (!$record->system_defined) {
+                        ->action(function ($records): void {
+                            $records->each(function (LayoutDefinition $record): void {
+                                if (! $record->system_defined) {
                                     $record->delete();
                                 }
                             });

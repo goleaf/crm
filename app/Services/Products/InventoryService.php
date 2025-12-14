@@ -7,7 +7,6 @@ namespace App\Services\Products;
 use App\Models\InventoryAdjustment;
 use App\Models\Product;
 use App\Models\ProductVariation;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -22,23 +21,23 @@ final class InventoryService
         string $reason,
         ?string $notes = null,
         ?string $referenceType = null,
-        ?string $referenceId = null
+        ?string $referenceId = null,
     ): InventoryAdjustment {
-        if (!$item->track_inventory) {
+        if (! $item->track_inventory) {
             throw new \InvalidArgumentException('Cannot adjust inventory for item that does not track inventory');
         }
 
         return DB::transaction(function () use ($item, $quantity, $reason, $notes, $referenceType, $referenceId) {
             $quantityBefore = $item->inventory_quantity;
             $quantityAfter = max(0, $quantityBefore + $quantity);
-            
+
             // Update the inventory quantity
             $item->update(['inventory_quantity' => $quantityAfter]);
-            
+
             // Create audit record
             $adjustment = InventoryAdjustment::create([
                 'team_id' => $item instanceof Product ? $item->team_id : $item->product->team_id,
-                'adjustable_type' => get_class($item),
+                'adjustable_type' => $item::class,
                 'adjustable_id' => $item->id,
                 'user_id' => auth()->id(),
                 'quantity_before' => $quantityBefore,
@@ -64,7 +63,7 @@ final class InventoryService
      */
     public function getAvailableQuantity(Product|ProductVariation $item): int
     {
-        if (!$item->track_inventory) {
+        if (! $item->track_inventory) {
             return PHP_INT_MAX; // Unlimited if not tracking
         }
 
@@ -78,9 +77,9 @@ final class InventoryService
         Product|ProductVariation $item,
         int $quantity,
         ?string $referenceType = null,
-        ?string $referenceId = null
+        ?string $referenceId = null,
     ): bool {
-        if (!$item->track_inventory) {
+        if (! $item->track_inventory) {
             return true; // Always successful if not tracking
         }
 
@@ -88,12 +87,12 @@ final class InventoryService
             return false; // Insufficient inventory
         }
 
-        return DB::transaction(function () use ($item, $quantity, $referenceType, $referenceId) {
+        return DB::transaction(function () use ($item, $quantity, $referenceType, $referenceId): true {
             $item->increment('reserved_quantity', $quantity);
 
             // Log the reservation
             Log::info('Inventory reserved', [
-                'item_type' => get_class($item),
+                'item_type' => $item::class,
                 'item_id' => $item->id,
                 'quantity' => $quantity,
                 'reference_type' => $referenceType,
@@ -112,19 +111,19 @@ final class InventoryService
         Product|ProductVariation $item,
         int $quantity,
         ?string $referenceType = null,
-        ?string $referenceId = null
+        ?string $referenceId = null,
     ): void {
-        if (!$item->track_inventory) {
+        if (! $item->track_inventory) {
             return; // Nothing to release if not tracking
         }
 
-        DB::transaction(function () use ($item, $quantity, $referenceType, $referenceId) {
+        DB::transaction(function () use ($item, $quantity, $referenceType, $referenceId): void {
             $releaseQuantity = min($quantity, $item->reserved_quantity);
             $item->decrement('reserved_quantity', $releaseQuantity);
 
             // Log the release
             Log::info('Reserved inventory released', [
-                'item_type' => get_class($item),
+                'item_type' => $item::class,
                 'item_id' => $item->id,
                 'quantity' => $releaseQuantity,
                 'reference_type' => $referenceType,
@@ -139,11 +138,12 @@ final class InventoryService
      */
     public function isLowStock(Product|ProductVariation $item, ?int $threshold = null): bool
     {
-        if (!$item->track_inventory) {
+        if (! $item->track_inventory) {
             return false;
         }
 
         $threshold ??= config('inventory.low_stock_threshold', 10);
+
         return $this->getAvailableQuantity($item) <= $threshold;
     }
 
@@ -153,15 +153,15 @@ final class InventoryService
     public function decrementForSale(
         Product|ProductVariation $item,
         int $quantity,
-        string $referenceId
+        string $referenceId,
     ): InventoryAdjustment {
         return $this->adjustInventory(
             item: $item,
             quantity: -$quantity,
             reason: 'Sale',
-            notes: "Inventory decremented for sale",
+            notes: 'Inventory decremented for sale',
             referenceType: 'sale',
-            referenceId: $referenceId
+            referenceId: $referenceId,
         );
     }
 
@@ -171,15 +171,15 @@ final class InventoryService
     public function incrementForReturn(
         Product|ProductVariation $item,
         int $quantity,
-        string $referenceId
+        string $referenceId,
     ): InventoryAdjustment {
         return $this->adjustInventory(
             item: $item,
             quantity: $quantity,
             reason: 'Return',
-            notes: "Inventory incremented for return",
+            notes: 'Inventory incremented for return',
             referenceType: 'return',
-            referenceId: $referenceId
+            referenceId: $referenceId,
         );
     }
 
@@ -190,7 +190,7 @@ final class InventoryService
     {
         $results = [];
 
-        DB::transaction(function () use ($adjustments, &$results) {
+        DB::transaction(function () use ($adjustments, &$results): void {
             foreach ($adjustments as $adjustment) {
                 $item = $adjustment['item'];
                 $quantity = $adjustment['quantity'];
@@ -205,7 +205,7 @@ final class InventoryService
                     $reason,
                     $notes,
                     $referenceType,
-                    $referenceId
+                    $referenceId,
                 );
             }
         });
@@ -228,17 +228,15 @@ final class InventoryService
         ];
 
         if ($product->hasVariants()) {
-            $stats['variations'] = $product->variations->map(function (ProductVariation $variation) {
-                return [
-                    'id' => $variation->id,
-                    'name' => $variation->name,
-                    'sku' => $variation->sku,
-                    'inventory_quantity' => $variation->inventory_quantity,
-                    'reserved_quantity' => $variation->reserved_quantity,
-                    'available_quantity' => $variation->availableInventory(),
-                    'is_low_stock' => $this->isLowStock($variation),
-                ];
-            })->toArray();
+            $stats['variations'] = $product->variations->map(fn (ProductVariation $variation): array => [
+                'id' => $variation->id,
+                'name' => $variation->name,
+                'sku' => $variation->sku,
+                'inventory_quantity' => $variation->inventory_quantity,
+                'reserved_quantity' => $variation->reserved_quantity,
+                'available_quantity' => $variation->availableInventory(),
+                'is_low_stock' => $this->isLowStock($variation),
+            ])->toArray();
         }
 
         return $stats;
@@ -249,7 +247,7 @@ final class InventoryService
      */
     public function getAdjustmentHistory(Product|ProductVariation $item, int $limit = 50): \Illuminate\Database\Eloquent\Collection
     {
-        return InventoryAdjustment::where('adjustable_type', get_class($item))
+        return InventoryAdjustment::where('adjustable_type', $item::class)
             ->where('adjustable_id', $item->id)
             ->with('user')
             ->orderBy('created_at', 'desc')
@@ -262,11 +260,11 @@ final class InventoryService
      */
     public function syncVariationInventory(Product $product): void
     {
-        if (!$product->hasVariants()) {
+        if (! $product->hasVariants()) {
             return;
         }
 
-        DB::transaction(function () use ($product) {
+        DB::transaction(function () use ($product): void {
             $totalInventory = $product->variations()->sum('inventory_quantity');
             $totalReserved = $product->variations()->sum('reserved_quantity');
 
@@ -285,17 +283,17 @@ final class InventoryService
         $threshold ??= config('inventory.low_stock_threshold', 10);
 
         // Get products that are low on stock
-        $products = Product::where('team_id', $teamId)
-            ->where('track_inventory', true)
-            ->where('is_active', true)
+        $products = Product::where('team_id')
+            ->where('track_inventory')
+            ->where('is_active')
             ->whereRaw('(inventory_quantity - reserved_quantity) <= ?', [$threshold])
             ->get();
 
         // Get variations that are low on stock
-        $variations = ProductVariation::whereHas('product', function ($query) use ($teamId) {
-                $query->where('team_id', $teamId)
-                    ->where('is_active', true);
-            })
+        $variations = ProductVariation::whereHas('product', function (\Illuminate\Contracts\Database\Query\Builder $query) use ($teamId): void {
+            $query->where('team_id', $teamId)
+                ->where('is_active', true);
+        })
             ->where('track_inventory', true)
             ->whereRaw('(inventory_quantity - reserved_quantity) <= ?', [$threshold])
             ->with('product')
@@ -307,12 +305,12 @@ final class InventoryService
     /**
      * Trigger low stock notification.
      */
-    protected function triggerLowStockNotification(Product|ProductVariation $item): void
+    private function triggerLowStockNotification(Product|ProductVariation $item): void
     {
         // This would integrate with your notification system
         // For now, just log it
         Log::warning('Low stock detected', [
-            'item_type' => get_class($item),
+            'item_type' => $item::class,
             'item_id' => $item->id,
             'item_name' => $item->name,
             'available_quantity' => $this->getAvailableQuantity($item),
@@ -355,7 +353,7 @@ final class InventoryService
     {
         $results = [];
 
-        DB::transaction(function () use ($items, $orderId, &$results) {
+        DB::transaction(function () use ($items, $orderId, &$results): void {
             foreach ($items as $itemData) {
                 $item = $itemData['item'];
                 $quantity = $itemData['quantity'];
@@ -364,7 +362,7 @@ final class InventoryService
                     $item,
                     $quantity,
                     'order',
-                    $orderId
+                    $orderId,
                 );
 
                 $results[] = [
@@ -373,7 +371,7 @@ final class InventoryService
                     'success' => $success,
                 ];
 
-                if (!$success) {
+                if (! $success) {
                     throw new \Exception("Insufficient inventory for item: {$item->name}");
                 }
             }
@@ -387,7 +385,7 @@ final class InventoryService
      */
     public function releaseInventoryForOrder(array $items, string $orderId): void
     {
-        DB::transaction(function () use ($items, $orderId) {
+        DB::transaction(function () use ($items, $orderId): void {
             foreach ($items as $itemData) {
                 $item = $itemData['item'];
                 $quantity = $itemData['quantity'];
@@ -396,7 +394,7 @@ final class InventoryService
                     $item,
                     $quantity,
                     'order',
-                    $orderId
+                    $orderId,
                 );
             }
         });

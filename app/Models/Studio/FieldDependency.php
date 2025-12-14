@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Field Dependency Model
- * 
+ *
  * Manages field dependencies and conditional visibility rules
  */
 final class FieldDependency extends Model
@@ -34,6 +34,9 @@ final class FieldDependency extends Model
         'active' => 'boolean',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Team, $this>
+     */
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
@@ -89,7 +92,8 @@ final class FieldDependency extends Model
     /**
      * Scope to active dependencies only
      */
-    public function scopeActive($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function active($query)
     {
         return $query->where('active', true);
     }
@@ -97,7 +101,8 @@ final class FieldDependency extends Model
     /**
      * Scope by module name
      */
-    public function scopeForModule($query, string $moduleName)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forModule($query, string $moduleName)
     {
         return $query->where('module_name', $moduleName);
     }
@@ -105,7 +110,8 @@ final class FieldDependency extends Model
     /**
      * Scope by source field
      */
-    public function scopeForSourceField($query, string $fieldCode)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forSourceField($query, string $fieldCode)
     {
         return $query->where('source_field_code', $fieldCode);
     }
@@ -113,7 +119,8 @@ final class FieldDependency extends Model
     /**
      * Scope by target field
      */
-    public function scopeForTargetField($query, string $fieldCode)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forTargetField($query, string $fieldCode)
     {
         return $query->where('target_field_code', $fieldCode);
     }

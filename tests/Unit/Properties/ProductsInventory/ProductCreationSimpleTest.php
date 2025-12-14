@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Enums\ProductStatus;
 use App\Models\Product;
 use App\Models\Team;
 use App\Models\User;
@@ -14,7 +13,7 @@ test('simple product creation test', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);
-    
+
     $this->actingAs($user);
 
     $product = Product::factory()->create([

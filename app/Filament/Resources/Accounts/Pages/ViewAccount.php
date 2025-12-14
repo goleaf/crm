@@ -6,7 +6,6 @@ namespace App\Filament\Resources\Accounts\Pages;
 
 use App\Data\AddressData;
 use App\Enums\AccountType;
-use App\Enums\AddressType;
 use App\Enums\Industry;
 use App\Filament\Resources\Accounts\AccountResource;
 use App\Models\Account;

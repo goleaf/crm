@@ -33,11 +33,6 @@ final class AppServiceProviderTest extends TestCase
         $this->markTestIncomplete('Test for configureTranslations needs implementation');
     }
 
-    public function test_configure_scramble_gate(): void
-    {
-        $this->markTestIncomplete('Test for configureScrambleGate needs implementation');
-    }
-
     public function test_configure_company_config(): void
     {
         $this->markTestIncomplete('Test for configureCompanyConfig needs implementation');

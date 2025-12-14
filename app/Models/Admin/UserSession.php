@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Admin;
 
 use App\Models\Model;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class UserSession extends Model
+final class UserSession extends Model
 {
     protected $fillable = [
         'user_id',
@@ -22,22 +24,28 @@ class UserSession extends Model
         'is_active' => 'boolean',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function scopeActive($query)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function active($query)
     {
         return $query->where('is_active', true);
     }
 
-    public function scopeForUser($query, User $user)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forUser($query, User $user)
     {
         return $query->where('user_id', $user->id);
     }
 
-    public function scopeExpired($query, int $minutes = 120)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function expired($query, int $minutes = 120)
     {
         return $query->where('last_activity', '<', now()->subMinutes($minutes));
     }
@@ -54,7 +62,7 @@ class UserSession extends Model
 
     public static function createSession(User $user, string $sessionId): self
     {
-        return static::create([
+        return self::create([
             'user_id' => $user->id,
             'session_id' => $sessionId,
             'ip_address' => request()->ip(),
@@ -66,12 +74,12 @@ class UserSession extends Model
 
     public static function terminateUserSessions(User $user, ?string $exceptSessionId = null): int
     {
-        $query = static::where('user_id', $user->id)->where('is_active', true);
-        
+        $query = self::where('user_id', $user->id)->where('is_active', true);
+
         if ($exceptSessionId) {
             $query->where('session_id', '!=', $exceptSessionId);
         }
-        
+
         return $query->update(['is_active' => false]);
     }
 }

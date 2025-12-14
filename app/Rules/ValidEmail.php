@@ -27,6 +27,7 @@ final readonly class ValidEmail implements ValidationRule
 
         if (! is_string($value)) {
             $fail(__('validation.email', ['attribute' => $attribute]));
+
             return;
         }
 
@@ -35,11 +36,13 @@ final readonly class ValidEmail implements ValidationRule
         foreach ($emails as $email) {
             if (! $this->isValidEmail($email)) {
                 $fail(__('validation.email', ['attribute' => $attribute]));
+
                 return;
             }
 
             if ($this->checkDisposable && $this->isDisposableEmail($email)) {
                 $fail(__('validation.custom.email.no_disposable', ['attribute' => $attribute]));
+
                 return;
             }
         }
@@ -52,10 +55,10 @@ final readonly class ValidEmail implements ValidationRule
     {
         return array_filter(
             array_map(
-                'trim',
-                preg_split('/[,;]/', $value) ?: []
+                trim(...),
+                preg_split('/[,;]/', $value) ?: [],
             ),
-            fn (string $email): bool => $email !== ''
+            fn (string $email): bool => $email !== '',
         );
     }
 
@@ -84,22 +87,18 @@ final readonly class ValidEmail implements ValidationRule
         [$local, $domain] = $parts;
 
         // Local part validation
-        if (strlen($local) > 64 || strlen($local) === 0) {
+        if (strlen($local) > 64 || $local === '') {
             return false;
         }
 
         // Domain validation
-        if (strlen($domain) > 253 || strlen($domain) === 0) {
-            return false;
-        }
-
-        return true;
+        return strlen($domain) <= 253 && strlen($domain) !== 0;
     }
 
     private function isDisposableEmail(string $email): bool
     {
         $domain = Str::after($email, '@');
-        
+
         // Common disposable email domains
         $disposableDomains = [
             '10minutemail.com',

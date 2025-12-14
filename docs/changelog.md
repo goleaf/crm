@@ -62,7 +62,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Custom Fields**: Flexible custom field system for all entities
 - **Notes System**: Rich note-taking with polymorphic relationships
 - **File Management**: Integrated file manager with Livewire
-- **API Documentation**: Auto-generated API docs with Scramble
 - **Security**: Comprehensive security headers and audit system
 - **Performance**: Optimized queries with eager loading and caching
 

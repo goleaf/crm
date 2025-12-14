@@ -14,14 +14,14 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Studio Service
- * 
+ *
  * Handles Studio customization operations including field management,
  * layout configuration, label customization, and dependency management.
  */
-final class StudioService
+final readonly class StudioService
 {
     public function __construct(
-        private readonly int $cacheTtl = 3600
+        private int $cacheTtl = 3600,
     ) {}
 
     /**
@@ -31,13 +31,11 @@ final class StudioService
     {
         $cacheKey = "studio.layout.{$team->id}.{$moduleName}.{$viewType}";
 
-        return Cache::remember($cacheKey, $this->cacheTtl, function () use ($team, $moduleName, $viewType) {
-            return LayoutDefinition::where('team_id', $team->id)
-                ->forModule($moduleName)
-                ->forViewType($viewType)
-                ->active()
-                ->first();
-        });
+        return Cache::remember($cacheKey, $this->cacheTtl, fn () => LayoutDefinition::where('team_id', $team->id)
+            ->forModule($moduleName)
+            ->forViewType($viewType)
+            ->active()
+            ->first());
     }
 
     /**
@@ -52,7 +50,7 @@ final class StudioService
                 'view_type' => $data['view_type'],
                 'name' => $data['name'],
             ],
-            $data
+            $data,
         );
 
         $this->clearLayoutCache($team, $data['module_name'], $data['view_type']);
@@ -67,12 +65,10 @@ final class StudioService
     {
         $cacheKey = "studio.dependencies.{$team->id}.{$moduleName}";
 
-        return Cache::remember($cacheKey, $this->cacheTtl, function () use ($team, $moduleName) {
-            return FieldDependency::where('team_id', $team->id)
-                ->forModule($moduleName)
-                ->active()
-                ->get();
-        });
+        return Cache::remember($cacheKey, $this->cacheTtl, fn () => FieldDependency::where('team_id', $team->id)
+            ->forModule($moduleName)
+            ->active()
+            ->get());
     }
 
     /**
@@ -88,7 +84,7 @@ final class StudioService
                 'target_field_code' => $data['target_field_code'],
                 'dependency_type' => $data['dependency_type'],
             ],
-            $data
+            $data,
         );
 
         $this->clearDependencyCache($team, $data['module_name']);
@@ -103,13 +99,11 @@ final class StudioService
     {
         $cacheKey = "studio.labels.{$team->id}.{$moduleName}.{$locale}";
 
-        return Cache::remember($cacheKey, $this->cacheTtl, function () use ($team, $moduleName, $locale) {
-            return LabelCustomization::where('team_id', $team->id)
-                ->forModule($moduleName)
-                ->forLocale($locale)
-                ->active()
-                ->get();
-        });
+        return Cache::remember($cacheKey, $this->cacheTtl, fn () => LabelCustomization::where('team_id', $team->id)
+            ->forModule($moduleName)
+            ->forLocale($locale)
+            ->active()
+            ->get());
     }
 
     /**
@@ -125,7 +119,7 @@ final class StudioService
                 'element_key' => $data['element_key'],
                 'locale' => $data['locale'] ?? 'en',
             ],
-            $data
+            $data,
         );
 
         $this->clearLabelCache($team, $data['module_name'], $data['locale'] ?? 'en');
@@ -139,7 +133,7 @@ final class StudioService
     public function getCustomLabel(Team $team, string $moduleName, string $elementType, string $elementKey, string $locale = 'en'): ?string
     {
         $customizations = $this->getLabelCustomizations($team, $moduleName, $locale);
-        
+
         $customization = $customizations->where('element_type', $elementType)
             ->where('element_key', $elementKey)
             ->first();
@@ -162,7 +156,7 @@ final class StudioService
         $dependenciesByTarget = $dependencies->groupBy('target_field_code');
 
         foreach ($schema as &$component) {
-            if (!isset($component['name'])) {
+            if (! isset($component['name'])) {
                 continue;
             }
 
@@ -170,15 +164,13 @@ final class StudioService
             $fieldDependencies = $dependenciesByTarget->get($fieldCode);
 
             if ($fieldDependencies) {
-                $component['dependencies'] = $fieldDependencies->map(function ($dependency) {
-                    return [
-                        'source_field' => $dependency->source_field_code,
-                        'condition_operator' => $dependency->condition_operator,
-                        'condition_value' => $dependency->condition_value,
-                        'action_type' => $dependency->action_type,
-                        'action_config' => $dependency->action_config,
-                    ];
-                })->toArray();
+                $component['dependencies'] = $fieldDependencies->map(fn ($dependency): array => [
+                    'source_field' => $dependency->source_field_code,
+                    'condition_operator' => $dependency->condition_operator,
+                    'condition_value' => $dependency->condition_value,
+                    'action_type' => $dependency->action_type,
+                    'action_config' => $dependency->action_config,
+                ])->all();
             }
         }
 
@@ -193,13 +185,6 @@ final class StudioService
         // Ensure module name is consistent
         if (isset($data['module_name']) && $data['module_name'] !== $moduleName) {
             return false;
-        }
-
-        // Check for cross-module field references in dependencies
-        if (isset($data['source_field_code']) || isset($data['target_field_code'])) {
-            // In a real implementation, you would validate that field codes
-            // belong to the specified module
-            return true;
         }
 
         return true;
@@ -294,7 +279,7 @@ final class StudioService
      */
     public function importModuleCustomizations(Team $team, array $data): bool
     {
-        return DB::transaction(function () use ($team, $data) {
+        return DB::transaction(function () use ($team, $data): true {
             $moduleName = $data['module_name'];
 
             // Import layouts

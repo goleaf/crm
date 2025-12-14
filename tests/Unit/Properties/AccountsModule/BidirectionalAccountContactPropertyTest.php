@@ -40,7 +40,7 @@ test('property: account-contact association is bidirectional', function (): void
 
     // Contact -> Account relationship
     expect($retrievedContact->company_id)->toBe($account->id);
-    
+
     if (method_exists($retrievedContact, 'company')) {
         expect($retrievedContact->company)->not->toBeNull();
         expect($retrievedContact->company->id)->toBe($account->id);
@@ -77,17 +77,17 @@ test('property: multiple contacts can be associated with one account', function 
 
     // Verify all contacts are associated with the account
     $retrievedAccount = Account::find($account->id);
-    
+
     if (method_exists($retrievedAccount, 'contacts')) {
         expect($retrievedAccount->contacts)->toHaveCount($contactCount);
 
         foreach ($contacts as $contact) {
             expect($retrievedAccount->contacts->pluck('id'))->toContain($contact->id);
-            
+
             // Verify reverse relationship
             $retrievedContact = People::find($contact->id);
             expect($retrievedContact->company_id)->toBe($account->id);
-            
+
             if (method_exists($retrievedContact, 'company')) {
                 expect($retrievedContact->company->id)->toBe($account->id);
             }
@@ -120,7 +120,7 @@ test('property: contact can be moved between accounts', function (): void {
 
     // Verify initial association
     expect($contact->company_id)->toBe($account1->id);
-    
+
     if (method_exists($account1, 'contacts') && method_exists($account2, 'contacts')) {
         expect($account1->fresh()->contacts->pluck('id'))->toContain($contact->id);
         expect($account2->fresh()->contacts->pluck('id'))->not->toContain($contact->id);
@@ -131,7 +131,7 @@ test('property: contact can be moved between accounts', function (): void {
         // Verify the move
         $updatedContact = People::find($contact->id);
         expect($updatedContact->company_id)->toBe($account2->id);
-        
+
         if (method_exists($updatedContact, 'company')) {
             expect($updatedContact->company->id)->toBe($account2->id);
         }
@@ -160,7 +160,7 @@ test('property: account-contact relationships survive soft deletes', function ()
 
     // Verify initial relationship
     expect($contact->company_id)->toBe($account->id);
-    
+
     if (method_exists($account, 'contacts')) {
         expect($account->contacts->pluck('id'))->toContain($contact->id);
     }
@@ -224,7 +224,7 @@ test('property: contact without account has null company relationship', function
 
     // Verify null relationship
     expect($contact->company_id)->toBeNull();
-    
+
     if (method_exists($contact, 'company')) {
         expect($contact->company)->toBeNull();
     }
@@ -233,7 +233,7 @@ test('property: contact without account has null company relationship', function
     $retrievedContact = People::find($contact->id);
     expect($retrievedContact)->not->toBeNull();
     expect($retrievedContact->company_id)->toBeNull();
-    
+
     if (method_exists($retrievedContact, 'company')) {
         expect($retrievedContact->company)->toBeNull();
     }

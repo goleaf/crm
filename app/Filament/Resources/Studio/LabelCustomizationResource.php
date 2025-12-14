@@ -107,8 +107,7 @@ final class LabelCustomizationResource extends Resource
                 Tables\Columns\TextColumn::make('module_name')
                     ->label(__('app.labels.module'))
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => 
-                        LayoutDefinition::getAvailableModules()[$state] ?? $state
+                    ->formatStateUsing(fn (string $state): string => LayoutDefinition::getAvailableModules()[$state] ?? $state,
                     )
                     ->sortable()
                     ->searchable(),
@@ -116,8 +115,7 @@ final class LabelCustomizationResource extends Resource
                 Tables\Columns\TextColumn::make('element_type')
                     ->label(__('app.labels.element_type'))
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => 
-                        LabelCustomization::getElementTypes()[$state] ?? $state
+                    ->formatStateUsing(fn (string $state): string => LabelCustomization::getElementTypes()[$state] ?? $state,
                     )
                     ->sortable(),
 

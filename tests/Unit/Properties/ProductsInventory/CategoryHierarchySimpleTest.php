@@ -13,7 +13,7 @@ test('simple category hierarchy test', function (): void {
     $team = Team::factory()->create();
     $user = User::factory()->create();
     $user->teams()->attach($team);
-    
+
     $this->actingAs($user);
 
     $parent = ProductCategory::create([

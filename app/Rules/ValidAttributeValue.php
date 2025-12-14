@@ -8,10 +8,10 @@ use App\Models\ProductAttribute;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class ValidAttributeValue implements ValidationRule
+final readonly class ValidAttributeValue implements ValidationRule
 {
     public function __construct(
-        private readonly ProductAttribute $attribute
+        private ProductAttribute $attribute,
     ) {}
 
     /**
@@ -19,7 +19,7 @@ class ValidAttributeValue implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!$this->attribute->isValidValue($value)) {
+        if (! $this->attribute->isValidValue($value)) {
             $fail("The {$attribute} field must be a valid {$this->attribute->data_type->getLabel()} value.");
         }
     }

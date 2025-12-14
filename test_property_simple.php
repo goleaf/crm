@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require_once 'vendor/autoload.php';
 
 use App\Enums\ProductAttributeDataType;
@@ -8,7 +10,6 @@ use App\Models\ProductAttribute;
 use App\Models\ProductAttributeValue;
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 // Bootstrap Laravel
 $app = require_once 'bootstrap/app.php';
@@ -30,7 +31,7 @@ for ($i = 1; $i <= $iterations; $i++) {
         $user = User::factory()->create();
         $user->teams()->attach($team);
         $user->switchTeam($team);
-        
+
         $product = Product::factory()->create(['team_id' => $team->id]);
 
         // Create various types of attributes
@@ -102,62 +103,62 @@ for ($i = 1; $i <= $iterations; $i++) {
 
         // Verify all assignments are retrievable
         if ($retrievedProduct->attributeAssignments->count() !== 5) {
-            throw new Exception("Expected 5 assignments, got " . $retrievedProduct->attributeAssignments->count());
+            throw new Exception('Expected 5 assignments, got ' . $retrievedProduct->attributeAssignments->count());
         }
 
         // Verify each attribute value is correctly retrievable
         if ($retrievedProduct->getProductAttributeValue($textAttribute) !== $textValue) {
-            throw new Exception("Text value mismatch");
+            throw new Exception('Text value mismatch');
         }
 
         if ((float) $retrievedProduct->getProductAttributeValue($numberAttribute) !== (float) $numberValue) {
-            throw new Exception("Number value mismatch");
+            throw new Exception('Number value mismatch');
         }
 
         if ($retrievedProduct->getProductAttributeValue($booleanAttribute) !== $booleanValue) {
-            throw new Exception("Boolean value mismatch");
+            throw new Exception('Boolean value mismatch');
         }
 
         if ($retrievedProduct->getProductAttributeValue($selectAttribute) !== $selectValue) {
-            throw new Exception("Select value mismatch");
+            throw new Exception('Select value mismatch');
         }
 
-        if ($retrievedProduct->getProductAttributeValue($multiSelectAttribute) != $multiSelectValue) {
-            throw new Exception("Multi-select value mismatch");
+        if ($retrievedProduct->getProductAttributeValue($multiSelectAttribute) !== $multiSelectValue) {
+            throw new Exception('Multi-select value mismatch');
         }
 
         // Verify hasProductAttribute works for all assigned attributes
-        if (!$retrievedProduct->hasProductAttribute($textAttribute) ||
-            !$retrievedProduct->hasProductAttribute($numberAttribute) ||
-            !$retrievedProduct->hasProductAttribute($booleanAttribute) ||
-            !$retrievedProduct->hasProductAttribute($selectAttribute) ||
-            !$retrievedProduct->hasProductAttribute($multiSelectAttribute)) {
-            throw new Exception("hasProductAttribute check failed");
+        if (! $retrievedProduct->hasProductAttribute($textAttribute) ||
+            ! $retrievedProduct->hasProductAttribute($numberAttribute) ||
+            ! $retrievedProduct->hasProductAttribute($booleanAttribute) ||
+            ! $retrievedProduct->hasProductAttribute($selectAttribute) ||
+            ! $retrievedProduct->hasProductAttribute($multiSelectAttribute)) {
+            throw new Exception('hasProductAttribute check failed');
         }
 
         // Verify getAttributesForDisplay returns all attributes
         $displayAttributes = $retrievedProduct->getAttributesForDisplay();
         if (count($displayAttributes) !== 5) {
-            throw new Exception("Expected 5 display attributes, got " . count($displayAttributes));
+            throw new Exception('Expected 5 display attributes, got ' . count($displayAttributes));
         }
 
         // Verify each display attribute has the expected structure
         foreach ($displayAttributes as $displayAttribute) {
-            if (!isset($displayAttribute['attribute']) || 
-                !isset($displayAttribute['value']) || 
-                !isset($displayAttribute['display_value'])) {
-                throw new Exception("Display attribute missing required keys");
+            if (! isset($displayAttribute['attribute']) ||
+                ! isset($displayAttribute['value']) ||
+                ! isset($displayAttribute['display_value'])) {
+                throw new Exception('Display attribute missing required keys');
             }
-            
-            if (!($displayAttribute['attribute'] instanceof ProductAttribute)) {
+
+            if (! ($displayAttribute['attribute'] instanceof ProductAttribute)) {
                 throw new Exception("Display attribute 'attribute' is not a ProductAttribute instance");
             }
-            
+
             if ($displayAttribute['value'] === null) {
                 throw new Exception("Display attribute 'value' is null");
             }
-            
-            if (!is_string($displayAttribute['display_value'])) {
+
+            if (! is_string($displayAttribute['display_value'])) {
                 throw new Exception("Display attribute 'display_value' is not a string");
             }
         }

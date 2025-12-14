@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Admin;
 
 use App\Models\Model;
@@ -7,7 +9,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class UserActivity extends Model
+final class UserActivity extends Model
 {
     protected $fillable = [
         'user_id',
@@ -23,6 +25,9 @@ class UserActivity extends Model
         'properties' => 'array',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -33,38 +38,42 @@ class UserActivity extends Model
         return $this->morphTo();
     }
 
-    public function scopeForUser($query, User $user)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forUser($query, User $user)
     {
         return $query->where('user_id', $user->id);
     }
 
-    public function scopeForAction($query, string $action)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forAction($query, string $action)
     {
         return $query->where('action', $action);
     }
 
-    public function scopeForModel($query, string $modelType, ?int $modelId = null)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function forModel($query, string $modelType, ?int $modelId = null)
     {
         $query = $query->where('model_type', $modelType);
-        
+
         if ($modelId) {
             $query->where('model_id', $modelId);
         }
-        
+
         return $query;
     }
 
-    public function scopeRecent($query, int $hours = 24)
+    #[\Illuminate\Database\Eloquent\Attributes\Scope]
+    protected function recent($query, int $hours = 24)
     {
         return $query->where('created_at', '>=', now()->subHours($hours));
     }
 
     public static function log(string $action, $model = null, array $properties = []): self
     {
-        return static::create([
+        return self::create([
             'user_id' => auth()->id(),
             'action' => $action,
-            'model_type' => $model ? get_class($model) : null,
+            'model_type' => $model ? $model::class : null,
             'model_id' => $model?->id,
             'properties' => $properties,
             'ip_address' => request()->ip(),
