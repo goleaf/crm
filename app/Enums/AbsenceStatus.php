@@ -44,4 +44,3 @@ enum AbsenceStatus: string implements HasColor, HasLabel
         return $this->getColor();
     }
 }
-

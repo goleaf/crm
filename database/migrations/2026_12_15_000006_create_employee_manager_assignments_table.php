@@ -32,4 +32,3 @@ return new class extends Migration
         Schema::dropIfExists('employee_manager_assignments');
     }
 };
-

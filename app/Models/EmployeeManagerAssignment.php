@@ -58,4 +58,3 @@ final class EmployeeManagerAssignment extends Model
         return $this->belongsTo(Employee::class, 'manager_id');
     }
 }
-

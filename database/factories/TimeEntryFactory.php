@@ -66,4 +66,3 @@ final class TimeEntryFactory extends Factory
         });
     }
 }
-

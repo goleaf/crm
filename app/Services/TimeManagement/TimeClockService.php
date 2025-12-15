@@ -10,8 +10,8 @@ use App\Models\TimeCategory;
 use App\Models\TimeEntry;
 use App\Models\User;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 final readonly class TimeClockService
@@ -92,7 +92,7 @@ final readonly class TimeClockService
         $entry->end_time = Date::now();
         $entry->notes = $notes;
 
-        DB::transaction(function () use ($entry, $actor): void {
+        DB::transaction(function () use ($entry): void {
             $entry->approval_status = TimeEntryApprovalStatus::PENDING;
             $entry->approved_by = null;
             $entry->approved_at = null;
@@ -122,4 +122,3 @@ final readonly class TimeClockService
         return $category instanceof TimeCategory && $category->is_billable_default;
     }
 }
-

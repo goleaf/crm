@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property array<string, mixed>|null $escalation_rules
  * @property array<string, mixed>|null $metadata
  */
-class ProcessDefinition extends Model
+final class ProcessDefinition extends Model
 {
     use HasFactory;
     use HasTeam;

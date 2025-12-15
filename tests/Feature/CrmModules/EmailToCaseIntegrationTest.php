@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
+
 // Uses TestCase and RefreshDatabase globally via Pest.php
 
 beforeEach(function (): void {

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Models\Concerns;
 
 use App\Models\NotableEntry;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**

@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
 use App\Services\Task\TaskRecurrenceService;

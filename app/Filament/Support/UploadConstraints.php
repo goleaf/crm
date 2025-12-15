@@ -11,7 +11,7 @@ use Symfony\Component\Mime\MimeTypes;
 final class UploadConstraints
 {
     /**
-     * @param  array<int, string>  $types  Keys from `laravel-crm.uploads.allowed_extensions` (e.g. documents/images/archives).
+     * @param array<int, string> $types Keys from `laravel-crm.uploads.allowed_extensions` (e.g. documents/images/archives).
      */
     public static function apply(FileUpload $upload, array $types, ?int $maxSizeKb = null): FileUpload
     {
@@ -41,7 +41,8 @@ final class UploadConstraints
     }
 
     /**
-     * @param  array<int, string>  $extensions
+     * @param array<int, string> $extensions
+     *
      * @return array<int, string>
      */
     private static function mimeTypesForExtensions(array $extensions): array
@@ -59,4 +60,3 @@ final class UploadConstraints
         return $mimeTypes;
     }
 }
-

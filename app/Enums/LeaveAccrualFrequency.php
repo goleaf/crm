@@ -26,4 +26,3 @@ enum LeaveAccrualFrequency: string implements HasLabel
         return $this->getLabel();
     }
 }
-

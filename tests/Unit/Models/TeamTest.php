@@ -390,7 +390,7 @@ describe('Team Model Data Integrity', function (): void {
 
         // Check if task still exists (behavior depends on database constraints)
         $freshTask = Task::withTrashed()->find($taskId);
-        
+
         // The task may be deleted due to foreign key constraints or remain
         // This test verifies the deletion doesn't cause errors
         expect(true)->toBeTrue(); // Test passes if no exceptions are thrown

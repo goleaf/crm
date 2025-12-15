@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Spatie\PestPluginRouteTest;
 
-use Tests\Support\RouteTesting\RouteTestingBuilder;
-
 use function test;
+
+use Tests\Support\RouteTesting\RouteTestingBuilder;
 
 function routeTesting(): RouteTestingBuilder
 {
@@ -18,4 +18,3 @@ function routeTesting(): RouteTestingBuilder
 
     return new RouteTestingBuilder($testCase);
 }
-

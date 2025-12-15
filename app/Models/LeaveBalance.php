@@ -101,4 +101,3 @@ final class LeaveBalance extends Model
         return (float) $this->available_days >= $days;
     }
 }
-

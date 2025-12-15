@@ -60,7 +60,7 @@ final class EnforceIpLists
     }
 
     /**
-     * @param  array<int, string>  $ranges
+     * @param array<int, string> $ranges
      */
     private function matches(string $ip, array $ranges): bool
     {
@@ -77,4 +77,3 @@ final class EnforceIpLists
         }
     }
 }
-

@@ -18,7 +18,7 @@ final class EnforceIpListsTest extends TestCase
             'laravel-crm.security.ip_denylist' => [],
         ]);
 
-        $middleware = new EnforceIpLists();
+        $middleware = new EnforceIpLists;
         $request = Request::create('/', 'GET', server: ['REMOTE_ADDR' => '203.0.113.10']);
 
         $response = $middleware->handle($request, fn () => response('ok'));
@@ -33,7 +33,7 @@ final class EnforceIpListsTest extends TestCase
             'laravel-crm.security.ip_denylist' => ['203.0.113.10'],
         ]);
 
-        $middleware = new EnforceIpLists();
+        $middleware = new EnforceIpLists;
         $request = Request::create('/', 'GET', server: ['REMOTE_ADDR' => '203.0.113.10']);
 
         try {
@@ -51,7 +51,7 @@ final class EnforceIpListsTest extends TestCase
             'laravel-crm.security.ip_denylist' => [],
         ]);
 
-        $middleware = new EnforceIpLists();
+        $middleware = new EnforceIpLists;
         $request = Request::create('/', 'GET', server: ['REMOTE_ADDR' => '203.0.113.10']);
 
         try {
@@ -69,7 +69,7 @@ final class EnforceIpListsTest extends TestCase
             'laravel-crm.security.ip_denylist' => [],
         ]);
 
-        $middleware = new EnforceIpLists();
+        $middleware = new EnforceIpLists;
         $request = Request::create('/', 'GET', server: ['REMOTE_ADDR' => '10.12.34.56']);
 
         $response = $middleware->handle($request, fn () => response('ok'));
@@ -84,7 +84,7 @@ final class EnforceIpListsTest extends TestCase
             'laravel-crm.security.ip_denylist' => ['10.12.34.56'],
         ]);
 
-        $middleware = new EnforceIpLists();
+        $middleware = new EnforceIpLists;
         $request = Request::create('/', 'GET', server: ['REMOTE_ADDR' => '10.12.34.56']);
 
         try {
@@ -95,4 +95,3 @@ final class EnforceIpListsTest extends TestCase
         }
     }
 }
-

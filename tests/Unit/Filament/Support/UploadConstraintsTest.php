@@ -55,4 +55,3 @@ final class UploadConstraintsTest extends TestCase
         $this->assertNull($upload->getAcceptedFileTypes());
     }
 }
-

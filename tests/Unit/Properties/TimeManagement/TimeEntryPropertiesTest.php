@@ -200,4 +200,3 @@ test('property: approved entries are locked when configured', function (): void 
         actor: null,
     ))->toThrow(ValidationException::class);
 })->group('property');
-

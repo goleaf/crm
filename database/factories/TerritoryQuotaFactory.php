@@ -33,4 +33,3 @@ final class TerritoryQuotaFactory extends Factory
         ];
     }
 }
-

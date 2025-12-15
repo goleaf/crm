@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Support\RouteTesting;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Routing\Route as LaravelRoute;
 use Illuminate\Routing\Exceptions\UrlGenerationException;
+use Illuminate\Routing\Route as LaravelRoute;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -31,11 +31,10 @@ final class RouteTestingBuilder
 
     public function __construct(
         private readonly TestCase $testCase,
-    ) {
-    }
+    ) {}
 
     /**
-     * @param  array<int, string>  $routeNamesOrPatterns
+     * @param array<int, string> $routeNamesOrPatterns
      */
     public function only(array $routeNamesOrPatterns): self
     {
@@ -45,7 +44,7 @@ final class RouteTestingBuilder
     }
 
     /**
-     * @param  array<int, string>  $routeNamesOrPatterns
+     * @param array<int, string> $routeNamesOrPatterns
      */
     public function except(array $routeNamesOrPatterns): self
     {
@@ -118,7 +117,7 @@ final class RouteTestingBuilder
     }
 
     /**
-     * @param  callable(TestResponse, string): void  $assertion
+     * @param callable(TestResponse, string): void $assertion
      */
     public function assertAllRoutesReturn(callable $assertion): void
     {
@@ -174,7 +173,7 @@ final class RouteTestingBuilder
     }
 
     /**
-     * @param  array<int, string>  $patterns
+     * @param array<int, string> $patterns
      */
     private function matchesAny(string $routeName, array $patterns): bool
     {
@@ -264,7 +263,7 @@ final class RouteTestingBuilder
     }
 
     /**
-     * @param  array<string, string>  $headers
+     * @param array<string, string> $headers
      */
     private function makeApiRequest(string $method, string $url, array $headers): TestResponse
     {
@@ -277,7 +276,7 @@ final class RouteTestingBuilder
     }
 
     /**
-     * @param  array<string, string>  $headers
+     * @param array<string, string> $headers
      */
     private function makeWebRequest(string $method, string $url, array $headers): TestResponse
     {
@@ -291,4 +290,3 @@ final class RouteTestingBuilder
         };
     }
 }
-

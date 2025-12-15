@@ -71,13 +71,13 @@ trait HasNotes
         $noteModels = collect($notes)->filter(fn (mixed $note): bool => $note instanceof Note);
 
         $noteIds = collect($notes)
-            ->map(fn (mixed $note): int|null => $note instanceof Note ? $note->getKey() : (is_int($note) ? $note : null))
+            ->map(fn (mixed $note): ?int => $note instanceof Note ? $note->getKey() : (is_int($note) ? $note : null))
             ->filter()
             ->unique()
             ->values();
 
         $knownIds = $noteModels
-            ->map(fn (Note $note): int|null => $note->getKey())
+            ->map(fn (Note $note): ?int => $note->getKey())
             ->filter()
             ->unique();
 
@@ -90,7 +90,7 @@ trait HasNotes
         /** @var \Illuminate\Support\Collection<int, Note> $allNotes */
         $allNotes = $noteModels
             ->merge($missingNotes)
-            ->unique(fn (Note $note): int|null => $note->getKey())
+            ->unique(fn (Note $note): ?int => $note->getKey())
             ->values();
 
         $pivotData = $allNotes->mapWithKeys(function (Note $note): array {

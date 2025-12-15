@@ -34,11 +34,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 final class TimeCategory extends Model
 {
     use HasCreator;
-    use HasTeam;
-    use SoftDeletes;
-
     /** @use HasFactory<TimeCategoryFactory> */
     use HasFactory;
+    use HasTeam;
+
+    use SoftDeletes;
 
     protected $fillable = [
         'team_id',

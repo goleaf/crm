@@ -89,4 +89,3 @@ final class LeaveType extends Model
         return $this->hasMany(LeaveBalance::class);
     }
 }
-

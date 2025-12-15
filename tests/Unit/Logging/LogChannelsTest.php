@@ -33,4 +33,3 @@ final class LogChannelsTest extends TestCase
         }
     }
 }
-

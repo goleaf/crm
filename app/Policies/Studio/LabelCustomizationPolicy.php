@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Policies\Studio;
 
-use Illuminate\Foundation\Auth\User as AuthUser;
 use App\Models\Studio\LabelCustomization;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Foundation\Auth\User as AuthUser;
 
-class LabelCustomizationPolicy
+final class LabelCustomizationPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:LabelCustomization');
@@ -66,5 +66,4 @@ class LabelCustomizationPolicy
     {
         return $authUser->can('Reorder:LabelCustomization');
     }
-
 }

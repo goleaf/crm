@@ -41,4 +41,3 @@ final class TeamResolver implements PermissionsTeamResolver
         return Auth::user();
     }
 }
-

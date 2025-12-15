@@ -8,6 +8,7 @@ use App\Enums\AbsenceStatus;
 use App\Enums\CreationSource;
 use App\Models\Concerns\HasCreator;
 use App\Models\Concerns\HasTeam;
+use Carbon\CarbonPeriod;
 use Database\Factories\AbsenceFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,7 +16,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Date;
-use Carbon\CarbonPeriod;
 
 final class Absence extends Model
 {
@@ -70,7 +70,7 @@ final class Absence extends Model
 
     protected static function booted(): void
     {
-        static::saving(static function (self $absence): void {
+        self::saving(static function (self $absence): void {
             $absence->syncDuration();
         });
     }

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Policies\Studio;
 
-use Illuminate\Foundation\Auth\User as AuthUser;
 use App\Models\Studio\FieldDependency;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Foundation\Auth\User as AuthUser;
 
-class FieldDependencyPolicy
+final class FieldDependencyPolicy
 {
     use HandlesAuthorization;
-    
+
     public function viewAny(AuthUser $authUser): bool
     {
         return $authUser->can('ViewAny:FieldDependency');
@@ -66,5 +66,4 @@ class FieldDependencyPolicy
     {
         return $authUser->can('Reorder:FieldDependency');
     }
-
 }

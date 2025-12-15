@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Filament\Resources\TaskResource;
 use App\Models\Task;
-use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Eloquent\MassAssignmentException;
 use Illuminate\Database\Eloquent\MissingAttributeException;

@@ -126,11 +126,11 @@ it('searches across all specified fields', function (): void {
                 'manufacturer' => $p->manufacturer,
                 'part_number' => $p->part_number,
             ]);
-            
+
             // Also check categories
             $categories = $productWithCategory->taxonomyCategories;
-            
-            throw new \Exception("Search for '{$searchTerm}' returned no results. Products: " . json_encode($productData) . ", Categories: " . json_encode($categories->pluck('name')));
+
+            throw new \Exception("Search for '{$searchTerm}' returned no results. Products: " . json_encode($productData) . ', Categories: ' . json_encode($categories->pluck('name')));
         }
 
         // Verify that the search finds the expected products
@@ -139,9 +139,9 @@ it('searches across all specified fields', function (): void {
             $foundIds = $results->pluck('id')->toArray();
             $expectedIdType = gettype($expectedId);
             $foundIdTypes = array_map('gettype', $foundIds);
-            
+
             expect($foundIds)->toContain($expectedId,
-                "Search for '{$searchTerm}' should find product ID {$expectedId} (type: {$expectedIdType}). Found IDs: " . implode(', ', $foundIds) . " (types: " . implode(', ', $foundIdTypes) . ")",
+                "Search for '{$searchTerm}' should find product ID {$expectedId} (type: {$expectedIdType}). Found IDs: " . implode(', ', $foundIds) . ' (types: ' . implode(', ', $foundIdTypes) . ')',
             );
         }
 
@@ -291,7 +291,7 @@ it('handles empty or whitespace-only search terms appropriately', function (): v
             ->get();
 
         expect($results)->toBeEmpty(
-            "Search with whitespace term should return no results",
+            'Search with whitespace term should return no results',
         );
     }
 });

@@ -13,8 +13,8 @@ use App\Models\User;
 use App\Services\ActivityService;
 use App\Services\NotificationService;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 final readonly class TimesheetService
@@ -313,4 +313,3 @@ final readonly class TimesheetService
             ]);
     }
 }
-

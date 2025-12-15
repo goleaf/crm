@@ -43,7 +43,7 @@ final class PerformanceSafeguardsPropertyTest extends TestCase
 
     public function test_middleware_clamps_per_page_parameter_to_configured_bounds(): void
     {
-        $middleware = new EnforcePaginationLimits();
+        $middleware = new EnforcePaginationLimits;
         $parameter = config('performance.pagination.parameter');
         $max = (int) config('performance.pagination.max_per_page');
 

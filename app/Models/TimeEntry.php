@@ -16,18 +16,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 
 #[ObservedBy(TimeEntryObserver::class)]
 final class TimeEntry extends Model
 {
     use HasCreator;
-    use HasTeam;
-    use SoftDeletes;
-
     /** @use HasFactory<TimeEntryFactory> */
     use HasFactory;
+    use HasTeam;
+
+    use SoftDeletes;
 
     protected $fillable = [
         'team_id',
@@ -87,7 +87,7 @@ final class TimeEntry extends Model
 
     protected static function booted(): void
     {
-        static::saving(static function (self $entry): void {
+        self::saving(static function (self $entry): void {
             $entry->syncDuration();
             $entry->syncBillingAmount();
             $entry->validateInvariants();

@@ -180,4 +180,3 @@ final class PermissionService
         return $map[$teamRole] ?? $teamRole;
     }
 }
-

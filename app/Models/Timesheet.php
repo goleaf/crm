@@ -36,10 +36,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 final class Timesheet extends Model
 {
-    use HasTeam;
-
     /** @use HasFactory<TimesheetFactory> */
     use HasFactory;
+
+    use HasTeam;
 
     protected $fillable = [
         'team_id',

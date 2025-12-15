@@ -6,6 +6,7 @@ use App\Models\Opportunity;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+
 // Uses TestCase and RefreshDatabase globally via Pest.php
 
 beforeEach(function (): void {

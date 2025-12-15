@@ -57,4 +57,3 @@ final class TimesheetFactory extends Factory
         });
     }
 }
-

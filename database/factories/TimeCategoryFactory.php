@@ -35,4 +35,3 @@ final class TimeCategoryFactory extends Factory
         ];
     }
 }
-

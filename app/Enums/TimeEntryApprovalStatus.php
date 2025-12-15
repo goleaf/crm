@@ -41,4 +41,3 @@ enum TimeEntryApprovalStatus: string implements HasColor, HasLabel
         return $this->getColor();
     }
 }
-
