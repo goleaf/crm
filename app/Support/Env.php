@@ -133,7 +133,7 @@ final class Env
 
     public function cacheStore(): string
     {
-        return (string) env('CACHE_STORE', 'redis');
+        return (string) env('CACHE_STORE', 'memcached');
     }
 
     public function cachePrefix(): string
@@ -143,7 +143,7 @@ final class Env
 
     public function sessionDriver(): string
     {
-        return (string) env('SESSION_DRIVER', 'database');
+        return (string) env('SESSION_DRIVER', 'memcached');
     }
 
     public function sessionLifetime(): int

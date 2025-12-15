@@ -45,20 +45,26 @@ it('detects debug logging enabled', function (): void {
 });
 
 it('detects empty database password', function (): void {
+    $originalDefaultConnection = config('database.default');
+
     config([
         'database.default' => 'mysql',
         'database.connections.mysql.password' => '',
     ]);
 
-    $audit = new EnvironmentSecurityAudit;
-    $passed = $audit->audit();
-    $findings = $audit->getFindings();
+    try {
+        $audit = new EnvironmentSecurityAudit;
+        $passed = $audit->audit();
+        $findings = $audit->getFindings();
 
-    expect($passed)->toBeFalse();
+        expect($passed)->toBeFalse();
 
-    $dbIssue = collect($findings)->firstWhere('title', 'Empty database password');
-    expect($dbIssue)->not->toBeNull()
-        ->and($dbIssue['severity'])->toBe('critical');
+        $dbIssue = collect($findings)->firstWhere('title', 'Empty database password');
+        expect($dbIssue)->not->toBeNull()
+            ->and($dbIssue['severity'])->toBe('critical');
+    } finally {
+        config(['database.default' => $originalDefaultConnection]);
+    }
 });
 
 it('passes when configuration is secure', function (): void {

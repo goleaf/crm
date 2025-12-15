@@ -7,6 +7,7 @@ namespace Database\Factories;
 use App\Enums\CreationSource;
 use App\Models\Opportunity;
 use App\Models\Team;
+use App\Services\Tenancy\CurrentTeamResolver;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 
@@ -19,9 +20,11 @@ final class OpportunityFactory extends Factory
 
     public function definition(): array
     {
+        $teamId = CurrentTeamResolver::resolveId();
+
         return [
             'name' => $this->faker->sentence(),
-            'team_id' => Team::factory(),
+            'team_id' => $teamId ?? Team::factory(),
             'creation_source' => CreationSource::WEB->value,
         ];
     }

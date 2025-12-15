@@ -8,6 +8,7 @@ use App\Enums\NoteCategory;
 use App\Enums\NoteVisibility;
 use App\Models\Team;
 use App\Models\User;
+use App\Services\Tenancy\CurrentTeamResolver;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 
@@ -23,11 +24,13 @@ final class NoteFactory extends Factory
      */
     public function definition(): array
     {
+        $teamId = CurrentTeamResolver::resolveId();
+        $user = auth('web')->user() ?? auth()->user();
+
         return [
             'title' => $this->faker->sentence(),
-            // Use null defaults - caller should provide these to avoid cascading factory creation
-            'team_id' => null,
-            'creator_id' => null,
+            'team_id' => $teamId ?? Team::factory(),
+            'creator_id' => $user?->getAuthIdentifier(),
             'category' => NoteCategory::GENERAL->value,
             'visibility' => NoteVisibility::INTERNAL,
             'is_template' => false,

@@ -24,6 +24,10 @@ $app = Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Ensure HTTPS scheme is detected correctly behind reverse proxies (e.g. Nginx/Cloudflare),
+        // so generated asset / route URLs don't downgrade to HTTP (mixed-content).
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'crm.auth' => \App\Http\Middleware\EnsureCrmAuthenticated::class,
             'crm.permission' => \App\Http\Middleware\EnsurePermission::class,

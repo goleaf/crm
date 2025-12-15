@@ -34,7 +34,15 @@ trait HasNotes
      */
     public function addNote(Note $note): void
     {
-        $this->notes()->attach($note);
+        $createdAt = $note->created_at ?? now();
+        $updatedAt = $note->updated_at ?? $createdAt;
+
+        $this->notes()->syncWithoutDetaching([
+            $note->getKey() => [
+                'created_at' => $createdAt,
+                'updated_at' => $updatedAt,
+            ],
+        ]);
     }
 
     /**
@@ -60,7 +68,43 @@ trait HasNotes
      */
     public function syncNotes(array $notes): void
     {
-        $noteIds = collect($notes)->map(fn ($note) => $note instanceof Note ? $note->id : $note)->all();
-        $this->notes()->sync($noteIds);
+        $noteModels = collect($notes)->filter(fn (mixed $note): bool => $note instanceof Note);
+
+        $noteIds = collect($notes)
+            ->map(fn (mixed $note): int|null => $note instanceof Note ? $note->getKey() : (is_int($note) ? $note : null))
+            ->filter()
+            ->unique()
+            ->values();
+
+        $knownIds = $noteModels
+            ->map(fn (Note $note): int|null => $note->getKey())
+            ->filter()
+            ->unique();
+
+        $missingIds = $noteIds->diff($knownIds)->values();
+
+        $missingNotes = $missingIds->isEmpty()
+            ? collect()
+            : Note::withoutGlobalScopes()->whereIn('id', $missingIds)->get();
+
+        /** @var \Illuminate\Support\Collection<int, Note> $allNotes */
+        $allNotes = $noteModels
+            ->merge($missingNotes)
+            ->unique(fn (Note $note): int|null => $note->getKey())
+            ->values();
+
+        $pivotData = $allNotes->mapWithKeys(function (Note $note): array {
+            $createdAt = $note->created_at ?? now();
+            $updatedAt = $note->updated_at ?? $createdAt;
+
+            return [
+                $note->getKey() => [
+                    'created_at' => $createdAt,
+                    'updated_at' => $updatedAt,
+                ],
+            ];
+        })->all();
+
+        $this->notes()->sync($pivotData);
     }
 }

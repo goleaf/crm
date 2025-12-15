@@ -1,0 +1,215 @@
+# Repository Guidelines
+
+## Project Structure & Module Organization
+- `app/` contains controllers, models, console commands, and service providers.
+- `app-modules/` stores custom packages (SystemAdmin, Documentation, OnboardSeed) with their own `src`, configs, and migrations via Composer's PSR-4 autoload.
+- `resources/` (JS, CSS, Blade snippets) handle frontend assets built by Vite/Tailwind; `routes/`, `config/`, and `lang/` follow Laravel layout.
+- `database/` carries migrations, seeders, and a committed SQLite file for quick local work; `tests/` uses Pest with `Feature`, `Unit`, and `ArchTest.php` suites.
+
+## Build, Test, and Development Commands
+- `composer install` installs PHP packages, copies `.env.example`, generates the app key, and touches `database/database.sqlite`.
+- `composer dev` starts artisan serve, the queue listener, Pail log tailer, and `npm run dev` via `npx concurrently`.
+- `npm run dev` runs the Vite dev server; `npm run build` compiles production assets.
+- `composer lint` runs Rector v2 (with Laravel 12 sets and composer-based detection) followed by `pint --parallel` to keep refactoring and formatting aligned before commits.
+- `composer test:refactor` runs Rector in dry-run mode to verify no pending refactors without writing files (used in CI).
+- `composer test` executes linting, Rector dry-run checks, type coverage, `phpstan analyse`, and the default Pest parallel suite; `composer test:ci` mirrors the CI pipeline with the dedicated phpunit config.
+- `composer test:pest:profile` profiles test execution to identify slow-running tests for optimization (see `docs/test-profiling.md`).
+- `composer test:translations` runs the translation checker to ensure all keys are present in all supported locales.
+
+## Coding Style & Naming Conventions
+- Follow PSR-12 for PHP classes (`App\`, and custom module namespaces) and keep Blade components in kebab-case, while Livewire classes stay PascalCase.
+- Use `pint` (and the `pint.json` config) to format PHP/Blade files; Rector v2 keeps typed props, modern Laravel APIs, and code quality consistent during refactors.
+- Rector v2 uses composer-based detection to automatically apply Laravel 12-specific rules, converts arrays to collections, adds type declarations, removes dead code, and enforces early returns.
+- Always run `composer lint` before commits to apply Rector refactoring + Pint formatting; review changes in git diff before committing.
+- Frontend JS leverages Vite + Tailwind; keep entrypoints (`resources/js/app.js`) lean and prefer semantic class names documented in `resources/css`.
+- Tailwind theming runs on the 3.4+ utility set (dvh viewport units, `size-*`, `text-balance`/`text-pretty`, `has-*`, forced-colors); use these in Filament v4.3+ themes instead of hand-rolled width/height or viewport hacks.
+
+## Testing Guidelines
+- Pest drives the test suite; place specs under `tests/Feature` or `tests/Unit`, suffix files with `*Test.php`, and share helpers in `tests/Pest.php`.
+- Use `defstudio/pest-plugin-laravel-expectations` for HTTP/model/storage checks (e.g., `toBeOk()`, `toBeRedirect()`, `toExist()`); keep assertions Pest-style alongside Livewire helpers.
+- Use `spatie/pest-plugin-route-testing` to ensure all routes remain accessible; test routes by type (public, authenticated, API) in `tests/Feature/Routes/` with centralized config in `RouteTestingConfig`—see `.kiro/steering/pest-route-testing.md` and `docs/pest-route-testing-complete-guide.md`.
+- Route tests run automatically via `.kiro/hooks/route-testing-automation.kiro.hook` when route files change; use `composer test:routes` to run manually.
+- When adding new routes, update `RouteTestingConfig` with appropriate category (public, authenticated, API, parametric) and create corresponding tests.
+- Stress testing is available via `pestphp/pest-plugin-stressless`; keep runs opt-in (`RUN_STRESS_TESTS=1` + `STRESSLESS_TARGET`) and small (`STRESSLESS_CONCURRENCY`, `STRESSLESS_DURATION`, `STRESSLESS_P95_THRESHOLD_MS`).
+- Coverage gates are enforced by `composer test:type-coverage` (`pest --type-coverage --min=99.9`) and `composer test:coverage` (`pest --coverage --min=80`).
+- `composer test:types` (`phpstan analyse`) and `composer test:pest:ci` (`phpunit.ci.xml`) validate static analysis and CI-specific shards when needed.
+- Code coverage uses PCOV extension (10-30x faster than Xdebug) for performance; install via `pecl install pcov` and enable in php.ini—see `docs/pcov-code-coverage-integration.md` and `.kiro/steering/pcov-code-coverage.md`.
+- Coverage reports are generated in HTML (`coverage-html/`), XML (`coverage.xml`), and text formats; view via Filament at System → Code Coverage or open `coverage-html/index.html`.
+- Use `CodeCoverageService` (singleton) for programmatic coverage access; Filament widget displays real-time stats with trend indicators.
+
+## Commit & Pull Request Guidelines
+- Commit messages follow the conventional `<type>: <summary>` pattern (`feat:`, `fix:`, `chore:`) with a short imperative subject.
+- PR descriptions should summarize behavior changes, link relevant issues/RFCs, and list verification steps (e.g., `composer lint`, `composer test:coverage`).
+- Generated files (`bootstrap/cache`, `storage`, `vendor`) should remain unchanged unless required for a deployment artifact.
+
+## Environment & Configuration Tips
+- Composer scripts already copy `.env.example` and touch the SQLite file, but double-check `.env` values before running `composer dev`.
+- Clear cached config when providers or module bindings change via `php artisan optimize:clear`.
+- HTTP clients are centralized via `config/http-clients.php` (`Http::external`, `Http::github`) with retry/backoff, timeouts, and a brand-aware user agent; override defaults with `HTTP_CLIENT_*`/`GITHUB_HTTP_*` env vars and reuse the macros in Filament actions/pages instead of ad-hoc `Http::` calls.
+- PCNTL must be enabled locally for the bundled Pail log tailer; prefer `php artisan pail --timeout=0` (used in `composer dev`) and the Filament "Log streaming" page for curated commands/filters—see `docs/laravel-pail.md`.
+- Security headers/CSP/security.txt live in `config/security.php` (stacked with `config/headers.php`); adjust env toggles there instead of adding per-controller headers. Use the Filament Security Audit page to run `composer audit` and review checklist items.
+- Logging integrations (GitHub Issues, Sentry) must be configured via `config/logging.php` channels. Use dedicated Services (e.g., `GitHubIssuesService`) for UI data retrieval, wrapping external calls in `try/catch` blocks to prevent dashboard failures. See `.kiro/steering/logging-integration.md`.
+- Services follow the container pattern with constructor injection and readonly properties; register in `AppServiceProvider::register()` using `bind()` or `singleton()`, and avoid service locator pattern in business logic—see `docs/laravel-container-services.md` and `docs/laravel-container-implementation-guide.md` for comprehensive patterns and examples.
+
+## Filament Shield Integration
+- Filament Shield provides role-based access control (RBAC) using Spatie Laravel Permission.
+- Generate permissions with `php artisan shield:generate --all` after creating new resources.
+- Roles are team-scoped in multi-tenant applications; assign with `$user->assignRole('role', $team)`.
+- Super admin role (`super_admin`) bypasses all permission checks when enabled.
+- Shield resource is located in Settings cluster at `/app/shield/roles`.
+- Permissions follow pattern: `{action}::{Resource}` (e.g., `view_any::Company`, `create::Task`).
+- See `docs/filament-shield-integration.md` and `.kiro/steering/filament-shield.md` for complete patterns.
+
+## Helper Functions
+
+- Comprehensive helper classes in `app/Support/Helpers/` provide utilities for common operations:
+  - `ArrayHelper` - Array manipulation, joining, grouping, filtering (wraps Laravel Arr)
+  - `StringHelper` - String formatting, truncation, case conversion, highlighting
+  - `DateHelper` - Date formatting, relative time, business days, ranges
+  - `NumberHelper` - Currency, percentages, file sizes, abbreviations, ordinals
+  - `ColorHelper` - Color manipulation, brightness checks, conversions
+  - `UrlHelper` - URL validation, query parameters, UTM tracking, shortening
+  - `FileHelper` - File type detection, MIME types, icon classes, storage operations
+- Always use helpers instead of manual implementations for consistency and type safety
+- All helpers handle null values gracefully and include proper type hints
+- See `docs/helper-functions-guide.md` for comprehensive usage examples and patterns
+- When adding new helper methods, include PHPDoc, usage examples, and tests
+
+## Documentation Structure
+
+### Primary Documentation (`docs/`)
+The `docs/` folder contains comprehensive guides for all major integrations and patterns. **Always consult these first** before implementing features:
+
+**Core Patterns**:
+- `docs/laravel-validation-enhancements.md` - Modern validation patterns, Form Requests, custom rules
+- `docs/controller-refactoring-guide.md` - Action classes, Single Action Controllers, service integration
+- `docs/laravel-container-services.md` - Service container patterns, dependency injection
+- `docs/test-profiling.md` - Test performance optimization, profiling strategies
+
+**Integrations**:
+- `docs/laravel-sharelink-integration.md` - Secure shareable links with expiration/passwords
+- `docs/localazy-github-actions-integration.md` - Automated translation management
+- `docs/laravel-precognition.md` - Real-time form validation
+- `docs/filament-shield-integration.md` - Role-based access control (RBAC)
+- `docs/warden-security-audit.md` - Security auditing and vulnerability scanning
+- `docs/blasp-profanity-filter-integration.md` - Multi-language profanity filtering
+- `docs/world-data-enhanced-features.md` - Country/state/city data with utilities
+- `docs/laravel-union-paginator.md` - Multi-model pagination patterns
+- `docs/pcov-code-coverage-integration.md` - Fast code coverage with PCOV
+- `docs/pest-route-testing-complete-guide.md` - Comprehensive route testing
+
+**Testing & Quality**:
+- `docs/testing-infrastructure.md` - Testing setup and patterns
+- `docs/testing-ecosystem-overview.md` - Complete testing stack overview
+- `docs/helper-functions-guide.md` - Utility helper classes and usage
+
+**Filament**:
+- `docs/filament-minimal-tabs.md` - Minimal tabs component usage
+- `docs/minimal-tabs-quick-reference.md` - Quick reference for tabs
+
+### Steering Rules (`.kiro/steering/`)
+Steering files provide concise rules and conventions. They reference `docs/` for detailed implementation:
+
+- `.kiro/steering/laravel-conventions.md` - Laravel coding standards
+- `.kiro/steering/filament-conventions.md` - Filament v4.3+ patterns
+- `.kiro/steering/testing-standards.md` - Testing requirements
+- `.kiro/steering/translations.md` - Translation conventions
+- `.kiro/steering/controller-refactoring.md` - Controller patterns (→ `docs/controller-refactoring-guide.md`)
+- `.kiro/steering/test-profiling.md` - Test profiling rules (→ `docs/test-profiling.md`)
+- `.kiro/steering/laravel-sharelink.md` - ShareLink conventions (→ `docs/laravel-sharelink-integration.md`)
+- `.kiro/steering/localazy-integration.md` - Translation management (→ `docs/localazy-github-actions-integration.md`)
+
+### Workflow for New Features
+1. **Check `docs/` first** - Find the comprehensive guide for the pattern/integration
+2. **Review `.kiro/steering/`** - Understand the conventions and rules
+3. **Implement** - Follow the documented patterns
+4. **Test** - Use testing patterns from `docs/testing-infrastructure.md`
+5. **Update docs** - If behavior changes, update both `docs/` and `.kiro/steering/`
+
+## Repository expectations
+
+- **Always consult `docs/` before implementing** - Comprehensive guides prevent common errors and ensure consistency
+- Document public utilities in `docs/` when you change behavior. Also read and use `.kiro/system`, `.kiro/hooks/`, `.kiro/steering/` inside existing files
+- When adjusting model inheritance or shared base models, update the relevant `.kiro/steering` rule (e.g., `laravel-conventions.md`) in the same change so future edits avoid repeating the issue.
+- When fixing enum method/translation issues (label/color), also update the relevant `.kiro/steering` guideline (e.g., `filament-conventions.md`) in the same change to prevent regressions.
+- When changing brand-visible text, prefer the config-driven `brand_name()` helper and update `.kiro/steering` guidance accordingly rather than hardcoding names.
+- When formatting array/JSON data, prefer `App\Support\Helpers\ArrayHelper` (`docs/array-helpers.md`) over manual `implode()` so Filament v4.3+ schemas, exports, and notifications handle strings/arrays consistently.
+- When wrapping long text in Filament tables or infolists, use `App\Support\Helpers\StringHelper::wordWrap()` (e.g., `break: '<br>'`, `cutLongWords: true`) instead of manual `wordwrap()` or inline CSS.
+- App models extend the shared `App\Models\Model` base with Laravel Date Scopes—avoid importing `Illuminate\Database\Eloquent\Model` in domain models and reuse the DateScopes trait/`App\Filament\Support\Filters\DateScopeFilter` for timestamp filtering instead of custom Carbon ranges.
+- Use Laravel Precognition for real-time form validation; always use Form Requests for validation logic, debounce text input validation (300-500ms), validate on blur for better UX, and test both precognitive and actual submissions—see `docs/laravel-precognition.md` and `.kiro/steering/laravel-precognition.md`.
+- Security headers are enforced globally via `treblle/security-headers` and `App\Http\Middleware\ApplySecurityHeaders`; tune via `SECURITY_HEADERS_*` env vars and `config/headers.php` (`headers.except` for narrow opt-outs) instead of removing the middleware.
+- Warden security audits (`dgtlss/warden`) run automated `composer audit` checks with scheduled execution (daily at 3 AM by default); configure notifications via `WARDEN_EMAIL_RECIPIENTS`/`WARDEN_SLACK_WEBHOOK_URL`, enable audit history with `WARDEN_HISTORY_ENABLED=true`, and access via Filament Security Audit page—see `docs/warden-security-audit.md` and `.kiro/steering/warden-security.md`.
+- Services should use constructor injection with readonly properties; register in `AppServiceProvider` and avoid service locator pattern (`app()`, `resolve()`) in business logic—see `docs/laravel-container-services.md` and `.kiro/steering/laravel-container-services.md` for patterns.
+- Profanity filtering uses `ProfanityFilterService` (singleton) with multi-language support (English, Spanish, German, French, All); validate user content with `NoProfanity` rule, use `CleanProfanityAction` in Filament resources, and cache frequently checked content—see `docs/blasp-profanity-filter-integration.md` and `.kiro/steering/blasp-profanity-filter.md`.
+- OCR services follow the container pattern with SpaceOCR and Tesseract driver support, AI cleanup via Prism PHP, template-based extraction, and queue processing—see `docs/ocr-complete-implementation.md` and `.kiro/steering/ocr-integration.md` for usage patterns and best practices.
+- World data (countries, states, cities, currencies, languages, timezones) is accessed via `WorldDataService` singleton with caching; use dependent selects in Filament forms for country → state → city hierarchies (storing `_id` foreign keys, not strings)—see `docs/world-data-integration.md` and `.kiro/steering/world-data-package.md`.
+- Union pagination (`austinw/laravel-union-paginator`) combines data from multiple models into paginated results; use `ActivityFeedService` for activity feeds, `UnifiedSearchService` for cross-model search, and ensure consistent column counts/types across union queries—see `docs/laravel-union-paginator.md` and `.kiro/steering/laravel-union-paginator.md` for patterns and performance optimization.
+- **Filename Generation**: Use `Blaspsoft\Onym\Facades\Onym` for generating sanitized, structured filenames (UUIDs, slugs, timestamps) for all user uploads; configure default strategies in `config/onym.php` and integrate with Filament's `FileUpload` via `getUploadedFileNameForStorageUsing`—see `docs/laravel-onym-integration.md`.
+- **Validation**: Use modern Laravel validation patterns with Form Requests, invokable validation rules, `Rule::enum()` for enums, conditional validation with `Rule::when()`, and Precognition for real-time validation—see `docs/laravel-validation-enhancements.md` for comprehensive patterns.
+- **Controller Refactoring**: Extract business logic to Action classes, use Single Action Controllers for complex operations, delegate validation to Form Requests, and keep controllers thin (HTTP concerns only)—see `docs/controller-refactoring-guide.md` and `.kiro/steering/controller-refactoring.md`.
+- **Test Profiling**: Use `composer test:pest:profile` to identify slow tests; target < 100ms for unit tests, < 500ms for feature tests; mock external services, use database transactions, and create minimal test data—see `docs/test-profiling.md` and `.kiro/steering/test-profiling.md`.
+- **ShareLink**: Use `ShareLinkService` (singleton) for creating secure, temporary shareable links with expiration, password protection, click limits, and burn-after-reading; access via Filament resource at System → Share Links—see `docs/laravel-sharelink-integration.md` and `.kiro/steering/laravel-sharelink.md`.
+- **Localazy**: Translation management integrated with GitHub Actions for automated upload/download; use Translation Checker for database-backed storage, export before uploading, import after downloading—see `docs/localazy-github-actions-integration.md` and `.kiro/steering/localazy-integration.md`.
+- **ShareLink Integration**: Use `ShareLinkService` (singleton) to create secure, temporary shareable links for any Eloquent model with expiration, password protection, click limits, and burn-after-reading support; access via Filament at System → Share Links for full management UI—see `docs/laravel-sharelink-integration.md` and `.kiro/steering/laravel-sharelink.md` for usage patterns and security features.
+
+## Translation Management Integration
+- Translation management uses Laravel Translation Checker (`outhebox/laravel-translations`) with database-backed storage.
+- **Modules Supported**: The system scans `app-modules/*/src/resources/lang` in addition to `lang/`.
+- Run `php artisan translations:import` after adding new keys to PHP files in `lang/en/` or module lang files.
+- Use the Translation UI at `/translations` for editing translations across all languages.
+- Run `php artisan translations:export` before deploying to sync database changes back to `lang/` PHP files (module translations are shadowed).
+- Use `TranslationCheckerService` (singleton) for programmatic access to translation data.
+- Translation Management page available in Filament at Settings → Translations.
+- Translation Status Widget displays completion percentages on dashboard.
+- Automatic import enabled via serial hook on `lang/en/**/*.php` changes.
+- Supports module translations by scanning `app-modules/*/src/resources/lang`.
+- See `docs/laravel-translation-checker-integration.md`,- See `docs/laravel-translation-checker-integration.md` and `.kiro/steering/translation-checker.md` for complete workflow patterns.
+
+## File Manager Integration
+- Uses `livewire-filemanager/filemanager` integrated as a custom Filament page.
+- Accessible via `/file-manager` or the "File Manager" sidebar item.
+- Styles are handled via Tailwind v4 source integration in `resources/css/filament/admin/theme.css`.
+- See `docs/livewire-filemanager-integration.md` for usage details.
+
+
+## Config Checker Integration
+- Config health monitoring uses `chrisdicarlo/laravel-config-checker` wrapped in `ConfigCheckerService`.
+- Run `php artisan config:check` to verify references in CLI or use `composer test:config`.
+- Use `System > Config Checker` in Filament to view status and run checks.
+- Results are cached for 5 minutes; use the UI refresh button or `ConfigCheckerService::clearCache()` to reset.
+- See `docs/laravel-config-checker-integration.md` and `.kiro/steering/config-checker.md`.
+
+## Playwright Integration
+- Use `hyvor/laravel-playwright` for E2E testing.
+- Tests are located in `tests/Playwright/`.
+- Use the `php()` helper to interact with the backend (factories, DB) rather than GUI steps for setup.
+- Run tests via `npm run test:e2e`.
+- Ensure `APP_ENV` is `local` or `testing` for Playwright routes to be exposed.
+- See `docs/playwright-integration.md` for full documentation.
+- When implementing features from `.kiro/specs`, verify E2E flows using Playwright when UI interaction is critical.
+
+## World Data Service Enhancements
+- The existing `nnjeim/world` integration has been enhanced with 10 additional CRM-focused utility methods.
+- **Regional Filtering**: `getCountriesByRegion()`, `getCountriesBySubregion()`, `getRegions()`, `getEUCountries()` for geographic grouping.
+- **Enhanced Lookups**: `getCountriesByPhoneCode()` for dialing code searches, `getCountryWithDetails()` for eager-loaded relationships.
+- **Address Utilities**: `formatAddress()` for display-ready strings, `getCountryFlag()` for emoji flags (🇺🇸🇬🇧🇫🇷).
+- **Validation**: `validatePostalCode()` validates formats for 50+ countries (US, GB, CA, AU, DE, FR, IT, ES, and more).
+- **Distance**: `getDistanceBetweenCities()` calculates kilometers using Haversine formula.
+- Use `WorldDataService` (singleton) for all world data access; inject via constructor with readonly properties.
+- See `docs/world-data-enhanced-features.md` and `.kiro/steering/world-data-package.md` for complete usage patterns.
+- Example: Country columns in Filament tables can display flag emojis using `$worldData->getCountryFlag($country->iso2)`.
+
+---
+
+## 📚 Complete Documentation Index
+
+**Start here for all implementation patterns**: [`docs/README.md`](docs/README.md)
+
+This index provides quick access to all comprehensive guides organized by category:
+- **Core Patterns**: Validation, Controllers, Services, Testing
+- **Security**: Shield, Warden, Profanity Filter
+- **Data**: World Data, Metadata, Union Pagination
+- **UI**: Filament, Minimal Tabs, Blade Hot Refresh
+- **Integrations**: ShareLink, Localazy, OCR, Playwright
+
+**Always consult `docs/` before implementing to minimize errors and ensure consistency.**

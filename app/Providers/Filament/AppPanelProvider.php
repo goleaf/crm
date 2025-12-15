@@ -137,12 +137,10 @@ final class AppPanelProvider extends PanelProvider
      */
     public function panel(Panel $panel): Panel
     {
-        $host = parse_url((string) config('app.url'), PHP_URL_HOST) ?: 'localhost';
-
         $panel
             ->default()
             ->id('app')
-            ->domain("app.{$host}")
+            ->path('app')
             ->homeUrl(function (): string {
                 // Get current tenant for tenant-aware home URL
                 $tenant = Filament::getTenant();
@@ -206,7 +204,7 @@ final class AppPanelProvider extends PanelProvider
                 ApiTokens::class,
             ])
             ->routes(function (): void {
-                if (app()->environment(['local', 'testing'])) {
+                if (app()->environment(['local', 'testing']) && (bool) env('DEV_LOGIN_ENABLED', false)) {
                     \Illuminate\Support\Facades\Route::get('/dev-login-form', \App\Filament\Pages\Auth\DeveloperLogin::class)
                         ->name('filament.app.dev-login-form');
                 }

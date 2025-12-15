@@ -15,8 +15,8 @@ return [
         ],
     ],
     'csp' => [
-        'enabled' => env('SECURITY_CSP_ENABLED', true),
-        'report_only' => env('SECURITY_CSP_REPORT_ONLY', true),
+        'enabled' => env('SECURITY_CSP_ENABLED', false),
+        'report_only' => env('SECURITY_CSP_REPORT_ONLY', false),
         'directives' => [
             'default-src' => ["'self'"],
             'script-src' => ["'self'", 'https:'],

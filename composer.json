@@ -13,7 +13,7 @@
     ],
     "license": "AGPL-3.0",
     "require": {
-        "php": "^8.4",
+        "php": "^8.5",
         "aliziodev/laravel-taxonomy": "^2.8",
         "ashallendesign/favicon-fetcher": "^3.8",
         "austinw/laravel-union-paginator": "^2.2",

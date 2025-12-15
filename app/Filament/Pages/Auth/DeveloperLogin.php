@@ -7,11 +7,12 @@ namespace App\Filament\Pages\Auth;
 use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Pages\SimplePage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 /**
  * Developer Login Page
@@ -41,12 +42,16 @@ final class DeveloperLogin extends SimplePage
 
     private static bool $shouldRegisterNavigation = false;
 
-    public ?string $selectedUser = null;
+    public ?string $email = null;
+
+    public ?string $name = null;
+
+    public ?string $password = null;
 
     public function mount(): void
     {
         // Only allow in local and testing environments
-        if (! app()->environment(['local', 'testing'])) {
+        if (! app()->environment(['local', 'testing']) || ! (bool) env('DEV_LOGIN_ENABLED', false)) {
             abort(404);
         }
     }
@@ -70,35 +75,49 @@ final class DeveloperLogin extends SimplePage
     {
         return $form
             ->schema([
-                Select::make('selectedUser')
-                    ->label(__('app.labels.user'))
-                    ->options(fn (): array => User::query()
-                        ->orderBy('name')
-                        ->limit(50)
-                        ->pluck('name', 'id')
-                        ->toArray())
-                    ->searchable()
+                TextInput::make('email')
+                    ->label(__('app.labels.email'))
+                    ->email()
                     ->required()
-                    ->placeholder(__('app.placeholders.select_user')),
+                    ->maxLength(255),
+                TextInput::make('name')
+                    ->label(__('app.labels.name'))
+                    ->maxLength(255),
+                TextInput::make('password')
+                    ->label(__('filament-panels::auth/pages/login.form.password.label'))
+                    ->password()
+                    ->dehydrated(false),
             ]);
     }
 
     public function login(): void
     {
         // Only allow in local and testing environments
-        if (! app()->environment(['local', 'testing'])) {
+        if (! app()->environment(['local', 'testing']) || ! (bool) env('DEV_LOGIN_ENABLED', false)) {
             abort(404);
         }
 
         $data = $this->form->getState();
 
-        $user = User::find($data['selectedUser']);
+        /** @var string|null $email */
+        $email = $data['email'] ?? null;
+        /** @var string|null $name */
+        $name = $data['name'] ?? null;
 
-        if (! $user) {
-            $this->addError('selectedUser', __('app.messages.developer_login_user_not_found', ['email' => 'selected user']));
+        $user = User::query()->firstOrCreate(
+            ['email' => (string) $email],
+            [
+                'name' => is_string($name) && $name !== '' ? $name : Str::of((string) $email)->before('@')->toString(),
+                'email_verified_at' => now(),
+                'password' => Str::random(32),
+            ],
+        );
 
-            return;
+        if ($user->email_verified_at === null) {
+            $user->forceFill(['email_verified_at' => now()])->save();
         }
+
+        $this->ensureUserHasTeam($user);
 
         Auth::login($user);
 
@@ -109,6 +128,28 @@ final class DeveloperLogin extends SimplePage
         ]);
 
         $this->redirect($this->resolveRedirectUrl($user));
+    }
+
+    private function ensureUserHasTeam(User $user): void
+    {
+        if ($user->currentTeam !== null) {
+            return;
+        }
+
+        $firstTeam = $user->allTeams()->first();
+
+        if ($firstTeam !== null) {
+            $user->switchTeam($firstTeam);
+
+            return;
+        }
+
+        $team = $user->ownedTeams()->create([
+            'name' => $user->name . "'s Team",
+            'personal_team' => true,
+        ]);
+
+        $user->switchTeam($team);
     }
 
     /**

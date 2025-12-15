@@ -50,11 +50,13 @@ Route::middleware('guest')->group(function (): void {
 | @see docs/auth/developer-login.md
 |
 */
-if (app()->environment(['local', 'testing'])) {
+if (app()->environment(['local', 'testing']) && (bool) env('DEV_LOGIN_ENABLED', false)) {
     Route::get('/dev-login', \App\Http\Controllers\Auth\DeveloperLoginController::class)
-        ->name('dev.login');
+        ->name('dev.login')
+        ->middleware(['signed', 'throttle:10,1']);
     Route::get('/dev-login-form', \App\Filament\Pages\Auth\DeveloperLogin::class)
-        ->name('dev.login.form');
+        ->name('dev.login.form')
+        ->middleware('throttle:10,1');
 }
 
 Route::get('/.well-known/security.txt', SecurityTxtController::class)->name('security.txt');

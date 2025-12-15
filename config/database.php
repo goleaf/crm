@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 use App\Support\Env;
 
+$mysqlAttrSslCa = defined('Pdo\\Mysql::ATTR_SSL_CA')
+    ? Pdo\Mysql::ATTR_SSL_CA
+    : PDO::MYSQL_ATTR_SSL_CA;
+
 return [
 
     /*
@@ -60,7 +64,7 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => Env::make()->mysqlAttrSslCa(),
+                $mysqlAttrSslCa => Env::make()->mysqlAttrSslCa(),
             ]) : [],
         ],
 
@@ -80,7 +84,7 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => Env::make()->mysqlAttrSslCa(),
+                $mysqlAttrSslCa => Env::make()->mysqlAttrSslCa(),
             ]) : [],
         ],
 

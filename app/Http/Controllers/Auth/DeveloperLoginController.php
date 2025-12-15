@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 /**
  * Developer Login Controller
@@ -36,10 +37,11 @@ use Illuminate\Support\Facades\Log;
  * ## Security
  *
  * - Only available when `APP_ENV` is `local` or `testing`
+ * - Requires `DEV_LOGIN_ENABLED=true` in the environment
  * - Returns 404 in production environments
  * - Requires signed URLs (403 for unsigned/tampered URLs)
  * - Logs all authentication attempts with IP address
- * - Requires valid user email in database
+ * - Creates missing users (local/testing only)
  *
  * ## Breaking Changes (2025-12-08)
  *
@@ -95,24 +97,38 @@ final class DeveloperLoginController extends Controller
     public function __invoke(Request $request): RedirectResponse
     {
         // Only allow in local and testing environments
-        if (! app()->environment(['local', 'testing'])) {
+        if (! app()->environment(['local', 'testing']) || ! (bool) env('DEV_LOGIN_ENABLED', false)) {
             abort(404);
         }
 
         $email = $request->query('email');
         $redirectUrl = $request->query('redirect');
+        $name = $request->query('name');
 
         if (! $email) {
             return to_route('login')
                 ->with('error', __('app.messages.developer_login_email_required'));
         }
 
-        $user = User::where('email', $email)->first();
-
-        if (! $user) {
+        if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return to_route('login')
-                ->with('error', __('app.messages.developer_login_user_not_found', ['email' => $email]));
+                ->with('error', __('app.messages.developer_login_email_required'));
         }
+
+        $user = User::query()->firstOrCreate(
+            ['email' => $email],
+            [
+                'name' => is_string($name) && $name !== '' ? $name : Str::of($email)->before('@')->toString(),
+                'email_verified_at' => now(),
+                'password' => Str::random(32),
+            ],
+        );
+
+        if ($user->email_verified_at === null) {
+            $user->forceFill(['email_verified_at' => now()])->save();
+        }
+
+        $this->ensureUserHasTeam($user);
 
         Auth::login($user);
 
@@ -127,6 +143,28 @@ final class DeveloperLoginController extends Controller
 
         return redirect($finalRedirectUrl)
             ->with('success', __('app.messages.developer_login_success', ['name' => $user->name]));
+    }
+
+    private function ensureUserHasTeam(User $user): void
+    {
+        if ($user->currentTeam !== null) {
+            return;
+        }
+
+        $firstTeam = $user->allTeams()->first();
+
+        if ($firstTeam !== null) {
+            $user->switchTeam($firstTeam);
+
+            return;
+        }
+
+        $team = $user->ownedTeams()->create([
+            'name' => $user->name . "'s Team",
+            'personal_team' => true,
+        ]);
+
+        $user->switchTeam($team);
     }
 
     /**

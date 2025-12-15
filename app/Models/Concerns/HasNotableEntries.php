@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models\Concerns;
 
-use App\Models\Model;
 use App\Models\NotableEntry;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
@@ -23,11 +23,11 @@ trait HasNotableEntries
             ->orderBy(config('notable.order_by_column', 'created_at'), config('notable.order_by_direction', 'desc'));
     }
 
-    public function addNotableNote(string $note, ?Model $creator = null): NotableEntry
+    public function addNotableNote(string $note, ?EloquentModel $creator = null): NotableEntry
     {
         $attributes = ['note' => $note];
 
-        if ($creator instanceof \Illuminate\Database\Eloquent\Model) {
+        if ($creator instanceof EloquentModel) {
             $attributes['creator_type'] = $creator->getMorphClass();
             $attributes['creator_id'] = $creator->getKey();
         }
@@ -68,7 +68,7 @@ trait HasNotableEntries
     /**
      * @return EloquentCollection<int, NotableEntry>
      */
-    public function notableNotesByCreator(Model $creator): EloquentCollection
+    public function notableNotesByCreator(EloquentModel $creator): EloquentCollection
     {
         return $this->notables()
             ->where('creator_type', $creator->getMorphClass())
@@ -115,7 +115,12 @@ trait HasNotableEntries
      */
     public function notableNotesThisWeek(): EloquentCollection
     {
-        return $this->notables()->thisWeek()->get();
+        $end = now();
+        $start = $end->copy()->subDays(7);
+
+        return $this->notables()
+            ->whereBetween('created_at', [$start, $end])
+            ->get();
     }
 
     /**

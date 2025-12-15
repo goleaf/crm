@@ -8,6 +8,7 @@ use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Support\Enums\Size;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Facades\URL;
 
 final class Login extends \Filament\Auth\Pages\Login
 {
@@ -21,7 +22,11 @@ final class Login extends \Filament\Auth\Pages\Login
 
     public function getSubheading(): string|Htmlable|null
     {
-        if (! app()->environment(['local', 'testing'])) {
+        if (
+            ! app()->environment(['local', 'testing'])
+            || ! (bool) env('DEV_LOGIN_ENABLED', false)
+            || ! \Illuminate\Support\Facades\Route::has('dev.login')
+        ) {
             return parent::getSubheading();
         }
 
@@ -37,7 +42,7 @@ final class Login extends \Filament\Auth\Pages\Login
             );
         }
 
-        $devLoginUrl = route('dev.login', [
+        $devLoginUrl = URL::temporarySignedRoute('dev.login', now()->addMinutes(30), [
             'email' => $user->email,
             'redirect' => filament()->getHomeUrl(),
         ]);
