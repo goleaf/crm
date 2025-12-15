@@ -240,4 +240,51 @@ return [
         'database_only' => 'Database Only',
         'files_only' => 'Files Only',
     ],
+
+    'milestone_type' => [
+        'phase_completion' => 'Phase completion',
+        'deliverable' => 'Deliverable',
+        'review' => 'Review',
+        'approval' => 'Approval',
+        'external_dependency' => 'External dependency',
+    ],
+
+    'milestone_status' => [
+        'not_started' => 'Not started',
+        'in_progress' => 'In progress',
+        'ready_for_review' => 'Ready for review',
+        'under_review' => 'Under review',
+        'completed' => 'Completed',
+        'overdue' => 'Overdue',
+        'blocked' => 'Blocked',
+        'cancelled' => 'Cancelled',
+    ],
+
+    'milestone_priority' => [
+        'low' => 'Low',
+        'medium' => 'Medium',
+        'high' => 'High',
+        'critical' => 'Critical',
+    ],
+
+    'dependency_type' => [
+        'finish_to_start' => 'Finish to start',
+        'start_to_start' => 'Start to start',
+        'finish_to_finish' => 'Finish to finish',
+        'start_to_finish' => 'Start to finish',
+    ],
+
+    'deliverable_status' => [
+        'pending' => 'Pending',
+        'in_progress' => 'In progress',
+        'completed' => 'Completed',
+        'rejected' => 'Rejected',
+    ],
+
+    'milestone_approval_status' => [
+        'pending' => 'Pending',
+        'approved' => 'Approved',
+        'rejected' => 'Rejected',
+        'info_requested' => 'Info requested',
+    ],
 ];
