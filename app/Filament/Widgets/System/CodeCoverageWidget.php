@@ -12,14 +12,15 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 final class CodeCoverageWidget extends BaseWidget
 {
+    private CodeCoverageService $coverageService;
+
     protected ?string $pollingInterval = null;
 
     protected static ?int $sort = 10;
 
-    public function __construct(
-        private readonly CodeCoverageService $coverageService,
-    ) {
-        parent::__construct();
+    public function boot(CodeCoverageService $coverageService): void
+    {
+        $this->coverageService = $coverageService;
     }
 
     public static function canView(): bool

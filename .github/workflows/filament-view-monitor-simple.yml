@@ -6,6 +6,10 @@ on:
     - cron: '0 9 * * *'
   workflow_dispatch: # Allow manual trigger
 
+permissions:
+  contents: write
+  issues: write
+
 jobs:
   check-filament-updates:
     runs-on: ubuntu-latest
@@ -17,7 +21,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: '8.5'
           coverage: none
 
       - name: Install dependencies

@@ -23,7 +23,7 @@ final class ImportEngineTest extends TestCase
         $user = User::factory()->create();
         $team = Team::factory()->create();
         $user->teams()->attach($team);
-        $user->update(['current_team_id' => $team->id]);
+        $user->switchTeam($team);
 
         $this->actingAs($user);
 

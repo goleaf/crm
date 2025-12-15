@@ -169,7 +169,7 @@ final class CalendarEvent extends Model
             return null;
         }
 
-        return (int) $this->end_at->diffInMinutes($this->start_at);
+        return (int) $this->start_at->diffInMinutes($this->end_at);
     }
 
     /**

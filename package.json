@@ -9,11 +9,7 @@
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.10",
         "@tailwindcss/typography": "^0.5.19",
-<<<<<<< HEAD
-        "@vitejs/plugin-vue": "^6.0.0",
-=======
         "@vitejs/plugin-vue": "^6.0.2",
->>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
         "autoprefixer": "^10.4.22",
         "chokidar": "^5.0.0",
         "cropperjs": "1.6.2",
@@ -26,11 +22,7 @@
     },
     "dependencies": {
         "@tailwindcss/vite": "^4.1.17",
-<<<<<<< HEAD
-        "@vueuse/core": "^11.3.0",
-=======
         "@vueuse/core": "^14.1.0",
->>>>>>> d03887dc78a6e1a0c2ed674137398a067503335e
         "laravel-precognition-vue": "^0.5.11",
         "shiki": "^3.19.0"
     }

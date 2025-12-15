@@ -12,6 +12,7 @@ use App\Filament\Resources\KnowledgeArticleResource\RelationManagers\ApprovalsRe
 use App\Http\Responses\LoginResponse;
 use App\Models\Account;
 use App\Models\Activity;
+use App\Models\CalendarEvent;
 use App\Models\Company;
 use App\Models\Customer;
 use App\Models\Delivery;

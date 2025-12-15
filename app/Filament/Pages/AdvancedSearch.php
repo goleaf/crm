@@ -24,6 +24,10 @@ final class AdvancedSearch extends Page implements HasForms
 {
     use InteractsWithForms;
 
+    private AdvancedSearchService $advancedSearch;
+
+    private SavedSearchService $savedSearch;
+
     public static function getNavigationIcon(): string
     {
         return 'heroicon-o-magnifying-glass';
@@ -44,11 +48,10 @@ final class AdvancedSearch extends Page implements HasForms
 
     public array $suggestions = [];
 
-    public function __construct(
-        private readonly AdvancedSearchService $advancedSearch,
-        private readonly SavedSearchService $savedSearch,
-    ) {
-        parent::__construct();
+    public function boot(AdvancedSearchService $advancedSearch, SavedSearchService $savedSearch): void
+    {
+        $this->advancedSearch = $advancedSearch;
+        $this->savedSearch = $savedSearch;
     }
 
     public static function getNavigationLabel(): string

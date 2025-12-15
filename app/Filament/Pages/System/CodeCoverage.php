@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\File;
 
 final class CodeCoverage extends Page
 {
+    private CodeCoverageService $coverageService;
+
     protected string $view = 'filament.pages.system.code-coverage';
 
     protected static ?int $navigationSort = 50;
@@ -30,10 +32,9 @@ final class CodeCoverage extends Page
 
     public bool $pcovEnabled = false;
 
-    public function __construct(
-        private readonly CodeCoverageService $coverageService,
-    ) {
-        parent::__construct();
+    public function boot(CodeCoverageService $coverageService): void
+    {
+        $this->coverageService = $coverageService;
     }
 
     public static function getNavigationGroup(): ?string

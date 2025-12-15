@@ -67,7 +67,7 @@ final class CalendarEventGenerator
         $recurrenceRules = ['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'];
         $baseStartAt = isset($overrides['start_at'])
             ? \Illuminate\Support\Facades\Date::parse($overrides['start_at'])
-            : fake()->dateTimeBetween('-1 month', '+1 month');
+            : \Illuminate\Support\Facades\Date::parse(fake()->dateTimeBetween('-1 month', '+1 month'));
 
         $endDate = fake()->dateTimeBetween(
             $baseStartAt->copy()->addMonth(),
@@ -218,13 +218,24 @@ final class CalendarEventGenerator
      */
     public static function generateWithRelated(Team $team, object $relatedRecord, ?User $creator = null, array $overrides = []): CalendarEvent
     {
-        if (! property_exists($relatedRecord, 'id') || ! $relatedRecord->id) {
+        $relatedId = null;
+        $relatedType = null;
+
+        if ($relatedRecord instanceof \Illuminate\Database\Eloquent\Model) {
+            $relatedId = $relatedRecord->getKey();
+            $relatedType = $relatedRecord->getMorphClass();
+        } elseif (property_exists($relatedRecord, 'id')) {
+            $relatedId = $relatedRecord->id;
+            $relatedType = $relatedRecord::class;
+        }
+
+        if (! filled($relatedId) || ! filled($relatedType)) {
             throw new InvalidArgumentException('Related record must have a valid ID');
         }
 
         return self::generate($team, $creator, array_merge([
-            'related_id' => $relatedRecord->id,
-            'related_type' => $relatedRecord::class,
+            'related_id' => $relatedId,
+            'related_type' => $relatedType,
         ], $overrides));
     }
 

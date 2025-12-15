@@ -22,37 +22,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.4
-          extensions: json, dom, curl, libxml, mbstring, zip
-          tools: composer:v2
-
-      - name: Cache Dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.composer/cache/files
-          key: dependencies-php-composer-${{ hashFiles('composer.lock') }}
-
-      - name: Install PHP dependencies
-        run: composer install --no-interaction --no-progress --ansi --prefer-dist --optimize-autoloader
-
-      - name: Prepare Laravel Application
-        run: |
-          cp .env.ci .env
-          php artisan key:generate
-
-      - name: Export translations from database
-        run: php artisan translations:export --language=en
-
       - name: Upload translations to Localazy
+        if: ${{ secrets.LOCALAZY_READ_KEY != '' && secrets.LOCALAZY_WRITE_KEY != '' }}
         uses: localazy/upload@v1
         with:
           read_key: ${{ secrets.LOCALAZY_READ_KEY }}
           write_key: ${{ secrets.LOCALAZY_WRITE_KEY }}
 
       - name: Create summary
+        if: ${{ secrets.LOCALAZY_READ_KEY != '' && secrets.LOCALAZY_WRITE_KEY != '' }}
         run: |
           echo "## 📤 Translations Uploaded" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -62,3 +40,10 @@ jobs:
           find lang/en -name "*.php" -type f >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           find app-modules/*/src/resources/lang/en -name "*.php" -type f 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "No module translations found" >> $GITHUB_STEP_SUMMARY
+
+      - name: Skip Localazy upload (missing secrets)
+        if: ${{ secrets.LOCALAZY_READ_KEY == '' || secrets.LOCALAZY_WRITE_KEY == '' }}
+        run: |
+          echo "## ⚠️ Localazy secrets missing" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Set LOCALAZY_READ_KEY and LOCALAZY_WRITE_KEY to enable translation uploads." >> $GITHUB_STEP_SUMMARY

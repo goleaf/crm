@@ -12,6 +12,9 @@ on:
   repository_dispatch:
     types: [localazy-updated]
 
+permissions:
+  contents: write
+
 jobs:
   download-translations:
     runs-on: ubuntu-latest
@@ -23,40 +26,25 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.4
-          extensions: json, dom, curl, libxml, mbstring, zip
-          tools: composer:v2
-
-      - name: Cache Dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.composer/cache/files
-          key: dependencies-php-composer-${{ hashFiles('composer.lock') }}
-
-      - name: Install PHP dependencies
-        run: composer install --no-interaction --no-progress --ansi --prefer-dist --optimize-autoloader
-
-      - name: Prepare Laravel Application
-        run: |
-          cp .env.ci .env
-          php artisan key:generate
-
       - name: Download translations from Localazy
+        if: ${{ secrets.LOCALAZY_READ_KEY != '' && secrets.LOCALAZY_WRITE_KEY != '' }}
         uses: localazy/download@v1
         with:
           read_key: ${{ secrets.LOCALAZY_READ_KEY }}
           write_key: ${{ secrets.LOCALAZY_WRITE_KEY }}
 
-      - name: Import translations to database
-        run: php artisan translations:import
+      - name: Skip Localazy download (missing secrets)
+        if: ${{ secrets.LOCALAZY_READ_KEY == '' || secrets.LOCALAZY_WRITE_KEY == '' }}
+        run: |
+          echo "## ⚠️ Localazy secrets missing" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Set LOCALAZY_READ_KEY and LOCALAZY_WRITE_KEY to enable translation downloads." >> $GITHUB_STEP_SUMMARY
 
       - name: Check for changes
         id: check_changes
+        if: ${{ secrets.LOCALAZY_READ_KEY != '' && secrets.LOCALAZY_WRITE_KEY != '' }}
         run: |
-          if [[ -n $(git status --porcelain) ]]; then
+          if [[ -n $(git status --porcelain -- lang/) ]]; then
             echo "changes=true" >> $GITHUB_OUTPUT
           else
             echo "changes=false" >> $GITHUB_OUTPUT
@@ -76,7 +64,7 @@ jobs:
         run: |
           echo "## 🌍 Translations Updated" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Translations have been downloaded from Localazy and imported to the database." >> $GITHUB_STEP_SUMMARY
+          echo "Translations have been downloaded from Localazy and committed to the repository." >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Changed Files" >> $GITHUB_STEP_SUMMARY
           git diff --name-only HEAD~1 HEAD | grep "^lang/" >> $GITHUB_STEP_SUMMARY || echo "No language files changed" >> $GITHUB_STEP_SUMMARY

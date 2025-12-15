@@ -6,6 +6,7 @@ use App\Filament\Pages\Calendar;
 use App\Models\CalendarEvent;
 use App\Models\Team;
 use App\Models\User;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -197,6 +198,7 @@ it('can update event dates', function (): void {
     $team = Team::factory()->create();
     $user->teams()->attach($team);
     $user->forceFill(['current_team_id' => $team->id])->save();
+    Filament::setTenant($team, true);
 
     $event = CalendarEvent::factory()->create([
         'team_id' => $team->id,

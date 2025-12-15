@@ -18,6 +18,8 @@ final class Activity extends Model
      */
     protected $fillable = [
         'team_id',
+        'subject_type',
+        'subject_id',
         'event',
         'changes',
         'causer_id',

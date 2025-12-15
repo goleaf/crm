@@ -12,15 +12,16 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 /**
  * Example widget demonstrating service injection in Filament widgets.
  *
- * Services are injected via constructor for widget data.
+ * Services are injected via Livewire's lifecycle hooks for widget data.
  * Use singleton services with caching for performance.
  */
 final class ExampleServiceWidget extends BaseWidget
 {
-    public function __construct(
-        private readonly OpportunityMetricsService $metricsService,
-    ) {
-        parent::__construct();
+    private OpportunityMetricsService $metricsService;
+
+    public function boot(OpportunityMetricsService $metricsService): void
+    {
+        $this->metricsService = $metricsService;
     }
 
     protected function getStats(): array
