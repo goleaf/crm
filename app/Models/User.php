@@ -269,4 +269,32 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Has
     {
         return $this->hasMany(\App\Models\Admin\PasswordHistory::class);
     }
+
+    /**
+     * Determine if the user can impersonate other users.
+     *
+     * @return bool
+     */
+    public function canImpersonate(): bool
+    {
+        // Allow users with 'super_admin' role or permission to impersonate
+        return $this->hasRole('super_admin') || $this->hasPermissionTo('impersonate users');
+    }
+
+    /**
+     * Determine if the user can be impersonated.
+     *
+     * @return bool
+     */
+    public function canBeImpersonated(): bool
+    {
+        // Prevent impersonating super admins for security
+        if ($this->hasRole('super_admin')) {
+            return false;
+        }
+
+        // Allow impersonation by default, but you can add more conditions here
+        // For example: return $this->status === 'active';
+        return true;
+    }
 }

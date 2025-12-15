@@ -64,11 +64,13 @@ use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Laravel\Pennant\Feature;
 use Livewire\Livewire;
+use Mcamara\LaravelLocalization\Traits\LoadsTranslatedCachedRoutes;
 use Mateffy\Introspect\LaravelIntrospect;
 use Relaticle\SystemAdmin\Models\SystemAdministrator;
 
 final class AppServiceProvider extends ServiceProvider
 {
+    use LoadsTranslatedCachedRoutes;
     /**
      * Register any application services.
      */

@@ -38,6 +38,8 @@ $app = Application::configure(basePath: dirname(__DIR__))
             'localizationRedirect' => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRedirectFilter::class,
             'localeSessionRedirect' => \Mcamara\LaravelLocalization\Middleware\LocaleSessionRedirect::class,
             'localeViewPath' => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationViewPath::class,
+            'cacheResponse' => \Spatie\ResponseCache\Middlewares\CacheResponse::class,
+            'doNotCacheResponse' => \Spatie\ResponseCache\Middlewares\DoNotCacheResponse::class,
         ]);
 
         $middleware->append([

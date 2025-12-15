@@ -52,6 +52,7 @@
 - **[World Data Enhanced Features](world-data-enhanced-features.md)** - Country/state/city data with utilities
 - **[World Data Integration](world-data-integration.md)** - World data service patterns
 - **[Laravel Translation Checker Integration](laravel-translation-checker-integration.md)** - Database-backed translations
+- **[Laravel Translatable Integration](laravel-translatable-integration.md)** - JSON-based model translations (Spatie)
 
 ### 👥 Models & Entities
 
