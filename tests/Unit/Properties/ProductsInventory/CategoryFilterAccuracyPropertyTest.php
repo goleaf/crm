@@ -69,7 +69,7 @@ it('filters products by selected categories accurately', function (): void {
 
     // Test filtering by single category
     $electronicsResults = Product::query()
-        ->where('team_id')
+        ->where('team_id', $team->id)
         ->whereHas('taxonomyCategories', function ($query) use ($electronicsCategory): void {
             $query->where('taxonomies.id', $electronicsCategory->id);
         })
@@ -82,7 +82,7 @@ it('filters products by selected categories accurately', function (): void {
 
     // Test filtering by multiple categories
     $multiCategoryResults = Product::query()
-        ->where('team_id')
+        ->where('team_id', $team->id)
         ->whereHas('taxonomyCategories', function ($query) use ($electronicsCategory, $clothingCategory): void {
             $query->whereIn('taxonomies.id', [$electronicsCategory->id, $clothingCategory->id]);
         })
@@ -155,7 +155,7 @@ it('includes products from subcategories when filtering by parent category', fun
 
     // Test filtering by parent category should include subcategory products
     $parentCategoryResults = Product::query()
-        ->where('team_id')
+        ->where('team_id', $team->id)
         ->whereHas('taxonomyCategories', function ($query) use ($electronicsCategory): void {
             $query->where('taxonomies.id', $electronicsCategory->id)
                 ->orWhere('taxonomies.parent_id', $electronicsCategory->id);
@@ -219,7 +219,7 @@ it('handles products with multiple categories correctly', function (): void {
 
     // Test that multi-category product appears in all relevant filters
     $electronicsResults = Product::query()
-        ->where('team_id')
+        ->where('team_id', $team->id)
         ->whereHas('taxonomyCategories', function ($query) use ($electronicsCategory): void {
             $query->where('taxonomies.id', $electronicsCategory->id);
         })
@@ -229,7 +229,7 @@ it('handles products with multiple categories correctly', function (): void {
     expect($electronicsResults->pluck('id'))->not->toContain($singleCategoryProduct->id);
 
     $accessoriesResults = Product::query()
-        ->where('team_id')
+        ->where('team_id', $team->id)
         ->whereHas('taxonomyCategories', function ($query) use ($accessoriesCategory): void {
             $query->where('taxonomies.id', $accessoriesCategory->id);
         })
@@ -239,7 +239,7 @@ it('handles products with multiple categories correctly', function (): void {
     expect($accessoriesResults->pluck('id'))->not->toContain($singleCategoryProduct->id);
 
     $giftResults = Product::query()
-        ->where('team_id')
+        ->where('team_id', $team->id)
         ->whereHas('taxonomyCategories', function ($query) use ($giftCategory): void {
             $query->where('taxonomies.id', $giftCategory->id);
         })
@@ -288,7 +288,7 @@ it('respects team boundaries when filtering by categories', function (): void {
 
     // Test that team 1 filter only returns team 1 products
     $team1Results = Product::query()
-        ->where('team_id')
+        ->where('team_id', $team1->id)
         ->whereHas('taxonomyCategories', function ($query) use ($team1Category): void {
             $query->where('taxonomies.id', $team1Category->id);
         })
@@ -299,7 +299,7 @@ it('respects team boundaries when filtering by categories', function (): void {
 
     // Test that team 2 filter only returns team 2 products
     $team2Results = Product::query()
-        ->where('team_id')
+        ->where('team_id', $team2->id)
         ->whereHas('taxonomyCategories', function ($query) use ($team2Category): void {
             $query->where('taxonomies.id', $team2Category->id);
         })
@@ -342,7 +342,7 @@ it('returns all products when no category filter is applied', function (): void 
 
     // Test that no filter returns all products
     $allResults = Product::query()
-        ->where('team_id')
+        ->where('team_id', $team->id)
         ->get();
 
     expect($allResults->pluck('id'))->toContain($categorizedProduct1->id);

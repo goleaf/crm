@@ -139,7 +139,7 @@ test('property: category sort order works independently at each hierarchy level'
     }
 
     // Verify root categories are ordered correctly
-    $orderedRoots = ProductCategory::where('team_id')
+    $orderedRoots = ProductCategory::where('team_id', $team->id)
         ->whereNull('parent_id')
         ->ordered()
         ->get();
@@ -330,7 +330,7 @@ test('property: category sort order auto-assignment maintains sequence', functio
     }
 
     // Test auto-assignment for root categories (no parent)
-    $existingRootCount = ProductCategory::where('team_id')
+    $existingRootCount = ProductCategory::where('team_id', $team->id)
         ->whereNull('parent_id')
         ->count();
 
@@ -377,7 +377,7 @@ test('property: category sort order respects team boundaries', function (): void
     }
 
     // Verify team 1 categories are ordered correctly within team 1
-    $team1OrderedCategories = ProductCategory::where('team_id')
+    $team1OrderedCategories = ProductCategory::where('team_id', $team1->id)
         ->whereNull('parent_id')
         ->ordered()
         ->get();
@@ -392,7 +392,7 @@ test('property: category sort order respects team boundaries', function (): void
     }
 
     // Verify team 2 categories are ordered correctly within team 2
-    $team2OrderedCategories = ProductCategory::where('team_id')
+    $team2OrderedCategories = ProductCategory::where('team_id', $team2->id)
         ->whereNull('parent_id')
         ->ordered()
         ->get();

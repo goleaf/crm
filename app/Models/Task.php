@@ -282,6 +282,18 @@ final class Task extends Model implements HasCustomFields
     }
 
     /**
+     * Dedicated milestone records this task contributes to (not milestone tasks).
+     *
+     * @return BelongsToMany<Milestone, $this>
+     */
+    public function milestoneRecords(): BelongsToMany
+    {
+        return $this->belongsToMany(Milestone::class, 'milestone_task')
+            ->withPivot(['weight'])
+            ->withTimestamps();
+    }
+
+    /**
      * Determine whether this task is blocked by open dependencies.
      */
     public function isBlocked(): bool

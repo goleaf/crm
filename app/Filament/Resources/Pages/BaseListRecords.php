@@ -9,6 +9,7 @@ use App\Filament\Widgets\ResourceTrendChart;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Enums\IconSize;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -142,7 +143,7 @@ abstract class BaseListRecords extends ListRecords
 
     protected function getTableEmptyStateIcon(): ?string
     {
-        return Heroicon::OutlinedDocumentPlus;
+        return Heroicon::OutlinedDocumentPlus->getIconForSize(IconSize::Large);
     }
 
     /**

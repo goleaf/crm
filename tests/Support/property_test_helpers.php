@@ -161,7 +161,23 @@ if (! function_exists('runPropertyTest')) {
     function runPropertyTest(callable $test, int $iterations = 100): void
     {
         for ($i = 0; $i < $iterations; $i++) {
-            $test($i);
+            $startingLevel = \Illuminate\Support\Facades\DB::transactionLevel();
+
+            \Illuminate\Support\Facades\DB::beginTransaction();
+
+            try {
+                $test($i);
+            } finally {
+                while (\Illuminate\Support\Facades\DB::transactionLevel() > $startingLevel) {
+                    \Illuminate\Support\Facades\DB::rollBack();
+                }
+
+                \Illuminate\Support\Facades\Date::setTestNow();
+
+                if (class_exists(\Spatie\Permission\PermissionRegistrar::class)) {
+                    app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+                }
+            }
         }
     }
 }

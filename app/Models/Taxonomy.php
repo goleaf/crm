@@ -8,6 +8,7 @@ use Aliziodev\LaravelTaxonomy\Models\Taxonomy as BaseTaxonomy;
 use App\Models\Concerns\HasTeam;
 use App\Services\Tenancy\CurrentTeamResolver;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class Taxonomy extends BaseTaxonomy
@@ -66,5 +67,19 @@ final class Taxonomy extends BaseTaxonomy
             ->when($teamId !== null, fn (Builder $builder): Builder => $builder->where('team_id', $teamId))
             ->when($excludeId, fn (Builder $builder): Builder => $builder->whereKeyNot($excludeId))
             ->exists();
+    }
+
+    /**
+     * Strategic goals are stored as Taxonomy records with type "goal".
+     *
+     * @return MorphToMany<Milestone, $this>
+     */
+    public function milestones(): MorphToMany
+    {
+        return $this->morphedByMany(
+            Milestone::class,
+            'taxonomable',
+            config('taxonomy.table_names.taxonomables', 'taxonomables'),
+        );
     }
 }

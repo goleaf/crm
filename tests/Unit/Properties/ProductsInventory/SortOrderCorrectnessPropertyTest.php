@@ -35,7 +35,7 @@ it('sorts products correctly by name in ascending order', function (): void {
 
     // Sort by name ascending
     $results = Product::query()
-        ->where('team_id')
+        ->where('team_id', $team->id)
         ->orderBy('name', 'asc')
         ->get();
 
@@ -66,7 +66,7 @@ it('sorts products correctly by name in descending order', function (): void {
 
     // Sort by name descending
     $results = Product::query()
-        ->where('team_id')
+        ->where('team_id', $team->id)
         ->orderBy('name', 'desc')
         ->get();
 
@@ -100,7 +100,7 @@ it('sorts products correctly by SKU in ascending order', function (): void {
 
     // Sort by SKU ascending
     $results = Product::query()
-        ->where('team_id')
+        ->where('team_id', $team->id)
         ->orderBy('sku', 'asc')
         ->get();
 
@@ -134,7 +134,7 @@ it('sorts products correctly by price in ascending order', function (): void {
 
     // Sort by price ascending
     $results = Product::query()
-        ->where('team_id')
+        ->where('team_id', $team->id)
         ->orderBy('price', 'asc')
         ->get();
 
@@ -168,7 +168,7 @@ it('sorts products correctly by price in descending order', function (): void {
 
     // Sort by price descending
     $results = Product::query()
-        ->where('team_id')
+        ->where('team_id', $team->id)
         ->orderBy('price', 'desc')
         ->get();
 
@@ -202,7 +202,7 @@ it('sorts products correctly by creation date in ascending order', function (): 
 
     // Sort by created_at ascending
     $results = Product::query()
-        ->where('team_id')
+        ->where('team_id', $team->id)
         ->orderBy('created_at', 'asc')
         ->get();
 
@@ -236,7 +236,7 @@ it('sorts products correctly by creation date in descending order', function ():
 
     // Sort by created_at descending
     $results = Product::query()
-        ->where('team_id')
+        ->where('team_id', $team->id)
         ->orderBy('created_at', 'desc')
         ->get();
 
@@ -267,7 +267,7 @@ it('handles null values correctly when sorting', function (): void {
 
     // Sort by SKU ascending (nulls should come first in most databases)
     $results = Product::query()
-        ->where('team_id')
+        ->where('team_id', $team->id)
         ->orderBy('sku', 'asc')
         ->get();
 
@@ -304,7 +304,7 @@ it('applies multiple sort criteria in the correct order', function (): void {
 
     // Sort by price ascending, then by name ascending
     $results = Product::query()
-        ->where('team_id')
+        ->where('team_id', $team->id)
         ->orderBy('price', 'asc')
         ->orderBy('name', 'asc')
         ->get();

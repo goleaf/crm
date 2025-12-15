@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Models\Milestone;
 use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
 use App\Services\ActivityService;
+use App\Services\Milestones\ProgressTrackingService;
+use Illuminate\Support\Facades\DB;
 
 final class TaskObserver
 {
@@ -60,6 +63,28 @@ final class TaskObserver
                 $changes,
             );
         }
+
+        if (! array_key_exists('percent_complete', $changes)) {
+            return;
+        }
+
+        $milestoneIds = DB::table('milestone_task')
+            ->where('task_id', $task->getKey())
+            ->pluck('milestone_id')
+            ->all();
+
+        if ($milestoneIds === []) {
+            return;
+        }
+
+        $progress = resolve(ProgressTrackingService::class);
+
+        Milestone::query()
+            ->whereIn('id', $milestoneIds)
+            ->get()
+            ->each(function (Milestone $milestone) use ($progress): void {
+                $progress->updateFromTasks($milestone);
+            });
     }
 
     public function deleted(Task $task): void

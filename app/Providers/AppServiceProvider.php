@@ -32,6 +32,7 @@ use App\Models\KnowledgeFaq;
 use App\Models\KnowledgeTag;
 use App\Models\KnowledgeTemplateResponse;
 use App\Models\Lead;
+use App\Models\Milestone;
 use App\Models\Note;
 use App\Models\Opportunity;
 use App\Models\Order;
@@ -144,6 +145,11 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\Task\TaskReminderService::class);
         $this->app->singleton(\App\Services\Task\TaskRecurrenceService::class);
         $this->app->singleton(\App\Services\Task\TaskDelegationService::class);
+
+        // Register Milestone Services
+        $this->app->singleton(\App\Services\Milestones\DependencyService::class);
+        $this->app->singleton(\App\Services\Milestones\ProgressTrackingService::class);
+        $this->app->singleton(\App\Services\Milestones\MilestoneService::class);
 
         // Register Time Management Services
         $this->app->singleton(\App\Services\TimeManagement\LeaveBalanceService::class);
@@ -330,6 +336,10 @@ final class AppServiceProvider extends ServiceProvider
      */
     private function shareUiTranslations(): void
     {
+        if ($this->app->runningUnitTests()) {
+            return;
+        }
+
         Facades\View::share('uiTranslations', fn (): array => trans('ui'));
     }
 
@@ -398,12 +408,12 @@ final class AppServiceProvider extends ServiceProvider
             }
 
             if (str_contains($ability, '.')) {
-                return $user->can($ability);
+                return $user->checkPermissionTo($ability);
             }
 
             $permission = $this->mapAbilityToPermission($ability, $arguments[0] ?? null);
 
-            return $permission ? $user->can($permission) : null;
+            return $permission ? $user->checkPermissionTo($permission) : null;
         });
     }
 
@@ -476,6 +486,7 @@ final class AppServiceProvider extends ServiceProvider
             'company' => Company::class,
             'opportunity' => Opportunity::class,
             'task' => Task::class,
+            'milestone' => Milestone::class,
             'note' => Note::class,
             'support_case' => SupportCase::class,
             'system_administrator' => SystemAdministrator::class,
@@ -551,6 +562,10 @@ final class AppServiceProvider extends ServiceProvider
      */
     private function configureGitHubStars(): void
     {
+        if ($this->app->runningUnitTests()) {
+            return;
+        }
+
         // Share GitHub stars count with the header component
         Facades\View::composer('components.layout.header', function (View $view): void {
             $gitHubService = resolve(GitHubService::class);

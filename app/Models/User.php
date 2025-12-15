@@ -25,6 +25,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Lab404\Impersonate\Models\Impersonate;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasTeams;
 use Laravel\Sanctum\HasApiTokens;
@@ -54,6 +55,7 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Has
     use HasRoles;
     use HasSchedules;
     use HasTeams;
+    use Impersonate;
     use InteractsWithReactions;
     use Notifiable;
     use TwoFactorAuthenticatable;

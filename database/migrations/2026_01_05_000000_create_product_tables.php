@@ -28,7 +28,7 @@ return new class extends Migration
             $table->foreignId('team_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('slug');
-            $table->string('sku');
+            $table->string('sku')->nullable();
             $table->text('description')->nullable();
             $table->decimal('price', 12, 2)->default(0);
             $table->string('currency_code', 3)->default('USD');

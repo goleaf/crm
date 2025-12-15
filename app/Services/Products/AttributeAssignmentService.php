@@ -95,8 +95,8 @@ final class AttributeAssignmentService
         }
 
         // Check for missing required attributes
-        $requiredAttributes = ProductAttribute::where('team_id')
-            ->where('is_required')
+        $requiredAttributes = ProductAttribute::where('team_id', $product->team_id)
+            ->where('is_required', true)
             ->get();
 
         $assignedAttributeIds = $product->attributeAssignments->pluck('product_attribute_id');

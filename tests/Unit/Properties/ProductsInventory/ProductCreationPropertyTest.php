@@ -160,9 +160,9 @@ test('property: product creation respects team boundaries', function (): void {
 
     // Verify product is only accessible within its team
     // @phpstan-ignore-next-line
-    $team1Products = Product::where('team_id')->count();
+    $team1Products = Product::where('team_id', $team1->id)->count();
     // @phpstan-ignore-next-line
-    $team2Products = Product::where('team_id')->count();
+    $team2Products = Product::where('team_id', $team2->id)->count();
 
     expect($team1Products)->toBeGreaterThan(0)
         ->and($team2Products)->toBe(0);

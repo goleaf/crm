@@ -85,6 +85,9 @@ Route::group([
         Route::get('/calendar', [\App\Http\Controllers\CalendarController::class, 'index'])->name('calendar');
         Route::post('/calendar', [\App\Http\Controllers\CalendarController::class, 'store'])->name('calendar.store');
         Route::get('/calendar/export/ical', [\App\Http\Controllers\CalendarController::class, 'exportIcal'])->name('calendar.export.ical');
+
+        // Impersonate routes
+        Route::impersonate();
     });
 
     Route::get('/discord', fn () => redirect()->away(config('services.discord.invite_url')))->name('discord');

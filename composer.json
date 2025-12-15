@@ -46,6 +46,7 @@
         "intervention/validation": "^4.6",
         "jonpurvis/squeaky": "^2.2",
         "kodeine/laravel-meta": "*",
+        "lab404/laravel-impersonate": "^1.7",
         "laracraft-tech/laravel-date-scopes": "^2.4",
         "laravel/framework": "^12.0",
         "laravel/horizon": "^5.29",
@@ -84,8 +85,10 @@
         "spatie/laravel-medialibrary": "^11.12",
         "spatie/laravel-permission": "*",
         "spatie/laravel-prefixed-ids": "^1.4",
+        "spatie/laravel-responsecache": "*",
         "spatie/laravel-settings": "^3.3",
         "spatie/laravel-sitemap": "^7.3",
+        "spatie/laravel-translatable": "*",
         "stephenjude/filament-feature-flags": "^4.0",
         "symfony/http-client": "^7.2",
         "symfony/postmark-mailer": "^7.2",
@@ -156,7 +159,7 @@
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi",
-            "@php artisan filament:upgrade"
+            "@php -r \"if (getenv('FILAMENT_UPGRADE') === '1') { passthru('php artisan filament:upgrade'); }\""
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"

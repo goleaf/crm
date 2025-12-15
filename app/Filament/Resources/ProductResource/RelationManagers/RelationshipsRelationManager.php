@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Filament\Resources\ProductResource\RelationManagers;
 
 use App\Models\Product;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
-use Filament\Tables\Actions\CreateAction;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -29,7 +29,7 @@ final class RelationshipsRelationManager extends RelationManager
                 ->label('Related Product')
                 ->required()
                 ->options(fn (): array => Product::query()
-                    ->where('team_id')
+                    ->where('team_id', $this->ownerRecord->team_id)
                     ->whereKeyNot($this->ownerRecord->getKey())
                     ->orderBy('name')
                     ->pluck('name', 'id')
@@ -91,7 +91,7 @@ final class RelationshipsRelationManager extends RelationManager
                         'team_id' => $this->ownerRecord->team_id,
                     ]),
             ])
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
             ]);

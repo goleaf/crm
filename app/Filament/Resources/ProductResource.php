@@ -15,10 +15,10 @@ use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -109,7 +109,9 @@ final class ProductResource extends Resource
                                 ->label('Cost')
                                 ->numeric()
                                 ->minValue(0)
-                                ->prefix('$'),
+                                ->prefix('$')
+                                ->default(0)
+                                ->dehydrateStateUsing(fn (mixed $state): mixed => blank($state) ? 0 : $state),
                             TextInput::make('currency_code')
                                 ->label('Currency')
                                 ->maxLength(3)
@@ -312,8 +314,17 @@ final class ProductResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('name')
-            ->searchable()
-            ->globalSearchAttributes(['name', 'sku', 'description', 'manufacturer', 'part_number'])
+            ->searchable([
+                'name',
+                'sku',
+                'description',
+                'manufacturer',
+                'part_number',
+                'taxonomyCategories.name',
+                fn (Builder $query, string $search): Builder => $query->whereHas('customFieldValues', function (Builder $subQuery) use ($search): void {
+                    $subQuery->where('value', 'like', "%{$search}%");
+                }),
+            ])
             ->filters([
                 // Category filter with subcategory inclusion
                 \Filament\Tables\Filters\SelectFilter::make('taxonomyCategories')
@@ -390,7 +401,7 @@ final class ProductResource extends Resource
                 \Filament\Tables\Filters\Filter::make('price_range')
                     ->label(__('app.labels.price_range'))
                     ->form([
-                        \Filament\Forms\Components\Grid::make(2)
+                        \Filament\Schemas\Components\Grid::make(2)
                             ->schema([
                                 \Filament\Forms\Components\TextInput::make('price_from')
                                     ->label(__('app.labels.price_from'))
@@ -501,8 +512,8 @@ final class ProductResource extends Resource
         }
 
         $attributes = \App\Models\ProductAttribute::query()
-            ->where('team_id')
-            ->where('is_filterable')
+            ->where('team_id', $tenant->id)
+            ->where('is_filterable', true)
             ->with('values')
             ->get();
 
@@ -539,14 +550,14 @@ final class ProductResource extends Resource
 
                         return $query->whereHas('attributeAssignments', function (Builder $subQuery) use ($attribute, $boolValue): void {
                             $subQuery->where('product_attribute_id', $attribute->id)
-                                ->where('value', $boolValue ? 'true' : 'false');
+                                ->where('custom_value', $boolValue ? 'true' : 'false');
                         });
                     });
             } elseif ($attribute->data_type === 'number') {
                 $filters[] = \Filament\Tables\Filters\Filter::make($filterId)
                     ->label($attribute->name)
                     ->form([
-                        \Filament\Forms\Components\Grid::make(2)
+                        \Filament\Schemas\Components\Grid::make(2)
                             ->schema([
                                 \Filament\Forms\Components\TextInput::make('min_value')
                                     ->label(__('app.labels.minimum'))
@@ -560,11 +571,11 @@ final class ProductResource extends Resource
                         $subQuery->where('product_attribute_id', $attribute->id);
 
                         if (! empty($data['min_value'])) {
-                            $subQuery->where('value', '>=', $data['min_value']);
+                            $subQuery->where('custom_value', '>=', $data['min_value']);
                         }
 
                         if (! empty($data['max_value'])) {
-                            $subQuery->where('value', '<=', $data['max_value']);
+                            $subQuery->where('custom_value', '<=', $data['max_value']);
                         }
                     }));
             }

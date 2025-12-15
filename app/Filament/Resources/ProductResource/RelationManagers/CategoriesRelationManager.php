@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace App\Filament\Resources\ProductResource\RelationManagers;
 
 use App\Filament\Support\SlugHelper;
-use App\Models\Taxonomy;
+use Filament\Actions\AttachAction;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DetachAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Components\Textarea;
-use Filament\Schemas\Components\TextInput;
 use Filament\Schemas\Schema;
-use Filament\Tables\Actions\AttachAction;
-use Filament\Tables\Actions\CreateAction;
-use Filament\Tables\Actions\DetachAction;
-use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 final class CategoriesRelationManager extends RelationManager
 {
@@ -60,16 +60,17 @@ final class CategoriesRelationManager extends RelationManager
                 CreateAction::make()
                     ->mutateFormDataUsing(function (array $data): array {
                         $data['type'] = 'product_category';
+                        $data['team_id'] = $this->ownerRecord->team_id;
 
                         return $data;
                     }),
                 AttachAction::make()
-                    ->recordSelectOptions(fn () => Taxonomy::query()
+                    ->recordSelectOptionsQuery(fn (Builder $query): Builder => $query
                         ->where('type', 'product_category')
-                        ->orderBy('name')
-                        ->pluck('name', 'id')),
+                        ->where('team_id', $this->ownerRecord->team_id)
+                        ->orderBy('name')),
             ])
-            ->actions([
+            ->recordActions([
                 EditAction::make(),
                 DetachAction::make(),
             ]);

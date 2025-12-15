@@ -180,6 +180,16 @@ final class Project extends Model implements HasMedia
     }
 
     /**
+     * Dedicated milestone records (separate from the legacy JSON milestones column).
+     *
+     * @return HasMany<Milestone, $this>
+     */
+    public function milestoneRecords(): HasMany
+    {
+        return $this->hasMany(Milestone::class);
+    }
+
+    /**
      * @return HasMany<TimeEntry, $this>
      */
     public function timeEntries(): HasMany

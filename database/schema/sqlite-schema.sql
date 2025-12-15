@@ -2244,7 +2244,7 @@ CREATE TABLE IF NOT EXISTS "products"(
   "team_id" integer not null,
   "name" varchar not null,
   "slug" varchar not null,
-  "sku" varchar not null,
+  "sku" varchar,
   "description" text,
   "price" numeric not null default '0',
   "currency_code" varchar not null default 'USD',

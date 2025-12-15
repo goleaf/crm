@@ -10,6 +10,7 @@ use App\Enums\ProductStatus;
 use App\Models\Concerns\HasTaxonomies;
 use App\Models\Concerns\HasTeam;
 use App\Models\Concerns\HasUniqueSlug;
+use App\Models\Concerns\LogsActivity;
 use Carbon\CarbonInterface;
 use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,6 +34,7 @@ final class Product extends Model implements HasCustomFields, HasMedia
     use HasTeam;
     use HasUniqueSlug;
     use InteractsWithMedia;
+    use LogsActivity;
     use SoftDeletes;
     use UsesCustomFields;
 

@@ -69,6 +69,7 @@ return [
     'types' => [
         TaxonomyType::Category->value,
         TaxonomyType::Tag->value,
+        'goal',
         'product_category',
         'task_category',
         'note_category',

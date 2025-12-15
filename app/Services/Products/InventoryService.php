@@ -283,9 +283,9 @@ final class InventoryService
         $threshold ??= config('inventory.low_stock_threshold', 10);
 
         // Get products that are low on stock
-        $products = Product::where('team_id')
-            ->where('track_inventory')
-            ->where('is_active')
+        $products = Product::where('team_id', $teamId)
+            ->where('track_inventory', true)
+            ->where('is_active', true)
             ->whereRaw('(inventory_quantity - reserved_quantity) <= ?', [$threshold])
             ->get();
 
