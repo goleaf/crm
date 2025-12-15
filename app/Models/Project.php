@@ -34,6 +34,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * @property float|null                      $budget
  * @property float                           $actual_cost
  * @property string                          $currency
+ * @property float|null                      $billing_rate
  * @property float                           $percent_complete
  * @property array|null                      $phases
  * @property array|null                      $milestones
@@ -73,6 +74,7 @@ final class Project extends Model implements HasMedia
         'budget',
         'actual_cost',
         'currency',
+        'billing_rate',
         'percent_complete',
         'phases',
         'milestones',
@@ -119,6 +121,7 @@ final class Project extends Model implements HasMedia
             'budget' => 'decimal:2',
             'actual_cost' => 'decimal:2',
             'percent_complete' => 'decimal:2',
+            'billing_rate' => 'decimal:2',
             'phases' => 'array',
             'milestones' => 'array',
             'deliverables' => 'array',
@@ -174,6 +177,14 @@ final class Project extends Model implements HasMedia
     {
         return $this->belongsToMany(Task::class, 'project_task')
             ->withTimestamps();
+    }
+
+    /**
+     * @return HasMany<TimeEntry, $this>
+     */
+    public function timeEntries(): HasMany
+    {
+        return $this->hasMany(TimeEntry::class);
     }
 
     /**

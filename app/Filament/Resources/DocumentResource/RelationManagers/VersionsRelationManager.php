@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\DocumentResource\RelationManagers;
 
+use App\Filament\Support\UploadConstraints;
 use App\Support\Paths\StoragePaths;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -12,6 +13,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Size;
 use Filament\Tables\Columns\TextColumn;
@@ -28,16 +30,19 @@ final class VersionsRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\FileUpload::make('file_path')
-                    ->label('File')
-                    ->disk('public')
-                    ->directory(fn (): string => StoragePaths::documentsDirectory($this->ownerRecord?->team_id))
-                    ->getUploadedFileNameForStorageUsing(
-                        fn (TemporaryUploadedFile $file): string => StoragePaths::documentFileName(
-                            $file->getClientOriginalName(),
-                        ),
-                    )
-                    ->required(),
+                UploadConstraints::apply(
+                    FileUpload::make('file_path')
+                        ->label('File')
+                        ->disk('public')
+                        ->directory(fn (): string => StoragePaths::documentsDirectory($this->ownerRecord?->team_id))
+                        ->getUploadedFileNameForStorageUsing(
+                            fn (TemporaryUploadedFile $file): string => StoragePaths::documentFileName(
+                                $file->getClientOriginalName(),
+                            ),
+                        )
+                        ->required(),
+                    types: ['documents', 'images'],
+                ),
                 \Filament\Forms\Components\Textarea::make('notes')
                     ->rows(3),
             ]);

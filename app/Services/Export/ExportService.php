@@ -46,7 +46,7 @@ final readonly class ExportService
                 'expires_at' => now()->addDays(7), // Default 7 days expiration
             ]);
 
-            Log::info('Export job created', [
+            Log::channel('exports')->info('Export job created', [
                 'export_job_id' => $exportJob->id,
                 'model_type' => $exportJob->model_type,
                 'user_id' => $user->id,
@@ -105,7 +105,7 @@ final readonly class ExportService
                 'completed_at' => now(),
             ]);
 
-            Log::info('Export job completed', [
+            Log::channel('exports')->info('Export job completed', [
                 'export_job_id' => $exportJob->id,
                 'status' => $exportJob->status,
                 'total_records' => $totalRecords,
@@ -115,7 +115,7 @@ final readonly class ExportService
             return $result['success'];
 
         } catch (\Exception $e) {
-            Log::error('Export job failed', [
+            Log::channel('exports')->error('Export job failed', [
                 'export_job_id' => $exportJob->id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -195,7 +195,7 @@ final readonly class ExportService
 
                 $cleanedCount++;
             } catch (\Exception $e) {
-                Log::warning('Failed to cleanup expired export file', [
+                Log::channel('exports')->warning('Failed to cleanup expired export file', [
                     'export_job_id' => $job->id,
                     'file_path' => $job->file_path,
                     'error' => $e->getMessage(),
@@ -203,7 +203,7 @@ final readonly class ExportService
             }
         }
 
-        Log::info('Cleaned up expired export files', ['count' => $cleanedCount]);
+        Log::channel('exports')->info('Cleaned up expired export files', ['count' => $cleanedCount]);
 
         return $cleanedCount;
     }

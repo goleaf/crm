@@ -152,6 +152,32 @@ return [
         'boolean' => 'Boolean',
     ],
 
+    'timesheet_status' => [
+        'draft' => 'Draft',
+        'pending' => 'Pending',
+        'approved' => 'Approved',
+        'rejected' => 'Rejected',
+    ],
+
+    'time_entry_approval_status' => [
+        'pending' => 'Pending',
+        'approved' => 'Approved',
+        'rejected' => 'Rejected',
+    ],
+
+    'absence_status' => [
+        'pending' => 'Pending',
+        'approved' => 'Approved',
+        'rejected' => 'Rejected',
+        'cancelled' => 'Cancelled',
+    ],
+
+    'leave_accrual_frequency' => [
+        'monthly' => 'Monthly',
+        'quarterly' => 'Quarterly',
+        'annually' => 'Annually',
+    ],
+
     'product_field' => [
         'brand' => 'Brand',
         'model_number' => 'Model Number',

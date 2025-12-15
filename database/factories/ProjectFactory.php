@@ -33,6 +33,7 @@ final class ProjectFactory extends Factory
             'budget' => fake()->randomFloat(2, 10000, 500000),
             'actual_cost' => fake()->randomFloat(2, 0, 100000),
             'currency' => fake()->randomElement(['USD', 'EUR', 'GBP']),
+            'billing_rate' => fake()->boolean(60) ? fake()->randomFloat(2, 50, 500) : null,
             'percent_complete' => fake()->randomFloat(2, 0, 100),
             'is_template' => false,
         ];

@@ -144,6 +144,13 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\Task\TaskRecurrenceService::class);
         $this->app->singleton(\App\Services\Task\TaskDelegationService::class);
 
+        // Register Time Management Services
+        $this->app->singleton(\App\Services\TimeManagement\LeaveBalanceService::class);
+        $this->app->singleton(\App\Services\TimeManagement\ValidationService::class);
+        $this->app->singleton(\App\Services\TimeManagement\BillingCalculator::class);
+        $this->app->singleton(\App\Services\TimeManagement\TimeEntryService::class);
+        $this->app->singleton(\App\Services\TimeManagement\AbsenceService::class);
+
         // Register Product Services
         $this->app->singleton(\App\Services\Products\AttributeAssignmentService::class);
         $this->app->singleton(\App\Services\Products\VariationService::class);
@@ -459,8 +466,7 @@ final class AppServiceProvider extends ServiceProvider
      */
     private function configureModels(): void
     {
-        Model::unguard();
-        //        Model::shouldBeStrict(! $this->app->isProduction()); // TODO: Uncomment this line to enable strict mode in production
+        Model::shouldBeStrict();
 
         Relation::enforceMorphMap([
             'team' => Team::class,

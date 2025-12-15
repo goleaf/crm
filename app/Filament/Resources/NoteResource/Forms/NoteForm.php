@@ -118,14 +118,17 @@ final class NoteForm
                 ->nullable();
         }
 
-        $components[] = SpatieMediaLibraryFileUpload::make('attachments')
-            ->collection('attachments')
-            ->label('Attachments')
-            ->preserveFilenames()
-            ->appendFiles()
-            ->multiple()
-            ->downloadable()
-            ->columnSpanFull();
+        $components[] = \App\Filament\Support\UploadConstraints::apply(
+            SpatieMediaLibraryFileUpload::make('attachments')
+                ->collection('attachments')
+                ->label('Attachments')
+                ->preserveFilenames()
+                ->appendFiles()
+                ->multiple()
+                ->downloadable()
+                ->columnSpanFull(),
+            types: ['documents', 'images', 'archives'],
+        );
 
         $components[] = CustomFields::form()->forSchema($schema)->build()
             ->columnSpanFull()

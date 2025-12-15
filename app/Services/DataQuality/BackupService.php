@@ -71,7 +71,7 @@ final class BackupService
 
             return true;
         } catch (\Throwable $e) {
-            Log::error('Backup job failed', [
+            Log::channel('backups')->error('Backup job failed', [
                 'backup_job_id' => $backupJob->id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -107,7 +107,7 @@ final class BackupService
         try {
             return DB::transaction(function () use ($backupJob, $pointInTime): bool {
                 // Log the restore operation
-                Log::info('Starting backup restore', [
+                Log::channel('backups')->info('Starting backup restore', [
                     'backup_job_id' => $backupJob->id,
                     'backup_type' => $backupJob->type->value,
                     'point_in_time' => $pointInTime?->toISOString(),
@@ -121,7 +121,7 @@ final class BackupService
                 };
 
                 if ($result) {
-                    Log::info('Backup restore completed successfully', [
+                    Log::channel('backups')->info('Backup restore completed successfully', [
                         'backup_job_id' => $backupJob->id,
                     ]);
                 }
@@ -129,7 +129,7 @@ final class BackupService
                 return $result;
             });
         } catch (\Throwable $e) {
-            Log::error('Backup restore failed', [
+            Log::channel('backups')->error('Backup restore failed', [
                 'backup_job_id' => $backupJob->id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -197,7 +197,7 @@ final class BackupService
                 $backup->update(['status' => BackupJobStatus::EXPIRED]);
                 $cleanedCount++;
             } catch (\Throwable $e) {
-                Log::error('Failed to cleanup expired backup', [
+                Log::channel('backups')->error('Failed to cleanup expired backup', [
                     'backup_job_id' => $backup->id,
                     'error' => $e->getMessage(),
                 ]);
@@ -648,7 +648,7 @@ final class BackupService
 
             return $dbRestoreResult && $filesRestoreResult;
         } catch (\Throwable $e) {
-            Log::error('Full backup restore failed', [
+            Log::channel('backups')->error('Full backup restore failed', [
                 'backup_job_id' => $backupJob->id,
                 'error' => $e->getMessage(),
             ]);
@@ -694,7 +694,7 @@ final class BackupService
 
             return $result;
         } catch (\Throwable $e) {
-            Log::error('Files backup restore failed', [
+            Log::channel('backups')->error('Files backup restore failed', [
                 'backup_job_id' => $backupJob->id,
                 'error' => $e->getMessage(),
             ]);
@@ -709,7 +709,7 @@ final class BackupService
     private function restoreDatabaseFromPath(string $sqlPath, ?\Carbon\Carbon $pointInTime = null): bool
     {
         if (! File::exists($sqlPath)) {
-            Log::error('Database backup file not found', ['path' => $sqlPath]);
+            Log::channel('backups')->error('Database backup file not found', ['path' => $sqlPath]);
 
             return false;
         }
@@ -719,7 +719,7 @@ final class BackupService
             $driver = $connection->getDriverName();
 
             if ($pointInTime instanceof \Carbon\Carbon) {
-                Log::info('Point-in-time database restore requested', [
+                Log::channel('backups')->info('Point-in-time database restore requested', [
                     'target_time' => $pointInTime->toISOString(),
                 ]);
                 // For point-in-time recovery, we would need to apply transaction logs
@@ -738,7 +738,7 @@ final class BackupService
 
             throw new \Exception("Unsupported database driver for restore: {$driver}");
         } catch (\Throwable $e) {
-            Log::error('Database restore failed', [
+            Log::channel('backups')->error('Database restore failed', [
                 'sql_path' => $sqlPath,
                 'error' => $e->getMessage(),
             ]);
@@ -753,14 +753,14 @@ final class BackupService
     private function restoreFilesFromPath(string $filesPath, ?\Carbon\Carbon $pointInTime = null): bool
     {
         if (! File::exists($filesPath)) {
-            Log::error('Files backup directory not found', ['path' => $filesPath]);
+            Log::channel('backups')->error('Files backup directory not found', ['path' => $filesPath]);
 
             return false;
         }
 
         try {
             if ($pointInTime instanceof \Carbon\Carbon) {
-                Log::info('Point-in-time files restore requested', [
+                Log::channel('backups')->info('Point-in-time files restore requested', [
                     'target_time' => $pointInTime->toISOString(),
                 ]);
                 // For point-in-time recovery, we would filter files by modification time
@@ -779,7 +779,7 @@ final class BackupService
                 File::deleteDirectory($storageTarget);
                 File::copyDirectory($storageSource, $storageTarget);
 
-                Log::info('Storage directory restored', [
+                Log::channel('backups')->info('Storage directory restored', [
                     'backup_location' => $backupStorage,
                 ]);
             }
@@ -796,14 +796,14 @@ final class BackupService
                 // Restore .env from backup
                 File::copy($envSource, $envTarget);
 
-                Log::info('Environment file restored', [
+                Log::channel('backups')->info('Environment file restored', [
                     'backup_location' => $envBackup,
                 ]);
             }
 
             return true;
         } catch (\Throwable $e) {
-            Log::error('Files restore failed', [
+            Log::channel('backups')->error('Files restore failed', [
                 'files_path' => $filesPath,
                 'error' => $e->getMessage(),
             ]);
@@ -871,7 +871,7 @@ final class BackupService
         // Restore from backup
         File::copy($sqlPath, $dbPath);
 
-        Log::info('SQLite database restored', [
+        Log::channel('backups')->info('SQLite database restored', [
             'backup_location' => $backupPath,
         ]);
 

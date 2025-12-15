@@ -139,13 +139,16 @@ final class KnowledgeArticleForm
                             ->icon('heroicon-o-paper-clip')
                             ->badge(fn (?KnowledgeArticle $record): ?string => $record?->getMedia('attachments')->count() > 0 ? (string) $record->getMedia('attachments')->count() : null)
                             ->schema([
-                                SpatieMediaLibraryFileUpload::make('attachments')
-                                    ->collection('attachments')
-                                    ->multiple()
-                                    ->preserveFilenames()
-                                    ->appendFiles()
-                                    ->downloadable()
-                                    ->columnSpanFull(),
+                                \App\Filament\Support\UploadConstraints::apply(
+                                    SpatieMediaLibraryFileUpload::make('attachments')
+                                        ->collection('attachments')
+                                        ->multiple()
+                                        ->preserveFilenames()
+                                        ->appendFiles()
+                                        ->downloadable()
+                                        ->columnSpanFull(),
+                                    types: ['documents', 'images', 'archives'],
+                                ),
                             ]),
                     ])
                     ->columnSpanFull()

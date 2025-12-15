@@ -462,18 +462,21 @@ final class CompanyResource extends Resource
                                     ->label('Description')
                                     ->rows(4)
                                     ->columnSpanFull(),
-                                SpatieMediaLibraryFileUpload::make('attachments')
-                                    ->collection('attachments')
-                                    ->multiple()
-                                    ->preserveFilenames()
-                                    ->appendFiles()
-                                    ->downloadable()
-                                    ->customProperties(fn (): array => [
-                                        'uploaded_by' => auth()->id(),
-                                    ])
-                                    ->maxFiles(20)
-                                    ->columnSpanFull()
-                                    ->helperText('Upload contracts, proposals, or supporting documents.'),
+                                \App\Filament\Support\UploadConstraints::apply(
+                                    SpatieMediaLibraryFileUpload::make('attachments')
+                                        ->collection('attachments')
+                                        ->multiple()
+                                        ->preserveFilenames()
+                                        ->appendFiles()
+                                        ->downloadable()
+                                        ->customProperties(fn (): array => [
+                                            'uploaded_by' => auth()->id(),
+                                        ])
+                                        ->maxFiles(20)
+                                        ->columnSpanFull()
+                                        ->helperText('Upload contracts, proposals, or supporting documents.'),
+                                    types: ['documents', 'images', 'archives'],
+                                ),
                                 \App\Filament\Forms\Components\UnsplashPicker::make('unsplash_image')
                                     ->label('Unsplash Image')
                                     ->imageSize('regular')

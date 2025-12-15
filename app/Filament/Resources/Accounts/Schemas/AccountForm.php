@@ -260,13 +260,16 @@ final class AccountForm
                             ->valueLabel('Value')
                             ->addButtonLabel('Add Field')
                             ->columnSpanFull(),
-                        SpatieMediaLibraryFileUpload::make('attachments')
-                            ->collection('attachments')
-                            ->multiple()
-                            ->downloadable()
-                            ->appendFiles()
-                            ->preserveFilenames()
-                            ->columnSpanFull(),
+                        \App\Filament\Support\UploadConstraints::apply(
+                            SpatieMediaLibraryFileUpload::make('attachments')
+                                ->collection('attachments')
+                                ->multiple()
+                                ->downloadable()
+                                ->appendFiles()
+                                ->preserveFilenames()
+                                ->columnSpanFull(),
+                            types: ['documents', 'images', 'archives'],
+                        ),
                     ]),
             ]);
     }

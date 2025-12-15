@@ -51,10 +51,14 @@ final class PerformanceServiceProvider extends ServiceProvider
         $preventLazyLoading = (bool) config('performance.lazy_loading.prevent', false);
         $strictMode = (bool) config('performance.lazy_loading.strict_mode', false);
 
-        Model::preventLazyLoading($preventLazyLoading);
-
         if ($strictMode) {
             Model::shouldBeStrict();
+
+            return;
+        }
+
+        if ($preventLazyLoading) {
+            Model::preventLazyLoading(true);
         }
     }
 
@@ -84,7 +88,7 @@ final class PerformanceServiceProvider extends ServiceProvider
         }
 
         DB::whenQueryingForLongerThan(((int) $thresholdMs) / 1000, function ($connection, QueryExecuted $event) use ($thresholdMs): void {
-            Log::warning('Slow query detected', [
+            Log::channel('slow_queries')->warning('Slow query detected', [
                 'sql' => $event->sql,
                 'bindings' => $event->bindings,
                 'time_ms' => $event->time,

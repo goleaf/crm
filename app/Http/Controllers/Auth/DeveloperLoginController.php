@@ -132,7 +132,7 @@ final class DeveloperLoginController extends Controller
 
         Auth::login($user);
 
-        Log::info('Developer login', [
+        Log::channel('auth')->info('Developer login', [
             'user_id' => $user->id,
             'email' => $user->email,
             'ip' => $request->ip(),

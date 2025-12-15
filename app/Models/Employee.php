@@ -53,6 +53,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * @property string|null                     $payroll_id
  * @property array|null                      $payroll_metadata
  * @property float                           $capacity_hours_per_week
+ * @property float|null                      $default_billing_rate
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -101,6 +102,7 @@ final class Employee extends Model implements HasMedia
         'payroll_id',
         'payroll_metadata',
         'capacity_hours_per_week',
+        'default_billing_rate',
     ];
 
     /**
@@ -135,6 +137,7 @@ final class Employee extends Model implements HasMedia
             'has_portal_access' => 'boolean',
             'payroll_metadata' => 'array',
             'capacity_hours_per_week' => 'decimal:2',
+            'default_billing_rate' => 'decimal:2',
             'name' => PersonNameCast::using('first_name', 'last_name'),
         ];
     }
@@ -188,6 +191,38 @@ final class Employee extends Model implements HasMedia
     public function timeOffRequests(): HasMany
     {
         return $this->hasMany(EmployeeTimeOff::class);
+    }
+
+    /**
+     * @return HasMany<TimeEntry, $this>
+     */
+    public function timeEntries(): HasMany
+    {
+        return $this->hasMany(TimeEntry::class);
+    }
+
+    /**
+     * @return HasMany<Timesheet, $this>
+     */
+    public function timesheets(): HasMany
+    {
+        return $this->hasMany(Timesheet::class);
+    }
+
+    /**
+     * @return HasMany<EmployeeManagerAssignment, $this>
+     */
+    public function managerAssignments(): HasMany
+    {
+        return $this->hasMany(EmployeeManagerAssignment::class, 'employee_id');
+    }
+
+    /**
+     * @return HasMany<EmployeeManagerAssignment, $this>
+     */
+    public function managedEmployeeAssignments(): HasMany
+    {
+        return $this->hasMany(EmployeeManagerAssignment::class, 'manager_id');
     }
 
     /**

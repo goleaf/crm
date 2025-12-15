@@ -97,6 +97,7 @@ final class EmployeeFactory extends Factory
             'payroll_id' => $this->faker->boolean(70) ? 'PAY-' . $this->faker->unique()->numberBetween(1000, 9999) : null,
             'payroll_metadata' => null,
             'capacity_hours_per_week' => 40,
+            'default_billing_rate' => $this->faker->boolean(60) ? $this->faker->randomFloat(2, 25, 250) : null,
         ];
     }
 

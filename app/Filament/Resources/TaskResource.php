@@ -34,6 +34,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Relaticle\CustomFields\Contracts\ValueResolvers;
 use Relaticle\CustomFields\Models\CustomField;
 use Throwable;
@@ -154,46 +155,16 @@ final class TaskResource extends Resource
             ->recordActions([
                 ActionGroup::make([
                     EditAction::make()
+                        ->databaseTransaction()
                         ->using(function (Task $record, array $data): Task {
                             try {
-                                DB::beginTransaction();
-
                                 $record->update($data);
-
-                                /** @var Collection<int, User> $assignees */
-                                $assignees = $record->assignees;
-
-                                // TODO: Improve the logic to check if the task is already assigned to the user
-                                // Send notifications to assignees if they haven't been notified about this task yet
-                                if ($assignees->isNotEmpty()) {
-                                    $assignees->each(function (User $recipient) use ($record): void {
-                                        // Check if a notification for this task already exists for this user
-                                        $notificationExists = $recipient->notifications()
-                                            ->where('data->viewData->task_id', $record->id)
-                                            ->exists();
-
-                                        // Only send notification if one doesn't already exist
-                                        if (! $notificationExists) {
-                                            Notification::make()
-                                                ->title('New Task Assignment: ' . $record->title)
-                                                ->actions([
-                                                    Action::make('view')
-                                                        ->button()
-                                                        ->label('View Task')
-                                                        ->url(ManageTasks::getUrl(['record' => $record]))
-                                                        ->markAsRead(),
-                                                ])
-                                                ->icon('heroicon-o-check-circle')
-                                                ->iconColor('primary')
-                                                ->viewData(['task_id' => $record->id]) // Store task ID in notification data
-                                                ->sendToDatabase($recipient);
-                                        }
-                                    });
-                                }
-
-                                DB::commit();
+                                self::notifyNewAssignees($record);
                             } catch (Throwable $e) {
-                                DB::rollBack();
+                                Log::error('Task update failed', [
+                                    'task_id' => $record->getKey(),
+                                    'error' => $e->getMessage(),
+                                ]);
 
                                 throw $e;
                             }
@@ -219,6 +190,52 @@ final class TaskResource extends Resource
         return [
             'index' => ManageTasks::route('/'),
         ];
+    }
+
+    public static function notifyNewAssignees(Task $task): void
+    {
+        /** @var Collection<int, User> $recipients */
+        $recipients = $task->assignees()
+            ->wherePivotNull('notified_at')
+            ->get();
+
+        if ($recipients->isEmpty()) {
+            return;
+        }
+
+        $recipients->each(function (User $recipient) use ($task): void {
+            $now = now();
+
+            $claimed = DB::table('task_user')
+                ->where('task_id', $task->getKey())
+                ->where('user_id', $recipient->getKey())
+                ->whereNull('notified_at')
+                ->update([
+                    'notified_at' => $now,
+                    'updated_at' => $now,
+                ]);
+
+            if ($claimed === 0) {
+                return;
+            }
+
+            Notification::make()
+                ->title('New Task Assignment: ' . $task->title)
+                ->actions([
+                    Action::make('view')
+                        ->button()
+                        ->label('View Task')
+                        ->url(ManageTasks::getUrl([
+                            'tenant' => $task->getAttribute('team_id'),
+                            'record' => $task,
+                        ]))
+                        ->markAsRead(),
+                ])
+                ->icon('heroicon-o-check-circle')
+                ->iconColor('primary')
+                ->viewData(['task_id' => $task->getKey()])
+                ->sendToDatabase($recipient);
+        });
     }
 
     /**

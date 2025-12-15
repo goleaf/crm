@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Pages;
 
 use App\Filament\Components\MinimalTabs;
+use App\Filament\Support\UploadConstraints;
 use App\Services\SettingsService;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -92,10 +93,13 @@ final class CrmSettings extends Page
                             ->label(__('app.labels.address'))
                             ->rows(3),
 
-                        Forms\Components\FileUpload::make('company.logo_url')
-                            ->label(__('app.labels.logo'))
-                            ->image()
-                            ->maxSize(2048),
+                        UploadConstraints::apply(
+                            Forms\Components\FileUpload::make('company.logo_url')
+                                ->label(__('app.labels.logo'))
+                                ->image(),
+                            types: ['images'],
+                            maxSizeKb: 2048,
+                        ),
                     ]),
             ]);
     }

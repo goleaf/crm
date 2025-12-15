@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Models\Team;
 use Illuminate\Support\Str;
 use Relaticle\CustomFields\Enums\CustomFieldWidth;
+use Relaticle\CustomFields\Facades\Entities;
 use Relaticle\CustomFields\Models\CustomField;
 use Relaticle\CustomFields\Models\CustomFieldOption;
 use Relaticle\CustomFields\Models\CustomFieldSection;
@@ -18,10 +19,12 @@ function createCustomFieldFor(string $entity, string $code, string $type, array 
     $tenantId = $team?->getKey() ?? Team::factory()->create()->getKey();
     TenantContextService::setTenantId($tenantId);
 
+    $entityType = Entities::getEntity($entity)?->getAlias() ?? $entity;
+
     $section = CustomFieldSection::query()->firstOrCreate(
         [
             'tenant_id' => $tenantId,
-            'entity_type' => $entity,
+            'entity_type' => $entityType,
             'code' => 'general',
         ],
         [
@@ -39,7 +42,7 @@ function createCustomFieldFor(string $entity, string $code, string $type, array 
         'code' => $code,
         'name' => Str::headline(str_replace('_', ' ', $code)),
         'type' => $type,
-        'entity_type' => $entity,
+        'entity_type' => $entityType,
         'sort_order' => 1,
         'system_defined' => true,
         'active' => true,

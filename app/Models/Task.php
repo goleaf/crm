@@ -516,6 +516,14 @@ final class Task extends Model implements HasCustomFields
      */
     public function saveCustomFieldValue(CustomField $customField, mixed $value, ?Model $tenant = null): void
     {
+        if (in_array($customField->code, [TaskField::STATUS->value, TaskField::PRIORITY->value], true)) {
+            $value = $this->coerceSelectOptionId($customField, $value);
+        }
+
+        if ($customField->code === TaskField::DUE_DATE->value) {
+            $value = $this->coerceDateTimeValue($value);
+        }
+
         if ($customField->code === TaskField::STATUS->value) {
             $label = $this->resolveOptionLabel($customField, $value);
 
@@ -936,5 +944,57 @@ final class Task extends Model implements HasCustomFields
         }
 
         return null;
+    }
+
+    private function coerceSelectOptionId(CustomField $field, mixed $value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        $field->loadMissing('options');
+
+        if (is_numeric($value)) {
+            $optionId = (int) $value;
+
+            if ($field->options->firstWhere('id', $optionId) === null) {
+                throw new \InvalidArgumentException("Invalid option selected for '{$field->code}'.");
+            }
+
+            return $optionId;
+        }
+
+        if (is_string($value)) {
+            $option = $field->options->firstWhere('name', $value);
+
+            if ($option === null) {
+                throw new \InvalidArgumentException("Invalid option selected for '{$field->code}'.");
+            }
+
+            return (int) $option->id;
+        }
+
+        throw new \InvalidArgumentException("Invalid option selected for '{$field->code}'.");
+    }
+
+    private function coerceDateTimeValue(mixed $value): ?Carbon
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if ($value instanceof \DateTimeInterface) {
+            return \Illuminate\Support\Facades\Date::instance($value);
+        }
+
+        if (is_string($value)) {
+            try {
+                return \Illuminate\Support\Facades\Date::parse($value);
+            } catch (\Throwable) {
+                throw new \InvalidArgumentException("Invalid date provided for '" . TaskField::DUE_DATE->value . "'.");
+            }
+        }
+
+        throw new \InvalidArgumentException("Invalid date provided for '" . TaskField::DUE_DATE->value . "'.");
     }
 }

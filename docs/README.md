@@ -43,6 +43,10 @@
 - **[Blasp Profanity Filter Integration](blasp-profanity-filter-integration.md)** - Multi-language profanity filtering
 - Filament stack pinned to `>=4.3.1` (fixes CVE-2025-67507: recovery codes reuse).
 
+### 🧰 System & Ops
+
+- **[System & Technical](system-technical.md)** - Performance guardrails, logging/debugging, security controls, backup/recovery
+
 ### 🌍 Data & Localization
 
 - **[World Data Enhanced Features](world-data-enhanced-features.md)** - Country/state/city data with utilities

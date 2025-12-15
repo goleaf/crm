@@ -387,6 +387,7 @@ return [
         'lockout_duration' => env('CRM_LOCKOUT_DURATION', 15), // minutes
         'audit_log_enabled' => env('CRM_AUDIT_LOG_ENABLED', true),
         'ip_whitelist' => env('CRM_IP_WHITELIST') ? explode(',', (string) env('CRM_IP_WHITELIST')) : [],
+        'ip_denylist' => env('CRM_IP_DENYLIST') ? explode(',', (string) env('CRM_IP_DENYLIST')) : [],
     ],
 
     /*

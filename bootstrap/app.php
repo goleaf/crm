@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Middleware\ApplySecurityHeaders;
 use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -127,7 +128,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
         });
     })
     ->booting(function (): void {
-        //        Model::automaticallyEagerLoadRelationships(); TODO: Before enabling this, check the test suite for any issues with eager loading.
+        Model::automaticallyEagerLoadRelationships();
     })
     ->create();
 

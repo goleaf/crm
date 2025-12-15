@@ -17,6 +17,7 @@ use App\Filament\Widgets\PipelinePerformanceChart;
 use App\Filament\Widgets\QuickActions;
 use App\Filament\Widgets\RecentActivity;
 use App\Http\Middleware\ApplyTenantScopes;
+use App\Http\Middleware\EnforceIpLists;
 use App\Http\Middleware\SetLocale;
 use App\Listeners\SwitchTeam;
 use App\Models\Team;
@@ -218,6 +219,7 @@ final class AppPanelProvider extends PanelProvider
                     ->icon('heroicon-o-shopping-cart'),
             ])
             ->middleware([
+                EnforceIpLists::class,
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
                 StartSession::class,

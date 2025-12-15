@@ -7,9 +7,6 @@ use App\Models\Studio\LabelCustomization;
 use App\Models\Studio\LayoutDefinition;
 use App\Models\Team;
 use App\Services\Studio\StudioService;
-use Tests\Support\PropertyTestCase;
-
-uses(PropertyTestCase::class);
 
 /**
  * Property: Layout customizations are isolated per module and team

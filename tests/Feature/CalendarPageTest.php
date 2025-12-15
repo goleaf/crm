@@ -14,7 +14,7 @@ it('can render calendar page', function (): void {
     $user = User::factory()->create();
     $team = Team::factory()->create();
     $user->teams()->attach($team);
-    $user->update(['current_team_id' => $team->id]);
+    $user->forceFill(['current_team_id' => $team->id])->save();
 
     $this->actingAs($user);
 
@@ -26,7 +26,7 @@ it('can switch between calendar views', function (): void {
     $user = User::factory()->create();
     $team = Team::factory()->create();
     $user->teams()->attach($team);
-    $user->update(['current_team_id' => $team->id]);
+    $user->forceFill(['current_team_id' => $team->id])->save();
 
     $this->actingAs($user);
 
@@ -45,7 +45,7 @@ it('can navigate between periods', function (): void {
     $user = User::factory()->create();
     $team = Team::factory()->create();
     $user->teams()->attach($team);
-    $user->update(['current_team_id' => $team->id]);
+    $user->forceFill(['current_team_id' => $team->id])->save();
 
     $this->actingAs($user);
 
@@ -65,7 +65,7 @@ it('can filter events by type and status', function (): void {
     $user = User::factory()->create();
     $team = Team::factory()->create();
     $user->teams()->attach($team);
-    $user->update(['current_team_id' => $team->id]);
+    $user->forceFill(['current_team_id' => $team->id])->save();
 
     CalendarEvent::factory()->count(5)->create([
         'team_id' => $team->id,
@@ -85,7 +85,7 @@ it('can search events', function (): void {
     $user = User::factory()->create();
     $team = Team::factory()->create();
     $user->teams()->attach($team);
-    $user->update(['current_team_id' => $team->id]);
+    $user->forceFill(['current_team_id' => $team->id])->save();
 
     CalendarEvent::factory()->create([
         'team_id' => $team->id,
@@ -110,7 +110,7 @@ it('can toggle team events visibility', function (): void {
     $user = User::factory()->create();
     $team = Team::factory()->create();
     $user->teams()->attach($team);
-    $user->update(['current_team_id' => $team->id]);
+    $user->forceFill(['current_team_id' => $team->id])->save();
 
     $this->actingAs($user);
 
@@ -126,7 +126,7 @@ it('can filter by team members', function (): void {
     $user = User::factory()->create();
     $team = Team::factory()->create();
     $user->teams()->attach($team);
-    $user->update(['current_team_id' => $team->id]);
+    $user->forceFill(['current_team_id' => $team->id])->save();
 
     $otherUser = User::factory()->create();
     $otherUser->teams()->attach($team);
@@ -152,7 +152,7 @@ it('can create event through header action', function (): void {
     $user = User::factory()->create();
     $team = Team::factory()->create();
     $user->teams()->attach($team);
-    $user->update(['current_team_id' => $team->id]);
+    $user->forceFill(['current_team_id' => $team->id])->save();
 
     $this->actingAs($user);
 
@@ -181,7 +181,7 @@ it('validates required fields when creating event', function (): void {
     $user = User::factory()->create();
     $team = Team::factory()->create();
     $user->teams()->attach($team);
-    $user->update(['current_team_id' => $team->id]);
+    $user->forceFill(['current_team_id' => $team->id])->save();
 
     $this->actingAs($user);
 
@@ -196,7 +196,7 @@ it('can update event dates', function (): void {
     $user = User::factory()->create();
     $team = Team::factory()->create();
     $user->teams()->attach($team);
-    $user->update(['current_team_id' => $team->id]);
+    $user->forceFill(['current_team_id' => $team->id])->save();
 
     $event = CalendarEvent::factory()->create([
         'team_id' => $team->id,
@@ -223,7 +223,7 @@ it('requires authorization to update event', function (): void {
     $user = User::factory()->create();
     $team = Team::factory()->create();
     $user->teams()->attach($team);
-    $user->update(['current_team_id' => $team->id]);
+    $user->forceFill(['current_team_id' => $team->id])->save();
 
     $otherUser = User::factory()->create();
     $otherTeam = Team::factory()->create();
@@ -245,7 +245,7 @@ it('gets team members correctly', function (): void {
     $user = User::factory()->create();
     $team = Team::factory()->create(['user_id' => $user->id]);
     $user->teams()->attach($team);
-    $user->update(['current_team_id' => $team->id]);
+    $user->forceFill(['current_team_id' => $team->id])->save();
 
     $member1 = User::factory()->create();
     $member1->teams()->attach($team);
@@ -277,7 +277,7 @@ it('filters events by date range in day view', function (): void {
     $user = User::factory()->create();
     $team = Team::factory()->create();
     $user->teams()->attach($team);
-    $user->update(['current_team_id' => $team->id]);
+    $user->forceFill(['current_team_id' => $team->id])->save();
 
     $todayEvent = CalendarEvent::factory()->create([
         'team_id' => $team->id,
@@ -307,7 +307,7 @@ it('filters events by search term', function (): void {
     $user = User::factory()->create();
     $team = Team::factory()->create();
     $user->teams()->attach($team);
-    $user->update(['current_team_id' => $team->id]);
+    $user->forceFill(['current_team_id' => $team->id])->save();
 
     $matchingEvent = CalendarEvent::factory()->create([
         'team_id' => $team->id,
@@ -338,7 +338,7 @@ it('shows only user events when show_team_events is false', function (): void {
     $user = User::factory()->create();
     $team = Team::factory()->create();
     $user->teams()->attach($team);
-    $user->update(['current_team_id' => $team->id]);
+    $user->forceFill(['current_team_id' => $team->id])->save();
 
     $otherUser = User::factory()->create();
     $otherUser->teams()->attach($team);
@@ -370,7 +370,7 @@ it('navigates periods correctly in different view modes', function (): void {
     $user = User::factory()->create();
     $team = Team::factory()->create();
     $user->teams()->attach($team);
-    $user->update(['current_team_id' => $team->id]);
+    $user->forceFill(['current_team_id' => $team->id])->save();
 
     $this->actingAs($user);
 
@@ -404,7 +404,7 @@ it('includes attendees in event creation', function (): void {
     $user = User::factory()->create();
     $team = Team::factory()->create();
     $user->teams()->attach($team);
-    $user->update(['current_team_id' => $team->id]);
+    $user->forceFill(['current_team_id' => $team->id])->save();
 
     $this->actingAs($user);
 

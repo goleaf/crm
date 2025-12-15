@@ -8,11 +8,7 @@ use App\Models\Opportunity;
 use App\Models\People;
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
-use Tests\TestCase;
-
-uses(TestCase::class, RefreshDatabase::class);
 
 beforeEach(function (): void {
     $this->team = Team::factory()->create();

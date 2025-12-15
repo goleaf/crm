@@ -10,6 +10,7 @@ use App\Filament\Resources\DocumentResource\Pages\ListDocuments;
 use App\Filament\Resources\DocumentResource\Pages\ViewDocument;
 use App\Filament\Resources\DocumentResource\RelationManagers\SharesRelationManager;
 use App\Filament\Resources\DocumentResource\RelationManagers\VersionsRelationManager;
+use App\Filament\Support\UploadConstraints;
 use App\Models\Document;
 use App\Models\User;
 use App\Support\Paths\StoragePaths;
@@ -105,20 +106,23 @@ final class DocumentResource extends Resource
                                     ])
                                     ->inline()
                                     ->default('private'),
-                                FileUpload::make('upload')
-                                    ->label('Initial file')
-                                    ->disk('public')
-                                    ->directory(fn (): string => StoragePaths::documentsDirectory(self::resolveTeamId()))
-                                    ->getUploadedFileNameForStorageUsing(
-                                        fn (TemporaryUploadedFile $file): string => \Blaspsoft\Onym\Facades\Onym::make(
-                                            defaultFilename: '',
-                                            strategy: 'uuid',
-                                            extension: $file->getClientOriginalExtension(),
-                                            options: ['suffix' => '_' . now()->format('Ymd')],
-                                        ),
-                                    )
-                                    ->helperText('Optional: upload the first version now.')
-                                    ->dehydrated(false),
+                                UploadConstraints::apply(
+                                    FileUpload::make('upload')
+                                        ->label('Initial file')
+                                        ->disk('public')
+                                        ->directory(fn (): string => StoragePaths::documentsDirectory(self::resolveTeamId()))
+                                        ->getUploadedFileNameForStorageUsing(
+                                            fn (TemporaryUploadedFile $file): string => \Blaspsoft\Onym\Facades\Onym::make(
+                                                defaultFilename: '',
+                                                strategy: 'uuid',
+                                                extension: $file->getClientOriginalExtension(),
+                                                options: ['suffix' => '_' . now()->format('Ymd')],
+                                            ),
+                                        )
+                                        ->helperText('Optional: upload the first version now.')
+                                        ->dehydrated(false),
+                                    types: ['documents', 'images'],
+                                ),
                             ])
                             ->columns(2)
                             ->columnSpan(12),

@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use App\Enums\CustomFields\TaskField;
+use App\Enums\CustomFieldType;
 use App\Models\Task;
 use App\Models\Team;
 use App\Models\User;
-use Relaticle\CustomFields\Models\CustomField;
 
 use function Pest\Laravel\actingAs;
 
@@ -15,6 +15,16 @@ beforeEach(function (): void {
     $this->user = User::factory()->create();
     $this->user->teams()->attach($this->team);
     actingAs($this->user);
+
+    $this->statusField = createCustomFieldFor(
+        Task::class,
+        TaskField::STATUS->value,
+        CustomFieldType::SELECT->value,
+        ['Not Started', 'In Progress', 'Completed'],
+        $this->team,
+    );
+
+    $this->completedOption = $this->statusField->options->firstWhere('name', 'Completed');
 });
 
 /**
@@ -70,17 +80,9 @@ test('property: completing a task sets percent complete to one hundred', functio
             'percent_complete' => fake()->randomFloat(2, 0, 80),
         ]);
 
-        $statusField = CustomField::query()
-            ->where('code', TaskField::STATUS->value)
-            ->where('entity_type', Task::class)
-            ->first();
+        expect($this->completedOption)->not->toBeNull();
 
-        expect($statusField)->not->toBeNull();
-
-        $completedOption = $statusField?->options()->where('name', 'Completed')->first();
-        expect($completedOption)->not->toBeNull();
-
-        $task->saveCustomFieldValue($statusField, $completedOption->id);
+        $task->saveCustomFieldValue($this->statusField, $this->completedOption->id);
         $task->refresh();
 
         expect((float) $task->percent_complete)->toBe(100.0);
