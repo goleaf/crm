@@ -29,7 +29,6 @@ return [
         'extensions' => 'Расширения',
         'datatable' => 'Таблицы данных',
     ],
-
     'actions' => [
         'create' => 'Создать',
         'edit' => 'Редактировать',
@@ -66,7 +65,6 @@ return [
         'bulk_actions' => 'Массовые действия',
         'export_selected' => 'Экспортировать выбранное',
     ],
-
     'labels' => [
         'name' => 'Название',
         'email' => 'Email',
@@ -122,9 +120,9 @@ return [
         'language' => 'Язык',
         'datatable' => 'Таблица данных',
     ],
-
     'placeholders' => [
         'search' => 'Поиск...',
+        'global_search' => 'Search across companies, people, tasks, and more...',
         'select' => 'Выберите опцию',
         'enter_name' => 'Введите название',
         'enter_email' => 'Введите email',
@@ -139,7 +137,6 @@ return [
         'enter_notes' => 'Введите заметки',
         'no_results' => 'Результаты не найдены',
     ],
-
     'messages' => [
         'success' => [
             'created' => 'Успешно создано',
@@ -163,7 +160,6 @@ return [
             'restore' => 'Вы уверены, что хотите восстановить это?',
         ],
     ],
-
     'status' => [
         'active' => 'Активный',
         'inactive' => 'Неактивный',
@@ -178,14 +174,12 @@ return [
         'in_progress' => 'В процессе',
         'on_hold' => 'На удержании',
     ],
-
     'priority' => [
         'low' => 'Низкий',
         'medium' => 'Средний',
         'high' => 'Высокий',
         'urgent' => 'Срочный',
     ],
-
     'auth' => [
         'login' => 'Войти',
         'register' => 'Регистрация',
@@ -198,7 +192,6 @@ return [
         'current_password' => 'Текущий пароль',
         'new_password' => 'Новый пароль',
     ],
-
     'pagination' => [
         'showing' => 'Показано',
         'to' => 'до',

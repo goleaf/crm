@@ -3,16 +3,14 @@
 declare(strict_types=1);
 
 return [
-    'heading' => [
-        'title' => 'Кастомні поля',
-    ],
-
     'nav' => [
         'label' => 'Кастомні поля',
         'group' => 'Кастомні поля',
         'icon' => 'heroicon-o-cube',
     ],
-
+    'heading' => [
+        'title' => 'Кастомні поля',
+    ],
     'section' => [
         'form' => [
             'name' => 'Назва',
@@ -25,7 +23,6 @@ return [
             'new_section' => 'Нова секція',
         ],
     ],
-
     'field' => [
         'form' => [
             'general' => 'Загальні',
@@ -97,7 +94,6 @@ return [
             ],
         ],
     ],
-
     'validation' => [
         'labels' => [
             'ACCEPTED' => 'Прийнято',
@@ -315,7 +311,6 @@ return [
         'parameter_missing' => 'Це правило валідації вимагає точно :count параметр(ів). Будь ласка, додайте всі необхідні параметри.',
         'invalid_rule_for_field_type' => 'Вибране правило недійсне для цього типу поля.',
     ],
-
     'empty_states' => [
         'sections' => [
             'heading' => 'Готові почати?',
@@ -328,7 +323,6 @@ return [
             'icon' => 'heroicon-o-squares-plus',
         ],
     ],
-
     'common' => [
         'inactive' => 'Неактивний',
     ],

@@ -29,7 +29,6 @@ return [
         'extensions' => 'Plėtiniai',
         'datatable' => 'Duomenų lentelės',
     ],
-
     'actions' => [
         'create' => 'Sukurti',
         'edit' => 'Redaguoti',
@@ -66,7 +65,6 @@ return [
         'bulk_actions' => 'Masiniai veiksmai',
         'export_selected' => 'Eksportuoti pasirinktus',
     ],
-
     'labels' => [
         'name' => 'Pavadinimas',
         'email' => 'El. paštas',
@@ -122,9 +120,9 @@ return [
         'language' => 'Kalba',
         'datatable' => 'Duomenų lentelė',
     ],
-
     'placeholders' => [
         'search' => 'Ieškoti...',
+        'global_search' => 'Search across companies, people, tasks, and more...',
         'select' => 'Pasirinkite parinktį',
         'enter_name' => 'Įveskite pavadinimą',
         'enter_email' => 'Įveskite el. paštą',
@@ -139,7 +137,6 @@ return [
         'enter_notes' => 'Įveskite pastabas',
         'no_results' => 'Rezultatų nerasta',
     ],
-
     'messages' => [
         'success' => [
             'created' => 'Sėkmingai sukurta',
@@ -163,7 +160,6 @@ return [
             'restore' => 'Ar tikrai norite tai atkurti?',
         ],
     ],
-
     'status' => [
         'active' => 'Aktyvus',
         'inactive' => 'Neaktyvus',
@@ -178,14 +174,12 @@ return [
         'in_progress' => 'Vykdoma',
         'on_hold' => 'Sulaikyta',
     ],
-
     'priority' => [
         'low' => 'Žemas',
         'medium' => 'Vidutinis',
         'high' => 'Aukštas',
         'urgent' => 'Skubus',
     ],
-
     'auth' => [
         'login' => 'Prisijungti',
         'register' => 'Registruotis',
@@ -198,7 +192,6 @@ return [
         'current_password' => 'Dabartinis slaptažodis',
         'new_password' => 'Naujas slaptažodis',
     ],
-
     'pagination' => [
         'showing' => 'Rodoma',
         'to' => 'iki',

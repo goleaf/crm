@@ -11,12 +11,10 @@ return [
         'select_all' => 'Pasirinkti visus',
         'clear_selection' => 'Išvalyti pasirinkimą',
     ],
-
     'empty' => [
         'title' => 'Įrašų nerasta',
         'description' => 'Pabandykite pakoreguoti filtrus ar paiešką.',
     ],
-
     'pagination' => [
         'label' => 'Puslapiavimas',
         'previous' => 'Ankstesnis',
@@ -24,11 +22,9 @@ return [
         'per_page' => 'Puslapyje',
         'showing' => 'Rodoma :from-:to iš :total rezultatų',
     ],
-
     'search' => [
         'placeholder' => 'Ieškokite įrašų...',
     ],
-
     'columns' => [
         'sort_asc' => 'Rikiuoti didėjančiai',
         'sort_desc' => 'Rikiuoti mažėjančiai',
